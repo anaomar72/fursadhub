@@ -1,0 +1,25 @@
+{
+  "app": {
+    "name": "FursadHub",
+    "tagline": "Furaya albaabbada mustaqbalkaaga."
+  },
+  "nav": {
+    "home": "Bogga hore",
+    "student": "Arday",
+    "university": "Jaamacad",
+    "organization": "Ururka",
+    "admin": "Maamule"
+  },
+  "status": {
+    "loading": "Waa la soo raray",
+    "verified": "La xaqiijiyay",
+    "pending": "Sugaya",
+    "underReview": "Dib loo eegayo",
+    "actionRequired": "Tallaabo ayaa loo baahan yahay",
+    "rejected": "La diiday"
+  },
+  "language": {
+    "en": "Ingiriisi",
+    "so": "Soomaali"
+  }
+}

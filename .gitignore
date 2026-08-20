@@ -1,0 +1,44 @@
+# Environment
+.env
+.env.*
+!.env.example
+
+# OS / editor
+.DS_Store
+Thumbs.db
+.vscode/*
+!.vscode/extensions.json
+.idea
+
+# Backend (Maven / Java)
+apps/api/target/
+apps/api/.mvn/wrapper/maven-wrapper.jar
+*.class
+*.jar
+!apps/api/.mvn/wrapper/maven-wrapper.properties
+hs_err_pid*
+
+# Frontend (Node)
+node_modules/
+apps/web/dist/
+apps/web/dist-ssr/
+apps/web/coverage/
+*.local
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+# E2E (Playwright)
+e2e/node_modules/
+e2e/test-results/
+e2e/playwright-report/
+e2e/blob-report/
+e2e/.cache/
+
+# Logs
+logs/
+*.log
+
+# Local infra volumes
+infra/.data/

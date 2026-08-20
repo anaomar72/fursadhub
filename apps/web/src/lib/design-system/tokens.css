@@ -1,0 +1,87 @@
+/*
+ * FursadHub centralized design tokens.
+ *
+ * Palette values are the approved *initial working palette* derived from the
+ * approved logo reference sheet (docs/product/BRAND_AND_UI_GUIDELINES.md).
+ * They are provisional-but-approved, not a final locked brand sheet — flagged
+ * per CLAUDE.md section 57 as awaiting FursadHub team confirmation.
+ *
+ * Do not use raw hex values or arbitrary Tailwind color utilities (bg-blue-600,
+ * bg-[#1f2937], ...) in feature code. Use the semantic tokens below (and their
+ * Tailwind mapping in tailwind config) instead, so a future palette change is a
+ * one-file edit.
+ */
+
+:root {
+  /* Brand palette — awaiting FursadHub team final confirmation. */
+  --color-brand-navy: #091423;
+  --color-brand-orange: #f8891f;
+  --color-brand-orange-deep: #e56d0e;
+  --color-brand-cream: #fbf6ee;
+  --color-brand-beige: #edcfae;
+
+  --color-brand-primary: var(--color-brand-orange);
+  --color-brand-secondary: var(--color-brand-navy);
+  --color-brand-accent: var(--color-brand-orange-deep);
+
+  /* Surfaces */
+  --color-background: #ffffff;
+  --color-surface: #ffffff;
+  --color-surface-muted: #f7f5f1;
+  --color-border: #e6e1d8;
+
+  /* Text */
+  --color-text-primary: var(--color-brand-navy);
+  --color-text-secondary: #3c4a5c;
+  --color-text-muted: #6b7280;
+  --color-text-on-brand: #ffffff;
+
+  /* Semantic status */
+  --color-success: #1a7f4e;
+  --color-success-bg: #e7f6ee;
+  --color-warning: #a15c00;
+  --color-warning-bg: #fdf1de;
+  --color-danger: #b3261e;
+  --color-danger-bg: #fbeae9;
+  --color-info: #1f5aa8;
+  --color-info-bg: #e9f1fb;
+
+  /* Radius */
+  --radius-sm: 0.375rem;
+  --radius-md: 0.625rem;
+  --radius-lg: 1rem;
+
+  /* Shadow */
+  --shadow-sm: 0 1px 2px 0 rgb(9 20 35 / 0.06);
+  --shadow-md: 0 4px 12px -2px rgb(9 20 35 / 0.12);
+
+  /* Motion — see docs/product/BRAND_AND_UI_GUIDELINES.md section 13 */
+  --duration-fast: 150ms;
+  --duration-normal: 240ms;
+  --duration-slow: 450ms;
+
+  --ease-standard: cubic-bezier(0.4, 0, 0.2, 1);
+  --ease-enter: cubic-bezier(0, 0, 0.2, 1);
+  --ease-exit: cubic-bezier(0.4, 0, 1, 1);
+}
+
+/* Dark surfaces (hero sections, auth panels, footers) use the dark-logo variant
+   and invert surface/text tokens locally via the .surface-dark utility rather
+   than a global dark mode, since FursadHub's app shell is light-first. */
+.surface-dark {
+  --color-background: var(--color-brand-navy);
+  --color-surface: var(--color-brand-navy);
+  --color-surface-muted: #101d30;
+  --color-border: #1e2c3f;
+  --color-text-primary: #ffffff;
+  --color-text-secondary: #cbd5e1;
+  --color-text-muted: #94a3b8;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  :root {
+    --duration-fast: 1ms;
+    --duration-normal: 1ms;
+    --duration-slow: 1ms;
+  }
+}

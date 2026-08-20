@@ -1,0 +1,57 @@
+# Local development infrastructure only.
+# Spring Boot and React run on the host for fast reload (see README.md).
+#
+# Usage:
+#   cp .env.example .env
+#   docker compose -f infra/compose.yaml up -d
+
+name: fursadhub
+
+services:
+  postgres:
+    image: postgres:16-alpine
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: ${DB_NAME:-fursadhub}
+      POSTGRES_USER: ${DB_USERNAME:-fursadhub}
+      POSTGRES_PASSWORD: ${DB_PASSWORD:-fursadhub}
+    ports:
+      - "${DB_PORT:-5433}:5432cd apps/web"
+    volumes:
+      - fursadhub-postgres-data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${DB_USERNAME:-fursadhub} -d ${DB_NAME:-fursadhub}"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  # S3-compatible private object storage (CLAUDE.md section 47).
+  object-storage:
+    image: minio/minio:latest
+    restart: unless-stopped
+    command: server /data --console-address ":9001"
+    environment:
+      MINIO_ROOT_USER: ${STORAGE_ACCESS_KEY:-fursadhub}
+      MINIO_ROOT_PASSWORD: ${STORAGE_SECRET_KEY:-fursadhub-local-secret}
+    ports:
+      - "9000:9000" # S3 API
+      - "9001:9001" # Web console
+    volumes:
+      - fursadhub-object-storage-data:/data
+    healthcheck:
+      test: ["CMD", "mc", "ready", "local"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  # Local mail catcher — captures outbound mail without sending real email.
+  mailcatcher:
+    image: maildev/maildev:latest
+    restart: unless-stopped
+    ports:
+      - "1025:1025" # SMTP
+      - "1080:1080" # Web UI
+
+volumes:
+  fursadhub-postgres-data:
+  fursadhub-object-storage-data:

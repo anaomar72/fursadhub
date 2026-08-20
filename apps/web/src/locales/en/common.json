@@ -1,0 +1,25 @@
+{
+  "app": {
+    "name": "FursadHub",
+    "tagline": "Opening doors to your future."
+  },
+  "nav": {
+    "home": "Home",
+    "student": "Student",
+    "university": "University",
+    "organization": "Organization",
+    "admin": "Admin"
+  },
+  "status": {
+    "loading": "Loading",
+    "verified": "Verified",
+    "pending": "Pending",
+    "underReview": "Under review",
+    "actionRequired": "Action required",
+    "rejected": "Rejected"
+  },
+  "language": {
+    "en": "English",
+    "so": "Soomaali"
+  }
+}
