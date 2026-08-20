@@ -1,0 +1,62 @@
+spring:
+  application:
+    name: fursadhub-api
+
+  jpa:
+    open-in-view: false
+    hibernate:
+      ddl-auto: validate
+    properties:
+      hibernate:
+        jdbc:
+          time_zone: UTC
+
+  flyway:
+    enabled: true
+    baseline-on-migrate: false
+
+  jackson:
+    time-zone: UTC
+    default-property-inclusion: non_null
+
+server:
+  port: 8080
+  error:
+    include-message: never
+    include-binding-errors: never
+    include-stacktrace: never
+    include-exception: false
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info
+  endpoint:
+    health:
+      show-details: never
+      probes:
+        enabled: true
+  health:
+    livenessstate:
+      enabled: true
+    readinessstate:
+      enabled: true
+
+springdoc:
+  swagger-ui:
+    path: /docs
+  api-docs:
+    path: /api-docs
+
+# FursadHub API base prefix for all business endpoints: /api/v1
+
+fursadhub:
+  cors:
+    allowed-origins: ${FURSADHUB_CORS_ALLOWED_ORIGINS:http://localhost:5173}
+  jwt:
+    issuer: ${JWT_ISSUER:fursadhub}
+    audience: ${JWT_AUDIENCE:fursadhub-api}
+    access-token-ttl: ${JWT_ACCESS_TOKEN_TTL:10m}
+    public-key-location: ${JWT_PUBLIC_KEY:}
+    private-key-location: ${JWT_PRIVATE_KEY:}

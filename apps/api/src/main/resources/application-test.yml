@@ -1,0 +1,10 @@
+# Datasource is provided per-test via Testcontainers @DynamicPropertySource.
+# No H2 or other in-memory database is used for integration tests.
+spring:
+  jpa:
+    show-sql: false
+
+logging:
+  level:
+    com.fursadhub: DEBUG
+    org.testcontainers: INFO

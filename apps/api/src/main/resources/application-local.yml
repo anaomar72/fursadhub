@@ -1,0 +1,16 @@
+spring:
+  datasource:
+    url: jdbc:postgresql://${DB_HOST:localhost}:${DB_PORT:5432}/${DB_NAME:fursadhub}
+    username: ${DB_USERNAME:fursadhub}
+    password: ${DB_PASSWORD:fursadhub}
+
+  jpa:
+    show-sql: true
+
+logging:
+  level:
+    com.fursadhub: DEBUG
+
+fursadhub:
+  cors:
+    allowed-origins: http://localhost:5173
