@@ -22,12 +22,16 @@ jobs:
           java-version: '21'
           cache: maven
           cache-dependency-path: apps/api/pom.xml
+          
+      - name: Make mvnw executable
+        run: chmod +x ./mvnw    
 
       - name: Compile
         run: ./mvnw -B compile
 
       - name: Unit + Testcontainers integration tests, and package
         run: ./mvnw -B verify
+
 
   frontend:
     name: Frontend (lint, typecheck, test, build)
