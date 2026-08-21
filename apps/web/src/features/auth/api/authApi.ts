@@ -11,8 +11,8 @@ export function register(input: { email: string; password: string; preferredLoca
   return apiFetch<RegisterResponse>('/auth/register', { method: 'POST', body: input })
 }
 
-export function verifyEmail(token: string) {
-  return apiFetch<MessageResponse>('/auth/email/verify', { method: 'POST', body: { token } })
+export function verifyEmail(input: { email: string; code: string }) {
+  return apiFetch<MessageResponse>('/auth/email/verify', { method: 'POST', body: input })
 }
 
 export function resendVerification(email: string) {

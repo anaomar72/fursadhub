@@ -1,18 +1,17 @@
-import { useState } from 'react'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useMutation } from '@tanstack/react-query'
 import { useTranslation } from 'react-i18next'
-import { Link } from 'react-router-dom'
+import { Link, useNavigate } from 'react-router-dom'
 import { registerSchema, type RegisterFormValues } from '../schemas/registerSchema'
 import * as authApi from '../api/authApi'
 import { authErrorMessage } from '../api/errorMessage'
 import { AuthCard } from '../components/AuthCard'
-import { AnimatedCheck, Button, FormField, Input } from '../../../components/ui'
+import { Button, FormField, Input } from '../../../components/ui'
 
 export function RegisterPage() {
   const { t } = useTranslation()
-  const [registeredEmail, setRegisteredEmail] = useState<string | null>(null)
+  const navigate = useNavigate()
 
   const form = useForm<RegisterFormValues>({
     resolver: zodResolver(registerSchema),
@@ -21,34 +20,8 @@ export function RegisterPage() {
 
   const registerMutation = useMutation({
     mutationFn: authApi.register,
-    onSuccess: (data) => setRegisteredEmail(data.email),
+    onSuccess: (data) => navigate(`/verify-email?email=${encodeURIComponent(data.email)}`),
   })
-
-  const resendMutation = useMutation({ mutationFn: authApi.resendVerification })
-
-  if (registeredEmail) {
-    return (
-      <AuthCard title={t('auth:register.successTitle')}>
-        <AnimatedCheck label={t('auth:register.successTitle')} />
-        <p className="mt-4 text-center text-sm text-foreground-secondary">
-          {t('auth:register.successBody', { email: registeredEmail })}
-        </p>
-
-        {resendMutation.isSuccess ? (
-          <p className="mt-4 text-center text-sm text-success">{t('auth:register.resendSuccess')}</p>
-        ) : (
-          <button
-            type="button"
-            className="mt-4 block w-full text-center text-sm font-medium text-brand-primary hover:underline disabled:opacity-60"
-            onClick={() => resendMutation.mutate(registeredEmail)}
-            disabled={resendMutation.isPending}
-          >
-            {t('auth:register.resendLink')}
-          </button>
-        )}
-      </AuthCard>
-    )
-  }
 
   return (
     <AuthCard title={t('auth:register.title')} subtitle={t('auth:register.subtitle')}>

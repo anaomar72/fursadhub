@@ -5,6 +5,7 @@ import com.fursadhub.identity.domain.EmailVerificationTokenRepository;
 import org.springframework.stereotype.Repository;
 
 import java.util.Optional;
+import java.util.UUID;
 
 @Repository
 class EmailVerificationTokenRepositoryAdapter implements EmailVerificationTokenRepository {
@@ -21,7 +22,12 @@ class EmailVerificationTokenRepositoryAdapter implements EmailVerificationTokenR
     }
 
     @Override
-    public Optional<EmailVerificationToken> findByTokenHash(String tokenHash) {
-        return jpaRepository.findByTokenHash(tokenHash);
+    public Optional<EmailVerificationToken> findActiveByUserId(UUID userId) {
+        return jpaRepository.findFirstByUserIdAndConsumedAtIsNullOrderByCreatedAtDesc(userId);
+    }
+
+    @Override
+    public void deleteActiveForUser(UUID userId) {
+        jpaRepository.deleteByUserIdAndConsumedAtIsNull(userId);
     }
 }

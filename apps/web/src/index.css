@@ -48,6 +48,9 @@
   --animate-verified-circle: verified-circle-in var(--duration-slow) var(--ease-standard) both;
   --animate-verified-check: verified-check-draw var(--duration-slow) var(--ease-standard) 150ms both;
   --animate-verified-text: verified-text-in var(--duration-normal) var(--ease-standard) 350ms both;
+
+  /* One-time invalid-code feedback for <OtpCodeInput /> — a subtle wiggle, not a loop. */
+  --animate-otp-shake: otp-shake var(--duration-normal) var(--ease-standard);
 }
 
 @keyframes verified-circle-in {
@@ -78,6 +81,21 @@
   to {
     opacity: 1;
     transform: translateY(0);
+  }
+}
+
+@keyframes otp-shake {
+  0%,
+  100% {
+    transform: translateX(0);
+  }
+  20%,
+  60% {
+    transform: translateX(-4px);
+  }
+  40%,
+  80% {
+    transform: translateX(4px);
   }
 }
 

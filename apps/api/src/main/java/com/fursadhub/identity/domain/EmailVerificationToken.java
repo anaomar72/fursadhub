@@ -9,9 +9,14 @@ import java.time.Instant;
 import java.util.UUID;
 
 /**
- * Opaque, hash-stored, one-time, expiring email-verification token (CLAUDE.md section 13).
- * Never a JWT; the raw value only ever exists transiently in memory and inside the outbound
- * verification email — it is never persisted or logged.
+ * A keyed-hash-stored, one-time, expiring 4-digit email-verification code challenge (CLAUDE.md
+ * section 13). Never a JWT; the raw code only ever exists transiently in memory and inside the
+ * outbound verification email — it is never persisted or logged. {@code codeHash} is an HMAC
+ * (see {@code EmailVerificationCodeHasher}), not a plain hash: a 4-digit code has only 10,000
+ * possible values, so a plain hash would be trivially brute-forceable offline if this table ever
+ * leaked. At most one active (unconsumed) challenge exists per user at a time (enforced by a
+ * partial unique index — see the Flyway migration) since issuing a new one always invalidates any
+ * previous one.
  */
 @Entity
 @Table(name = "email_verification_tokens")
@@ -23,8 +28,8 @@ public class EmailVerificationToken {
     @Column(name = "user_id", nullable = false)
     private UUID userId;
 
-    @Column(name = "token_hash", nullable = false, unique = true, length = 64)
-    private String tokenHash;
+    @Column(name = "code_hash", nullable = false, length = 64)
+    private String codeHash;
 
     @Column(name = "expires_at", nullable = false)
     private Instant expiresAt;
@@ -32,17 +37,21 @@ public class EmailVerificationToken {
     @Column(name = "consumed_at")
     private Instant consumedAt;
 
+    @Column(name = "failed_attempts", nullable = false)
+    private int failedAttempts;
+
     @Column(name = "created_at", nullable = false)
     private Instant createdAt;
 
     protected EmailVerificationToken() {
     }
 
-    public EmailVerificationToken(UUID id, UUID userId, String tokenHash, Instant expiresAt) {
+    public EmailVerificationToken(UUID id, UUID userId, String codeHash, Instant expiresAt) {
         this.id = id;
         this.userId = userId;
-        this.tokenHash = tokenHash;
+        this.codeHash = codeHash;
         this.expiresAt = expiresAt;
+        this.failedAttempts = 0;
         this.createdAt = Instant.now();
     }
 
@@ -58,6 +67,10 @@ public class EmailVerificationToken {
         this.consumedAt = Instant.now();
     }
 
+    public void registerFailedAttempt() {
+        this.failedAttempts++;
+    }
+
     public UUID getId() {
         return id;
     }
@@ -66,8 +79,8 @@ public class EmailVerificationToken {
         return userId;
     }
 
-    public String getTokenHash() {
-        return tokenHash;
+    public String getCodeHash() {
+        return codeHash;
     }
 
     public Instant getExpiresAt() {
@@ -76,6 +89,10 @@ public class EmailVerificationToken {
 
     public Instant getConsumedAt() {
         return consumedAt;
+    }
+
+    public int getFailedAttempts() {
+        return failedAttempts;
     }
 
     public Instant getCreatedAt() {
