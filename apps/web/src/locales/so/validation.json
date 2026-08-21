@@ -1,0 +1,16 @@
+{
+  "email": {
+    "required": "Emailku waa lagama maarmaan.",
+    "invalid": "Geli ciwaan email oo saxan."
+  },
+  "field": {
+    "required": "Goobtan waa lagama maarmaan."
+  },
+  "password": {
+    "weak": "Furaha sirta ah waa inuu ka koobnaadaa ugu yaraan 8 xaraf, wuxuuna ka kooban yahay xaraf iyo lambar.",
+    "mismatch": "Furayaasha sirta ah isku mid ma aha."
+  },
+  "token": {
+    "required": "Linkigan ma laha token."
+  }
+}

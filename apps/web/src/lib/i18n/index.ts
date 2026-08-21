@@ -4,6 +4,10 @@ import LanguageDetector from 'i18next-browser-languagedetector'
 
 import commonEn from '../../locales/en/common.json'
 import commonSo from '../../locales/so/common.json'
+import authEn from '../../locales/en/auth.json'
+import authSo from '../../locales/so/auth.json'
+import validationEn from '../../locales/en/validation.json'
+import validationSo from '../../locales/so/validation.json'
 
 export const defaultNamespace = 'common'
 
@@ -12,9 +16,10 @@ void i18n
   .use(initReactI18next)
   .init({
     resources: {
-      en: { common: commonEn },
-      so: { common: commonSo },
+      en: { common: commonEn, auth: authEn, validation: validationEn },
+      so: { common: commonSo, auth: authSo, validation: validationSo },
     },
+    ns: ['common', 'auth', 'validation'],
     fallbackLng: 'en',
     supportedLngs: ['en', 'so'],
     defaultNS: defaultNamespace,

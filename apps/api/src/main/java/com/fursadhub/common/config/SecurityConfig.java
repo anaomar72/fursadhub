@@ -1,11 +1,15 @@
 package com.fursadhub.common.config;
 
-import org.springframework.beans.factory.annotation.Value;
+import com.fursadhub.common.security.RestAccessDeniedHandler;
+import com.fursadhub.common.security.RestAuthenticationEntryPoint;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.http.SessionCreationPolicy;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.oauth2.jwt.JwtDecoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
@@ -14,44 +18,64 @@ import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 import java.util.List;
 
 /**
- * Phase 0 foundation security: stateless, CORS-controlled, foundation endpoints only.
+ * FursadHub API security: stateless JWT resource server, controlled CORS, no server-side sessions.
  *
- * <p>Real JWT validation (Spring Security OAuth2 Resource Server) and cookie-based refresh/logout
- * CSRF protection are wired in Phase 1 once actual keys and the authentication business flow
- * exist (see CLAUDE.md sections 15-21). CSRF is disabled here because this API is stateless and
- * issues no cookies yet; that decision must be revisited the moment a cookie-authenticated
- * endpoint (refresh/logout) is introduced.
+ * <p>Refresh/logout use an HttpOnly cookie rather than the Authorization header; classic
+ * session-CSRF-token protection is not applicable since there is no server session, so those
+ * endpoints are instead protected by SameSite=Lax cookie scoping plus explicit Origin validation
+ * in {@code AuthController} (see CLAUDE.md section 21 and ADR-003).
  */
 @Configuration
 @EnableWebSecurity
 public class SecurityConfig {
 
-    @Value("${fursadhub.cors.allowed-origins}")
-    private String allowedOrigins;
+    private final CorsProperties corsProperties;
+
+    public SecurityConfig(CorsProperties corsProperties) {
+        this.corsProperties = corsProperties;
+    }
 
     @Bean
-    public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
+    public SecurityFilterChain securityFilterChain(
+            HttpSecurity http,
+            JwtDecoder jwtDecoder,
+            RestAuthenticationEntryPoint authenticationEntryPoint,
+            RestAccessDeniedHandler accessDeniedHandler) throws Exception {
         http
                 .cors(cors -> cors.configurationSource(corsConfigurationSource()))
                 .csrf(csrf -> csrf.disable())
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+                .exceptionHandling(exceptions -> exceptions
+                        .authenticationEntryPoint(authenticationEntryPoint)
+                        .accessDeniedHandler(accessDeniedHandler))
                 .authorizeHttpRequests(authorize -> authorize
+                        // logout-all must know which user is calling, so it requires a valid JWT
+                        // even though the rest of /api/v1/auth/** is intentionally open (CLAUDE.md
+                        // section 19) — this matcher is declared before the broader permitAll below
+                        // since Spring Security authorization rules are evaluated in order.
+                        .requestMatchers("/api/v1/auth/logout-all").authenticated()
                         .requestMatchers(
                                 "/actuator/health/**",
                                 "/actuator/info",
                                 "/docs/**",
                                 "/api-docs/**",
-                                "/swagger-ui/**")
+                                "/swagger-ui/**",
+                                "/api/v1/auth/**")
                         .permitAll()
-                        // No authenticated business endpoints exist yet in Phase 0.
-                        .anyRequest().permitAll());
+                        .anyRequest().authenticated())
+                .oauth2ResourceServer(oauth2 -> oauth2.jwt(jwt -> jwt.decoder(jwtDecoder)));
 
         return http.build();
     }
 
+    @Bean
+    public PasswordEncoder passwordEncoder() {
+        return new BCryptPasswordEncoder();
+    }
+
     private CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
-        configuration.setAllowedOrigins(List.of(allowedOrigins.split(",")));
+        configuration.setAllowedOrigins(List.copyOf(corsProperties.originList()));
         configuration.setAllowedMethods(List.of("GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"));
         configuration.setAllowedHeaders(List.of("Authorization", "Content-Type", "X-Request-Id"));
         configuration.setExposedHeaders(List.of("X-Request-Id"));

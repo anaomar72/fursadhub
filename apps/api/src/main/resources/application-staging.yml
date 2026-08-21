@@ -19,3 +19,5 @@ logging:
 fursadhub:
   cors:
     allowed-origins: ${FURSADHUB_CORS_ALLOWED_ORIGINS}
+  cookie:
+    secure: true

@@ -9,6 +9,8 @@ spring:
     show-sql: true
 
 logging:
+
+
   level:
     com.fursadhub: DEBUG
 

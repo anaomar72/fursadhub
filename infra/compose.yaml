@@ -16,7 +16,7 @@ services:
       POSTGRES_USER: ${DB_USERNAME:-fursadhub}
       POSTGRES_PASSWORD: ${DB_PASSWORD:-fursadhub}
     ports:
-      - "${DB_PORT:-5433}:5432cd apps/web"
+      - "${DB_PORT:-5433}:5432"
     volumes:
       - fursadhub-postgres-data:/var/lib/postgresql/data
     healthcheck:

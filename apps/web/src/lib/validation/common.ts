@@ -15,3 +15,9 @@ export const emailSchema = z
 
 export const requiredString = (messageKey = 'validation:field.required') =>
   z.string().trim().min(1, messageKey)
+
+/** Mirrors the backend's PasswordPolicy (apps/api .../identity/domain/PasswordPolicy.java). */
+export const passwordSchema = z
+  .string()
+  .min(1, 'validation:field.required')
+  .regex(/^(?=.*[A-Za-z])(?=.*\d).{8,100}$/, 'validation:password.weak')

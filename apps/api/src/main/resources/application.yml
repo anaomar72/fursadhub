@@ -19,6 +19,21 @@ spring:
     time-zone: UTC
     default-property-inclusion: non_null
 
+  mail:
+    host: ${SMTP_HOST:localhost}
+    port: ${SMTP_PORT:1025}
+    username: ${SMTP_USERNAME:}
+    password: ${SMTP_PASSWORD:}
+    properties:
+      mail:
+        smtp:
+          auth: ${SMTP_AUTH:false}
+          starttls:
+            enable: ${SMTP_STARTTLS:false}
+      mail.smtp.connectiontimeout: 5000
+      mail.smtp.timeout: 5000
+      mail.smtp.writetimeout: 5000
+
 server:
   port: 8080
   error:
@@ -60,3 +75,13 @@ fursadhub:
     access-token-ttl: ${JWT_ACCESS_TOKEN_TTL:10m}
     public-key-location: ${JWT_PUBLIC_KEY:}
     private-key-location: ${JWT_PRIVATE_KEY:}
+  auth:
+    refresh-token-ttl: ${REFRESH_TOKEN_TTL:30d}
+    email-verification-token-ttl: ${EMAIL_VERIFICATION_TOKEN_TTL:24h}
+    password-reset-token-ttl: ${PASSWORD_RESET_TOKEN_TTL:1h}
+  cookie:
+    secure: ${COOKIE_SECURE:false}
+    domain: ${COOKIE_DOMAIN:}
+  notification:
+    from-address: ${SMTP_FROM:no-reply@fursadhub.local}
+    app-base-url: ${APP_BASE_URL:http://localhost:5173}
