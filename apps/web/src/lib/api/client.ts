@@ -1,5 +1,6 @@
 import { env } from '../../app/config/env'
-import { getAccessToken } from '../auth/tokenStore'
+import { getAccessToken, setAccessToken } from '../auth/tokenStore'
+import { refreshAccessToken } from '../auth/refreshCoordinator'
 
 /** Stable API error contract from CLAUDE.md section 11 — branch on `code`, never on `message`. */
 export interface ApiErrorBody {
@@ -26,14 +27,20 @@ interface RequestOptions extends Omit<RequestInit, 'body'> {
 }
 
 /**
- * Centralized API client foundation.
+ * Centralized API client. Attaches `Authorization: Bearer <token>` whenever an in-memory access
+ * token is present (see lib/auth/tokenStore.ts) and always sends credentials so the HttpOnly
+ * refresh cookie is included on same-site auth calls.
  *
- * Attaches `Authorization: Bearer <token>` whenever an in-memory access token
- * is present (see lib/auth/tokenStore.ts) and always sends credentials so the
- * future HttpOnly refresh cookie is included. No real login/refresh flow is
- * wired yet — that is Phase 1 (CLAUDE.md section 14).
+ * On a 401 from any endpoint other than /auth/**, this makes one attempt to silently refresh the
+ * access token (deduplicated via lib/auth/refreshCoordinator.ts) and retries the original request
+ * once. If refresh also fails, the in-memory access token is cleared and the original error
+ * propagates so callers/UI can redirect to login.
  */
 export async function apiFetch<T>(path: string, options: RequestOptions = {}): Promise<T> {
+  return execute<T>(path, options, false)
+}
+
+async function execute<T>(path: string, options: RequestOptions, isRetry: boolean): Promise<T> {
   const { body, headers, ...rest } = options
   const accessToken = getAccessToken()
 
@@ -50,6 +57,16 @@ export async function apiFetch<T>(path: string, options: RequestOptions = {}): P
 
   if (!response.ok) {
     const errorBody = (await response.json().catch(() => null)) as ApiErrorBody | null
+
+    const canRetryWithRefresh = response.status === 401 && !isRetry && !path.startsWith('/auth/')
+    if (canRetryWithRefresh) {
+      const refreshedToken = await refreshAccessToken()
+      if (refreshedToken) {
+        return execute<T>(path, options, true)
+      }
+      setAccessToken(null)
+    }
+
     if (errorBody) {
       throw new ApiError(errorBody)
     }

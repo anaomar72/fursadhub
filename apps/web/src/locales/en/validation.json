@@ -1,0 +1,16 @@
+{
+  "email": {
+    "required": "Email is required.",
+    "invalid": "Enter a valid email address."
+  },
+  "field": {
+    "required": "This field is required."
+  },
+  "password": {
+    "weak": "Password must be at least 8 characters and include a letter and a number.",
+    "mismatch": "Passwords do not match."
+  },
+  "token": {
+    "required": "This link is missing its token."
+  }
+}

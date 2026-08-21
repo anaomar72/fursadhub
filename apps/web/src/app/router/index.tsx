@@ -4,6 +4,12 @@ import { PublicLayout, StudentLayout, UniversityLayout, OrganizationLayout, Admi
 import { HomePage } from '../pages/HomePage'
 import { ComingSoonPage } from '../pages/ComingSoonPage'
 import { NotFoundPage } from '../pages/NotFoundPage'
+import { RequireAuth } from '../../lib/auth/RequireAuth'
+import { RegisterPage } from '../../features/auth/pages/RegisterPage'
+import { LoginPage } from '../../features/auth/pages/LoginPage'
+import { VerifyEmailPage } from '../../features/auth/pages/VerifyEmailPage'
+import { ForgotPasswordPage } from '../../features/auth/pages/ForgotPasswordPage'
+import { ResetPasswordPage } from '../../features/auth/pages/ResetPasswordPage'
 
 function StudentIndex() {
   const { t } = useTranslation()
@@ -26,34 +32,58 @@ function AdminIndex() {
 }
 
 /**
- * Route foundation only — one route per role-area layout, proving the
- * PublicLayout/StudentLayout/UniversityLayout/OrganizationLayout/AdminLayout
- * shells wire up correctly. Real feature routes are added phase by phase.
+ * Route foundation — PublicLayout now also hosts the Phase 1 authentication pages, and each
+ * role-area layout is gated behind RequireAuth (CLAUDE.md section 61 Phase 1 scope; this is UX
+ * only, real authorization is enforced by the backend per CLAUDE.md section 24). Real feature
+ * routes for each area are added phase by phase.
  */
 export const router = createBrowserRouter([
   {
     path: '/',
     element: <PublicLayout />,
-    children: [{ index: true, element: <HomePage /> }],
+    children: [
+      { index: true, element: <HomePage /> },
+      { path: 'register', element: <RegisterPage /> },
+      { path: 'login', element: <LoginPage /> },
+      { path: 'verify-email', element: <VerifyEmailPage /> },
+      { path: 'forgot-password', element: <ForgotPasswordPage /> },
+      { path: 'reset-password', element: <ResetPasswordPage /> },
+    ],
   },
   {
     path: '/student',
-    element: <StudentLayout />,
+    element: (
+      <RequireAuth>
+        <StudentLayout />
+      </RequireAuth>
+    ),
     children: [{ index: true, element: <StudentIndex /> }],
   },
   {
     path: '/university',
-    element: <UniversityLayout />,
+    element: (
+      <RequireAuth>
+        <UniversityLayout />
+      </RequireAuth>
+    ),
     children: [{ index: true, element: <UniversityIndex /> }],
   },
   {
     path: '/organization',
-    element: <OrganizationLayout />,
+    element: (
+      <RequireAuth>
+        <OrganizationLayout />
+      </RequireAuth>
+    ),
     children: [{ index: true, element: <OrganizationIndex /> }],
   },
   {
     path: '/admin',
-    element: <AdminLayout />,
+    element: (
+      <RequireAuth>
+        <AdminLayout />
+      </RequireAuth>
+    ),
     children: [{ index: true, element: <AdminIndex /> }],
   },
   { path: '*', element: <NotFoundPage /> },
