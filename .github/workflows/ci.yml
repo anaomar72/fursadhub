@@ -25,10 +25,9 @@ jobs:
           
       - name: Make mvnw executable
         run: chmod +x ./mvnw    
-
-    -  name: Compile
-       
-    run: bash ./mvnw -B compile
+      
+      - name: Compile
+        run: bash ./mvnw -B compile
 
       - name: Unit + Testcontainers integration tests, and package
         run: ./mvnw -B verify
