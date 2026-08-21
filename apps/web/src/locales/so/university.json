@@ -1,0 +1,78 @@
+{
+  "nav": {
+    "students": "Ardayda",
+    "verificationQueue": "Safka xaqiijinta",
+    "departments": "Qaybaha",
+    "staff": "Shaqaalaha",
+    "noMembership": "Kama qaybgalayso shaqaale ahaan jaamacad."
+  },
+  "departments": {
+    "title": "Qaybaha"
+  },
+  "students": {
+    "title": "Ardayda",
+    "allDepartments": "Dhammaan qaybaha",
+    "email": "Iimaylka",
+    "studentNumber": "Lambarka ardayga",
+    "program": "Barnaamijka",
+    "status": "Xaaladda",
+    "empty": "Arday lama helin.",
+    "statusValues": {
+      "DRAFT": "Lama gudbin",
+      "SUBMITTED": "Waa la gudbiyay",
+      "UNDER_REVIEW": "Waa la eegayaa",
+      "NEEDS_MORE_EVIDENCE": "Waxaa loo baahan yahay caddayn dheeraad ah",
+      "VERIFIED": "Waa la xaqiijiyay",
+      "REJECTED": "Waa la diiday",
+      "REVOKED": "Waa la baabi'iyay"
+    }
+  },
+  "verificationQueue": {
+    "title": "Safka xaqiijinta",
+    "allStatuses": "Dhammaan xaaladaha",
+    "empty": "Xaalado xaqiijin ah lama helin."
+  },
+  "caseDetail": {
+    "notesLabel": "Faallooyin",
+    "consumeChallengeTitle": "Xaqiiji xiriirinta akoonka",
+    "consumeChallengeBody": "Weydii ardayga koodhkiisa mar-hal-ah oo halkan ku qor si aad u xaqiijiso aqoonsigiisa.",
+    "confirmCode": "Xaqiiji koodhka",
+    "codeConfirmed": "Koodhka waa la xaqiijiyay.",
+    "beginReview": "Bilow eegista",
+    "verify": "Xaqiiji",
+    "requestMoreEvidence": "Codso caddayn dheeraad ah",
+    "reject": "Diid",
+    "revokeReasonLabel": "Sababta baabi'inta",
+    "revoke": "Baabi'i xaqiijinta",
+    "errors": {
+      "VERIFICATION_CHALLENGE_EXPIRED": "Koodhkani wuu dhacay. Weydii ardayga inuu mid cusub sameeyo.",
+      "VERIFICATION_CHALLENGE_INVALID": "Koodhkani waa khalad ama horeba waa la isticmaalay.",
+      "VERIFICATION_CASE_ALREADY_RESOLVED": "Xaaladdan horeba waa la xalliyay.",
+      "VERIFICATION_CASE_INVALID_TRANSITION": "Ficilkan lama heli karo xaaladda hadda ee kiiskan.",
+      "ACCESS_DENIED": "Ma lihid ogolaanshaha kiiskan.",
+      "generic": "Wax baa qaldamay. Fadlan isku day mar kale."
+    }
+  },
+  "staff": {
+    "title": "Shaqaalaha",
+    "emailLabel": "Cinwaanka iimaylka",
+    "roleLabel": "Doorka",
+    "roles": {
+      "UNIVERSITY_ADMIN": "Maamulaha jaamacadda",
+      "DEPARTMENT_COORDINATOR": "Isku-duwaha qaybta",
+      "UNIVERSITY_SUPERVISOR": "Kormeeraha jaamacadda"
+    },
+    "departmentsLabel": "Qaybaha",
+    "assignSubmit": "U meelee doorka shaqaalaha",
+    "revoke": "Baabi'i",
+    "empty": "Weli shaqaale lama meelayn.",
+    "errors": {
+      "STAFF_USER_NOT_FOUND": "Iimaylkan akoon uma jiro.",
+      "STAFF_USER_NOT_ACTIVE": "Akoonkan waa inuu firfircoon yahay ka hor inta doorka shaqaalaha loo meelayn.",
+      "STAFF_ALREADY_ASSIGNED": "Isticmaalahani horeba wuxuu leeyahay door shaqaale oo firfircoon oo jaamacaddan ku jira.",
+      "DEPARTMENT_NOT_IN_UNIVERSITY": "Hal ama in ka badan oo qaybo ah kama tirsana jaamacaddan.",
+      "VALIDATION_FAILED": "Fadlan dooro ugu yaraan hal qaybood.",
+      "generic": "Wax baa qaldamay. Fadlan isku day mar kale."
+    }
+  }
+}

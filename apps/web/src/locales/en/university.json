@@ -1,0 +1,78 @@
+{
+  "nav": {
+    "students": "Students",
+    "verificationQueue": "Verification queue",
+    "departments": "Departments",
+    "staff": "Staff",
+    "noMembership": "You don't have an active staff role at a university."
+  },
+  "departments": {
+    "title": "Departments"
+  },
+  "students": {
+    "title": "Students",
+    "allDepartments": "All departments",
+    "email": "Email",
+    "studentNumber": "Student number",
+    "program": "Program",
+    "status": "Status",
+    "empty": "No students found.",
+    "statusValues": {
+      "DRAFT": "Not submitted",
+      "SUBMITTED": "Submitted",
+      "UNDER_REVIEW": "Under review",
+      "NEEDS_MORE_EVIDENCE": "More evidence needed",
+      "VERIFIED": "Verified",
+      "REJECTED": "Rejected",
+      "REVOKED": "Revoked"
+    }
+  },
+  "verificationQueue": {
+    "title": "Verification queue",
+    "allStatuses": "All statuses",
+    "empty": "No verification cases found."
+  },
+  "caseDetail": {
+    "notesLabel": "Notes",
+    "consumeChallengeTitle": "Confirm account binding",
+    "consumeChallengeBody": "Ask the student for their one-time code and enter it here to confirm their identity.",
+    "confirmCode": "Confirm code",
+    "codeConfirmed": "Code confirmed.",
+    "beginReview": "Begin review",
+    "verify": "Verify",
+    "requestMoreEvidence": "Request more evidence",
+    "reject": "Reject",
+    "revokeReasonLabel": "Reason for revocation",
+    "revoke": "Revoke verification",
+    "errors": {
+      "VERIFICATION_CHALLENGE_EXPIRED": "This code has expired. Ask the student to generate a new one.",
+      "VERIFICATION_CHALLENGE_INVALID": "This code is invalid or has already been used.",
+      "VERIFICATION_CASE_ALREADY_RESOLVED": "This case has already been resolved.",
+      "VERIFICATION_CASE_INVALID_TRANSITION": "This action isn't available for the case's current state.",
+      "ACCESS_DENIED": "You do not have access to this case.",
+      "generic": "Something went wrong. Please try again."
+    }
+  },
+  "staff": {
+    "title": "Staff",
+    "emailLabel": "Email address",
+    "roleLabel": "Role",
+    "roles": {
+      "UNIVERSITY_ADMIN": "University admin",
+      "DEPARTMENT_COORDINATOR": "Department coordinator",
+      "UNIVERSITY_SUPERVISOR": "University supervisor"
+    },
+    "departmentsLabel": "Departments",
+    "assignSubmit": "Assign staff role",
+    "revoke": "Revoke",
+    "empty": "No staff assigned yet.",
+    "errors": {
+      "STAFF_USER_NOT_FOUND": "No account exists for this email.",
+      "STAFF_USER_NOT_ACTIVE": "This account must be active before it can be assigned a staff role.",
+      "STAFF_ALREADY_ASSIGNED": "This user already has an active staff role at this university.",
+      "DEPARTMENT_NOT_IN_UNIVERSITY": "One or more departments do not belong to this university.",
+      "VALIDATION_FAILED": "Please select at least one department.",
+      "generic": "Something went wrong. Please try again."
+    }
+  }
+}

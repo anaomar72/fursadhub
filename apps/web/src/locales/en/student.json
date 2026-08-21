@@ -1,0 +1,66 @@
+{
+  "nav": {
+    "enrollment": "Enrollment",
+    "profile": "Profile"
+  },
+  "profile": {
+    "title": "Your profile",
+    "subtitle": "This information is shared with universities and organizations when relevant.",
+    "fullNameLabel": "Full name",
+    "phoneLabel": "Phone number",
+    "submit": "Save profile",
+    "saved": "Profile saved.",
+    "createHint": "You don't have a profile yet — fill in the details below to create one.",
+    "errors": {
+      "generic": "Something went wrong. Please try again."
+    }
+  },
+  "enrollment": {
+    "title": "University enrollment",
+    "statusLabel": "Verification status",
+    "status": {
+      "DRAFT": "Not submitted",
+      "SUBMITTED": "Submitted",
+      "UNDER_REVIEW": "Under review",
+      "NEEDS_MORE_EVIDENCE": "More evidence needed",
+      "VERIFIED": "Verified",
+      "REJECTED": "Rejected",
+      "REVOKED": "Revoked"
+    },
+    "studentNumberLabel": "Student number",
+    "programLabel": "Program",
+    "academicYearLabel": "Academic year",
+    "editDetails": "Edit details",
+    "submitForVerification": "Submit for verification",
+    "needsMoreEvidenceTitle": "Your university needs more evidence",
+    "resubmit": "Resubmit for verification",
+    "pendingReviewBody": "Your university is reviewing your enrollment. This can take a few days.",
+    "challengeTitle": "Confirm your identity in person",
+    "challengeBody": "Generate a one-time code and show it to university staff when they verify you in person.",
+    "challengeExpires": "Expires at {{time}}",
+    "generateCode": "Generate code",
+    "verifiedTitle": "Enrollment verified",
+    "rejectedTitle": "Your enrollment was rejected",
+    "revokedTitle": "Your verification was revoked",
+    "editTitle": "Edit your enrollment",
+    "claimTitle": "Claim your university enrollment",
+    "claimSubtitle": "Tell us which university and department you're enrolled in.",
+    "universityLabel": "University",
+    "departmentLabel": "Department",
+    "selectPlaceholder": "Select...",
+    "saveChanges": "Save changes",
+    "claimSubmit": "Save enrollment",
+    "cancel": "Cancel",
+    "errors": {
+      "STUDENT_ENROLLMENT_ALREADY_EXISTS": "You already have an enrollment on file.",
+      "STUDENT_NUMBER_ALREADY_REGISTERED": "This student number is already registered at this university.",
+      "DEPARTMENT_NOT_IN_UNIVERSITY": "This department does not belong to the selected university.",
+      "UNIVERSITY_NOT_FOUND": "University not found.",
+      "STUDENT_ENROLLMENT_LOCKED": "This enrollment cannot be edited while a verification case is active.",
+      "VERIFICATION_CASE_ALREADY_RESOLVED": "This verification case has already been resolved.",
+      "VERIFICATION_CASE_INVALID_TRANSITION": "A verification case is already in progress.",
+      "VALIDATION_FAILED": "Please check the details and try again.",
+      "generic": "Something went wrong. Please try again."
+    }
+  }
+}
