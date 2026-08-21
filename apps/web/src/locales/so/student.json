@@ -1,0 +1,66 @@
+{
+  "nav": {
+    "enrollment": "Diiwaangelinta",
+    "profile": "Astaanta shakhsi ahaaneed"
+  },
+  "profile": {
+    "title": "Astaantaada",
+    "subtitle": "Macluumaadkan waxaa la wadaagaa jaamacadaha iyo ururrada marka lagama maarmaan yahay.",
+    "fullNameLabel": "Magaca oo dhan",
+    "phoneLabel": "Lambarka taleefanka",
+    "submit": "Kaydi astaanta",
+    "saved": "Astaanta waa la kaydiyay.",
+    "createHint": "Weli ma lihid astaan — buuxi macluumaadka hoose si aad u samayso mid.",
+    "errors": {
+      "generic": "Wax baa qaldamay. Fadlan isku day mar kale."
+    }
+  },
+  "enrollment": {
+    "title": "Diiwaangelinta jaamacadda",
+    "statusLabel": "Xaaladda xaqiijinta",
+    "status": {
+      "DRAFT": "Lama gudbin",
+      "SUBMITTED": "Waa la gudbiyay",
+      "UNDER_REVIEW": "Waa la eegayaa",
+      "NEEDS_MORE_EVIDENCE": "Waxaa loo baahan yahay caddayn dheeraad ah",
+      "VERIFIED": "Waa la xaqiijiyay",
+      "REJECTED": "Waa la diiday",
+      "REVOKED": "Waa la baabi'iyay"
+    },
+    "studentNumberLabel": "Lambarka ardayga",
+    "programLabel": "Barnaamijka waxbarasho",
+    "academicYearLabel": "Sanad-dugsiyeedka",
+    "editDetails": "Wax ka beddel faahfaahinta",
+    "submitForVerification": "U gudbi xaqiijin",
+    "needsMoreEvidenceTitle": "Jaamacaddaadu waxay u baahan tahay caddayn dheeraad ah",
+    "resubmit": "Dib u gudbi xaqiijinta",
+    "pendingReviewBody": "Jaamacaddaadu waxay eegaysaa diiwaangelintaada. Tani waxay qaadan kartaa dhowr maalmood.",
+    "challengeTitle": "Xaqiiji aqoonsigaaga si toos ah",
+    "challengeBody": "Samee koodh mar-hal-ah oo tus shaqaalaha jaamacadda marka ay si toos ah kuu xaqiijinayaan.",
+    "challengeExpires": "Wuxuu dhacayaa {{time}}",
+    "generateCode": "Samee koodh",
+    "verifiedTitle": "Diiwaangelinta waa la xaqiijiyay",
+    "rejectedTitle": "Diiwaangelintaada waa la diiday",
+    "revokedTitle": "Xaqiijintaada waa la baabi'iyay",
+    "editTitle": "Wax ka beddel diiwaangelintaada",
+    "claimTitle": "Sheeg diiwaangelintaada jaamacadda",
+    "claimSubtitle": "Noo sheeg jaamacadda iyo qaybta aad ku qoran tahay.",
+    "universityLabel": "Jaamacadda",
+    "departmentLabel": "Qaybta",
+    "selectPlaceholder": "Dooro...",
+    "saveChanges": "Kaydi isbeddelada",
+    "claimSubmit": "Kaydi diiwaangelinta",
+    "cancel": "Jooji",
+    "errors": {
+      "STUDENT_ENROLLMENT_ALREADY_EXISTS": "Diiwaangelin horeba ayaad u haysataa.",
+      "STUDENT_NUMBER_ALREADY_REGISTERED": "Lambarkan ardayga horeba ayaa jaamacaddan lagu diiwaan geliyay.",
+      "DEPARTMENT_NOT_IN_UNIVERSITY": "Qaybtan kama tirsana jaamacadda la doortay.",
+      "UNIVERSITY_NOT_FOUND": "Jaamacadda lama helin.",
+      "STUDENT_ENROLLMENT_LOCKED": "Diiwaangelintan lama beddeli karo intii xaalad xaqiijin socoto jirto.",
+      "VERIFICATION_CASE_ALREADY_RESOLVED": "Xaaladdan xaqiijinta horeba waa la xalliyay.",
+      "VERIFICATION_CASE_INVALID_TRANSITION": "Xaalad xaqiijin horeba way socotaa.",
+      "VALIDATION_FAILED": "Fadlan hubi faahfaahinta oo isku day mar kale.",
+      "generic": "Wax baa qaldamay. Fadlan isku day mar kale."
+    }
+  }
+}

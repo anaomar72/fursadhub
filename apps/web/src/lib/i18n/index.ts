@@ -8,6 +8,10 @@ import authEn from '../../locales/en/auth.json'
 import authSo from '../../locales/so/auth.json'
 import validationEn from '../../locales/en/validation.json'
 import validationSo from '../../locales/so/validation.json'
+import studentEn from '../../locales/en/student.json'
+import studentSo from '../../locales/so/student.json'
+import universityEn from '../../locales/en/university.json'
+import universitySo from '../../locales/so/university.json'
 
 export const defaultNamespace = 'common'
 
@@ -16,10 +20,10 @@ void i18n
   .use(initReactI18next)
   .init({
     resources: {
-      en: { common: commonEn, auth: authEn, validation: validationEn },
-      so: { common: commonSo, auth: authSo, validation: validationSo },
+      en: { common: commonEn, auth: authEn, validation: validationEn, student: studentEn, university: universityEn },
+      so: { common: commonSo, auth: authSo, validation: validationSo, student: studentSo, university: universitySo },
     },
-    ns: ['common', 'auth', 'validation'],
+    ns: ['common', 'auth', 'validation', 'student', 'university'],
     fallbackLng: 'en',
     supportedLngs: ['en', 'so'],
     defaultNS: defaultNamespace,

@@ -77,8 +77,10 @@ fursadhub:
     private-key-location: ${JWT_PRIVATE_KEY:}
   auth:
     refresh-token-ttl: ${REFRESH_TOKEN_TTL:30d}
-    email-verification-token-ttl: ${EMAIL_VERIFICATION_TOKEN_TTL:24h}
+    email-verification-token-ttl: ${EMAIL_VERIFICATION_TOKEN_TTL:10m}
     password-reset-token-ttl: ${PASSWORD_RESET_TOKEN_TTL:1h}
+    email-verification-resend-cooldown: ${EMAIL_VERIFICATION_RESEND_COOLDOWN:60s}
+    email-verification-code-secret: ${EMAIL_VERIFICATION_CODE_SECRET:}
   cookie:
     secure: ${COOKIE_SECURE:false}
     domain: ${COOKIE_DOMAIN:}

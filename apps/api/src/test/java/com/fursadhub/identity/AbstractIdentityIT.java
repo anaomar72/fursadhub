@@ -4,6 +4,7 @@ import com.fursadhub.common.notification.EmailOutboxMessage;
 import com.fursadhub.common.notification.EmailOutboxRepository;
 import com.fursadhub.identity.domain.User;
 import com.fursadhub.identity.domain.UserRepository;
+import com.fursadhub.identity.infrastructure.EmailVerificationCodeHasher;
 import com.fursadhub.identity.infrastructure.OpaqueTokenGenerator;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -101,9 +102,13 @@ public abstract class AbstractIdentityIT {
     protected OpaqueTokenGenerator tokenGenerator;
 
     @Autowired
+    protected EmailVerificationCodeHasher emailVerificationCodeHasher;
+
+    @Autowired
     protected JdbcTemplate jdbcTemplate;
 
     private static final Pattern TOKEN_PATTERN = Pattern.compile("token=([^\\s]+)");
+    private static final Pattern VERIFICATION_CODE_PATTERN = Pattern.compile("\\b(\\d{4})\\b");
 
     protected String url(String path) {
         return "http://localhost:" + port + path;
@@ -130,10 +135,41 @@ public abstract class AbstractIdentityIT {
         }
     }
 
-    protected void expireEmailVerificationToken(String rawToken) {
+    /** Reads the 4-digit verification code out of the most recent outbox email body for this address. */
+    protected String latestVerificationCodeFor(String toEmail) {
+        List<EmailOutboxMessage> messages = emailOutboxRepository.findByToEmailOrderByCreatedAtDesc(toEmail);
+        assertFalseEmpty(messages, toEmail);
+        Matcher matcher = VERIFICATION_CODE_PATTERN.matcher(messages.get(0).getBody());
+        if (!matcher.find()) {
+            throw new IllegalStateException("No verification code found in outbox body for " + toEmail);
+        }
+        return matcher.group(1);
+    }
+
+    protected void expireEmailVerificationCode(String email) {
         jdbcTemplate.update(
-                "UPDATE email_verification_tokens SET expires_at = now() - interval '1 second' WHERE token_hash = ?",
-                tokenGenerator.hash(rawToken));
+                "UPDATE email_verification_tokens SET expires_at = now() - interval '1 second' "
+                        + "WHERE user_id = (SELECT id FROM users WHERE email = ?) AND consumed_at IS NULL",
+                email);
+    }
+
+    /** Overwrites the caller's currently active verification code with a known value, for deterministic tests. */
+    protected void overrideActiveVerificationCode(String email, String code) {
+        User user = userRepository.findByEmail(email).orElseThrow();
+        String hash = emailVerificationCodeHasher.hash(user.getId(), code);
+        jdbcTemplate.update(
+                "UPDATE email_verification_tokens SET code_hash = ? WHERE user_id = ? AND consumed_at IS NULL",
+                hash, user.getId());
+    }
+
+    protected ResponseEntity<Map> verifyEmailCode(String email, String code) {
+        return restTemplate.postForEntity(
+                url("/api/v1/auth/email/verify"), Map.of("email", email, "code", code), Map.class);
+    }
+
+    protected ResponseEntity<Map> resendVerification(String email) {
+        return restTemplate.postForEntity(
+                url("/api/v1/auth/email/resend"), Map.of("email", email), Map.class);
     }
 
     protected void expirePasswordResetToken(String rawToken) {

@@ -1,9 +1,10 @@
 import { render, screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
-import { MemoryRouter } from 'react-router-dom'
+import { MemoryRouter, Route, Routes } from 'react-router-dom'
 import { AppProviders } from '../../../src/app/providers/AppProviders'
 import { RegisterPage } from '../../../src/features/auth/pages/RegisterPage'
+import { VerifyEmailPage } from '../../../src/features/auth/pages/VerifyEmailPage'
 
 function jsonResponse(body: unknown, status = 200) {
   return Promise.resolve(new Response(JSON.stringify(body), { status, headers: { 'Content-Type': 'application/json' } }))
@@ -11,9 +12,12 @@ function jsonResponse(body: unknown, status = 200) {
 
 function renderRegisterPage() {
   return render(
-    <MemoryRouter>
+    <MemoryRouter initialEntries={['/register']}>
       <AppProviders>
-        <RegisterPage />
+        <Routes>
+          <Route path="/register" element={<RegisterPage />} />
+          <Route path="/verify-email" element={<VerifyEmailPage />} />
+        </Routes>
       </AppProviders>
     </MemoryRouter>,
   )
@@ -51,7 +55,7 @@ describe('RegisterPage', () => {
     expect(await screen.findByText(/enter a valid email address/i)).toBeInTheDocument()
   })
 
-  it('registers successfully and shows the check-your-email confirmation', async () => {
+  it('registers successfully and navigates to the verification screen', async () => {
     const user = userEvent.setup()
     renderRegisterPage()
 
@@ -60,7 +64,8 @@ describe('RegisterPage', () => {
     await user.type(screen.getByLabelText(/confirm password/i), 'Password123')
     await user.click(screen.getByRole('button', { name: /create account/i }))
 
-    expect(await screen.findByRole('heading', { name: /check your email/i })).toBeInTheDocument()
+    expect(await screen.findByRole('heading', { name: /verify your email/i })).toBeInTheDocument()
+    expect(screen.getByText(/student@example\.com/)).toBeInTheDocument()
   })
 
   it('rejects a password that does not meet the strength policy', async () => {

@@ -16,18 +16,17 @@ public class IdentityEmailTemplates {
     public record RenderedEmail(String subject, String body) {
     }
 
-    public RenderedEmail verificationEmail(String locale, String rawToken) {
-        String link = properties.appBaseUrl() + "/verify-email?token=" + rawToken;
+    public RenderedEmail verificationEmail(String locale, String code) {
         if (isSomali(locale)) {
             return new RenderedEmail(
-                    "Xaqiiji ciwaanka emailkaaga - FursadHub",
-                    "Ku dhow inaad furto akoonkaaga FursadHub. Fadlan xaqiiji ciwaanka emailkaaga adigoo riixaya linkiga hoose:\n\n"
-                            + link + "\n\nLinkigani wuxuu dhacayaa 24 saacadood gudahood. Haddii aadan codsan diiwaangelinta, iska indho-tir emailkan.");
+                    "Koodhka xaqiijinta emailkaaga - FursadHub",
+                    "Ku dhow inaad furto akoonkaaga FursadHub. Koodhkaaga xaqiijinta waa " + code + ".\n\n"
+                            + "Koodhkani wuxuu dhacayaa 10 daqiiqo gudahood. Haddii aadan codsan diiwaangelinta, iska indho-tir emailkan.");
         }
         return new RenderedEmail(
-                "Verify your email - FursadHub",
-                "Welcome to FursadHub. Please verify your email address by opening the link below:\n\n"
-                        + link + "\n\nThis link expires in 24 hours. If you did not request this, you can ignore this email.");
+                "Your verification code - FursadHub",
+                "Welcome to FursadHub. Your verification code is " + code + ".\n\n"
+                        + "This code expires in 10 minutes. If you did not request this, you can ignore this email.");
     }
 
     public RenderedEmail passwordResetEmail(String locale, String rawToken) {

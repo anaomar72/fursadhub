@@ -1,4 +1,4 @@
-import { createBrowserRouter } from 'react-router-dom'
+import { createBrowserRouter, Navigate } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import { PublicLayout, StudentLayout, UniversityLayout, OrganizationLayout, AdminLayout } from '../layouts'
 import { HomePage } from '../pages/HomePage'
@@ -10,16 +10,15 @@ import { LoginPage } from '../../features/auth/pages/LoginPage'
 import { VerifyEmailPage } from '../../features/auth/pages/VerifyEmailPage'
 import { ForgotPasswordPage } from '../../features/auth/pages/ForgotPasswordPage'
 import { ResetPasswordPage } from '../../features/auth/pages/ResetPasswordPage'
-
-function StudentIndex() {
-  const { t } = useTranslation()
-  return <ComingSoonPage areaLabel={t('nav.student')} />
-}
-
-function UniversityIndex() {
-  const { t } = useTranslation()
-  return <ComingSoonPage areaLabel={t('nav.university')} />
-}
+import { StudentAreaLayout } from '../../features/student/components/StudentAreaLayout'
+import { StudentProfilePage } from '../../features/student/pages/ProfilePage'
+import { EnrollmentPage } from '../../features/student/pages/EnrollmentPage'
+import { UniversityAreaLayout } from '../../features/university/components/UniversityAreaLayout'
+import { DepartmentsPage } from '../../features/university/pages/DepartmentsPage'
+import { StudentsPage } from '../../features/university/pages/StudentsPage'
+import { VerificationQueuePage } from '../../features/university/pages/VerificationQueuePage'
+import { VerificationCaseDetailPage } from '../../features/university/pages/VerificationCaseDetailPage'
+import { StaffPage } from '../../features/university/pages/StaffPage'
 
 function OrganizationIndex() {
   const { t } = useTranslation()
@@ -57,7 +56,16 @@ export const router = createBrowserRouter([
         <StudentLayout />
       </RequireAuth>
     ),
-    children: [{ index: true, element: <StudentIndex /> }],
+    children: [
+      {
+        element: <StudentAreaLayout />,
+        children: [
+          { index: true, element: <Navigate to="enrollment" replace /> },
+          { path: 'enrollment', element: <EnrollmentPage /> },
+          { path: 'profile', element: <StudentProfilePage /> },
+        ],
+      },
+    ],
   },
   {
     path: '/university',
@@ -66,7 +74,19 @@ export const router = createBrowserRouter([
         <UniversityLayout />
       </RequireAuth>
     ),
-    children: [{ index: true, element: <UniversityIndex /> }],
+    children: [
+      {
+        element: <UniversityAreaLayout />,
+        children: [
+          { index: true, element: <Navigate to="students" replace /> },
+          { path: 'students', element: <StudentsPage /> },
+          { path: 'departments', element: <DepartmentsPage /> },
+          { path: 'verification-cases', element: <VerificationQueuePage /> },
+          { path: 'verification-cases/:caseId', element: <VerificationCaseDetailPage /> },
+          { path: 'staff', element: <StaffPage /> },
+        ],
+      },
+    ],
   },
   {
     path: '/organization',

@@ -8,5 +8,6 @@ import java.time.Duration;
 public record AuthProperties(
         Duration refreshTokenTtl,
         Duration emailVerificationTokenTtl,
-        Duration passwordResetTokenTtl) {
+        Duration passwordResetTokenTtl,
+        Duration emailVerificationResendCooldown) {
 }
