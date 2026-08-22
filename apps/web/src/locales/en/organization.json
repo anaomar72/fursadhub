@@ -1,0 +1,70 @@
+{
+  "nav": {
+    "opportunities": "Opportunities",
+    "profile": "Organization",
+    "staff": "Staff"
+  },
+  "setup": {
+    "title": "Set up your organization",
+    "body": "Register your organization to start publishing internship opportunities. You can invite colleagues once it's created.",
+    "nameLabel": "Organization name",
+    "typeLabel": "Organization type",
+    "registrationNumberLabel": "Registration number",
+    "websiteLabel": "Website",
+    "descriptionLabel": "About the organization",
+    "submit": "Create organization",
+    "errors": {
+      "VALIDATION_FAILED": "Please check the form and try again.",
+      "generic": "Something went wrong. Please try again."
+    }
+  },
+  "profile": {
+    "title": "Organization profile",
+    "types": {
+      "COMPANY": "Company",
+      "NGO": "NGO",
+      "GOVERNMENT": "Government",
+      "OTHER": "Other"
+    },
+    "verificationStatusValues": {
+      "DRAFT": "Not submitted",
+      "SUBMITTED": "Submitted",
+      "UNDER_REVIEW": "Under review",
+      "NEEDS_CHANGES": "Changes needed",
+      "VERIFIED": "Verified",
+      "REJECTED": "Rejected",
+      "SUSPENDED": "Suspended",
+      "REVOKED": "Revoked"
+    },
+    "verifiedLabel": "Verified organization",
+    "saveChanges": "Save changes",
+    "submitForVerification": "Submit for verification",
+    "submitForVerificationBody": "Your organization must be verified before you can publish opportunities.",
+    "errors": {
+      "ACCESS_DENIED": "You do not have access to this organization.",
+      "ORGANIZATION_VERIFICATION_INVALID_TRANSITION": "This organization can't be submitted for verification from its current state.",
+      "VALIDATION_FAILED": "Please check the form and try again.",
+      "generic": "Something went wrong. Please try again."
+    }
+  },
+  "staff": {
+    "title": "Staff",
+    "emailLabel": "Email address",
+    "roleLabel": "Role",
+    "roles": {
+      "ORGANIZATION_ADMIN": "Organization admin",
+      "RECRUITER": "Recruiter",
+      "ORGANIZATION_SUPERVISOR": "Organization supervisor"
+    },
+    "assignSubmit": "Assign staff role",
+    "revoke": "Revoke",
+    "empty": "No staff assigned yet.",
+    "errors": {
+      "STAFF_USER_NOT_FOUND": "No account exists for this email.",
+      "STAFF_USER_NOT_ACTIVE": "This account must be active before it can be assigned a staff role.",
+      "STAFF_ALREADY_ASSIGNED": "This user already has an active staff role at this organization.",
+      "ACCESS_DENIED": "Only an organization admin can manage staff.",
+      "generic": "Something went wrong. Please try again."
+    }
+  }
+}

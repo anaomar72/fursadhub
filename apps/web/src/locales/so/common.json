@@ -21,5 +21,11 @@
   "language": {
     "en": "Ingiriisi",
     "so": "Soomaali"
+  },
+  "pagination": {
+    "label": "Bogagga",
+    "previous": "Hore",
+    "next": "Xiga",
+    "pageOf": "Bogga {{page}} ee {{totalPages}}"
   }
 }

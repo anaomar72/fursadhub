@@ -1,0 +1,70 @@
+{
+  "nav": {
+    "opportunities": "Fursadaha",
+    "profile": "Ururka",
+    "staff": "Shaqaalaha"
+  },
+  "setup": {
+    "title": "Diyaari ururkaaga",
+    "body": "Diiwaan geli ururkaaga si aad u bilowdo daabacaadda fursadaha tababarka. Waxaad casumi kartaa asxaabtaada marka la abuuro.",
+    "nameLabel": "Magaca ururka",
+    "typeLabel": "Nooca ururka",
+    "registrationNumberLabel": "Lambarka diiwaangelinta",
+    "websiteLabel": "Websaydka",
+    "descriptionLabel": "Ku saabsan ururka",
+    "submit": "Abuur urur",
+    "errors": {
+      "VALIDATION_FAILED": "Fadlan hubi foomka oo isku day mar kale.",
+      "generic": "Wax baa qaldamay. Fadlan isku day mar kale."
+    }
+  },
+  "profile": {
+    "title": "Astaanta ururka",
+    "types": {
+      "COMPANY": "Shirkad",
+      "NGO": "Urur aan dawli ahayn",
+      "GOVERNMENT": "Dawlad",
+      "OTHER": "Kale"
+    },
+    "verificationStatusValues": {
+      "DRAFT": "Lama gudbin",
+      "SUBMITTED": "Waa la gudbiyay",
+      "UNDER_REVIEW": "Waa la eegayaa",
+      "NEEDS_CHANGES": "Waxaa loo baahan yahay isbeddel",
+      "VERIFIED": "Waa la xaqiijiyay",
+      "REJECTED": "Waa la diiday",
+      "SUSPENDED": "Waa la hakiyay",
+      "REVOKED": "Waa la baabi'iyay"
+    },
+    "verifiedLabel": "Urur la xaqiijiyay",
+    "saveChanges": "Kaydi isbeddelada",
+    "submitForVerification": "U gudbi xaqiijinta",
+    "submitForVerificationBody": "Ururkaaga waa in la xaqiijiyaa ka hor inta aadan daabicin fursadaha.",
+    "errors": {
+      "ACCESS_DENIED": "Ma lihid ogolaanshaha ururkan.",
+      "ORGANIZATION_VERIFICATION_INVALID_TRANSITION": "Ururkan lagama gudbin karo xaqiijinta xaaladdiisa hadda.",
+      "VALIDATION_FAILED": "Fadlan hubi foomka oo isku day mar kale.",
+      "generic": "Wax baa qaldamay. Fadlan isku day mar kale."
+    }
+  },
+  "staff": {
+    "title": "Shaqaalaha",
+    "emailLabel": "Cinwaanka iimaylka",
+    "roleLabel": "Doorka",
+    "roles": {
+      "ORGANIZATION_ADMIN": "Maamulaha ururka",
+      "RECRUITER": "Qaadaha shaqaalaha",
+      "ORGANIZATION_SUPERVISOR": "Kormeeraha ururka"
+    },
+    "assignSubmit": "U meelee doorka shaqaalaha",
+    "revoke": "Baabi'i",
+    "empty": "Weli shaqaale lama meelayn.",
+    "errors": {
+      "STAFF_USER_NOT_FOUND": "Iimaylkan akoon uma jiro.",
+      "STAFF_USER_NOT_ACTIVE": "Akoonkan waa inuu firfircoon yahay ka hor inta doorka shaqaalaha loo meelayn.",
+      "STAFF_ALREADY_ASSIGNED": "Isticmaalahani horeba wuxuu leeyahay door shaqaale oo firfircoon oo ururkan ku jira.",
+      "ACCESS_DENIED": "Kaliya maamulaha ururka ayaa maamuli kara shaqaalaha.",
+      "generic": "Wax baa qaldamay. Fadlan isku day mar kale."
+    }
+  }
+}

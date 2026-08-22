@@ -119,6 +119,17 @@
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-failsafe-plugin</artifactId>
+        <configuration>
+          <!-- Each *IT class boots its own full Spring context (embedded Tomcat + Hikari pool)
+               against the one shared Testcontainers Postgres instance. The default reuseForks=true
+               keeps every context alive in a single JVM for the whole run, and as the number of IT
+               classes has grown, their accumulated open resources have started exhausting local
+               (non-CI) machine limits partway through a full run even though every class passes
+               cleanly on its own. Forking a fresh JVM per class releases each class's sockets/pool
+               before the next one starts, trading a bit of startup time for a run that doesn't
+               degrade as the suite grows. -->
+          <reuseForks>false</reuseForks>
+        </configuration>
         <executions>
           <execution>
             <goals>

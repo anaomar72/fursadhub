@@ -1,0 +1,102 @@
+{
+  "modeValues": {
+    "PUBLIC": "Public",
+    "UNIVERSITY_TARGETED": "University-targeted",
+    "HYBRID": "Hybrid"
+  },
+  "statusValues": {
+    "DRAFT": "Draft",
+    "PUBLISHED": "Published",
+    "PAUSED": "Paused",
+    "CLOSED": "Closed",
+    "CANCELLED": "Cancelled"
+  },
+  "workModeValues": {
+    "ONSITE": "On site",
+    "HYBRID": "Hybrid",
+    "REMOTE": "Remote"
+  },
+  "list": {
+    "title": "Opportunities",
+    "create": "New opportunity",
+    "empty": "No opportunities yet."
+  },
+  "form": {
+    "createTitle": "New opportunity",
+    "titleLabel": "Title",
+    "descriptionLabel": "Description",
+    "responsibilitiesLabel": "Responsibilities",
+    "requirementsLabel": "Requirements",
+    "modeLabel": "Sourcing mode",
+    "modeHelp": {
+      "PUBLIC": "Eligible verified students can apply directly once published.",
+      "UNIVERSITY_TARGETED": "Only nominated students from the universities you target will be considered.",
+      "HYBRID": "Accepts both direct applications and university nominations."
+    },
+    "openingsLabel": "Number of openings",
+    "workModeLabel": "Work mode",
+    "locationLabel": "Location",
+    "startDateLabel": "Start date",
+    "endDateLabel": "End date",
+    "applicationDeadlineLabel": "Application deadline",
+    "createSubmit": "Create draft",
+    "saveChanges": "Save changes",
+    "errors": {
+      "openingsMin": "At least one opening is required.",
+      "dateOrder": "The end date must be after the start date.",
+      "deadlineRequired": "An application deadline is required for this mode.",
+      "deadlineBeforeStart": "The application deadline must be before the start date.",
+      "VALIDATION_FAILED": "Please check the form and try again.",
+      "OPPORTUNITY_NOT_EDITABLE": "Only a draft opportunity can be edited.",
+      "ACCESS_DENIED": "You do not have access to this opportunity.",
+      "generic": "Something went wrong. Please try again."
+    }
+  },
+  "actions": {
+    "publish": "Publish",
+    "pause": "Pause",
+    "resume": "Resume",
+    "close": "Close",
+    "cancel": "Cancel",
+    "errors": {
+      "ORGANIZATION_NOT_VERIFIED": "Your organization must be verified before publishing opportunities.",
+      "OPPORTUNITY_TARGET_REQUIRED": "Add at least one target university before publishing.",
+      "OPPORTUNITY_INVALID_TRANSITION": "This action isn't available for the opportunity's current state.",
+      "ACCESS_DENIED": "You do not have access to this opportunity.",
+      "generic": "Something went wrong. Please try again."
+    }
+  },
+  "targets": {
+    "title": "Target universities",
+    "universityLabel": "University",
+    "selectUniversity": "Select a university",
+    "departmentsLabel": "Departments",
+    "nomineesLabel": "Requested nominees",
+    "deadlineLabel": "Nomination deadline",
+    "addSubmit": "Add target",
+    "remove": "Remove",
+    "empty": "No target universities yet.",
+    "summary": "{{count}} nominees requested · due {{deadline}}",
+    "errors": {
+      "universityRequired": "Select a university.",
+      "nomineesMin": "At least one nominee is required.",
+      "deadlineRequired": "A nomination deadline is required.",
+      "OPPORTUNITY_TARGET_ALREADY_EXISTS": "This university is already targeted by this opportunity.",
+      "DEPARTMENT_NOT_IN_UNIVERSITY": "One or more departments do not belong to the target university.",
+      "TARGET_UNIVERSITY_NOT_VERIFIED": "Only a verified university can be targeted.",
+      "OPPORTUNITY_MODE_DOES_NOT_SUPPORT_TARGETING": "Only university-targeted or hybrid opportunities can have targets.",
+      "OPPORTUNITY_NOT_EDITABLE": "Targets can only be changed while the opportunity is a draft.",
+      "VALIDATION_FAILED": "Please check the form and try again.",
+      "generic": "Something went wrong. Please try again."
+    }
+  },
+  "public": {
+    "title": "Internship opportunities",
+    "searchPlaceholder": "Search by title or keyword",
+    "locationPlaceholder": "Location",
+    "allWorkModes": "All work modes",
+    "empty": "No opportunities match your search.",
+    "notFound": "This opportunity is no longer available.",
+    "backToList": "Back to all opportunities"
+  }
+}

@@ -3,6 +3,14 @@
 spring:
   jpa:
     show-sql: false
+  datasource:
+    # Every *IT class boots its own Spring context (and therefore its own Hikari pool) against the
+    # single shared Testcontainers Postgres instance (see AbstractIdentityIT). The default Hikari
+    # pool size (10) times the growing number of IT classes eventually exceeds Postgres's default
+    # max_connections once enough contexts accumulate in one JVM run — a small pool is plenty for
+    # tests, which never run meaningfully concurrent queries within one class.
+    hikari:
+      maximum-pool-size: 3
 
 logging:
   level:

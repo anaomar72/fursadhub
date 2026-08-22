@@ -19,11 +19,14 @@ import { StudentsPage } from '../../features/university/pages/StudentsPage'
 import { VerificationQueuePage } from '../../features/university/pages/VerificationQueuePage'
 import { VerificationCaseDetailPage } from '../../features/university/pages/VerificationCaseDetailPage'
 import { StaffPage } from '../../features/university/pages/StaffPage'
-
-function OrganizationIndex() {
-  const { t } = useTranslation()
-  return <ComingSoonPage areaLabel={t('nav.organization')} />
-}
+import { OrganizationAreaLayout } from '../../features/organization/components/OrganizationAreaLayout'
+import { ProfilePage as OrganizationProfilePage } from '../../features/organization/pages/ProfilePage'
+import { StaffPage as OrganizationStaffPage } from '../../features/organization/pages/StaffPage'
+import { OpportunityListPage } from '../../features/opportunities/pages/OpportunityListPage'
+import { CreateOpportunityPage } from '../../features/opportunities/pages/CreateOpportunityPage'
+import { OpportunityDetailPage } from '../../features/opportunities/pages/OpportunityDetailPage'
+import { PublicOpportunityListPage } from '../../features/opportunities/pages/PublicOpportunityListPage'
+import { PublicOpportunityDetailPage } from '../../features/opportunities/pages/PublicOpportunityDetailPage'
 
 function AdminIndex() {
   const { t } = useTranslation()
@@ -42,6 +45,8 @@ export const router = createBrowserRouter([
     element: <PublicLayout />,
     children: [
       { index: true, element: <HomePage /> },
+      { path: 'opportunities', element: <PublicOpportunityListPage /> },
+      { path: 'opportunities/:opportunityId', element: <PublicOpportunityDetailPage /> },
       { path: 'register', element: <RegisterPage /> },
       { path: 'login', element: <LoginPage /> },
       { path: 'verify-email', element: <VerifyEmailPage /> },
@@ -95,7 +100,19 @@ export const router = createBrowserRouter([
         <OrganizationLayout />
       </RequireAuth>
     ),
-    children: [{ index: true, element: <OrganizationIndex /> }],
+    children: [
+      {
+        element: <OrganizationAreaLayout />,
+        children: [
+          { index: true, element: <Navigate to="opportunities" replace /> },
+          { path: 'opportunities', element: <OpportunityListPage /> },
+          { path: 'opportunities/new', element: <CreateOpportunityPage /> },
+          { path: 'opportunities/:opportunityId', element: <OpportunityDetailPage /> },
+          { path: 'profile', element: <OrganizationProfilePage /> },
+          { path: 'staff', element: <OrganizationStaffPage /> },
+        ],
+      },
+    ],
   },
   {
     path: '/admin',
