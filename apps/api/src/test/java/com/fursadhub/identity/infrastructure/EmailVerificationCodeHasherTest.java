@@ -35,6 +35,9 @@ class EmailVerificationCodeHasherTest {
     void hashIsNotThePlainCode() {
         UUID userId = UUID.randomUUID();
 
-        assertThat(hasher.hash(userId, "1234")).doesNotContain("1234");
+        String hash = hasher.hash(userId, "1234");
+
+        assertThat(hash).isNotEqualTo("1234");
+        assertThat(hash).matches("^[0-9a-f]{64}$");
     }
 }
