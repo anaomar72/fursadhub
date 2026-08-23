@@ -80,7 +80,9 @@ class ResendVerificationServiceTest {
     }
 
     private ResendVerificationService service(Duration cooldown) {
-        AuthProperties authProperties = new AuthProperties(Duration.ofDays(30), Duration.ofMinutes(10), Duration.ofHours(1), cooldown);
+        // Login limits are irrelevant to resend behaviour; production defaults keep this realistic.
+        AuthProperties authProperties = new AuthProperties(
+                Duration.ofDays(30), Duration.ofMinutes(10), Duration.ofHours(1), cooldown, 10, 30);
         return new ResendVerificationService(users, issuer, new InMemoryRateLimiter(), authProperties);
     }
 }

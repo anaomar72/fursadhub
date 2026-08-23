@@ -81,6 +81,9 @@ fursadhub:
     password-reset-token-ttl: ${PASSWORD_RESET_TOKEN_TTL:1h}
     email-verification-resend-cooldown: ${EMAIL_VERIFICATION_RESEND_COOLDOWN:60s}
     email-verification-code-secret: ${EMAIL_VERIFICATION_CODE_SECRET:}
+    # Login abuse limits, per 15-minute sliding window (CLAUDE.md section 21).
+    login-max-attempts-per-email: ${LOGIN_MAX_ATTEMPTS_PER_EMAIL:10}
+    login-max-attempts-per-ip: ${LOGIN_MAX_ATTEMPTS_PER_IP:30}
   cookie:
     secure: ${COOKIE_SECURE:false}
     domain: ${COOKIE_DOMAIN:}

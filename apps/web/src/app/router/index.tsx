@@ -27,6 +27,15 @@ import { CreateOpportunityPage } from '../../features/opportunities/pages/Create
 import { OpportunityDetailPage } from '../../features/opportunities/pages/OpportunityDetailPage'
 import { PublicOpportunityListPage } from '../../features/opportunities/pages/PublicOpportunityListPage'
 import { PublicOpportunityDetailPage } from '../../features/opportunities/pages/PublicOpportunityDetailPage'
+import { ApplyPage } from '../../features/recruitment/pages/ApplyPage'
+import { MyApplicationsPage } from '../../features/recruitment/pages/MyApplicationsPage'
+import { CandidacyDetailPage } from '../../features/recruitment/pages/CandidacyDetailPage'
+import { MyNominationsPage } from '../../features/recruitment/pages/MyNominationsPage'
+import { OpportunityRequestsPage } from '../../features/recruitment/pages/OpportunityRequestsPage'
+import { NominateStudentsPage } from '../../features/recruitment/pages/NominateStudentsPage'
+import { UniversityNominationsPage } from '../../features/recruitment/pages/UniversityNominationsPage'
+import { CandidatePoolPage } from '../../features/recruitment/pages/CandidatePoolPage'
+import { CandidateDetailPage } from '../../features/recruitment/pages/CandidateDetailPage'
 
 function AdminIndex() {
   const { t } = useTranslation()
@@ -68,6 +77,12 @@ export const router = createBrowserRouter([
           { index: true, element: <Navigate to="enrollment" replace /> },
           { path: 'enrollment', element: <EnrollmentPage /> },
           { path: 'profile', element: <StudentProfilePage /> },
+          // Phase 4 recruitment. The apply route lives under /student because it requires an
+          // authenticated student; the opportunity itself stays publicly browsable at /opportunities.
+          { path: 'opportunities/:opportunityId/apply', element: <ApplyPage /> },
+          { path: 'applications', element: <MyApplicationsPage /> },
+          { path: 'applications/:candidacyId', element: <CandidacyDetailPage /> },
+          { path: 'nominations', element: <MyNominationsPage /> },
         ],
       },
     ],
@@ -89,6 +104,10 @@ export const router = createBrowserRouter([
           { path: 'verification-cases', element: <VerificationQueuePage /> },
           { path: 'verification-cases/:caseId', element: <VerificationCaseDetailPage /> },
           { path: 'staff', element: <StaffPage /> },
+          // Phase 4 nomination workflow.
+          { path: 'opportunity-requests', element: <OpportunityRequestsPage /> },
+          { path: 'opportunity-requests/:targetId', element: <NominateStudentsPage /> },
+          { path: 'nominations', element: <UniversityNominationsPage /> },
         ],
       },
     ],
@@ -108,6 +127,9 @@ export const router = createBrowserRouter([
           { path: 'opportunities', element: <OpportunityListPage /> },
           { path: 'opportunities/new', element: <CreateOpportunityPage /> },
           { path: 'opportunities/:opportunityId', element: <OpportunityDetailPage /> },
+          // Phase 4 candidate management — ONE unified pool per opportunity.
+          { path: 'opportunities/:opportunityId/candidates', element: <CandidatePoolPage /> },
+          { path: 'candidacies/:candidacyId', element: <CandidateDetailPage /> },
           { path: 'profile', element: <OrganizationProfilePage /> },
           { path: 'staff', element: <OrganizationStaffPage /> },
         ],

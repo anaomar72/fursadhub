@@ -1,0 +1,211 @@
+{
+  "sourceValues": {
+    "SELF_APPLICATION": "Applied directly",
+    "UNIVERSITY_NOMINATION": "University nomination",
+    "BOTH": "Applied and nominated"
+  },
+  "candidacyStatusValues": {
+    "SUBMITTED": "Submitted",
+    "UNDER_REVIEW": "Under review",
+    "SHORTLISTED": "Shortlisted",
+    "INTERVIEW": "Interview",
+    "OFFERED": "Offer sent",
+    "OFFER_DECLINED": "Offer declined",
+    "OFFER_EXPIRED": "Offer expired",
+    "ACCEPTED": "Accepted",
+    "REJECTED": "Not selected",
+    "WITHDRAWN": "Withdrawn"
+  },
+  "nominationStatusValues": {
+    "PENDING_STUDENT_CONSENT": "Awaiting your consent",
+    "ACCEPTED": "Accepted",
+    "DECLINED": "Declined",
+    "WITHDRAWN": "Withdrawn"
+  },
+  "offerStatusValues": {
+    "PENDING": "Awaiting response",
+    "ACCEPTED": "Accepted",
+    "DECLINED": "Declined",
+    "EXPIRED": "Expired",
+    "WITHDRAWN": "Withdrawn"
+  },
+  "nav": {
+    "applications": "My applications",
+    "nominations": "Nominations",
+    "candidates": "Candidates",
+    "opportunityRequests": "Nomination requests"
+  },
+  "apply": {
+    "title": "Apply for this internship",
+    "screeningTitle": "Screening questions",
+    "requiredLabel": "{{prompt}} (required)",
+    "selectPlaceholder": "Select an answer",
+    "yes": "Yes",
+    "no": "No",
+    "noQuestions": "This opportunity has no screening questions. You can submit your application directly.",
+    "submit": "Submit application",
+    "successTitle": "Application submitted",
+    "successBody": "The organization can now review your application. You can follow its progress under My applications.",
+    "viewApplications": "View my applications",
+    "errors": {
+      "answerRequired": "This question requires an answer.",
+      "SCREENING_ANSWER_INVALID": "Please check your answers and try again.",
+      "STUDENT_NOT_VERIFIED": "Your university enrollment must be verified before you can apply.",
+      "STUDENT_ALREADY_APPLIED": "You have already applied to this opportunity.",
+      "STUDENT_NOT_AVAILABLE": "You already have an active internship placement.",
+      "ACCOUNT_NOT_ACTIVE": "Your account must be active before you can apply.",
+      "OPPORTUNITY_NOT_PUBLIC": "This opportunity only accepts university nominations.",
+      "OPPORTUNITY_NOT_PUBLISHED": "This opportunity is not accepting applications right now.",
+      "OPPORTUNITY_DEADLINE_PASSED": "The application deadline for this opportunity has passed.",
+      "CANDIDACY_ALREADY_CLOSED": "This application has already been closed.",
+      "VALIDATION_FAILED": "Please check the form and try again.",
+      "generic": "Something went wrong. Please try again."
+    }
+  },
+  "applications": {
+    "title": "My applications",
+    "empty": "You have not applied to any internships yet.",
+    "offerAwaitingResponse": "You have an offer awaiting your response by {{deadline}}."
+  },
+  "detail": {
+    "notFound": "This application is no longer available.",
+    "offerTitle": "Internship offer",
+    "startDate": "Start date",
+    "endDate": "End date",
+    "responseDeadline": "Respond by",
+    "location": "Location",
+    "acceptOffer": "Accept offer",
+    "declineOffer": "Decline offer",
+    "offerAcceptedTitle": "Offer accepted",
+    "placementCreated": "Your internship placement has been created.",
+    "withdraw": "Withdraw application",
+    "errors": {
+      "OFFER_NOT_PENDING": "This offer is no longer awaiting a response.",
+      "OFFER_NOT_FOUND": "This offer is no longer available.",
+      "STUDENT_NOT_VERIFIED": "Your university enrollment must be verified before accepting an offer.",
+      "STUDENT_NOT_AVAILABLE": "You already have an active internship placement.",
+      "CANDIDACY_HAS_PLACEMENT": "You cannot withdraw after accepting an offer.",
+      "CANDIDACY_INVALID_TRANSITION": "This action isn't available for the current stage.",
+      "generic": "Something went wrong. Please try again."
+    }
+  },
+  "nominations": {
+    "title": "Nominations",
+    "empty": "You have no nominations yet.",
+    "needsConsent": "Awaiting your consent",
+    "consentExplainer": "Your university has nominated you. The organization will not see your details until you accept.",
+    "accept": "Accept nomination",
+    "decline": "Decline",
+    "acceptedTitle": "Nomination accepted",
+    "history": "Past nominations",
+    "errors": {
+      "NOMINATION_NOT_FOUND": "This nomination is no longer available.",
+      "NOMINATION_ALREADY_RESOLVED": "You have already responded to this nomination.",
+      "STUDENT_NOT_VERIFIED": "Your university enrollment must be verified first.",
+      "STUDENT_NOT_AVAILABLE": "You already have an active internship placement.",
+      "CANDIDACY_ALREADY_CLOSED": "This application has already been closed.",
+      "OPPORTUNITY_NOT_PUBLISHED": "This opportunity is no longer accepting candidates.",
+      "generic": "Something went wrong. Please try again."
+    }
+  },
+  "pool": {
+    "title": "Candidates",
+    "backToOpportunity": "Back to opportunity",
+    "filterLabel": "Filter candidates by source",
+    "allSources": "All candidates",
+    "empty": "No candidates yet."
+  },
+  "candidate": {
+    "notFound": "This candidate is no longer available.",
+    "answersTitle": "Screening answers",
+    "offersTitle": "Offers",
+    "sendOfferTitle": "Send an internship offer",
+    "startDate": "Start date",
+    "endDate": "End date",
+    "responseDeadline": "Respond by",
+    "location": "Location",
+    "details": "Offer details",
+    "sendOffer": "Send offer",
+    "commands": {
+      "review": "Move to review",
+      "shortlist": "Shortlist",
+      "interview": "Move to interview",
+      "reject": "Reject"
+    },
+    "errors": {
+      "startDateRequired": "A start date is required.",
+      "endDateRequired": "An end date is required.",
+      "deadlineRequired": "A response deadline is required.",
+      "dateOrder": "The end date must be after the start date.",
+      "deadlineAfterStart": "The response deadline must not be after the start date.",
+      "OFFER_ALREADY_EXISTS": "This candidate already has an outstanding offer.",
+      "OFFER_STILL_LIVE": "Withdraw the outstanding offer before rejecting this candidate.",
+      "CANDIDACY_INVALID_TRANSITION": "This action isn't available for the candidate's current stage.",
+      "STUDENT_NOT_VERIFIED": "This student's enrollment is no longer verified.",
+      "STUDENT_NOT_AVAILABLE": "This student already has an active internship placement.",
+      "ACCESS_DENIED": "You do not have access to this candidate.",
+      "VALIDATION_FAILED": "Please check the form and try again.",
+      "generic": "Something went wrong. Please try again."
+    }
+  },
+  "screening": {
+    "title": "Screening questions",
+    "limitHint": "Add up to {{max}} questions. Questions can only be changed while the opportunity is a draft.",
+    "promptLabel": "Question",
+    "typeLabel": "Answer type",
+    "choicesLabel": "Choices (one per line)",
+    "requiredLabel": "Answer is required",
+    "required": "Required",
+    "add": "Add question",
+    "remove": "Remove",
+    "empty": "No screening questions yet.",
+    "typeValues": {
+      "SHORT_TEXT": "Short text",
+      "LONG_TEXT": "Long text",
+      "YES_NO": "Yes / No",
+      "SINGLE_CHOICE": "Single choice"
+    },
+    "errors": {
+      "SCREENING_QUESTION_LIMIT_REACHED": "You have reached the maximum number of screening questions.",
+      "OPPORTUNITY_NOT_EDITABLE": "Questions can only be changed while the opportunity is a draft.",
+      "VALIDATION_FAILED": "Please check the question and try again.",
+      "generic": "Something went wrong. Please try again."
+    }
+  },
+  "requests": {
+    "title": "Nomination requests",
+    "empty": "No organizations have requested nominations yet.",
+    "notFound": "This request is no longer available.",
+    "progress": "{{current}} of {{requested}} nominated",
+    "deadline": "Nominate by {{deadline}}"
+  },
+  "nominate": {
+    "eligibleTitle": "Eligible students",
+    "eligibleExplainer": "Only students with verified enrollment in your assigned departments are shown.",
+    "empty": "No eligible students in your scope.",
+    "nominate": "Nominate",
+    "alreadyNominated": "Nominated",
+    "errors": {
+      "STUDENT_ALREADY_NOMINATED": "This student has already been nominated for this opportunity.",
+      "STUDENT_NOT_VERIFIED": "This student's enrollment is not verified.",
+      "STUDENT_NOT_AVAILABLE": "This student already has an active internship placement.",
+      "DEPARTMENT_NOT_ELIGIBLE_FOR_TARGET": "This opportunity does not accept nominations from that department.",
+      "OPPORTUNITY_NOT_TARGETED_TO_UNIVERSITY": "This opportunity is not targeted to your university.",
+      "OPPORTUNITY_DEADLINE_PASSED": "The nomination deadline has passed.",
+      "OPPORTUNITY_NOT_PUBLISHED": "This opportunity is no longer accepting nominations.",
+      "ACCESS_DENIED": "You do not have access to nominate this student.",
+      "generic": "Something went wrong. Please try again."
+    }
+  },
+  "universityNominations": {
+    "title": "Nominations",
+    "empty": "No nominations yet.",
+    "withdraw": "Withdraw",
+    "errors": {
+      "NOMINATION_ALREADY_RESOLVED": "This nomination has already been responded to.",
+      "NOMINATION_NOT_FOUND": "This nomination is no longer available.",
+      "ACCESS_DENIED": "You do not have access to this nomination.",
+      "generic": "Something went wrong. Please try again."
+    }
+  }
+}

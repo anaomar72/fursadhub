@@ -2,6 +2,7 @@ import { useQuery } from '@tanstack/react-query'
 import { useTranslation } from 'react-i18next'
 import { Link, useParams } from 'react-router-dom'
 import * as publicOpportunityApi from '../api/publicOpportunityApi'
+import { useAuth } from '../../../lib/auth/AuthContext'
 import { LoadingSpinner } from '../../../components/ui'
 
 export function PublicOpportunityDetailPage() {
@@ -55,7 +56,41 @@ export function PublicOpportunityDetailPage() {
       <Section title={t('opportunities:form.descriptionLabel')} body={opportunity.description} />
       {opportunity.responsibilities && <Section title={t('opportunities:form.responsibilitiesLabel')} body={opportunity.responsibilities} />}
       {opportunity.requirements && <Section title={t('opportunities:form.requirementsLabel')} body={opportunity.requirements} />}
+
+      <ApplyCallToAction opportunityId={opportunity.id} />
     </article>
+  )
+}
+
+/**
+ * Phase 4 entry point into the application flow.
+ *
+ * <p>Only PUBLIC/HYBRID opportunities ever reach this page (the public endpoint excludes
+ * targeted-only ones by construction), so the CTA is always appropriate here. Signed-out visitors
+ * are sent to log in first; whether they may actually apply — verified enrollment, deadline,
+ * availability — is decided by the backend, never here (CLAUDE.md section 24).
+ */
+function ApplyCallToAction({ opportunityId }: { opportunityId: string }) {
+  const { t } = useTranslation()
+  const { isAuthenticated } = useAuth()
+
+  return (
+    <div className="mt-8 border-t border-border pt-6">
+      {isAuthenticated ? (
+        <Link
+          to={`/student/opportunities/${opportunityId}/apply`}
+          className="inline-flex h-10 items-center justify-center rounded-md bg-brand-primary px-4 text-sm font-medium text-on-brand transition-colors duration-150 ease-in-out hover:bg-brand-accent"
+        >
+          {t('opportunities:public.apply')}
+        </Link>
+      ) : (
+        <p className="text-sm text-foreground-secondary">
+          <Link to="/login" className="font-medium text-brand-primary hover:underline">
+            {t('opportunities:public.signInToApply')}
+          </Link>
+        </p>
+      )}
+    </div>
   )
 }
 

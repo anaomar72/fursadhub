@@ -1,0 +1,211 @@
+{
+  "sourceValues": {
+    "SELF_APPLICATION": "Codsi toos ah",
+    "UNIVERSITY_NOMINATION": "Magacaabis jaamacadeed",
+    "BOTH": "Codsaday oo la magacaabay"
+  },
+  "candidacyStatusValues": {
+    "SUBMITTED": "La gudbiyay",
+    "UNDER_REVIEW": "Waa la eegayaa",
+    "SHORTLISTED": "Liiska kooban",
+    "INTERVIEW": "Wareysi",
+    "OFFERED": "Dalab la diray",
+    "OFFER_DECLINED": "Dalabka waa la diiday",
+    "OFFER_EXPIRED": "Dalabkii wuu dhacay",
+    "ACCEPTED": "La aqbalay",
+    "REJECTED": "Lama dooran",
+    "WITHDRAWN": "La laabtay"
+  },
+  "nominationStatusValues": {
+    "PENDING_STUDENT_CONSENT": "Sugaya oggolaanshahaaga",
+    "ACCEPTED": "La aqbalay",
+    "DECLINED": "La diiday",
+    "WITHDRAWN": "La laabtay"
+  },
+  "offerStatusValues": {
+    "PENDING": "Sugaya jawaab",
+    "ACCEPTED": "La aqbalay",
+    "DECLINED": "La diiday",
+    "EXPIRED": "Wuu dhacay",
+    "WITHDRAWN": "La laabtay"
+  },
+  "nav": {
+    "applications": "Codsiyadayda",
+    "nominations": "Magacaabisyada",
+    "candidates": "Musharrixiinta",
+    "opportunityRequests": "Codsiyada magacaabista"
+  },
+  "apply": {
+    "title": "Codso tababarkan",
+    "screeningTitle": "Su'aalaha kala-sooca",
+    "requiredLabel": "{{prompt}} (waa loo baahan yahay)",
+    "selectPlaceholder": "Dooro jawaab",
+    "yes": "Haa",
+    "no": "Maya",
+    "noQuestions": "Fursaddan ma laha su'aalo kala-sooc ah. Waxaad si toos ah u gudbin kartaa codsigaaga.",
+    "submit": "Gudbi codsiga",
+    "successTitle": "Codsiga waa la gudbiyay",
+    "successBody": "Ururka shaqada hadda wuu eegi karaa codsigaaga. Waxaad ka raadraaci kartaa qaybta Codsiyadayda.",
+    "viewApplications": "Eeg codsiyadayda",
+    "errors": {
+      "answerRequired": "Su'aashan waxay u baahan tahay jawaab.",
+      "SCREENING_ANSWER_INVALID": "Fadlan hubi jawaabahaaga oo isku day mar kale.",
+      "STUDENT_NOT_VERIFIED": "Diiwaangelintaada jaamacadeed waa in la xaqiijiyo ka hor inta aadan codsan.",
+      "STUDENT_ALREADY_APPLIED": "Horey ayaad u codsatay fursaddan.",
+      "STUDENT_NOT_AVAILABLE": "Waxaad hore u haysatay meel-gelin tababar oo firfircoon.",
+      "ACCOUNT_NOT_ACTIVE": "Akoonkaagu waa inuu firfircoonaadaa ka hor inta aadan codsan.",
+      "OPPORTUNITY_NOT_PUBLIC": "Fursaddan waxay kaliya aqbashaa magacaabis jaamacadeed.",
+      "OPPORTUNITY_NOT_PUBLISHED": "Fursaddan hadda ma aqbalayso codsiyo.",
+      "OPPORTUNITY_DEADLINE_PASSED": "Wakhtigii ugu dambeeyay ee codsiga wuu dhacay.",
+      "CANDIDACY_ALREADY_CLOSED": "Codsigan horey ayaa loo xiray.",
+      "VALIDATION_FAILED": "Fadlan hubi foomka oo isku day mar kale.",
+      "generic": "Wax baa qaldamay. Fadlan isku day mar kale."
+    }
+  },
+  "applications": {
+    "title": "Codsiyadayda",
+    "empty": "Weli ma aadan codsan wax tababar ah.",
+    "offerAwaitingResponse": "Waxaad haysataa dalab sugaya jawaabtaada ugu dambeyn {{deadline}}."
+  },
+  "detail": {
+    "notFound": "Codsigan hadda lama heli karo.",
+    "offerTitle": "Dalabka tababarka",
+    "startDate": "Taariikhda bilowga",
+    "endDate": "Taariikhda dhammaadka",
+    "responseDeadline": "Ka jawaab ugu dambeyn",
+    "location": "Goobta",
+    "acceptOffer": "Aqbal dalabka",
+    "declineOffer": "Diid dalabka",
+    "offerAcceptedTitle": "Dalabka waa la aqbalay",
+    "placementCreated": "Meel-gelintaada tababarka waa la abuuray.",
+    "withdraw": "Laabo codsiga",
+    "errors": {
+      "OFFER_NOT_PENDING": "Dalabkan hadda ma sugayo jawaab.",
+      "OFFER_NOT_FOUND": "Dalabkan hadda lama heli karo.",
+      "STUDENT_NOT_VERIFIED": "Diiwaangelintaada waa in la xaqiijiyo ka hor inta aadan dalab aqbalin.",
+      "STUDENT_NOT_AVAILABLE": "Waxaad hore u haysatay meel-gelin tababar oo firfircoon.",
+      "CANDIDACY_HAS_PLACEMENT": "Ma laaban kartid kadib markaad aqbashay dalabka.",
+      "CANDIDACY_INVALID_TRANSITION": "Talaabadan lama heli karo marxaladda hadda.",
+      "generic": "Wax baa qaldamay. Fadlan isku day mar kale."
+    }
+  },
+  "nominations": {
+    "title": "Magacaabisyada",
+    "empty": "Weli ma lihid magacaabis.",
+    "needsConsent": "Sugaya oggolaanshahaaga",
+    "consentExplainer": "Jaamacaddaadu way ku magacawday. Ururka shaqada ma arki doono xogtaada ilaa aad aqbasho.",
+    "accept": "Aqbal magacaabista",
+    "decline": "Diid",
+    "acceptedTitle": "Magacaabista waa la aqbalay",
+    "history": "Magacaabisyadii hore",
+    "errors": {
+      "NOMINATION_NOT_FOUND": "Magacaabistan hadda lama heli karo.",
+      "NOMINATION_ALREADY_RESOLVED": "Horey ayaad uga jawaabtay magacaabistan.",
+      "STUDENT_NOT_VERIFIED": "Diiwaangelintaada waa in marka hore la xaqiijiyo.",
+      "STUDENT_NOT_AVAILABLE": "Waxaad hore u haysatay meel-gelin tababar oo firfircoon.",
+      "CANDIDACY_ALREADY_CLOSED": "Codsigan horey ayaa loo xiray.",
+      "OPPORTUNITY_NOT_PUBLISHED": "Fursaddan hadda ma aqbalayso musharrixiin.",
+      "generic": "Wax baa qaldamay. Fadlan isku day mar kale."
+    }
+  },
+  "pool": {
+    "title": "Musharrixiinta",
+    "backToOpportunity": "Ku noqo fursadda",
+    "filterLabel": "Ku kala saar musharrixiinta isha ay ka yimaadeen",
+    "allSources": "Dhammaan musharrixiinta",
+    "empty": "Weli ma jiraan musharrixiin."
+  },
+  "candidate": {
+    "notFound": "Musharraxaan hadda lama heli karo.",
+    "answersTitle": "Jawaabaha kala-sooca",
+    "offersTitle": "Dalabyada",
+    "sendOfferTitle": "Dir dalab tababar",
+    "startDate": "Taariikhda bilowga",
+    "endDate": "Taariikhda dhammaadka",
+    "responseDeadline": "Ka jawaab ugu dambeyn",
+    "location": "Goobta",
+    "details": "Faahfaahinta dalabka",
+    "sendOffer": "Dir dalabka",
+    "commands": {
+      "review": "U gudbi eegista",
+      "shortlist": "Ku dar liiska kooban",
+      "interview": "U gudbi wareysiga",
+      "reject": "Diid"
+    },
+    "errors": {
+      "startDateRequired": "Taariikhda bilowga waa loo baahan yahay.",
+      "endDateRequired": "Taariikhda dhammaadka waa loo baahan yahay.",
+      "deadlineRequired": "Wakhtiga jawaabta waa loo baahan yahay.",
+      "dateOrder": "Taariikhda dhammaadku waa inay ka dambeysaa tan bilowga.",
+      "deadlineAfterStart": "Wakhtiga jawaabtu waa inaanu ka dambeyn taariikhda bilowga.",
+      "OFFER_ALREADY_EXISTS": "Musharraxan horey ayuu u haystaa dalab furan.",
+      "OFFER_STILL_LIVE": "Marka hore laabo dalabka furan ka hor inta aadan diidin musharraxan.",
+      "CANDIDACY_INVALID_TRANSITION": "Talaabadan lama heli karo marxaladda hadda ee musharraxa.",
+      "STUDENT_NOT_VERIFIED": "Diiwaangelinta ardaygan mar dambe lama xaqiijin.",
+      "STUDENT_NOT_AVAILABLE": "Ardaygan wuxuu hore u haystay meel-gelin tababar oo firfircoon.",
+      "ACCESS_DENIED": "Ma haysatid oggolaansho musharraxan.",
+      "VALIDATION_FAILED": "Fadlan hubi foomka oo isku day mar kale.",
+      "generic": "Wax baa qaldamay. Fadlan isku day mar kale."
+    }
+  },
+  "screening": {
+    "title": "Su'aalaha kala-sooca",
+    "limitHint": "Ku dar ilaa {{max}} su'aalood. Su'aalaha waa la beddeli karaa oo keliya inta fursaddu qabyo tahay.",
+    "promptLabel": "Su'aal",
+    "typeLabel": "Nooca jawaabta",
+    "choicesLabel": "Doorashooyinka (mid kasta sadar)",
+    "requiredLabel": "Jawaabtu waa qasab",
+    "required": "Qasab",
+    "add": "Ku dar su'aal",
+    "remove": "Ka saar",
+    "empty": "Weli ma jiraan su'aalo kala-sooc ah.",
+    "typeValues": {
+      "SHORT_TEXT": "Qoraal gaaban",
+      "LONG_TEXT": "Qoraal dheer",
+      "YES_NO": "Haa / Maya",
+      "SINGLE_CHOICE": "Hal doorasho"
+    },
+    "errors": {
+      "SCREENING_QUESTION_LIMIT_REACHED": "Waxaad gaartay tirada ugu badan ee su'aalaha kala-sooca.",
+      "OPPORTUNITY_NOT_EDITABLE": "Su'aalaha waa la beddeli karaa oo keliya inta fursaddu qabyo tahay.",
+      "VALIDATION_FAILED": "Fadlan hubi su'aasha oo isku day mar kale.",
+      "generic": "Wax baa qaldamay. Fadlan isku day mar kale."
+    }
+  },
+  "requests": {
+    "title": "Codsiyada magacaabista",
+    "empty": "Weli ma jiro urur codsaday magacaabis.",
+    "notFound": "Codsigan hadda lama heli karo.",
+    "progress": "{{current}} ka mid ah {{requested}} la magacaabay",
+    "deadline": "Magacaw ugu dambeyn {{deadline}}"
+  },
+  "nominate": {
+    "eligibleTitle": "Ardayda u qalanta",
+    "eligibleExplainer": "Waxaa la tusayaa oo keliya ardayda diiwaangelintoodu xaqiijisan tahay ee waaxyaha lagu meeleeyay.",
+    "empty": "Ma jiraan arday u qalma oo ku jira xayndaabkaaga.",
+    "nominate": "Magacaw",
+    "alreadyNominated": "La magacaabay",
+    "errors": {
+      "STUDENT_ALREADY_NOMINATED": "Ardaygan horey ayaa loogu magacaabay fursaddan.",
+      "STUDENT_NOT_VERIFIED": "Diiwaangelinta ardaygan lama xaqiijin.",
+      "STUDENT_NOT_AVAILABLE": "Ardaygan wuxuu hore u haystay meel-gelin tababar oo firfircoon.",
+      "DEPARTMENT_NOT_ELIGIBLE_FOR_TARGET": "Fursaddani ma aqbasho magacaabis ka timaadda waaxdaas.",
+      "OPPORTUNITY_NOT_TARGETED_TO_UNIVERSITY": "Fursaddani laguma bartilmaameedsan jaamacaddaada.",
+      "OPPORTUNITY_DEADLINE_PASSED": "Wakhtigii ugu dambeeyay ee magacaabistu wuu dhacay.",
+      "OPPORTUNITY_NOT_PUBLISHED": "Fursaddan mar dambe ma aqbalayso magacaabis.",
+      "ACCESS_DENIED": "Ma haysatid oggolaansho aad ku magacawdo ardaygan.",
+      "generic": "Wax baa qaldamay. Fadlan isku day mar kale."
+    }
+  },
+  "universityNominations": {
+    "title": "Magacaabisyada",
+    "empty": "Weli ma jiraan magacaabisyo.",
+    "withdraw": "Laabo",
+    "errors": {
+      "NOMINATION_ALREADY_RESOLVED": "Magacaabistan horey ayaa looga jawaabay.",
+      "NOMINATION_NOT_FOUND": "Magacaabistan hadda lama heli karo.",
+      "ACCESS_DENIED": "Ma haysatid oggolaansho magacaabistan.",
+      "generic": "Wax baa qaldamay. Fadlan isku day mar kale."
+    }
+  }
+}

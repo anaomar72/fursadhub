@@ -19,4 +19,11 @@ public interface InternshipOpportunityRepository {
     Page<InternshipOpportunity> searchPublic(PublicOpportunityFilter filter, Pageable pageable);
 
     Optional<InternshipOpportunity> findPublicById(UUID id);
+
+    /**
+     * Opportunities currently PUBLISHED that target the given university, for that university's
+     * nomination work queue. The PUBLISHED restriction lives in the query itself so a draft or
+     * cancelled opportunity can never surface in a university's queue.
+     */
+    List<InternshipOpportunity> findPublishedTargetingUniversity(UUID universityId);
 }
