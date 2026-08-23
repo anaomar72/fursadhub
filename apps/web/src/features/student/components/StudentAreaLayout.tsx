@@ -17,6 +17,12 @@ export function StudentAreaLayout() {
           <NavLink to="/student/enrollment" className={navLinkClasses}>
             {t('student:nav.enrollment')}
           </NavLink>
+          <NavLink to="/student/applications" className={navLinkClasses}>
+            {t('recruitment:nav.applications')}
+          </NavLink>
+          <NavLink to="/student/nominations" className={navLinkClasses}>
+            {t('recruitment:nav.nominations')}
+          </NavLink>
           <NavLink to="/student/profile" className={navLinkClasses}>
             {t('student:nav.profile')}
           </NavLink>

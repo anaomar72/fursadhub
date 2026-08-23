@@ -44,4 +44,9 @@ class InternshipOpportunityRepositoryAdapter implements InternshipOpportunityRep
     public Optional<InternshipOpportunity> findPublicById(UUID id) {
         return jpaRepository.findOne(InternshipOpportunitySpecifications.publicById(id));
     }
+
+    @Override
+    public List<InternshipOpportunity> findPublishedTargetingUniversity(UUID universityId) {
+        return jpaRepository.findPublishedTargetingUniversity(universityId);
+    }
 }

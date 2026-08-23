@@ -5,12 +5,24 @@ spring:
     show-sql: false
   datasource:
     # Every *IT class boots its own Spring context (and therefore its own Hikari pool) against the
-    # single shared Testcontainers Postgres instance (see AbstractIdentityIT). The default Hikari
-    # pool size (10) times the growing number of IT classes eventually exceeds Postgres's default
-    # max_connections once enough contexts accumulate in one JVM run — a small pool is plenty for
-    # tests, which never run meaningfully concurrent queries within one class.
+    # single shared Testcontainers Postgres instance (see AbstractIdentityIT).
+    #
+    # This was 3, sized on the assumption that many IT contexts stay alive together in one JVM and
+    # would otherwise exhaust Postgres's max_connections. The failsafe config now forks a fresh JVM
+    # per IT class (reuseForks=false), so only one context — and one pool — exists at a time, and
+    # Phase 4's concurrency tests fire several genuinely simultaneous requests that each hold a
+    # connection while waiting on the candidacy advisory lock, which a pool of 3 cannot serve.
+    # 10 is still far below Postgres's default max_connections.
     hikari:
-      maximum-pool-size: 3
+      maximum-pool-size: 10
+
+fursadhub:
+  auth:
+    # Every integration test logs in from 127.0.0.1, so a large suite would trip the production
+    # per-IP login limit that exists to stop credential stuffing from one host. Raising it here only
+    # removes a testing artifact; the per-EMAIL limit is deliberately left at the production value so
+    # the brute-force/lockout behaviour these tests rely on stays exactly as it ships.
+    login-max-attempts-per-ip: 100000
 
 logging:
   level:

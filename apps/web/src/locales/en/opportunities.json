@@ -96,6 +96,8 @@
     "locationPlaceholder": "Location",
     "allWorkModes": "All work modes",
     "empty": "No opportunities match your search.",
+    "apply": "Apply now",
+    "signInToApply": "Sign in to apply for this internship",
     "notFound": "This opportunity is no longer available.",
     "backToList": "Back to all opportunities"
   }

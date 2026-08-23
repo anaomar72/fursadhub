@@ -2,6 +2,7 @@ package com.fursadhub.opportunity.api;
 
 import com.fursadhub.common.api.PageResponse;
 import com.fursadhub.opportunity.application.PublicOpportunityQueryService;
+import com.fursadhub.opportunity.application.ScreeningQuestionService;
 import com.fursadhub.opportunity.domain.InternshipOpportunity;
 import com.fursadhub.opportunity.domain.PublicOpportunityFilter;
 import com.fursadhub.opportunity.domain.WorkMode;
@@ -18,6 +19,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.util.List;
 import java.util.UUID;
 
 /**
@@ -34,10 +36,14 @@ public class PublicOpportunityController {
 
     private final PublicOpportunityQueryService queryService;
     private final OrganizationQueryService organizationQueryService;
+    private final ScreeningQuestionService screeningQuestionService;
 
-    public PublicOpportunityController(PublicOpportunityQueryService queryService, OrganizationQueryService organizationQueryService) {
+    public PublicOpportunityController(
+            PublicOpportunityQueryService queryService, OrganizationQueryService organizationQueryService,
+            ScreeningQuestionService screeningQuestionService) {
         this.queryService = queryService;
         this.organizationQueryService = organizationQueryService;
+        this.screeningQuestionService = screeningQuestionService;
     }
 
     @GetMapping
@@ -56,6 +62,19 @@ public class PublicOpportunityController {
     @GetMapping("/{opportunityId}")
     public PublicOpportunityResponse get(@PathVariable UUID opportunityId) {
         return toResponse(queryService.getPublicOrThrow(opportunityId));
+    }
+
+    /**
+     * The screening questions an applicant must answer. Routed through
+     * {@code getPublicOrThrow} first so questions are only ever exposed for an opportunity that is
+     * itself publicly visible — a targeted-only or draft opportunity's questions stay private.
+     */
+    @GetMapping("/{opportunityId}/screening-questions")
+    public List<ScreeningQuestionResponse> screeningQuestions(@PathVariable UUID opportunityId) {
+        InternshipOpportunity opportunity = queryService.getPublicOrThrow(opportunityId);
+        return screeningQuestionService.listPublic(opportunity.getId()).stream()
+                .map(ScreeningQuestionResponse::from)
+                .toList();
     }
 
     private Pageable capPageSize(Pageable pageable) {

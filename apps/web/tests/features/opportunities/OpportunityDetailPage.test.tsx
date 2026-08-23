@@ -45,6 +45,11 @@ function stubFetch(detail: Record<string, unknown>) {
       if (url.includes('/targets')) {
         return jsonResponse([])
       }
+      // Phase 4 mounts the screening-question editor on a draft opportunity, so this page now
+      // also fetches its questions.
+      if (url.includes('/screening-questions')) {
+        return jsonResponse([])
+      }
       if (url.includes('/universities')) {
         return jsonResponse([])
       }

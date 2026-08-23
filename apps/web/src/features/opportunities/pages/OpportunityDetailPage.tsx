@@ -3,8 +3,9 @@ import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { useTranslation } from 'react-i18next'
-import { useParams } from 'react-router-dom'
+import { Link, useParams } from 'react-router-dom'
 import * as opportunityApi from '../api/opportunityApi'
+import { ScreeningQuestionEditor } from '../../recruitment/components/ScreeningQuestionEditor'
 import * as universityApi from '../../university/api/universityApi'
 import { opportunityFormSchema, type OpportunityFormValues } from '../schemas/opportunityFormSchema'
 import { targetFormSchema, type TargetFormValues } from '../schemas/targetFormSchema'
@@ -126,7 +127,23 @@ export function OpportunityDetailPage() {
         </dl>
       )}
 
+      {/* Screening questions are authored while the opportunity is still a draft, mirroring how
+          Phase 3 restricts editing the opportunity itself (CLAUDE.md Phase 4 section 9). */}
+      {canManage && isDraft && <ScreeningQuestionEditor opportunityId={opportunity.id} />}
+
       {canManage && isDraft && supportsTargeting && <TargetingSection opportunityId={opportunity.id} startDate={opportunity.startDate} />}
+
+      {/* The candidate pool only exists once the opportunity is live and can receive candidates. */}
+      {canManage && !isDraft && (
+        <div className="mt-6">
+          <Link
+            to={`/organization/opportunities/${opportunity.id}/candidates`}
+            className="text-sm font-medium text-brand-primary hover:underline"
+          >
+            {t('recruitment:nav.candidates')}
+          </Link>
+        </div>
+      )}
 
       {canManage && (
         <div className="mt-6 flex flex-col gap-2">

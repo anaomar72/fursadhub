@@ -58,8 +58,10 @@ public class LoginService {
     public LoginResult login(String rawEmail, String rawPassword, String ip, String userAgent) {
         String email = EmailNormalizer.normalize(rawEmail);
 
-        boolean withinEmailLimit = rateLimiter.tryConsume("login:email:" + email, 10, Duration.ofMinutes(15));
-        boolean withinIpLimit = rateLimiter.tryConsume("login:ip:" + safeIp(ip), 30, Duration.ofMinutes(15));
+        boolean withinEmailLimit = rateLimiter.tryConsume(
+                "login:email:" + email, authProperties.loginMaxAttemptsPerEmail(), Duration.ofMinutes(15));
+        boolean withinIpLimit = rateLimiter.tryConsume(
+                "login:ip:" + safeIp(ip), authProperties.loginMaxAttemptsPerIp(), Duration.ofMinutes(15));
         if (!withinEmailLimit || !withinIpLimit) {
             throw new ApiException("RATE_LIMITED", HttpStatus.TOO_MANY_REQUESTS, "Too many login attempts. Please try again later.");
         }

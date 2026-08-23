@@ -44,6 +44,15 @@ public class OpportunityQueryService {
         return opportunities.findById(opportunityId).orElseThrow(this::opportunityNotFound);
     }
 
+    /**
+     * Published opportunities targeting one university, for that university's Phase 4 nomination
+     * queue. Authorization for the calling staff member is enforced by the caller
+     * ({@code NominationQueryService}), which owns the university-membership context.
+     */
+    public List<InternshipOpportunity> listPublishedTargetingUniversity(UUID universityId) {
+        return opportunities.findPublishedTargetingUniversity(universityId);
+    }
+
     private ApiException opportunityNotFound() {
         return new ApiException("OPPORTUNITY_NOT_FOUND", HttpStatus.NOT_FOUND, "Opportunity not found.");
     }
