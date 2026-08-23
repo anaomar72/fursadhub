@@ -21,5 +21,11 @@
   "language": {
     "en": "English",
     "so": "Soomaali"
+  },
+  "pagination": {
+    "label": "Pagination",
+    "previous": "Previous",
+    "next": "Next",
+    "pageOf": "Page {{page}} of {{totalPages}}"
   }
 }

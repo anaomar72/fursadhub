@@ -60,7 +60,8 @@ public class SecurityConfig {
                                 "/docs/**",
                                 "/api-docs/**",
                                 "/swagger-ui/**",
-                                "/api/v1/auth/**")
+                                "/api/v1/auth/**",
+                                "/api/v1/public/**")
                         .permitAll()
                         .anyRequest().authenticated())
                 .oauth2ResourceServer(oauth2 -> oauth2.jwt(jwt -> jwt.decoder(jwtDecoder)));

@@ -1,0 +1,102 @@
+{
+  "modeValues": {
+    "PUBLIC": "Dadweyne",
+    "UNIVERSITY_TARGETED": "Jaamacad loo beegsaday",
+    "HYBRID": "Isku dhafan"
+  },
+  "statusValues": {
+    "DRAFT": "Qabyo",
+    "PUBLISHED": "La daabacay",
+    "PAUSED": "La hakiyay",
+    "CLOSED": "La xiray",
+    "CANCELLED": "La joojiyay"
+  },
+  "workModeValues": {
+    "ONSITE": "Goobta",
+    "HYBRID": "Isku dhafan",
+    "REMOTE": "Fog"
+  },
+  "list": {
+    "title": "Fursadaha",
+    "create": "Fursad cusub",
+    "empty": "Weli fursado ma jiraan."
+  },
+  "form": {
+    "createTitle": "Fursad cusub",
+    "titleLabel": "Cinwaanka",
+    "descriptionLabel": "Sharaxaad",
+    "responsibilitiesLabel": "Mas'uuliyadaha",
+    "requirementsLabel": "Shuruudaha",
+    "modeLabel": "Habka raadinta",
+    "modeHelp": {
+      "PUBLIC": "Ardayda xaqiijisan ee u qalma way codsan karaan si toos ah marka la daabaco.",
+      "UNIVERSITY_TARGETED": "Kaliya ardayda la magacaabay ee jaamacadaha aad beegsatay ayaa la tixgelin doonaa.",
+      "HYBRID": "Waxay aqbashaa codsiyada tooska ah iyo magacaabista jaamacadaha labadaba."
+    },
+    "openingsLabel": "Tirada booska",
+    "workModeLabel": "Habka shaqada",
+    "locationLabel": "Goobta",
+    "startDateLabel": "Taariikhda bilowga",
+    "endDateLabel": "Taariikhda dhammaadka",
+    "applicationDeadlineLabel": "Wakhtiga ugu dambeeya ee codsiga",
+    "createSubmit": "Abuur qabyo",
+    "saveChanges": "Kaydi isbeddelada",
+    "errors": {
+      "openingsMin": "Ugu yaraan hal boos ayaa loo baahan yahay.",
+      "dateOrder": "Taariikhda dhammaadka waa inay ka danbeysaa taariikhda bilowga.",
+      "deadlineRequired": "Habkan wuxuu u baahan yahay wakhti ugu dambeeya oo codsi.",
+      "deadlineBeforeStart": "Wakhtiga ugu dambeeya ee codsiga waa inuu ka horreeyaa taariikhda bilowga.",
+      "VALIDATION_FAILED": "Fadlan hubi foomka oo isku day mar kale.",
+      "OPPORTUNITY_NOT_EDITABLE": "Kaliya fursad qabyo ah ayaa la wax ka beddeli karaa.",
+      "ACCESS_DENIED": "Ma lihid ogolaanshaha fursaddan.",
+      "generic": "Wax baa qaldamay. Fadlan isku day mar kale."
+    }
+  },
+  "actions": {
+    "publish": "Daabac",
+    "pause": "Haki",
+    "resume": "Sii wad",
+    "close": "Xir",
+    "cancel": "Jooji",
+    "errors": {
+      "ORGANIZATION_NOT_VERIFIED": "Ururkaaga waa in la xaqiijiyaa ka hor inta aadan daabicin fursadaha.",
+      "OPPORTUNITY_TARGET_REQUIRED": "Ku dar ugu yaraan hal jaamacad oo la beegsado ka hor daabacaadda.",
+      "OPPORTUNITY_INVALID_TRANSITION": "Ficilkan lama heli karo xaaladda hadda ee fursaddan.",
+      "ACCESS_DENIED": "Ma lihid ogolaanshaha fursaddan.",
+      "generic": "Wax baa qaldamay. Fadlan isku day mar kale."
+    }
+  },
+  "targets": {
+    "title": "Jaamacadaha la beegsaday",
+    "universityLabel": "Jaamacadda",
+    "selectUniversity": "Dooro jaamacad",
+    "departmentsLabel": "Qaybaha",
+    "nomineesLabel": "Tirada la codsaday ee la magacaabo",
+    "deadlineLabel": "Wakhtiga ugu dambeeya ee magacaabista",
+    "addSubmit": "Ku dar bartilmaameed",
+    "remove": "Ka saar",
+    "empty": "Weli jaamacado la beegsaday ma jiraan.",
+    "summary": "{{count}} la codsaday · waa inta {{deadline}}",
+    "errors": {
+      "universityRequired": "Dooro jaamacad.",
+      "nomineesMin": "Ugu yaraan hal qof ayaa loo baahan yahay.",
+      "deadlineRequired": "Waxaa loo baahan yahay wakhti ugu dambeeya oo magacaabis.",
+      "OPPORTUNITY_TARGET_ALREADY_EXISTS": "Jaamacaddan horeba waa loo beegsaday fursaddan.",
+      "DEPARTMENT_NOT_IN_UNIVERSITY": "Hal ama in ka badan oo qaybo ah kama tirsana jaamacadda la beegsaday.",
+      "TARGET_UNIVERSITY_NOT_VERIFIED": "Kaliya jaamacad la xaqiijiyay ayaa la beegsan karaa.",
+      "OPPORTUNITY_MODE_DOES_NOT_SUPPORT_TARGETING": "Kaliya fursadaha jaamacad loo beegsaday ama kuwa isku dhafan ayaa yeelan kara bartilmaameedyo.",
+      "OPPORTUNITY_NOT_EDITABLE": "Bartilmaameedyada waa la beddeli karaa kaliya inta fursaddu qabyo tahay.",
+      "VALIDATION_FAILED": "Fadlan hubi foomka oo isku day mar kale.",
+      "generic": "Wax baa qaldamay. Fadlan isku day mar kale."
+    }
+  },
+  "public": {
+    "title": "Fursadaha tababarka",
+    "searchPlaceholder": "Ku raadi cinwaan ama eray",
+    "locationPlaceholder": "Goobta",
+    "allWorkModes": "Dhammaan habraacyada shaqada",
+    "empty": "Ma jiraan fursado la mid ah raadintaada.",
+    "notFound": "Fursaddan hadda lama heli karo.",
+    "backToList": "Ku noqo dhammaan fursadaha"
+  }
+}

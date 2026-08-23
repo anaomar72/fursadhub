@@ -12,6 +12,10 @@ import studentEn from '../../locales/en/student.json'
 import studentSo from '../../locales/so/student.json'
 import universityEn from '../../locales/en/university.json'
 import universitySo from '../../locales/so/university.json'
+import organizationEn from '../../locales/en/organization.json'
+import organizationSo from '../../locales/so/organization.json'
+import opportunitiesEn from '../../locales/en/opportunities.json'
+import opportunitiesSo from '../../locales/so/opportunities.json'
 
 export const defaultNamespace = 'common'
 
@@ -20,10 +24,26 @@ void i18n
   .use(initReactI18next)
   .init({
     resources: {
-      en: { common: commonEn, auth: authEn, validation: validationEn, student: studentEn, university: universityEn },
-      so: { common: commonSo, auth: authSo, validation: validationSo, student: studentSo, university: universitySo },
+      en: {
+        common: commonEn,
+        auth: authEn,
+        validation: validationEn,
+        student: studentEn,
+        university: universityEn,
+        organization: organizationEn,
+        opportunities: opportunitiesEn,
+      },
+      so: {
+        common: commonSo,
+        auth: authSo,
+        validation: validationSo,
+        student: studentSo,
+        university: universitySo,
+        organization: organizationSo,
+        opportunities: opportunitiesSo,
+      },
     },
-    ns: ['common', 'auth', 'validation', 'student', 'university'],
+    ns: ['common', 'auth', 'validation', 'student', 'university', 'organization', 'opportunities'],
     fallbackLng: 'en',
     supportedLngs: ['en', 'so'],
     defaultNS: defaultNamespace,

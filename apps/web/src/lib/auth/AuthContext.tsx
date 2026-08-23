@@ -1,6 +1,6 @@
 import { createContext, useContext, useEffect, useMemo, useState, type ReactNode } from 'react'
 import { getAccessToken, setAccessToken } from './tokenStore'
-import { registerRefreshFn } from './refreshCoordinator'
+import { refreshAccessToken, registerRefreshFn } from './refreshCoordinator'
 import * as authApi from '../../features/auth/api/authApi'
 
 interface AuthContextValue {
@@ -35,8 +35,13 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     // Shared with lib/api/client.ts, which calls this on any 401 from a non-auth endpoint.
     registerRefreshFn(attemptRefresh)
 
+    // Go through the coordinator rather than calling attemptRefresh() directly: under StrictMode
+    // this effect runs twice on mount, and two direct calls would send the same refresh token
+    // twice. The second send replays an already-rotated token, which the backend correctly treats
+    // as theft and revokes the whole family (CLAUDE.md section 18) — logging the user straight
+    // back out. The coordinator collapses both into one in-flight POST.
     let cancelled = false
-    attemptRefresh().finally(() => {
+    refreshAccessToken().finally(() => {
       if (!cancelled) {
         setIsInitializing(false)
       }
