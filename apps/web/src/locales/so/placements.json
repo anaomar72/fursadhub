@@ -1,0 +1,109 @@
+{
+  "nav": {
+    "placements": "Meelaynta",
+    "myPlacements": "Tababarkayga"
+  },
+  "statusValues": {
+    "PLANNED": "La qorsheeyay",
+    "ACTIVE": "Socda",
+    "COMPLETION_PENDING": "Dhammaystirka oo sugaya",
+    "COMPLETED": "La dhammeeyay",
+    "CANCELLED": "La joojiyay",
+    "TERMINATED": "Goor hore ayaa la joojiyay"
+  },
+  "student": {
+    "title": "Tababarkayga",
+    "empty": "Weli ma haysatid meelayn tababar. Marka aad aqbasho dalab, halkan ayuu ka soo muuqan doonaa."
+  },
+  "university": {
+    "title": "Meelaynta ardayda",
+    "description": "Tababarada ay ardaydaadu hadda qaadanayaan, gudaha xuduudkaaga.",
+    "empty": "Weli meelayn ma jirto."
+  },
+  "organization": {
+    "title": "Meelaynta",
+    "description": "Tababarlayaasha hay'addaadu hadda martigelinayso.",
+    "empty": "Weli meelayn ma jirto. Meelaynta waxaa la abuuraa marka musharraxu dalab aqbalo."
+  },
+  "list": {
+    "supervisorMissing": "Weli kormeere lama magacaabin."
+  },
+  "detail": {
+    "notFound": "Meelaynta lama helin.",
+    "untitledOpportunity": "Tababar",
+    "dates": "Taariikhaha",
+    "dateRange": "{{start}} ilaa {{end}}",
+    "location": "Goobta",
+    "organization": "Hay'adda",
+    "university": "Jaamacadda",
+    "department": "Waaxda",
+    "cancellationReason": "La joojiyay: {{reason}}",
+    "terminationReason": "Goor hore la joojiyay: {{reason}}"
+  },
+  "supervisors": {
+    "title": "Kormeerayaasha",
+    "universitySupervisor": "Kormeeraha jaamacadda",
+    "organizationSupervisor": "Kormeeraha hay'adda",
+    "unassigned": "Weli lama magacaabin",
+    "assignedSince": "Waxaa la magacaabay tan iyo {{date}}",
+    "assignLabel": "Magacaab kormeere",
+    "reassignLabel": "U wareeji kormeere kale",
+    "choosePlaceholder": "Dooro kormeere",
+    "assign": "Magacaab",
+    "reassign": "Wareeji",
+    "typeValues": {
+      "UNIVERSITY": "Kormeeraha jaamacadda",
+      "ORGANIZATION": "Kormeeraha hay'adda"
+    },
+    "noneEligible": {
+      "UNIVERSITY": "Kormeerayaal jaamacadeed lama helin. Maamulaha jaamacaddu waa inuu marka hore ku daraa shaqaale leh doorka kormeeraha.",
+      "ORGANIZATION": "Kormeerayaal hay'adeed lama helin. Maamulaha hay'addu waa inuu marka hore ku daraa shaqaale leh doorka kormeeraha."
+    },
+    "errors": {
+      "SUPERVISOR_NOT_ELIGIBLE": "Qofkaasi ma kormeeri karo meelayntan.",
+      "SUPERVISOR_WRONG_UNIVERSITY": "Kormeerahaasi wuxuu ka tirsan yahay jaamacad kale.",
+      "SUPERVISOR_WRONG_ORGANIZATION": "Kormeerahaasi wuxuu ka tirsan yahay hay'ad kale.",
+      "ACCESS_DENIED": "Ma haysatid oggolaansho aad ku magacaabto kormeerahan.",
+      "PLACEMENT_NOT_FOUND": "Meelaynta lama helin.",
+      "VALIDATION_FAILED": "Fadlan dooro kormeere.",
+      "generic": "Kormeeraha lama magacaabi karin. Fadlan mar kale isku day."
+    }
+  },
+  "history": {
+    "title": "Taariikhda kormeerka",
+    "description": "Mudo kasta oo kormeer ah waa la hayaa, oo ay ku jiraan kormeerayaashii hore.",
+    "period": "{{start}} ilaa {{end}}",
+    "since": "Tan iyo {{start}}",
+    "current": "Hadda",
+    "past": "Hore"
+  },
+  "actions": {
+    "title": "Maaree meelaynta",
+    "start": "Bilaw tababarka",
+    "requestCompletion": "Codso dhammaystirka",
+    "cancel": "Jooji meelaynta",
+    "terminate": "Goor hore jooji",
+    "dismiss": "Sii wad meelaynta",
+    "reasonLabel": "Sababta (ikhtiyaari)",
+    "reasonPlaceholder": "Si kooban u sharax waxa dhacay.",
+    "confirm": {
+      "cancel": "Meelayntan ma bilaaban, sidaas darteed waa la joojin doonaa. Tan lama celin karo.",
+      "terminate": "Tababarkani horeba wuu u bilaabmay, sidaas darteed waxaa loo diiwaan gelin doonaa mid goor hore la joojiyay. Tan lama celin karo."
+    },
+    "confirmButton": {
+      "cancel": "Xaqiiji joojinta",
+      "terminate": "Xaqiiji joojinta hore"
+    },
+    "terminalNote": {
+      "COMPLETED": "Tababarkani wuu dhammaaday.",
+      "CANCELLED": "Meelayntan waa la joojiyay ka hor inta uusan bilaaban.",
+      "TERMINATED": "Tababarkani goor hore ayuu joogsaday."
+    },
+    "errors": {
+      "PLACEMENT_INVALID_TRANSITION": "Meelayntani mar dambe uma guuri karto xaaladdaas.",
+      "ACCESS_DENIED": "Ma haysatid oggolaansho aad ku maamusho meelayntan.",
+      "PLACEMENT_NOT_FOUND": "Meelaynta lama helin.",
+      "generic": "Meelaynta lama cusboonaysiin karin. Fadlan mar kale isku day."
+    }
+  }
+}

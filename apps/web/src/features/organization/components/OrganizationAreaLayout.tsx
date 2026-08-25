@@ -50,6 +50,9 @@ export function OrganizationAreaLayout() {
           <NavLink to="/organization/opportunities" className={navLinkClasses}>
             {t('organization:nav.opportunities')}
           </NavLink>
+          <NavLink to="/organization/placements" className={navLinkClasses}>
+            {t('placements:nav.placements')}
+          </NavLink>
           <NavLink to="/organization/profile" className={navLinkClasses}>
             {t('organization:nav.profile')}
           </NavLink>

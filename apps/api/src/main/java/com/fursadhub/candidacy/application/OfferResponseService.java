@@ -154,7 +154,11 @@ public class OfferResponseService {
 
         audit.record("OFFER_ACCEPTED", studentUserId, ipAddress, userAgent,
                 "offerId=" + offer.getId() + ";candidacyId=" + candidacy.getId());
-        audit.record("PLACEMENT_STARTED", studentUserId, ipAddress, userAgent,
+        // The placement is created as PLANNED — it has NOT started. Phase 5 owns the real
+        // PLANNED -> ACTIVE transition and records PLACEMENT_STARTED there, so this event keeps the
+        // name the candidacy event stream above already uses for the same moment. Reusing
+        // PLACEMENT_STARTED here would put two different business events under one audit name.
+        audit.record("PLACEMENT_CREATED", studentUserId, ipAddress, userAgent,
                 "placementId=" + placement.getId() + ";candidacyId=" + candidacy.getId());
 
         return new AcceptanceResult(offer, candidacy, placement, false);
