@@ -18,6 +18,8 @@ import opportunitiesEn from '../../locales/en/opportunities.json'
 import opportunitiesSo from '../../locales/so/opportunities.json'
 import recruitmentEn from '../../locales/en/recruitment.json'
 import recruitmentSo from '../../locales/so/recruitment.json'
+import placementsEn from '../../locales/en/placements.json'
+import placementsSo from '../../locales/so/placements.json'
 
 export const defaultNamespace = 'common'
 
@@ -35,6 +37,7 @@ void i18n
         organization: organizationEn,
         opportunities: opportunitiesEn,
         recruitment: recruitmentEn,
+        placements: placementsEn,
       },
       so: {
         common: commonSo,
@@ -45,9 +48,10 @@ void i18n
         organization: organizationSo,
         opportunities: opportunitiesSo,
         recruitment: recruitmentSo,
+        placements: placementsSo,
       },
     },
-    ns: ['common', 'auth', 'validation', 'student', 'university', 'organization', 'opportunities', 'recruitment'],
+    ns: ['common', 'auth', 'validation', 'student', 'university', 'organization', 'opportunities', 'recruitment', 'placements'],
     fallbackLng: 'en',
     supportedLngs: ['en', 'so'],
     defaultNS: defaultNamespace,

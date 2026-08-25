@@ -5,6 +5,7 @@ import com.fursadhub.placement.domain.PlacementRepository;
 import com.fursadhub.placement.domain.PlacementStatus;
 import org.springframework.stereotype.Repository;
 
+import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -33,6 +34,11 @@ class PlacementRepositoryAdapter implements PlacementRepository {
     }
 
     @Override
+    public Optional<Placement> findByIdForUpdate(UUID id) {
+        return jpaRepository.findByIdForUpdate(id);
+    }
+
+    @Override
     public Optional<Placement> findByCandidacyId(UUID candidacyId) {
         return jpaRepository.findByCandidacyId(candidacyId);
     }
@@ -40,6 +46,32 @@ class PlacementRepositoryAdapter implements PlacementRepository {
     @Override
     public List<Placement> findByStudentUserId(UUID studentUserId) {
         return jpaRepository.findByStudentUserIdOrderByCreatedAtDesc(studentUserId);
+    }
+
+    @Override
+    public List<Placement> findByOrganizationId(UUID organizationId) {
+        return jpaRepository.findByOrganizationIdOrderByCreatedAtDesc(organizationId);
+    }
+
+    @Override
+    public List<Placement> findByUniversityId(UUID universityId) {
+        return jpaRepository.findByUniversityIdOrderByCreatedAtDesc(universityId);
+    }
+
+    @Override
+    public List<Placement> findByUniversityIdAndDepartmentIdIn(UUID universityId, Collection<UUID> departmentIds) {
+        if (departmentIds.isEmpty()) {
+            return List.of();
+        }
+        return jpaRepository.findByUniversityIdAndDepartmentIdInOrderByCreatedAtDesc(universityId, departmentIds);
+    }
+
+    @Override
+    public List<Placement> findByIdIn(Collection<UUID> ids) {
+        if (ids.isEmpty()) {
+            return List.of();
+        }
+        return jpaRepository.findByIdInOrderByCreatedAtDesc(ids);
     }
 
     @Override

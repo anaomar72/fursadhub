@@ -51,6 +51,9 @@ export function UniversityAreaLayout() {
           <NavLink to="/university/nominations" className={navLinkClasses}>
             {t('recruitment:nav.nominations')}
           </NavLink>
+          <NavLink to="/university/placements" className={navLinkClasses}>
+            {t('placements:nav.placements')}
+          </NavLink>
           <NavLink to="/university/departments" className={navLinkClasses}>
             {t('university:nav.departments')}
           </NavLink>

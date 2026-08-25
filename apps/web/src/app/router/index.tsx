@@ -36,6 +36,11 @@ import { NominateStudentsPage } from '../../features/recruitment/pages/NominateS
 import { UniversityNominationsPage } from '../../features/recruitment/pages/UniversityNominationsPage'
 import { CandidatePoolPage } from '../../features/recruitment/pages/CandidatePoolPage'
 import { CandidateDetailPage } from '../../features/recruitment/pages/CandidateDetailPage'
+import { MyPlacementsPage } from '../../features/placements/pages/MyPlacementsPage'
+import { StudentPlacementDetailPage } from '../../features/placements/pages/StudentPlacementDetailPage'
+import { UniversityPlacementsPage } from '../../features/placements/pages/UniversityPlacementsPage'
+import { OrganizationPlacementsPage } from '../../features/placements/pages/OrganizationPlacementsPage'
+import { PlacementDetailPage } from '../../features/placements/pages/PlacementDetailPage'
 
 function AdminIndex() {
   const { t } = useTranslation()
@@ -83,6 +88,9 @@ export const router = createBrowserRouter([
           { path: 'applications', element: <MyApplicationsPage /> },
           { path: 'applications/:candidacyId', element: <CandidacyDetailPage /> },
           { path: 'nominations', element: <MyNominationsPage /> },
+          // Phase 5 placement. Read-only for the student — the hosting organization drives the lifecycle.
+          { path: 'placements', element: <MyPlacementsPage /> },
+          { path: 'placements/:placementId', element: <StudentPlacementDetailPage /> },
         ],
       },
     ],
@@ -108,6 +116,9 @@ export const router = createBrowserRouter([
           { path: 'opportunity-requests', element: <OpportunityRequestsPage /> },
           { path: 'opportunity-requests/:targetId', element: <NominateStudentsPage /> },
           { path: 'nominations', element: <UniversityNominationsPage /> },
+          // Phase 5 placements. The university reads placements and owns the university supervisor.
+          { path: 'placements', element: <UniversityPlacementsPage /> },
+          { path: 'placements/:placementId', element: <PlacementDetailPage area="university" /> },
         ],
       },
     ],
@@ -130,6 +141,9 @@ export const router = createBrowserRouter([
           // Phase 4 candidate management — ONE unified pool per opportunity.
           { path: 'opportunities/:opportunityId/candidates', element: <CandidatePoolPage /> },
           { path: 'candidacies/:candidacyId', element: <CandidateDetailPage /> },
+          // Phase 5 placements. The hosting organization drives the lifecycle.
+          { path: 'placements', element: <OrganizationPlacementsPage /> },
+          { path: 'placements/:placementId', element: <PlacementDetailPage area="organization" /> },
           { path: 'profile', element: <OrganizationProfilePage /> },
           { path: 'staff', element: <OrganizationStaffPage /> },
         ],

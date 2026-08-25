@@ -1,0 +1,109 @@
+{
+  "nav": {
+    "placements": "Placements",
+    "myPlacements": "My internship"
+  },
+  "statusValues": {
+    "PLANNED": "Planned",
+    "ACTIVE": "Active",
+    "COMPLETION_PENDING": "Completion pending",
+    "COMPLETED": "Completed",
+    "CANCELLED": "Cancelled",
+    "TERMINATED": "Ended early"
+  },
+  "student": {
+    "title": "My internship",
+    "empty": "You do not have an internship placement yet. Once you accept an offer, it will appear here."
+  },
+  "university": {
+    "title": "Student placements",
+    "description": "Internships your students are currently serving, within your scope.",
+    "empty": "No placements yet."
+  },
+  "organization": {
+    "title": "Placements",
+    "description": "Interns your organization is currently hosting.",
+    "empty": "No placements yet. Placements are created when a candidate accepts an offer."
+  },
+  "list": {
+    "supervisorMissing": "A supervisor has not been assigned yet."
+  },
+  "detail": {
+    "notFound": "Placement not found.",
+    "untitledOpportunity": "Internship",
+    "dates": "Dates",
+    "dateRange": "{{start}} to {{end}}",
+    "location": "Location",
+    "organization": "Organization",
+    "university": "University",
+    "department": "Department",
+    "cancellationReason": "Cancelled: {{reason}}",
+    "terminationReason": "Ended early: {{reason}}"
+  },
+  "supervisors": {
+    "title": "Supervisors",
+    "universitySupervisor": "University supervisor",
+    "organizationSupervisor": "Organization supervisor",
+    "unassigned": "Not assigned yet",
+    "assignedSince": "Assigned since {{date}}",
+    "assignLabel": "Assign a supervisor",
+    "reassignLabel": "Hand over to another supervisor",
+    "choosePlaceholder": "Select a supervisor",
+    "assign": "Assign",
+    "reassign": "Hand over",
+    "typeValues": {
+      "UNIVERSITY": "University supervisor",
+      "ORGANIZATION": "Organization supervisor"
+    },
+    "noneEligible": {
+      "UNIVERSITY": "No university supervisors are available. A university admin must add staff with the supervisor role first.",
+      "ORGANIZATION": "No organization supervisors are available. An organization admin must add staff with the supervisor role first."
+    },
+    "errors": {
+      "SUPERVISOR_NOT_ELIGIBLE": "That person cannot supervise this placement.",
+      "SUPERVISOR_WRONG_UNIVERSITY": "That supervisor belongs to a different university.",
+      "SUPERVISOR_WRONG_ORGANIZATION": "That supervisor belongs to a different organization.",
+      "ACCESS_DENIED": "You do not have permission to assign this supervisor.",
+      "PLACEMENT_NOT_FOUND": "Placement not found.",
+      "VALIDATION_FAILED": "Please choose a supervisor.",
+      "generic": "The supervisor could not be assigned. Please try again."
+    }
+  },
+  "history": {
+    "title": "Supervision history",
+    "description": "Every supervision period is kept, including past supervisors.",
+    "period": "{{start}} to {{end}}",
+    "since": "Since {{start}}",
+    "current": "Current",
+    "past": "Past"
+  },
+  "actions": {
+    "title": "Manage placement",
+    "start": "Start internship",
+    "requestCompletion": "Request completion",
+    "cancel": "Cancel placement",
+    "terminate": "End early",
+    "dismiss": "Keep placement",
+    "reasonLabel": "Reason (optional)",
+    "reasonPlaceholder": "Briefly explain what happened.",
+    "confirm": {
+      "cancel": "This placement has not started, so it will be cancelled. This cannot be undone.",
+      "terminate": "This internship has already started, so it will be recorded as ended early. This cannot be undone."
+    },
+    "confirmButton": {
+      "cancel": "Confirm cancellation",
+      "terminate": "Confirm early end"
+    },
+    "terminalNote": {
+      "COMPLETED": "This internship is complete.",
+      "CANCELLED": "This placement was cancelled before it started.",
+      "TERMINATED": "This internship ended early."
+    },
+    "errors": {
+      "PLACEMENT_INVALID_TRANSITION": "This placement can no longer move to that state.",
+      "ACCESS_DENIED": "You do not have permission to manage this placement.",
+      "PLACEMENT_NOT_FOUND": "Placement not found.",
+      "generic": "The placement could not be updated. Please try again."
+    }
+  }
+}

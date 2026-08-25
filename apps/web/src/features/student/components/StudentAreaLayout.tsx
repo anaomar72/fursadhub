@@ -23,6 +23,9 @@ export function StudentAreaLayout() {
           <NavLink to="/student/nominations" className={navLinkClasses}>
             {t('recruitment:nav.nominations')}
           </NavLink>
+          <NavLink to="/student/placements" className={navLinkClasses}>
+            {t('placements:nav.myPlacements')}
+          </NavLink>
           <NavLink to="/student/profile" className={navLinkClasses}>
             {t('student:nav.profile')}
           </NavLink>
