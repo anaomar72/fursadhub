@@ -71,3 +71,48 @@ export interface EligibleSupervisorResponse {
   userId: string
   email: string | null
 }
+
+// ---------------------------------------------------------------- Phase 6 completion
+
+/** The five — and only five — completion requirements (CLAUDE.md section 41). */
+export type CompletionRequirementType =
+  | 'WEEKLY_LOGS'
+  | 'ATTENDANCE'
+  | 'ORGANIZATION_EVALUATION'
+  | 'FINAL_REPORT'
+  | 'DEFENSE'
+
+/**
+ * One checklist row, computed by the backend.
+ *
+ * `required === false` means this placement's policy does not ask for it at all: the UI HIDES it
+ * rather than drawing it as an unmet item. That distinction is why there are two booleans here, and
+ * it is why the frontend must never derive requirements from the policy itself.
+ */
+export interface CompletionRequirementResponse {
+  type: CompletionRequirementType
+  required: boolean
+  satisfied: boolean
+  /** A short machine-readable hint such as "3/12" or "SUBMITTED" — never a sentence. */
+  detail: string | null
+  /** The code this requirement reports in `fieldErrors` when it blocks completion. */
+  unmetCode: string
+}
+
+export interface CompletionStatusResponse {
+  canComplete: boolean
+  policySource: 'DEPARTMENT' | 'UNIVERSITY' | 'PLATFORM_DEFAULT'
+  requirements: CompletionRequirementResponse[]
+}
+
+/** The five requirement booleans as configured at one level. */
+export interface InternshipPolicyResponse {
+  weeklyLogsRequired: boolean
+  attendanceRequired: boolean
+  organizationEvaluationRequired: boolean
+  finalReportRequired: boolean
+  defenseRequired: boolean
+  source: 'DEPARTMENT' | 'UNIVERSITY' | 'PLATFORM_DEFAULT'
+}
+
+export type InternshipPolicyInput = Omit<InternshipPolicyResponse, 'source'>

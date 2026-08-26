@@ -1,0 +1,313 @@
+{
+  "nav": {
+    "label": "Qaybaha tababarka",
+    "overview": "Guudmar",
+    "weeklyLogs": "Diiwaanka toddobaadka",
+    "attendance": "Xaadirinta",
+    "evaluation": "Qiimaynta",
+    "finalReport": "Warbixinta ugu dambaysa",
+    "defense": "Difaaca"
+  },
+  "actions": {
+    "cancel": "Jooji"
+  },
+  "weeklyLogs": {
+    "title": "Diiwaanka toddobaadka",
+    "progress": "{{done}} toddobaad oo ka mid ah {{total}} ayaa la qoray",
+    "weekHeading": "Toddobaadka {{week}}",
+    "period": "{{start}} ilaa {{end}}",
+    "emptyStudent": "Weli ma aadan qorin diiwaan toddobaadle ah.",
+    "emptyReviewer": "Ardaygu weli ma gudbin diiwaan toddobaadle ah.",
+    "stateValues": {
+      "DRAFT": "Qabyo",
+      "SUBMITTED": "Dib-u-eegis sugaya",
+      "RETURNED_FOR_CHANGES": "Isbeddel ayaa la codsaday",
+      "REVIEWED": "La eegay"
+    },
+    "form": {
+      "createTitle": "Diiwaan toddobaadle cusub",
+      "editTitle": "Wax ka beddel toddobaadka {{week}}",
+      "week": "Toddobaadka",
+      "weekOption": "Toddobaadka {{week}}",
+      "summary": "Soo koobidda toddobaadka",
+      "summaryPlaceholder": "Maxaad toddobaadkan ka shaqaysay?",
+      "summaryRequired": "Si kooban u qor waxa toddobaadkan dhacay.",
+      "activities": "Hawlaha",
+      "challenges": "Caqabadaha",
+      "learningOutcomes": "Waxaad barstay",
+      "create": "Abuur diiwaan",
+      "save": "Kaydi isbeddelada"
+    },
+    "actions": {
+      "create": "Ku dar diiwaan toddobaadle",
+      "edit": "Wax ka beddel",
+      "submit": "U gudbi dib-u-eegis",
+      "review": "Calaamadee in la eegay",
+      "return": "Codso isbeddel",
+      "confirmReturn": "U celi ardayga"
+    },
+    "review": {
+      "feedback": "Jawaabta kormeeraha: {{comment}}",
+      "commentLabel": "Maxuu ardaygu beddelayaa?",
+      "commentPlaceholder": "Sharax waxa faahfaahin dheeraad ah u baahan.",
+      "commentRequired": "Sharax waxa ardaygu beddelayo."
+    },
+    "errors": {
+      "WEEKLY_LOG_ALREADY_EXISTS": "Diiwaan toddobaadkaas horeba waa u jiray.",
+      "WEEKLY_LOG_WEEK_OUT_OF_RANGE": "Toddobaadkaasi kama mid aha muddada tababarkan.",
+      "WEEKLY_LOG_INVALID_TRANSITION": "Diiwaankan si taas oo kale ah mar dambe looma beddeli karo.",
+      "WEEKLY_LOG_NOT_FOUND": "Diiwaanka toddobaadka lama helin.",
+      "PLACEMENT_NOT_ACTIVE": "Tababarkani ma socdo, sidaas darteed diiwaannadiisa lama beddeli karo.",
+      "PLACEMENT_NOT_FOUND": "Meelaynta lama helin.",
+      "ACCESS_DENIED": "Ma haysatid oggolaansho aad taas ku samayso.",
+      "VALIDATION_FAILED": "Fadlan hubi foomka oo mar kale isku day.",
+      "generic": "Diiwaanka toddobaadka lama kaydin karin. Fadlan mar kale isku day."
+    }
+  },
+  "attendance": {
+    "title": "Xaadirinta",
+    "tableCaption": "Diiwaannada xaadirinta tababarkan",
+    "empty": "Weli xaadirin lama diiwaan gelin.",
+    "date": "Taariikhda",
+    "value": "Joogitaanka",
+    "status": "Xaaladda",
+    "notes": "Qoraallo",
+    "actionsHeader": "Ficillo",
+    "disputedBecause": "Waa la diiday: {{reason}}",
+    "disputeLabel": "Maxay diiwaankani u qaldan tahay?",
+    "disputePlaceholder": "Sharax waxa maalintaas dhab ahaan dhacay.",
+    "valueValues": {
+      "PRESENT": "Wuu joogay",
+      "ABSENT": "Ma joogin",
+      "EXCUSED": "Cudur-daar leh"
+    },
+    "statusValues": {
+      "RECORDED": "Xaqiijin sugaya",
+      "CONFIRMED": "La xaqiijiyay",
+      "DISPUTED": "La diiday",
+      "RESOLVED": "La xalliyay"
+    },
+    "actions": {
+      "record": "Diiwaan geli",
+      "confirm": "Xaqiiji",
+      "dispute": "Diid",
+      "confirmDispute": "Gudbi diidmada",
+      "resolve": "Xallii"
+    },
+    "errors": {
+      "ATTENDANCE_ALREADY_RECORDED": "Xaadirinta taariikhdaas horeba waa loo diiwaan geliyay.",
+      "ATTENDANCE_DATE_OUT_OF_RANGE": "Taariikhdaasi kama mid aha muddada tababarkan.",
+      "ATTENDANCE_INVALID_TRANSITION": "Diiwaankan si taas oo kale ah looma beddeli karo.",
+      "ATTENDANCE_NOT_FOUND": "Diiwaanka xaadirinta lama helin.",
+      "PLACEMENT_NOT_ACTIVE": "Tababarkani ma socdo, sidaas darteed xaadirinta lama beddeli karo.",
+      "ACCESS_DENIED": "Ma haysatid oggolaansho aad taas ku samayso.",
+      "VALIDATION_FAILED": "Fadlan hubi foomka oo mar kale isku day.",
+      "generic": "Diiwaanka xaadirinta lama kaydin karin. Fadlan mar kale isku day."
+    }
+  },
+  "evaluation": {
+    "title": "Qiimaynta hay'adda",
+    "notAvailable": "Hay'addu weli ma wadaagin qiimayn.",
+    "notRated": "Lama qiimayn",
+    "chooseRating": "Dooro qiimayn",
+    "ratingOf": "{{value}} ka mid ah 5",
+    "sealed": "Qiimayntani waa mid dhammaystiran oo mar dambe lama beddeli karo.",
+    "stateValues": {
+      "DRAFT": "Qabyo",
+      "SUBMITTED": "La gudbiyay",
+      "FINAL": "Dhammaystiran"
+    },
+    "fields": {
+      "professionalismRating": "Xirfadnimo",
+      "reliabilityRating": "Xaadirin iyo lagu kalsoonaan karo",
+      "communicationRating": "Isgaarsiin",
+      "workPerformanceRating": "Waxqabadka shaqada",
+      "teamworkRating": "Shaqo wadajir ah",
+      "overallRating": "Waxqabadka guud",
+      "strengths": "Awoodaha",
+      "improvementAreas": "Meelaha la horumarinayo",
+      "finalComments": "Faallooyinka ugu dambeeya"
+    },
+    "actions": {
+      "saveDraft": "Kaydi qabyada",
+      "submit": "Gudbi qiimaynta",
+      "finalize": "Dhammaystir qiimaynta"
+    },
+    "errors": {
+      "EVALUATION_INCOMPLETE": "Bixi qiimayn kasta ka hor inta aanad gudbin.",
+      "EVALUATION_INVALID_TRANSITION": "Qiimayntan si taas oo kale ah mar dambe looma beddeli karo.",
+      "EVALUATION_NOT_FOUND": "Weli qiimayn lama bilaabin.",
+      "PLACEMENT_NOT_ACTIVE": "Tababarkani ma socdo, sidaas darteed qiimaynta lama beddeli karo.",
+      "ACCESS_DENIED": "Kormeeraha hay'adda ee la magacaabay oo kaliya ayaa qori kara qiimayntan.",
+      "VALIDATION_FAILED": "Qiimayntu waa inay u dhaxaysaa 1 iyo 5.",
+      "generic": "Qiimaynta lama kaydin karin. Fadlan mar kale isku day."
+    }
+  },
+  "finalReport": {
+    "title": "Warbixinta ugu dambaysa",
+    "notSubmittedYet": "Ardaygu weli ma gudbin warbixinta ugu dambaysa.",
+    "uploadLabel": "Dukumentiga warbixinta",
+    "uploadHint": "PDF kaliya, ilaa 15 MB.",
+    "documentSize": "{{size}} KB",
+    "reviewComment": "Jawaabta dib-u-eegaha: {{comment}}",
+    "revisionLabel": "Maxuu ardaygu dib u eegayaa?",
+    "revisionPlaceholder": "Sharax waxa beddelaya ka hor intaadan ansixin.",
+    "approvedConfirmation": "Warbixinta ugu dambaysa waa la ansixiyay",
+    "stateValues": {
+      "DRAFT": "Qabyo",
+      "SUBMITTED": "Dib-u-eegis sugaya",
+      "NEEDS_REVISION": "Dib-u-eegis ayaa la codsaday",
+      "APPROVED": "La ansixiyay"
+    },
+    "actions": {
+      "download": "Soo dejiso",
+      "submit": "U gudbi dib-u-eegis",
+      "approve": "Ansixi warbixinta",
+      "requestRevision": "Codso dib-u-eegis",
+      "confirmRevision": "U celi ardayga"
+    },
+    "errors": {
+      "FINAL_REPORT_FILE_INVALID": "Dukumentigaasi maaha PDF la aqbali karo.",
+      "FILE_TOO_LARGE": "Dukumentigaasi wuu ka weyn yahay xadka 15 MB.",
+      "FINAL_REPORT_FILE_MISSING": "Marka hore ku lifaaq dukumentiga warbixinta.",
+      "FINAL_REPORT_INVALID_TRANSITION": "Warbixinta si taas oo kale ah mar dambe looma beddeli karo.",
+      "FINAL_REPORT_NOT_FOUND": "Weli warbixin ugu dambaysa lama bilaabin.",
+      "FILE_NOT_FOUND": "Dukumentigu mar dambe ma jiro.",
+      "FILE_STORAGE_UNAVAILABLE": "Kaydka dukumentiyada si ku meel gaar ah lama heli karo. Fadlan mar kale isku day.",
+      "PLACEMENT_NOT_ACTIVE": "Tababarkani ma socdo, sidaas darteed warbixinta lama beddeli karo.",
+      "PLACEMENT_NOT_FOUND": "Meelaynta lama helin.",
+      "ACCESS_DENIED": "Ma haysatid oggolaansho aad ku furto warbixintan.",
+      "VALIDATION_FAILED": "Fadlan hubi foomka oo mar kale isku day.",
+      "generic": "Warbixinta lama kaydin karin. Fadlan mar kale isku day."
+    }
+  },
+  "defense": {
+    "title": "Difaaca",
+    "historyNote": "Isku day kasta waa la hayaa, oo ay ku jiraan kuwii hore.",
+    "empty": "Weli difaac lama qorsheyn.",
+    "attemptHeading": "Isku dayga {{number}}",
+    "scheduledAt": "Taariikhda iyo waqtiga",
+    "location": "Goobta ama faahfaahinta kulanka",
+    "locationPlaceholder": "Qolka, dhismaha ama xiriirka kulanka",
+    "resultLabel": "Natiijada",
+    "panelNotes": "Qoraallada guddiga",
+    "retakeNote": "Diiwaan gelinta dib-u-qaadis waxay dhammaystiraysaa isku daygan. Ka dib qorshee mid cusub; kan sidiisa ayaa loo hayaa.",
+    "stateValues": {
+      "SCHEDULED": "La qorsheeyay",
+      "COMPLETED": "La dhammeeyay",
+      "CANCELLED": "La joojiyay"
+    },
+    "resultValues": {
+      "PASSED": "Wuu gudbay",
+      "FAILED": "Wuu dhacay",
+      "RETAKE_REQUIRED": "Dib-u-qaadis ayaa loo baahan yahay"
+    },
+    "actions": {
+      "schedule": "Qorshee difaaca",
+      "scheduleRetake": "Qorshee dib-u-qaadis",
+      "confirmSchedule": "Qorshee",
+      "recordResult": "Diiwaan geli natiijada",
+      "confirmResult": "Kaydi natiijada",
+      "cancelAttempt": "Jooji isku daygan"
+    },
+    "errors": {
+      "DEFENSE_ATTEMPT_ALREADY_OPEN": "Difaac horeba waa loo qorsheeyay tababarkan.",
+      "DEFENSE_ATTEMPT_ALREADY_EXISTS": "Isku daygaas difaac horeba waa la abuuray.",
+      "DEFENSE_INVALID_TRANSITION": "Isku daygan si taas oo kale ah mar dambe looma beddeli karo.",
+      "DEFENSE_ATTEMPT_NOT_FOUND": "Isku dayga difaaca lama helin.",
+      "ACCESS_DENIED": "Ma haysatid oggolaansho aad ku maamusho difaacan.",
+      "VALIDATION_FAILED": "Fadlan hubi foomka oo mar kale isku day.",
+      "generic": "Difaaca lama cusboonaysiin karin. Fadlan mar kale isku day."
+    }
+  },
+  "completion": {
+    "title": "Dhammaystirka tababarka",
+    "readyBadge": "Diyaar u ah dhammaystirka",
+    "outstandingBadge": "{{count}} oo hadhay",
+    "noRequirements": "Tababarkan shuruudo dhammaystir ma leh.",
+    "satisfied": "waa la dhammeeyay",
+    "outstanding": "wuu hadhay",
+    "alreadyComplete": "Tababarkani wuu dhammaaday.",
+    "completedConfirmation": "Tababarka si guul leh ayaa loo dhammeeyay",
+    "blockedHint": "Shuruud kasta oo kor ku xusan waa in marka hore la dhammeeyo.",
+    "requirements": {
+      "WEEKLY_LOGS": "Diiwaannada toddobaadka waa la eegay",
+      "ATTENDANCE": "Xaadirinta waa la xalliyay",
+      "ORGANIZATION_EVALUATION": "Qiimaynta hay'adda waa la dhammaystiray",
+      "FINAL_REPORT": "Warbixinta ugu dambaysa waa la ansixiyay",
+      "DEFENSE": "Difaaca waa la gudbay"
+    },
+    "detail": {
+      "MISSING": "lama bilaabin",
+      "NOT_PASSED": "weli lama gudbin",
+      "PASSED": "waa la gudbay",
+      "DRAFT": "qabyo",
+      "SUBMITTED": "dib-u-eegis sugaya",
+      "NEEDS_REVISION": "dib-u-eegis ayaa la codsaday",
+      "APPROVED": "la ansixiyay",
+      "FINAL": "dhammaystiran"
+    },
+    "actions": {
+      "complete": "Dhammaystir tababarka"
+    },
+    "errors": {
+      "WEEKLY_LOGS_INCOMPLETE": "Diiwaan kasta oo toddobaadle ah waa in la eego.",
+      "ATTENDANCE_INCOMPLETE": "Xaadirinta waa in la diiwaan geliyo oo diiwaan kasta la xalliyo.",
+      "ORGANIZATION_EVALUATION_INCOMPLETE": "Qiimaynta hay'adda waa in la dhammaystiro.",
+      "FINAL_REPORT_NOT_APPROVED": "Warbixinta ugu dambaysa waa in la ansixiyo.",
+      "DEFENSE_NOT_PASSED": "Difaac waa in la gudbo.",
+      "PLACEMENT_INVALID_TRANSITION": "Tababarka sugaya dhammaystirka oo kaliya ayaa la dhammaystiri karaa.",
+      "PLACEMENT_COMPLETION_REQUIREMENTS_NOT_MET": "Tababarkani weli wuxuu leeyahay shuruudo hadhay.",
+      "ACCESS_DENIED": "Ma haysatid oggolaansho aad ku dhammaystirto tababarkan.",
+      "generic": "Tababarka lama dhammaystiri karin. Fadlan mar kale isku day."
+    }
+  },
+  "policy": {
+    "title": "Shuruudaha tababarka",
+    "description": "Dooro waxa ardaydu dhammaystirayaan ka hor inta aan tababarka la calaamadin mid dhammaystiran.",
+    "noMembership": "Ma tihid xubin jaamacadeed.",
+    "level": "Waxay khusaysaa",
+    "universityLevel": "Jaamacadda oo dhan",
+    "requirements": "Shuruudaha dhammaystirka",
+    "readOnly": "Maamulaha jaamacadda oo kaliya ayaa beddeli kara shuruudaha jaamacadda oo dhan.",
+    "saved": "Shuruudaha waa la kaydiyay.",
+    "historicalNote": "Beddelkani wuxuu saameeyaa tababarada laga bilaabo hadda. Tababarada horeba u socda waxay sii hayaan shuruudihii markay bilaabmeen jiray.",
+    "sourceValues": {
+      "DEPARTMENT": "Waaxdan ayaa dejisay",
+      "UNIVERSITY": "Waxay raacaysaa qaacidada jaamacadda",
+      "PLATFORM_DEFAULT": "Weli waxba lama dejin"
+    },
+    "fields": {
+      "weeklyLogsRequired": {
+        "label": "Diiwaanka toddobaadka",
+        "hint": "Toddobaad kasta oo tababarka ah waa inuu leeyahay diiwaan la eegay."
+      },
+      "attendanceRequired": {
+        "label": "Xaadirinta",
+        "hint": "Xaadirinta waa in la diiwaan geliyo, diiwaan kastana la xaqiijiyo ama diidmadiisa la xalliyo."
+      },
+      "organizationEvaluationRequired": {
+        "label": "Qiimaynta hay'adda",
+        "hint": "Qiimaynta hay'adda martigelisay waa in la dhammaystiro."
+      },
+      "finalReportRequired": {
+        "label": "Warbixinta ugu dambaysa",
+        "hint": "Warbixinta ugu dambaysa ee ardayga waa in la ansixiyo."
+      },
+      "defenseRequired": {
+        "label": "Difaaca",
+        "hint": "Ardaygu waa inuu gudbaa difaac."
+      }
+    },
+    "actions": {
+      "save": "Kaydi shuruudaha",
+      "clearOverride": "Raac qaacidada jaamacadda"
+    },
+    "errors": {
+      "DEPARTMENT_NOT_FOUND": "Waaxda lama helin.",
+      "ACCESS_DENIED": "Ma haysatid oggolaansho aad ku beddesho shuruudahan.",
+      "VALIDATION_FAILED": "Fadlan hubi foomka oo mar kale isku day.",
+      "generic": "Shuruudaha lama kaydin karin. Fadlan mar kale isku day."
+    }
+  }
+}

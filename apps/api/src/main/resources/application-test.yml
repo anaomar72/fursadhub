@@ -17,6 +17,13 @@ spring:
       maximum-pool-size: 10
 
 fursadhub:
+  storage:
+    # The integration suite exercises the real upload/download/authorization path, but against a
+    # temporary local directory rather than a MinIO container: adding a second container to every
+    # forked IT JVM would slow the whole suite for a component whose SECURITY properties (random key,
+    # no public URL, backend-authorized download, audited access) live in the service layer and are
+    # identical for both providers. Staging and production refuse this provider outright.
+    provider: filesystem
   auth:
     # Every integration test logs in from 127.0.0.1, so a large suite would trip the production
     # per-IP login limit that exists to stop credential stuffing from one host. Raising it here only

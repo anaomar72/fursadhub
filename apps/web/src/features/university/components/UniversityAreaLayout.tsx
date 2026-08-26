@@ -57,6 +57,13 @@ export function UniversityAreaLayout() {
           <NavLink to="/university/departments" className={navLinkClasses}>
             {t('university:nav.departments')}
           </NavLink>
+          {/*
+            Phase 6 internship requirements. Visible to admins and coordinators alike: a coordinator
+            configures their own departments, and the backend refuses anything wider.
+          */}
+          <NavLink to="/university/internship-policy" className={navLinkClasses}>
+            {t('internship:policy.title')}
+          </NavLink>
           {isAdmin && (
             <NavLink to="/university/staff" className={navLinkClasses}>
               {t('university:nav.staff')}

@@ -25,7 +25,9 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(ApiException.class)
     public ResponseEntity<ApiError> handleApiException(ApiException ex, HttpServletRequest request) {
-        return build(ex.getCode(), ex.getMessage(), ex.getStatus(), request, List.of());
+        // fieldErrors is empty for almost every ApiException; Phase 6 completion failures use it to
+        // report each unmet requirement with its own stable code (CLAUDE.md section 11).
+        return build(ex.getCode(), ex.getMessage(), ex.getStatus(), request, ex.getFieldErrors());
     }
 
     @ExceptionHandler(MethodArgumentNotValidException.class)

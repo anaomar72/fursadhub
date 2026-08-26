@@ -41,6 +41,15 @@ import { StudentPlacementDetailPage } from '../../features/placements/pages/Stud
 import { UniversityPlacementsPage } from '../../features/placements/pages/UniversityPlacementsPage'
 import { OrganizationPlacementsPage } from '../../features/placements/pages/OrganizationPlacementsPage'
 import { PlacementDetailPage } from '../../features/placements/pages/PlacementDetailPage'
+// Phase 6 internship management. One placement is a workspace with sections; which sections exist
+// mirrors the backend's authorization split, and the backend enforces it regardless.
+import { PlacementWorkspace } from '../../features/placements/components/PlacementWorkspace'
+import { WeeklyLogsPage } from '../../features/weekly-logs/pages/WeeklyLogsPage'
+import { AttendancePage } from '../../features/attendance/pages/AttendancePage'
+import { EvaluationPage } from '../../features/evaluations/pages/EvaluationPage'
+import { FinalReportPage } from '../../features/final-reports/pages/FinalReportPage'
+import { DefensePage } from '../../features/defense/pages/DefensePage'
+import { InternshipPolicyPage } from '../../features/university/pages/InternshipPolicyPage'
 
 function AdminIndex() {
   const { t } = useTranslation()
@@ -88,9 +97,21 @@ export const router = createBrowserRouter([
           { path: 'applications', element: <MyApplicationsPage /> },
           { path: 'applications/:candidacyId', element: <CandidacyDetailPage /> },
           { path: 'nominations', element: <MyNominationsPage /> },
-          // Phase 5 placement. Read-only for the student — the hosting organization drives the lifecycle.
+          // Phase 5 placement. Read-only for the student — the hosting organization drives the
+          // lifecycle and the university decides completion.
           { path: 'placements', element: <MyPlacementsPage /> },
-          { path: 'placements/:placementId', element: <StudentPlacementDetailPage /> },
+          {
+            path: 'placements/:placementId',
+            element: <PlacementWorkspace area="student" />,
+            children: [
+              { index: true, element: <StudentPlacementDetailPage /> },
+              // Phase 6. The student authors their own logs, report and disputes.
+              { path: 'weekly-logs', element: <WeeklyLogsPage audience="student" /> },
+              { path: 'attendance', element: <AttendancePage audience="student" /> },
+              { path: 'final-report', element: <FinalReportPage audience="student" /> },
+              { path: 'defense', element: <DefensePage audience="student" /> },
+            ],
+          },
         ],
       },
     ],
@@ -118,7 +139,20 @@ export const router = createBrowserRouter([
           { path: 'nominations', element: <UniversityNominationsPage /> },
           // Phase 5 placements. The university reads placements and owns the university supervisor.
           { path: 'placements', element: <UniversityPlacementsPage /> },
-          { path: 'placements/:placementId', element: <PlacementDetailPage area="university" /> },
+          {
+            path: 'placements/:placementId',
+            element: <PlacementWorkspace area="university" />,
+            children: [
+              { index: true, element: <PlacementDetailPage area="university" /> },
+              // Phase 6. Academic supervision: review logs, review the report, run the defense.
+              { path: 'weekly-logs', element: <WeeklyLogsPage audience="reviewer" /> },
+              { path: 'attendance', element: <AttendancePage audience="observer" /> },
+              { path: 'final-report', element: <FinalReportPage audience="reviewer" /> },
+              { path: 'defense', element: <DefensePage audience="university" /> },
+            ],
+          },
+          // Phase 6 internship policy — the five completion requirements, per university/department.
+          { path: 'internship-policy', element: <InternshipPolicyPage /> },
         ],
       },
     ],
@@ -143,7 +177,17 @@ export const router = createBrowserRouter([
           { path: 'candidacies/:candidacyId', element: <CandidateDetailPage /> },
           // Phase 5 placements. The hosting organization drives the lifecycle.
           { path: 'placements', element: <OrganizationPlacementsPage /> },
-          { path: 'placements/:placementId', element: <PlacementDetailPage area="organization" /> },
+          {
+            path: 'placements/:placementId',
+            element: <PlacementWorkspace area="organization" />,
+            children: [
+              { index: true, element: <PlacementDetailPage area="organization" /> },
+              // Phase 6. Workplace records only — weekly logs, the final report and the defense are
+              // university-only academic content and have no route here.
+              { path: 'attendance', element: <AttendancePage audience="supervisor" /> },
+              { path: 'evaluation', element: <EvaluationPage audience="evaluator" /> },
+            ],
+          },
           { path: 'profile', element: <OrganizationProfilePage /> },
           { path: 'staff', element: <OrganizationStaffPage /> },
         ],
