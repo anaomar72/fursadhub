@@ -25,6 +25,17 @@ public class StudentProfile {
     @Column(length = 40)
     private String phone;
 
+    /**
+     * The student's current CV (Phase 7). Private: never a public URL, and readable only by the
+     * student and by recruiters at organizations where the student has a candidacy
+     * (CLAUDE.md section 47).
+     */
+    @Column(name = "cv_stored_file_id")
+    private UUID cvStoredFileId;
+
+    @Column(name = "cv_uploaded_at")
+    private Instant cvUploadedAt;
+
     @Column(name = "created_at", nullable = false)
     private Instant createdAt;
 
@@ -32,6 +43,21 @@ public class StudentProfile {
     private Instant updatedAt;
 
     protected StudentProfile() {
+    }
+
+    /** Points the profile at a new CV, or clears it when the student removes theirs. */
+    public void attachCv(UUID storedFileId) {
+        this.cvStoredFileId = storedFileId;
+        this.cvUploadedAt = storedFileId == null ? null : Instant.now();
+        this.updatedAt = Instant.now();
+    }
+
+    public UUID getCvStoredFileId() {
+        return cvStoredFileId;
+    }
+
+    public Instant getCvUploadedAt() {
+        return cvUploadedAt;
     }
 
     public static StudentProfile create(UUID userId, String fullName, String phone) {

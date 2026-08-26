@@ -36,4 +36,9 @@ class StudentVerificationCaseRepositoryAdapter implements StudentVerificationCas
     public List<StudentVerificationCase> findByEnrollmentIdIn(List<UUID> enrollmentIds) {
         return jpaRepository.findByEnrollmentIdIn(enrollmentIds);
     }
+
+    @Override
+    public List<StudentVerificationCase> findEscalatedUnresolved() {
+        return jpaRepository.findEscalatedUnresolved();
+    }
 }

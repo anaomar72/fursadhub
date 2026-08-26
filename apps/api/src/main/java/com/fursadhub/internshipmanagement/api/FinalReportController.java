@@ -1,15 +1,13 @@
 package com.fursadhub.internshipmanagement.api;
 
 import com.fursadhub.common.web.RequestMetadata;
+import com.fursadhub.file.api.PrivateDocumentResponses;
 import com.fursadhub.file.domain.StoredFile;
 import com.fursadhub.internshipmanagement.application.FinalReportService;
 import com.fursadhub.internshipmanagement.domain.FinalReport;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import org.springframework.core.io.InputStreamResource;
-import org.springframework.http.ContentDisposition;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.oauth2.jwt.Jwt;
@@ -22,7 +20,6 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.nio.charset.StandardCharsets;
 import java.util.UUID;
 
 /**
@@ -59,9 +56,8 @@ public class FinalReportController {
     /**
      * Streams the private document to an authorized caller.
      *
-     * <p>{@code Content-Disposition: attachment} plus an explicit content type keeps the browser from
-     * rendering the document inline in FursadHub's own origin. The filename is the sanitized original
-     * one and is RFC 5987 encoded, so it cannot inject header content.
+     * <p>Response headers come from {@code PrivateDocumentResponses}, shared with Phase 7's other
+     * private-document routes so every one of them is built the same safe way.
      */
     @GetMapping("/document")
     public ResponseEntity<InputStreamResource> download(
@@ -70,18 +66,7 @@ public class FinalReportController {
                 currentUserId(jwt), placementId,
                 RequestMetadata.clientIp(httpRequest), RequestMetadata.userAgent(httpRequest));
 
-        StoredFile metadata = document.metadata();
-        ContentDisposition disposition = ContentDisposition.attachment()
-                .filename(metadata.getOriginalFilename(), StandardCharsets.UTF_8)
-                .build();
-
-        return ResponseEntity.ok()
-                .header(HttpHeaders.CONTENT_DISPOSITION, disposition.toString())
-                // Private student work must never be cached by an intermediary.
-                .header(HttpHeaders.CACHE_CONTROL, "no-store")
-                .contentType(MediaType.parseMediaType(metadata.getContentType()))
-                .contentLength(metadata.getSizeBytes())
-                .body(new InputStreamResource(document.content()));
+        return PrivateDocumentResponses.attachment(document.metadata(), document.content());
     }
 
     // ---------------------------------------------------------------- student commands

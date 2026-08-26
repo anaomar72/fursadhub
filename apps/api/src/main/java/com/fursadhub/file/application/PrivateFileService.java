@@ -1,6 +1,7 @@
 package com.fursadhub.file.application;
 
 import com.fursadhub.common.api.ApiException;
+import com.fursadhub.common.audit.AuditService;
 import com.fursadhub.file.domain.FileClassification;
 import com.fursadhub.file.domain.PrivateFileStorage;
 import com.fursadhub.file.domain.StoredFile;
@@ -15,6 +16,7 @@ import org.springframework.web.multipart.MultipartFile;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Locale;
+import java.util.Map;
 import java.util.UUID;
 
 /**
@@ -30,15 +32,26 @@ public class PrivateFileService {
 
     private static final Logger log = LoggerFactory.getLogger(PrivateFileService.class);
 
-    /** PDF magic bytes. A file claiming to be a PDF must actually begin like one. */
-    private static final byte[] PDF_MAGIC = {0x25, 0x50, 0x44, 0x46}; // %PDF
+    /**
+     * Leading bytes each permitted format must actually begin with.
+     *
+     * <p>Content-type headers come from the client and are trivially forged, so a file claiming to be
+     * a PDF must also LOOK like one. This is not a full parse — it is the cheap check that stops the
+     * obvious case of an arbitrary file renamed and re-labelled.
+     */
+    private static final Map<String, byte[]> MAGIC_BYTES = Map.of(
+            "application/pdf", new byte[] {0x25, 0x50, 0x44, 0x46},                      // %PDF
+            "image/jpeg", new byte[] {(byte) 0xFF, (byte) 0xD8, (byte) 0xFF},            // JPEG SOI
+            "image/png", new byte[] {(byte) 0x89, 0x50, 0x4E, 0x47, 0x0D, 0x0A, 0x1A, 0x0A});
 
     private final StoredFileRepository files;
     private final PrivateFileStorage storage;
+    private final AuditService audit;
 
-    public PrivateFileService(StoredFileRepository files, PrivateFileStorage storage) {
+    public PrivateFileService(StoredFileRepository files, PrivateFileStorage storage, AuditService audit) {
         this.files = files;
         this.storage = storage;
+        this.audit = audit;
     }
 
     /**
@@ -50,16 +63,16 @@ public class PrivateFileService {
      * on extension (CLAUDE.md section 48).
      */
     public StoredFile store(MultipartFile upload, FileClassification classification, UUID uploadedBy) {
-        requirePresent(upload);
+        requirePresent(upload, classification);
         requireSize(upload, classification);
         String contentType = requirePermittedContentType(upload, classification);
-        requireMagicBytes(upload, contentType);
+        requireMagicBytes(upload, classification, contentType);
 
         String storageKey = StorageKeyGenerator.generate(classification);
         try (InputStream content = upload.getInputStream()) {
             storage.put(storageKey, contentType, upload.getSize(), content);
         } catch (IOException e) {
-            throw invalidFile("The uploaded document could not be read.");
+            throw invalidFile(classification, "The uploaded document could not be read.");
         }
 
         StoredFile stored = StoredFile.of(
@@ -83,6 +96,27 @@ public class PrivateFileService {
     }
 
     /**
+     * Opens the document AND records that someone read it (CLAUDE.md sections 47, 51).
+     *
+     * <p>Phase 7 pulled this up from the individual features so that every private read is audited
+     * the same way, in one place. Before, each owning resource wrote its own PRIVATE_FILE_ACCESSED
+     * event, which meant the next feature to expose a document could simply forget to — and an
+     * unaudited read of a student's evidence is exactly the access nobody would notice.
+     *
+     * <p>The event carries identifiers only: never the storage key, never the filename, never any
+     * content (CLAUDE.md section 68).
+     *
+     * @param context short, safe scope for the event, e.g. {@code "placementId=..."}. Callers must
+     *                not pass anything derived from the document itself.
+     */
+    public InputStream openAudited(StoredFile file, UUID actingUserId, String context, String ipAddress, String userAgent) {
+        audit.record("PRIVATE_FILE_ACCESSED", actingUserId, ipAddress, userAgent,
+                "storedFileId=" + file.getId() + ";classification=" + file.getClassification()
+                        + (context == null || context.isBlank() ? "" : ";" + context));
+        return open(file);
+    }
+
+    /**
      * Removes a replaced document. Best-effort on purpose: a storage failure here must not roll back
      * the business transaction that already replaced the pointer, so the worst case is one orphaned
      * object rather than a report the student cannot resubmit.
@@ -102,9 +136,9 @@ public class PrivateFileService {
 
     // ---------------------------------------------------------------- validation
 
-    private void requirePresent(MultipartFile upload) {
+    private void requirePresent(MultipartFile upload, FileClassification classification) {
         if (upload == null || upload.isEmpty()) {
-            throw invalidFile("Choose a document to upload.");
+            throw invalidFile(classification, "Choose a document to upload.");
         }
     }
 
@@ -118,37 +152,39 @@ public class PrivateFileService {
     private String requirePermittedContentType(MultipartFile upload, FileClassification classification) {
         String declared = upload.getContentType();
         if (declared == null) {
-            throw invalidFile("The document type could not be determined.");
+            throw invalidFile(classification, "The document type could not be determined.");
         }
         // Strip any "; charset=..." parameter before comparing.
         String normalized = declared.split(";")[0].trim().toLowerCase(Locale.ROOT);
         if (!classification.permittedContentTypes().contains(normalized)) {
-            throw invalidFile("That document type is not accepted.");
+            throw invalidFile(classification, "That document type is not accepted.");
         }
         return normalized;
     }
 
     /**
-     * Content-type headers are supplied by the client and are trivially forged, so a PDF upload must
-     * also LOOK like a PDF. This is not a full parse — it is the cheap check that stops the obvious
-     * case of an arbitrary file renamed to .pdf.
+     * Rejects an upload whose bytes do not match the type it claims. See {@link #MAGIC_BYTES}.
+     *
+     * <p>A permitted content type with no entry in that map would pass unchecked, so every type in
+     * {@link FileClassification} must have one — which is why the two are kept next to each other.
      */
-    private void requireMagicBytes(MultipartFile upload, String contentType) {
-        if (!"application/pdf".equals(contentType)) {
+    private void requireMagicBytes(MultipartFile upload, FileClassification classification, String contentType) {
+        byte[] expected = MAGIC_BYTES.get(contentType);
+        if (expected == null) {
             return;
         }
         try (InputStream in = upload.getInputStream()) {
-            byte[] header = in.readNBytes(PDF_MAGIC.length);
-            if (header.length < PDF_MAGIC.length) {
-                throw invalidFile("That document is not a valid PDF.");
+            byte[] header = in.readNBytes(expected.length);
+            if (header.length < expected.length) {
+                throw invalidFile(classification, "That document does not match its file type.");
             }
-            for (int i = 0; i < PDF_MAGIC.length; i++) {
-                if (header[i] != PDF_MAGIC[i]) {
-                    throw invalidFile("That document is not a valid PDF.");
+            for (int i = 0; i < expected.length; i++) {
+                if (header[i] != expected[i]) {
+                    throw invalidFile(classification, "That document does not match its file type.");
                 }
             }
         } catch (IOException e) {
-            throw invalidFile("The uploaded document could not be read.");
+            throw invalidFile(classification, "The uploaded document could not be read.");
         }
     }
 
@@ -170,7 +206,7 @@ public class PrivateFileService {
         return base.length() > 200 ? base.substring(0, 200) : base;
     }
 
-    private ApiException invalidFile(String message) {
-        return new ApiException("FINAL_REPORT_FILE_INVALID", HttpStatus.BAD_REQUEST, message);
+    private ApiException invalidFile(FileClassification classification, String message) {
+        return new ApiException(classification.invalidFileErrorCode(), HttpStatus.BAD_REQUEST, message);
     }
 }

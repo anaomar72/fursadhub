@@ -1,8 +1,13 @@
 import { createBrowserRouter, Navigate } from 'react-router-dom'
-import { useTranslation } from 'react-i18next'
-import { PublicLayout, StudentLayout, UniversityLayout, OrganizationLayout, AdminLayout } from '../layouts'
+import {
+  PublicLayout,
+  StudentLayout,
+  UniversityLayout,
+  OrganizationLayout,
+  AdminLayout,
+  AccountLayout,
+} from '../layouts'
 import { HomePage } from '../pages/HomePage'
-import { ComingSoonPage } from '../pages/ComingSoonPage'
 import { NotFoundPage } from '../pages/NotFoundPage'
 import { RequireAuth } from '../../lib/auth/RequireAuth'
 import { RegisterPage } from '../../features/auth/pages/RegisterPage'
@@ -50,11 +55,21 @@ import { EvaluationPage } from '../../features/evaluations/pages/EvaluationPage'
 import { FinalReportPage } from '../../features/final-reports/pages/FinalReportPage'
 import { DefensePage } from '../../features/defense/pages/DefensePage'
 import { InternshipPolicyPage } from '../../features/university/pages/InternshipPolicyPage'
-
-function AdminIndex() {
-  const { t } = useTranslation()
-  return <ComingSoonPage areaLabel={t('nav.admin')} />
-}
+// Phase 7 platform administration. Which tabs render is driven by the caller's platform roles;
+// every endpoint behind them re-authorizes independently (CLAUDE.md section 24).
+import { AdminAreaLayout } from '../../features/admin/components/AdminAreaLayout'
+import { AdminDashboardPage } from '../../features/admin/pages/AdminDashboardPage'
+import { AdminOrganizationsPage } from '../../features/admin/pages/AdminOrganizationsPage'
+import { AdminEscalationsPage } from '../../features/admin/pages/AdminEscalationsPage'
+import { AdminUsersPage } from '../../features/admin/pages/AdminUsersPage'
+import { AdminPrivacyRequestsPage } from '../../features/admin/pages/AdminPrivacyRequestsPage'
+import { AdminLegalDocumentsPage } from '../../features/admin/pages/AdminLegalDocumentsPage'
+import { AdminAuditPage } from '../../features/admin/pages/AdminAuditPage'
+import { AdminPlatformRolesPage } from '../../features/admin/pages/AdminPlatformRolesPage'
+// Phase 7 account area and public legal documents.
+import { NotificationsPage } from '../../features/notifications/pages/NotificationsPage'
+import { PrivacyPage } from '../../features/privacy/pages/PrivacyPage'
+import { LegalDocumentPage } from '../../features/legal/pages/LegalDocumentPage'
 
 /**
  * Route foundation — PublicLayout now also hosts the Phase 1 authentication pages, and each
@@ -75,6 +90,11 @@ export const router = createBrowserRouter([
       { path: 'verify-email', element: <VerifyEmailPage /> },
       { path: 'forgot-password', element: <ForgotPasswordPage /> },
       { path: 'reset-password', element: <ResetPasswordPage /> },
+      // Phase 7 legal documents. Public and unauthenticated on purpose: someone deciding whether to
+      // register must be able to read the terms first (CLAUDE.md section 49).
+      { path: 'legal/terms', element: <LegalDocumentPage documentType="TERMS" /> },
+      { path: 'legal/privacy-policy', element: <LegalDocumentPage documentType="PRIVACY_POLICY" /> },
+      { path: 'legal/cookie-policy', element: <LegalDocumentPage documentType="COOKIE_POLICY" /> },
     ],
   },
   {
@@ -201,7 +221,40 @@ export const router = createBrowserRouter([
         <AdminLayout />
       </RequireAuth>
     ),
-    children: [{ index: true, element: <AdminIndex /> }],
+    children: [
+      {
+        element: <AdminAreaLayout />,
+        children: [
+          // Dashboard is SUPER_ADMIN-only; a verification officer landing here sees the API's 403
+          // rather than a fabricated client-side decision, so the redirect is to organizations —
+          // the one area both platform roles share.
+          { index: true, element: <Navigate to="organizations" replace /> },
+          { path: 'dashboard', element: <AdminDashboardPage /> },
+          { path: 'organizations', element: <AdminOrganizationsPage /> },
+          { path: 'verification-escalations', element: <AdminEscalationsPage /> },
+          { path: 'users', element: <AdminUsersPage /> },
+          { path: 'privacy-requests', element: <AdminPrivacyRequestsPage /> },
+          { path: 'legal-documents', element: <AdminLegalDocumentsPage /> },
+          { path: 'audit', element: <AdminAuditPage /> },
+          { path: 'platform-roles', element: <AdminPlatformRolesPage /> },
+        ],
+      },
+    ],
+  },
+  {
+    // Phase 7. Role-neutral: every signed-in person has notifications and privacy controls,
+    // whatever else they are on FursadHub.
+    path: '/account',
+    element: (
+      <RequireAuth>
+        <AccountLayout />
+      </RequireAuth>
+    ),
+    children: [
+      { index: true, element: <Navigate to="notifications" replace /> },
+      { path: 'notifications', element: <NotificationsPage /> },
+      { path: 'privacy', element: <PrivacyPage /> },
+    ],
   },
   { path: '*', element: <NotFoundPage /> },
 ])

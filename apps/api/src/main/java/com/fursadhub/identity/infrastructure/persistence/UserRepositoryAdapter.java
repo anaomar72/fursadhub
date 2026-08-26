@@ -2,6 +2,9 @@ package com.fursadhub.identity.infrastructure.persistence;
 
 import com.fursadhub.identity.domain.User;
 import com.fursadhub.identity.domain.UserRepository;
+import com.fursadhub.identity.domain.UserStatus;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Repository;
 
 import java.util.Optional;
@@ -34,5 +37,12 @@ class UserRepositoryAdapter implements UserRepository {
     @Override
     public boolean existsByEmail(String normalizedEmail) {
         return jpaRepository.existsByEmail(normalizedEmail);
+    }
+
+    @Override
+    public Page<User> search(String emailFragment, UserStatus status, Pageable pageable) {
+        // Empty string, never null — see the Javadoc on the query.
+        String fragment = (emailFragment == null || emailFragment.isBlank()) ? "" : emailFragment.trim();
+        return jpaRepository.search(fragment, status, pageable);
     }
 }

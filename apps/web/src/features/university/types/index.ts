@@ -54,4 +54,12 @@ export interface VerificationCaseResponse {
   studentNumber: string | null
   program: string | null
   academicYear: string | null
+  /**
+   * Phase 7. A boolean, not a file id: the evidence is fetched through its own audited route on the
+   * owning case, and publishing a file id would imply a generic file endpoint that does not exist.
+   */
+  hasEvidence: boolean
+  /** Set when a university has handed this case to the platform. Not a status — the state machine is unchanged. */
+  escalatedAt: string | null
+  escalationReason: string | null
 }

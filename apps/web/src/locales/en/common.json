@@ -8,7 +8,8 @@
     "student": "Student",
     "university": "University",
     "organization": "Organization",
-    "admin": "Admin"
+    "admin": "Admin",
+    "account": "Account"
   },
   "status": {
     "loading": "Loading",

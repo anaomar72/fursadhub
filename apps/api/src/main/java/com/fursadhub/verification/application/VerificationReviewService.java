@@ -2,6 +2,10 @@ package com.fursadhub.verification.application;
 
 import com.fursadhub.common.api.ApiException;
 import com.fursadhub.common.audit.AuditService;
+import com.fursadhub.identity.domain.User;
+import com.fursadhub.identity.domain.UserRepository;
+import com.fursadhub.notification.application.NotificationService;
+import com.fursadhub.notification.domain.NotificationType;
 import com.fursadhub.student.domain.StudentEnrollment;
 import com.fursadhub.student.domain.StudentEnrollmentRepository;
 import com.fursadhub.university.application.UniversityAuthorization;
@@ -14,6 +18,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Map;
 import java.util.UUID;
 
 /**
@@ -27,16 +32,22 @@ public class VerificationReviewService {
     private final StudentVerificationCaseRepository cases;
     private final StudentEnrollmentRepository enrollments;
     private final UniversityAuthorization universityAuthorization;
+    private final NotificationService notifications;
+    private final UserRepository users;
     private final AuditService audit;
 
     public VerificationReviewService(
             StudentVerificationCaseRepository cases,
             StudentEnrollmentRepository enrollments,
             UniversityAuthorization universityAuthorization,
+            NotificationService notifications,
+            UserRepository users,
             AuditService audit) {
         this.cases = cases;
         this.enrollments = enrollments;
         this.universityAuthorization = universityAuthorization;
+        this.notifications = notifications;
+        this.users = users;
         this.audit = audit;
     }
 
@@ -59,6 +70,7 @@ public class VerificationReviewService {
         loaded.verificationCase().requestMoreEvidence(staffUserId, notes);
         persist(loaded);
         audit.record("STUDENT_VERIFICATION_NEEDS_MORE_EVIDENCE", staffUserId, ipAddress, userAgent, "caseId=" + caseId);
+        notifyStudent(loaded, NotificationType.STUDENT_VERIFICATION_NEEDS_MORE_EVIDENCE);
     }
 
     @Transactional
@@ -68,6 +80,7 @@ public class VerificationReviewService {
         loaded.verificationCase().approve(staffUserId);
         persist(loaded);
         audit.record("STUDENT_VERIFIED", staffUserId, ipAddress, userAgent, "caseId=" + caseId);
+        notifyStudent(loaded, NotificationType.STUDENT_VERIFICATION_VERIFIED);
     }
 
     @Transactional
@@ -77,6 +90,7 @@ public class VerificationReviewService {
         loaded.verificationCase().reject(staffUserId, reason);
         persist(loaded);
         audit.record("STUDENT_VERIFICATION_REJECTED", staffUserId, ipAddress, userAgent, "caseId=" + caseId);
+        notifyStudent(loaded, NotificationType.STUDENT_VERIFICATION_REJECTED);
     }
 
     /** Revocation is restricted to {@code UNIVERSITY_ADMIN} — more consequential than routine review. */
@@ -99,6 +113,41 @@ public class VerificationReviewService {
         verificationCase.revoke(staffUserId, reason);
         persist(new Loaded(verificationCase, enrollment));
         audit.record("STUDENT_VERIFICATION_REVOKED", staffUserId, ipAddress, userAgent, "caseId=" + caseId);
+    }
+
+    /**
+     * Hands a case the university cannot resolve to the platform (Phase 7 "Admin: verification
+     * escalation").
+     *
+     * <p>Escalation does NOT change the case's status: the frozen state machine
+     * (CLAUDE.md section 30) is untouched, and the case stays exactly where it was. It changes who
+     * may act on it, so a coordinator facing a disputed identity or records the university itself
+     * cannot confirm has somewhere to send it instead of leaving it in the queue indefinitely.
+     *
+     * <p>The university keeps its own access throughout — escalating asks for help, it does not hand
+     * the case away.
+     */
+    @Transactional
+    public void escalate(UUID staffUserId, UUID universityId, UUID caseId, String reason, String ipAddress, String userAgent) {
+        Loaded loaded = loadForReview(staffUserId, universityId, caseId);
+        requireReviewable(loaded.verificationCase());
+        loaded.verificationCase().escalate(staffUserId, reason);
+        cases.save(loaded.verificationCase());
+        audit.record("STUDENT_VERIFICATION_ESCALATED", staffUserId, ipAddress, userAgent, "caseId=" + caseId);
+    }
+
+    /**
+     * Tells the student the outcome (Phase 7). In-app plus email, both enqueued inside this
+     * transaction — the review itself never depends on either being deliverable.
+     *
+     * <p>Carries the outcome only, never the reviewer's notes: those are written for university staff
+     * and may say more than the review intends the student to read. The student sees the notes on
+     * their own verification page, where the wording is presented as feedback.
+     */
+    private void notifyStudent(Loaded loaded, NotificationType type) {
+        UUID studentUserId = loaded.enrollment().getStudentUserId();
+        notifications.notify(studentUserId, type, Map.of(), "/student/enrollment",
+                users.findById(studentUserId).map(User::getEmail).orElse(null));
     }
 
     private Loaded loadForReview(UUID staffUserId, UUID universityId, UUID caseId) {

@@ -8,6 +8,7 @@ import jakarta.persistence.Id;
 import jakarta.persistence.Table;
 
 import java.time.Instant;
+import java.time.LocalDate;
 import java.util.UUID;
 
 /**
@@ -46,6 +47,23 @@ public class StoredFile {
     @Column(name = "uploaded_by", nullable = false)
     private UUID uploadedBy;
 
+    /**
+     * Why this document is kept (CLAUDE.md section 47). Derived from the classification at upload
+     * time and never edited afterwards, so it describes the policy that actually applied when the
+     * document was accepted rather than whatever the policy happens to be today.
+     */
+    @Enumerated(EnumType.STRING)
+    @Column(name = "retention_category", nullable = false, length = 40)
+    private RetentionCategory retentionCategory;
+
+    /**
+     * A fixed deletion date, when one applies. NULL — the normal case for academic documents — means
+     * the document is retained while the record that owns it exists, since a report's lifetime is the
+     * placement's rather than a clock's.
+     */
+    @Column(name = "retain_until")
+    private LocalDate retainUntil;
+
     @Column(name = "created_at", nullable = false)
     private Instant createdAt;
 
@@ -62,6 +80,7 @@ public class StoredFile {
         file.contentType = contentType;
         file.sizeBytes = sizeBytes;
         file.classification = classification;
+        file.retentionCategory = classification.retentionCategory();
         file.uploadedBy = uploadedBy;
         file.createdAt = Instant.now();
         return file;
@@ -93,6 +112,14 @@ public class StoredFile {
 
     public UUID getUploadedBy() {
         return uploadedBy;
+    }
+
+    public RetentionCategory getRetentionCategory() {
+        return retentionCategory;
+    }
+
+    public LocalDate getRetainUntil() {
+        return retainUntil;
     }
 
     public Instant getCreatedAt() {

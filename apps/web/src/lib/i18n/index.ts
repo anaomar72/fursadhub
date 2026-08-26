@@ -22,6 +22,14 @@ import placementsEn from '../../locales/en/placements.json'
 import placementsSo from '../../locales/so/placements.json'
 import internshipEn from '../../locales/en/internship.json'
 import internshipSo from '../../locales/so/internship.json'
+import notificationsEn from '../../locales/en/notifications.json'
+import notificationsSo from '../../locales/so/notifications.json'
+import legalEn from '../../locales/en/legal.json'
+import legalSo from '../../locales/so/legal.json'
+import privacyEn from '../../locales/en/privacy.json'
+import privacySo from '../../locales/so/privacy.json'
+import adminEn from '../../locales/en/admin.json'
+import adminSo from '../../locales/so/admin.json'
 
 export const defaultNamespace = 'common'
 
@@ -41,6 +49,10 @@ void i18n
         recruitment: recruitmentEn,
         placements: placementsEn,
         internship: internshipEn,
+        notifications: notificationsEn,
+        legal: legalEn,
+        privacy: privacyEn,
+        admin: adminEn,
       },
       so: {
         common: commonSo,
@@ -53,9 +65,29 @@ void i18n
         recruitment: recruitmentSo,
         placements: placementsSo,
         internship: internshipSo,
+        notifications: notificationsSo,
+        legal: legalSo,
+        privacy: privacySo,
+        admin: adminSo,
       },
     },
-    ns: ['common', 'auth', 'validation', 'student', 'university', 'organization', 'opportunities', 'recruitment', 'placements', 'internship'],
+    ns: [
+      'common',
+      'auth',
+      'validation',
+      'student',
+      'university',
+      'organization',
+      'opportunities',
+      'recruitment',
+      'placements',
+      'internship',
+      // Phase 7
+      'notifications',
+      'legal',
+      'privacy',
+      'admin',
+    ],
     fallbackLng: 'en',
     supportedLngs: ['en', 'so'],
     defaultNS: defaultNamespace,

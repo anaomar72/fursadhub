@@ -1,0 +1,50 @@
+{
+  "nav": {
+    "privacy": "Privacy and data"
+  },
+  "consents": {
+    "title": "Your privacy choices",
+    "description": "These are optional. Accepting the Terms does not grant any of them, and turning one off has no effect on your account or your internship.",
+    "granted": "On",
+    "notGranted": "Off"
+  },
+  "consentTypes": {
+    "PRODUCT_UPDATE_EMAIL": {
+      "label": "Product update emails",
+      "description": "Occasional announcements about new FursadHub features. Never used for messages about your internship."
+    },
+    "OPPORTUNITY_RECOMMENDATION_EMAIL": {
+      "label": "Internship suggestions",
+      "description": "Emails suggesting internships that may suit you."
+    }
+  },
+  "requests": {
+    "title": "Your data requests",
+    "description": "Ask FursadHub to give you a copy of your data, correct it, restrict it, or delete it. A person reviews every request.",
+    "typeLabel": "What are you asking for?",
+    "detailsLabel": "Tell us more",
+    "detailsPlaceholder": "Describe what you need, so we can act on it accurately.",
+    "submit": "Send request",
+    "empty": "You have not made any data requests.",
+    "submittedAt": "Submitted {{date}}",
+    "outcome": "Outcome",
+    "errors": {
+      "generic": "Your request could not be sent. Please try again.",
+      "VALIDATION_FAILED": "Please check the details you entered."
+    }
+  },
+  "requestTypes": {
+    "ACCESS": "A copy of my data",
+    "CORRECTION": "Correct my data",
+    "ERASURE": "Delete my data",
+    "RESTRICTION": "Restrict how my data is used",
+    "PORTABILITY": "Export my data",
+    "OBJECTION": "Object to how my data is used"
+  },
+  "requestStates": {
+    "SUBMITTED": "Submitted",
+    "IN_REVIEW": "In review",
+    "COMPLETED": "Completed",
+    "REJECTED": "Not accepted"
+  }
+}

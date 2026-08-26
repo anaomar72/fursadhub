@@ -1,0 +1,50 @@
+{
+  "nav": {
+    "privacy": "Asturnaanta iyo xogta"
+  },
+  "consents": {
+    "title": "Doorashooyinkaaga asturnaanta",
+    "description": "Kuwani waa ikhtiyaari. Aqbalaadda Shuruudaha midkoodna ma siiso, damintooduna saamayn kuma yeelanayso akoonkaaga ama tababarkaaga.",
+    "granted": "Shid",
+    "notGranted": "Damis"
+  },
+  "consentTypes": {
+    "PRODUCT_UPDATE_EMAIL": {
+      "label": "Iimaylada warbixinta badeecada",
+      "description": "Ogeysiisyo dhif ah oo ku saabsan sifooyin cusub oo FursadHub ah. Waligood looma isticmaalo fariimaha tababarkaaga."
+    },
+    "OPPORTUNITY_RECOMMENDATION_EMAIL": {
+      "label": "Talooyinka tababarrada",
+      "description": "Iimaylo soo jeedinaya tababarro ku habboon."
+    }
+  },
+  "requests": {
+    "title": "Codsiyada xogtaada",
+    "description": "Ka codso FursadHub inay ku siiso nuqul xogtaada ah, ay saxdo, ay xaddiddo, ama ay tirtirto. Qof ayaa dib u eega codsi kasta.",
+    "typeLabel": "Maxaad codsanaysaa?",
+    "detailsLabel": "Noo sheeg wax dheeraad ah",
+    "detailsPlaceholder": "Sharax waxaad u baahan tahay, si aan sax ugu tallaabsanno.",
+    "submit": "Dir codsiga",
+    "empty": "Weli ma samayn codsi xog.",
+    "submittedAt": "La gudbiyay {{date}}",
+    "outcome": "Natiijada",
+    "errors": {
+      "generic": "Codsigaaga lama diri karin. Fadlan mar kale isku day.",
+      "VALIDATION_FAILED": "Fadlan hubi faahfaahinta aad gelisay."
+    }
+  },
+  "requestTypes": {
+    "ACCESS": "Nuqul xogtayda ah",
+    "CORRECTION": "Sax xogtayda",
+    "ERASURE": "Tirtir xogtayda",
+    "RESTRICTION": "Xaddid sida xogtayda loo isticmaalo",
+    "PORTABILITY": "Soo saar xogtayda",
+    "OBJECTION": "Ka hor imow sida xogtayda loo isticmaalo"
+  },
+  "requestStates": {
+    "SUBMITTED": "La gudbiyay",
+    "IN_REVIEW": "Dib u eegis",
+    "COMPLETED": "La dhammeeyay",
+    "REJECTED": "Lama aqbalin"
+  }
+}

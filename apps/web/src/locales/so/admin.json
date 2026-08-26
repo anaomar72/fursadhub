@@ -1,0 +1,228 @@
+{
+  "nav": {
+    "dashboard": "Guudmarka",
+    "organizations": "Hay'adaha",
+    "escalations": "Kor-u-qaadista",
+    "users": "Akoonnada",
+    "privacyRequests": "Codsiyada asturnaanta",
+    "legalDocuments": "Dukumentiyada sharciga",
+    "audit": "Hanti-dhawrka",
+    "platformRoles": "Doorarka madasha",
+    "noAccess": "Ma haysatid gelitaan maamulka madasha."
+  },
+  "dashboard": {
+    "title": "Guudmarka madasha",
+    "unavailable": "Tirakoobku hadda ma diyaar aha.",
+    "needsAttention": "U baahan feejignaan",
+    "platform": "Madasha",
+    "needsAction": "Waxay u baahan tahay tallaabo",
+    "clear": "Waxba ma harin",
+    "openPrivacyRequests": "Codsiyada asturnaanta ee furan",
+    "escalatedCases": "Kiisaska xaqiijinta ee kor loo qaaday",
+    "failedEmails": "Iimaylada aan la gaarsiin",
+    "recentLoginFailures": "Gelitaanka fashilmay (24 saac)",
+    "accounts": "Akoonnada",
+    "organizations": "Hay'adaha",
+    "placements": "Meelaynta",
+    "opportunities": "Fursadaha",
+    "universities": "Jaamacadaha",
+    "candidacies": "Musharraxnimada"
+  },
+  "organizations": {
+    "title": "Xaqiijinta hay'adaha",
+    "statusFilter": "Xaaladda",
+    "allStatuses": "Dhammaan xaaladaha",
+    "searchLabel": "Magaca hay'adda",
+    "searchPlaceholder": "Ku raadi magaca",
+    "search": "Raadi",
+    "empty": "Ma jirto hay'ad ku habboon miirayaashan.",
+    "noActions": "Xaaladdan wax tallaabo ah lagama qaadi karo.",
+    "notePlaceholder": "Sharax go'aankaaga",
+    "confirm": "Xaqiiji",
+    "cancel": "Jooji",
+    "actions": {
+      "begin-review": "Bilow dib u eegis",
+      "verify": "Xaqiiji",
+      "request-changes": "Codso isbeddel",
+      "reject": "Diid",
+      "suspend": "Haki",
+      "revoke": "Burburi"
+    },
+    "errors": {
+      "generic": "Tallaabadaas lama dhammayn karin. Fadlan mar kale isku day.",
+      "ORGANIZATION_NOT_FOUND": "Hay'addaas lama helin.",
+      "ORGANIZATION_INVALID_TRANSITION": "Isbeddelkaas laguma oggola xaaladda hadda ee hay'adda.",
+      "ACCESS_DENIED": "Ma haysatid gelitaan tallaabadan."
+    }
+  },
+  "organizationTypes": {
+    "COMPANY": "Shirkad",
+    "NGO": "Urur aan dawli ahayn",
+    "GOVERNMENT": "Dawlad",
+    "OTHER": "Kale"
+  },
+  "escalations": {
+    "title": "Kiisaska xaqiijinta ee kor loo qaaday",
+    "description": "Kiisas jaamacaddu keligeed xallin kari weyday. Xallinta halkan waxay adeegsanaysaa tallaabooyinkii isku midka ahaa ee jaamacaddu isticmaali lahayd.",
+    "empty": "Ma jiraan kiisas kor loo qaaday.",
+    "unknownStudent": "Arday aan la aqoon",
+    "enrollment": "Lambarka ardayga {{studentNumber}} · {{program}} · {{year}}",
+    "reason": "Sababta kor loogu qaaday",
+    "downloadEvidence": "Soo dejiso caddaynta",
+    "noEvidence": "Caddayn lama soo gelin",
+    "notePlaceholder": "Sharax go'aankaaga",
+    "confirm": "Xaqiiji",
+    "cancel": "Jooji",
+    "actions": {
+      "verify": "Xaqiiji diiwaangelinta",
+      "reject": "Diid",
+      "request-more-evidence": "Codso caddayn dheeraad ah"
+    },
+    "errors": {
+      "generic": "Tallaabadaas lama dhammayn karin. Fadlan mar kale isku day.",
+      "VERIFICATION_CASE_NOT_FOUND": "Kiiskaas lama helin.",
+      "VERIFICATION_CASE_ALREADY_RESOLVED": "Kiiskaas horey ayaa loo xalliyay.",
+      "VERIFICATION_EVIDENCE_MISSING": "Kiiskan caddayn looma soo gelin.",
+      "VALIDATION_FAILED": "Tallaabadan waxay u baahan tahay sabab."
+    }
+  },
+  "verificationStatuses": {
+    "DRAFT": "Qabyo",
+    "SUBMITTED": "La gudbiyay",
+    "UNDER_REVIEW": "Dib u eegis",
+    "NEEDS_MORE_EVIDENCE": "Caddayn dheeraad ah loo baahan yahay",
+    "VERIFIED": "La xaqiijiyay",
+    "REJECTED": "La diiday",
+    "REVOKED": "La burburiyay"
+  },
+  "users": {
+    "title": "Akoonnada",
+    "searchLabel": "Iimaylka",
+    "searchPlaceholder": "Ku raadi iimaylka",
+    "statusFilter": "Xaaladda",
+    "allStatuses": "Dhammaan xaaladaha",
+    "search": "Raadi",
+    "empty": "Ma jiro akoon ku habboon miirayaashan.",
+    "email": "Iimaylka",
+    "status": "Xaaladda",
+    "created": "La abuuray",
+    "actions": "Tallaabooyinka",
+    "suspend": "Haki",
+    "reactivate": "Dib u firfircooni",
+    "confirmSuspend": "Xaqiiji hakinta",
+    "cancel": "Jooji",
+    "noActions": "Wax tallaabo ah ma jiraan",
+    "reasonLabel": "Sababta hakinta",
+    "reasonPlaceholder": "Sabab gudaha ah (lama tuso qofka akoonka leh)",
+    "errors": {
+      "generic": "Tallaabadaas lama dhammayn karin. Fadlan mar kale isku day.",
+      "USER_NOT_FOUND": "Akoonkaas lama helin.",
+      "USER_CLOSED": "Akoon xiran lama beddeli karo.",
+      "CANNOT_SUSPEND_SELF": "Ma hakin kartid akoonkaaga."
+    }
+  },
+  "privacyRequests": {
+    "title": "Codsiyada asturnaanta",
+    "description": "Codsi kasta waxaa gacanta ku haya qof. Diiwaangelinta natiijada halkan keligeed waxba ma tirtirto mana soo saarto.",
+    "stateFilter": "Xaaladda",
+    "allStates": "Dhammaan xaaladaha",
+    "empty": "Ma jiraan codsiyo ku habboon miirayaashan.",
+    "submittedAt": "La gudbiyay {{date}}",
+    "outcome": "Natiijada",
+    "notePlaceholder": "Sharax waxa la sameeyay, ama sababta aan loo samayn karin.",
+    "confirm": "Xaqiiji",
+    "cancel": "Jooji",
+    "actions": {
+      "begin-review": "Bilow dib u eegis",
+      "complete": "Calaamadee la dhammeeyay",
+      "reject": "Diid"
+    },
+    "errors": {
+      "generic": "Tallaabadaas lama dhammayn karin. Fadlan mar kale isku day.",
+      "PRIVACY_REQUEST_NOT_FOUND": "Codsigaas lama helin.",
+      "PRIVACY_REQUEST_INVALID_TRANSITION": "Codsigaas horey ayaa loo xalliyay.",
+      "VALIDATION_FAILED": "Marka la diidayo codsi waxaa loo baahan yahay sabab."
+    }
+  },
+  "legalDocuments": {
+    "title": "Dukumentiyada sharciga",
+    "description": "Dukumentiyadu waxay leeyihiin noocyo. Nooc la daabacay waligiis lama beddeli karo — halkii, daabac nooc cusub.",
+    "publishHeading": "Daabac nooc cusub",
+    "documentType": "Dukumentiga",
+    "locale": "Luqadda",
+    "version": "Nooca",
+    "versionPlaceholder": "tusaale 2026-01",
+    "effectiveFrom": "Wuxuu shaqeeyaa laga bilaabo",
+    "documentTitle": "Cinwaanka",
+    "body": "Qoraalka",
+    "immutableNotice": "Marka la daabaco, nooca lama beddeli karo lamana tirtiri karo. Saxidda waxay u baahan tahay nooc cusub.",
+    "publish": "Daabac",
+    "published": "Noocyada la daabacay",
+    "empty": "Weli lama daabicin dukumenti sharci ah.",
+    "summary": "{{type}} · nooca {{version}} · {{locale}} · wuxuu shaqeeyaa {{date}}",
+    "statusPublished": "La daabacay",
+    "statusDraft": "Qabyo",
+    "errors": {
+      "generic": "Dukumentiga lama daabici karin. Fadlan mar kale isku day.",
+      "LEGAL_DOCUMENT_VERSION_EXISTS": "Nooca ayaa hore ugu jira luqaddan. Isticmaal lambar nooc oo cusub.",
+      "VALIDATION_FAILED": "Fadlan hubi meelaha aad buuxisay."
+    }
+  },
+  "audit": {
+    "title": "Raadraaca hanti-dhawrka",
+    "description": "Diiwaan joogto ah oo lagu daro oo keliya, oo ah ficillada amniga iyo ganacsiga. Lama beddeli karo lamana tirtiri karo.",
+    "typeFilter": "Nooca dhacdada",
+    "allTypes": "Dhammaan noocyada dhacdooyinka",
+    "empty": "Ma jiraan dhacdooyin ku habboon miirayaashan.",
+    "occurredAt": "Goorma",
+    "eventType": "Dhacdada",
+    "actor": "Isticmaalaha wax qabtay",
+    "metadata": "Faahfaahin",
+    "system": "Nidaamka"
+  },
+  "platformRoles": {
+    "title": "Doorarka madasha",
+    "description": "Doorarka madasha waxaa la siiyaa akoonno gaar ah, waqti kastana waa laga qaadi karaa. Doorarka la qaaday waxay ku sii jiraan liiska taariikhda ahaan.",
+    "userId": "Aqoonsiga akoonka",
+    "userIdPlaceholder": "Ku dheji aqoonsiga akoonka ee bogga Akoonnada",
+    "role": "Doorka",
+    "grant": "Sii doorka",
+    "revoke": "Ka qaad",
+    "active": "Firfircoon",
+    "revoked": "La qaaday",
+    "grantedAt": "{{role}} · la siiyay {{date}}",
+    "errors": {
+      "generic": "Tallaabadaas lama dhammayn karin. Fadlan mar kale isku day.",
+      "USER_NOT_FOUND": "Akoonkaas lama helin.",
+      "USER_NOT_ACTIVE": "Akoon firfircoon oo keliya ayaa la siin karaa door madasha.",
+      "LAST_SUPER_ADMIN": "Maamulaha sare ee ugu dambeeya lama qaadi karo. Marka hore door sii akoon kale.",
+      "PLATFORM_ROLE_NOT_FOUND": "Siintaas lama helin.",
+      "VALIDATION_FAILED": "Fadlan hubi aqoonsiga akoonka aad gelisay."
+    }
+  },
+  "platformRoleNames": {
+    "SUPER_ADMIN": "Maamulaha sare",
+    "VERIFICATION_OFFICER": "Sarkaalka xaqiijinta"
+  },
+  "statusLabels": {
+    "PENDING_CONTACT_VERIFICATION": "Sugaya xaqiijinta iimaylka",
+    "ACTIVE": "Firfircoon",
+    "SUSPENDED": "La hakiyay",
+    "CLOSED": "La xiray",
+    "DRAFT": "Qabyo",
+    "SUBMITTED": "La gudbiyay",
+    "UNDER_REVIEW": "Dib u eegis",
+    "NEEDS_CHANGES": "Isbeddel loo baahan yahay",
+    "VERIFIED": "La xaqiijiyay",
+    "REJECTED": "La diiday",
+    "REVOKED": "La burburiyay",
+    "PUBLISHED": "La daabacay",
+    "PAUSED": "La joojiyay",
+    "CLOSED_OPPORTUNITY": "La xiray",
+    "CANCELLED": "La baajiyay",
+    "PLANNED": "La qorsheeyay",
+    "COMPLETION_PENDING": "Sugaya dhammaystirka",
+    "COMPLETED": "La dhammeeyay",
+    "TERMINATED": "La joojiyay"
+  }
+}

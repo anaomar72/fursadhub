@@ -1,11 +1,38 @@
 package com.fursadhub.organization.infrastructure.persistence;
 
 import com.fursadhub.organization.domain.Organization;
+import com.fursadhub.verification.domain.InstitutionVerificationStatus;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 
 import java.util.UUID;
 
 interface JpaOrganizationRepository extends JpaRepository<Organization, UUID> {
 
     boolean existsBySlug(String slug);
+
+    long countByVerificationStatus(InstitutionVerificationStatus status);
+
+    /**
+     * The name filter is ALWAYS a string, never null — an absent filter is the empty string, which
+     * makes the pattern {@code '%%'} and matches everything.
+     *
+     * <p>The obvious {@code :nameFragment IS NULL OR LOWER(...)} form does not work on PostgreSQL: a
+     * null parameter arrives with no inferred type, so {@code lower()} is handed a {@code bytea} and
+     * the whole query fails with "function lower(bytea) does not exist" — even though the null branch
+     * would have short-circuited. Keeping the parameter non-null side-steps the inference problem
+     * entirely rather than papering over it with a cast.
+     */
+    @Query("""
+            SELECT o FROM Organization o
+            WHERE (:status IS NULL OR o.verificationStatus = :status)
+              AND LOWER(o.name) LIKE LOWER(CONCAT('%', :nameFragment, '%'))
+            """)
+    Page<Organization> search(
+            @Param("status") InstitutionVerificationStatus status,
+            @Param("nameFragment") String nameFragment,
+            Pageable pageable);
 }

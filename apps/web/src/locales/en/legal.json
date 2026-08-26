@@ -1,0 +1,26 @@
+{
+  "documentTypes": {
+    "TERMS": "Terms and Conditions",
+    "PRIVACY_POLICY": "Privacy Policy",
+    "COOKIE_POLICY": "Cookie Notice"
+  },
+  "versionEffective": "Version {{version}} · effective {{date}}",
+  "translationUnavailable": "This document is not available in Somali yet, so the English version is shown.",
+  "notPublished": "This document has not been published yet.",
+  "loadFailed": "This document could not be loaded. Please try again later.",
+  "acceptance": {
+    "title": "Please review and accept",
+    "body": "FursadHub has published {{document}} version {{version}}. Please read it and accept to continue.",
+    "remaining": "There is 1 more document to accept after this one.",
+    "remaining_other": "There are {{count}} more documents to accept after this one.",
+    "read": "Read the full document",
+    "accept": "I accept",
+    "errors": {
+      "generic": "Your acceptance could not be recorded. Please try again.",
+      "LEGAL_DOCUMENT_NOT_FOUND": "That document could not be found.",
+      "LEGAL_DOCUMENT_NOT_IN_FORCE": "That document version cannot be accepted.",
+      "LEGAL_DOCUMENT_NOT_ACCEPTABLE": "That document does not require acceptance.",
+      "TERMS_ALREADY_ACCEPTED": "You have already accepted this document."
+    }
+  }
+}
