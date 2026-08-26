@@ -4,6 +4,7 @@ import { beforeEach, describe, expect, it, vi } from 'vitest'
 import { MemoryRouter, Route, Routes } from 'react-router-dom'
 import { AppProviders } from '../../../src/app/providers/AppProviders'
 import { PlacementDetailPage } from '../../../src/features/placements/pages/PlacementDetailPage'
+import { PlacementWorkspace } from '../../../src/features/placements/components/PlacementWorkspace'
 import i18n from '../../../src/lib/i18n'
 import { OrganizationMembershipContext } from '../../../src/features/organization/components/OrganizationMembershipContext'
 import { UniversityMembershipContext } from '../../../src/features/university/components/UniversityMembershipContext'
@@ -68,6 +69,11 @@ function stubFetch({ detail = placement(), onCommand, eligible = [], history = [
     if (url.includes('/supervisors')) {
       return jsonResponse(history)
     }
+    // Phase 6 completion checklist. Matched BEFORE the placement route below, which would otherwise
+    // swallow it — every internship-management path is nested under the placement.
+    if (url.endsWith('/completion')) {
+      return jsonResponse({ canComplete: false, policySource: 'PLATFORM_DEFAULT', requirements: [] })
+    }
     if (url.includes('/placements/pl-1')) {
       return jsonResponse(detail)
     }
@@ -86,9 +92,13 @@ function renderPage(
   area: 'organization' | 'university' = 'organization',
   role?: string,
 ) {
+  // Phase 6 nests the placement sections under a workspace shell that loads the placement once and
+  // hands it down. Rendering the overview through that shell is how the app actually mounts it.
   const page = (
     <Routes>
-      <Route path={`/${area}/placements/:placementId`} element={<PlacementDetailPage area={area} />} />
+      <Route path={`/${area}/placements/:placementId`} element={<PlacementWorkspace area={area} />}>
+        <Route index element={<PlacementDetailPage area={area} />} />
+      </Route>
     </Routes>
   )
 

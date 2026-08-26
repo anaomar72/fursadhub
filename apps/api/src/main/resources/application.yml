@@ -19,6 +19,14 @@ spring:
     time-zone: UTC
     default-property-inclusion: non_null
 
+  # Final-report upload (CLAUDE.md section 48). Deliberately a little above the 15 MB per-document
+  # cap enforced by FileClassification, so an oversized upload is rejected by FursadHub's own
+  # validation with a machine-readable code rather than by the servlet container.
+  servlet:
+    multipart:
+      max-file-size: 20MB
+      max-request-size: 20MB
+
   mail:
     host: ${SMTP_HOST:localhost}
     port: ${SMTP_PORT:1025}
@@ -90,3 +98,14 @@ fursadhub:
   notification:
     from-address: ${SMTP_FROM:no-reply@fursadhub.local}
     app-base-url: ${APP_BASE_URL:http://localhost:5173}
+  # Private S3-compatible object storage for student documents (CLAUDE.md section 47, ADR-004).
+  # The `filesystem` provider is for local development only and is refused outright in staging and
+  # production by StorageConfig.
+  storage:
+    provider: ${STORAGE_PROVIDER:s3}
+    endpoint: ${STORAGE_ENDPOINT:http://localhost:9000}
+    region: ${STORAGE_REGION:us-east-1}
+    bucket: ${STORAGE_BUCKET:fursadhub-local}
+    access-key: ${STORAGE_ACCESS_KEY:}
+    secret-key: ${STORAGE_SECRET_KEY:}
+    filesystem-directory: ${STORAGE_FILESYSTEM_DIRECTORY:}

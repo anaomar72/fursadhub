@@ -1,6 +1,9 @@
 import { apiFetch } from '../../../lib/api/client'
 import type {
+  CompletionStatusResponse,
   EligibleSupervisorResponse,
+  InternshipPolicyInput,
+  InternshipPolicyResponse,
   PlacementResponse,
   SupervisorAssignmentResponse,
 } from '../types'
@@ -99,5 +102,66 @@ export function listEligibleOrganizationSupervisors(placementId: string) {
   return apiFetch<EligibleSupervisorResponse[]>(
     `/placements/${placementId}/eligible-organization-supervisors`,
     { method: 'GET' },
+  )
+}
+
+// ---------------------------------------------------------------- Phase 6 completion
+
+/**
+ * The backend-computed completion checklist.
+ *
+ * The UI renders exactly this. It never re-derives requirements from the policy, so what a student
+ * sees and what the completion command enforces cannot drift apart (Phase 6 section 30/33).
+ */
+export function getCompletionStatus(placementId: string) {
+  return apiFetch<CompletionStatusResponse>(`/placements/${placementId}/completion`, { method: 'GET' })
+}
+
+/**
+ * COMPLETION_PENDING to COMPLETED. Fails with PLACEMENT_COMPLETION_REQUIREMENTS_NOT_MET carrying one
+ * `fieldErrors` entry per outstanding requirement, so the UI lists them without parsing prose.
+ */
+export function completePlacement(placementId: string) {
+  return apiFetch<PlacementResponse>(`/placements/${placementId}/complete`, { method: 'POST' })
+}
+
+// ---------------------------------------------------------------- Phase 6 policy
+
+export function getUniversityInternshipPolicy(universityId: string) {
+  return apiFetch<InternshipPolicyResponse>(`/universities/${universityId}/internship-policy`, {
+    method: 'GET',
+  })
+}
+
+export function setUniversityInternshipPolicy(universityId: string, policy: InternshipPolicyInput) {
+  return apiFetch<InternshipPolicyResponse>(`/universities/${universityId}/internship-policy`, {
+    method: 'PUT',
+    body: policy,
+  })
+}
+
+export function getDepartmentInternshipPolicy(universityId: string, departmentId: string) {
+  return apiFetch<InternshipPolicyResponse>(
+    `/universities/${universityId}/departments/${departmentId}/internship-policy`,
+    { method: 'GET' },
+  )
+}
+
+export function setDepartmentInternshipPolicy(
+  universityId: string,
+  departmentId: string,
+  policy: InternshipPolicyInput,
+) {
+  return apiFetch<InternshipPolicyResponse>(
+    `/universities/${universityId}/departments/${departmentId}/internship-policy`,
+    { method: 'PUT', body: policy },
+  )
+}
+
+/** Removes the override so the department follows the university default again — not "all false". */
+export function clearDepartmentInternshipPolicy(universityId: string, departmentId: string) {
+  return apiFetch<InternshipPolicyResponse>(
+    `/universities/${universityId}/departments/${departmentId}/internship-policy`,
+    { method: 'DELETE' },
   )
 }

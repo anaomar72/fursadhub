@@ -4,6 +4,7 @@ import { MemoryRouter, Route, Routes } from 'react-router-dom'
 import { AppProviders } from '../../../src/app/providers/AppProviders'
 import { MyPlacementsPage } from '../../../src/features/placements/pages/MyPlacementsPage'
 import { StudentPlacementDetailPage } from '../../../src/features/placements/pages/StudentPlacementDetailPage'
+import { PlacementWorkspace } from '../../../src/features/placements/components/PlacementWorkspace'
 import i18n from '../../../src/lib/i18n'
 
 function jsonResponse(body: unknown, status = 200) {
@@ -101,12 +102,35 @@ describe('StudentPlacementDetailPage', () => {
 
   /** The student reads their placement; the hosting organization drives the lifecycle. */
   it('shows supervisors but offers the student no lifecycle commands', async () => {
-    stubFetch(placement)
+    // URL-aware: the overview now also loads its completion checklist and the organization's
+    // evaluation, which the backend withholds until the evaluation is FINAL (hence the 204).
+    vi.stubGlobal(
+      'fetch',
+      vi.fn((input: RequestInfo | URL) => {
+        const url = String(input)
+        if (url.endsWith('/completion')) {
+          return jsonResponse({ canComplete: true, policySource: 'PLATFORM_DEFAULT', requirements: [] })
+        }
+        if (url.endsWith('/evaluation')) {
+          return Promise.resolve(new Response(null, { status: 204 }))
+        }
+        return jsonResponse(placement)
+      }),
+    )
     render(
       <MemoryRouter initialEntries={['/student/placements/pl-1']}>
         <AppProviders>
           <Routes>
-            <Route path="/student/placements/:placementId" element={<StudentPlacementDetailPage />} />
+            {/*
+              Phase 6 nests the student's internship sections under a workspace shell that loads the
+              placement once and hands it down — this is how the app actually mounts the overview.
+            */}
+            <Route
+              path="/student/placements/:placementId"
+              element={<PlacementWorkspace area="student" />}
+            >
+              <Route index element={<StudentPlacementDetailPage />} />
+            </Route>
           </Routes>
         </AppProviders>
       </MemoryRouter>,

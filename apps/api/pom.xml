@@ -21,6 +21,7 @@
   <properties>
     <java.version>21</java.version>
     <springdoc.version>2.9.0</springdoc.version>
+    <awssdk.version>2.31.30</awssdk.version>
   </properties>
 
   <dependencies>
@@ -63,6 +64,39 @@
     <dependency>
       <groupId>org.flywaydb</groupId>
       <artifactId>flyway-database-postgresql</artifactId>
+    </dependency>
+
+    <!--
+      Private S3-compatible object storage (CLAUDE.md section 47, ADR-004). Phase 6 is the first
+      phase that stores a document — the student's final internship report — and FursadHub's frozen
+      architecture requires those bytes to live in private object storage rather than in PostgreSQL.
+      MinIO is already provisioned locally in infra/compose.yaml and speaks the S3 API, so this is
+      the client for both local and production storage.
+
+      The bundled Netty and Apache HTTP clients are excluded in favour of url-connection-client:
+      FursadHub's usage is a handful of small synchronous PUT/GET calls, which the JDK's own
+      HttpURLConnection serves without pulling an async stack and a second connection pool into the
+      application.
+    -->
+    <dependency>
+      <groupId>software.amazon.awssdk</groupId>
+      <artifactId>s3</artifactId>
+      <version>${awssdk.version}</version>
+      <exclusions>
+        <exclusion>
+          <groupId>software.amazon.awssdk</groupId>
+          <artifactId>netty-nio-client</artifactId>
+        </exclusion>
+        <exclusion>
+          <groupId>software.amazon.awssdk</groupId>
+          <artifactId>apache-client</artifactId>
+        </exclusion>
+      </exclusions>
+    </dependency>
+    <dependency>
+      <groupId>software.amazon.awssdk</groupId>
+      <artifactId>url-connection-client</artifactId>
+      <version>${awssdk.version}</version>
     </dependency>
 
     <!-- Validation -->

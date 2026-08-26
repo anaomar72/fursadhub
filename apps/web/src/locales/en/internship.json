@@ -1,0 +1,313 @@
+{
+  "nav": {
+    "label": "Internship sections",
+    "overview": "Overview",
+    "weeklyLogs": "Weekly logs",
+    "attendance": "Attendance",
+    "evaluation": "Evaluation",
+    "finalReport": "Final report",
+    "defense": "Defense"
+  },
+  "actions": {
+    "cancel": "Cancel"
+  },
+  "weeklyLogs": {
+    "title": "Weekly logs",
+    "progress": "{{done}} of {{total}} weeks written",
+    "weekHeading": "Week {{week}}",
+    "period": "{{start}} to {{end}}",
+    "emptyStudent": "You have not written any weekly logs yet.",
+    "emptyReviewer": "This student has not submitted any weekly logs yet.",
+    "stateValues": {
+      "DRAFT": "Draft",
+      "SUBMITTED": "Awaiting review",
+      "RETURNED_FOR_CHANGES": "Changes requested",
+      "REVIEWED": "Reviewed"
+    },
+    "form": {
+      "createTitle": "New weekly log",
+      "editTitle": "Edit week {{week}}",
+      "week": "Week",
+      "weekOption": "Week {{week}}",
+      "summary": "Summary of the week",
+      "summaryPlaceholder": "What did you work on this week?",
+      "summaryRequired": "Write a short summary of your week.",
+      "activities": "Activities",
+      "challenges": "Challenges",
+      "learningOutcomes": "What you learned",
+      "create": "Create log",
+      "save": "Save changes"
+    },
+    "actions": {
+      "create": "Add a weekly log",
+      "edit": "Edit",
+      "submit": "Submit for review",
+      "review": "Mark as reviewed",
+      "return": "Request changes",
+      "confirmReturn": "Send back to student"
+    },
+    "review": {
+      "feedback": "Supervisor feedback: {{comment}}",
+      "commentLabel": "What should the student change?",
+      "commentPlaceholder": "Explain what needs more detail.",
+      "commentRequired": "Explain what the student needs to change."
+    },
+    "errors": {
+      "WEEKLY_LOG_ALREADY_EXISTS": "A log for that week already exists.",
+      "WEEKLY_LOG_WEEK_OUT_OF_RANGE": "That week is outside this internship period.",
+      "WEEKLY_LOG_INVALID_TRANSITION": "This log can no longer be changed that way.",
+      "WEEKLY_LOG_NOT_FOUND": "Weekly log not found.",
+      "PLACEMENT_NOT_ACTIVE": "This internship is not running, so its logs cannot be changed.",
+      "PLACEMENT_NOT_FOUND": "Placement not found.",
+      "ACCESS_DENIED": "You do not have permission to do that.",
+      "VALIDATION_FAILED": "Please check the form and try again.",
+      "generic": "The weekly log could not be saved. Please try again."
+    }
+  },
+  "attendance": {
+    "title": "Attendance",
+    "tableCaption": "Attendance records for this internship",
+    "empty": "No attendance has been recorded yet.",
+    "date": "Date",
+    "value": "Attendance",
+    "status": "Status",
+    "notes": "Notes",
+    "actionsHeader": "Actions",
+    "disputedBecause": "Disputed: {{reason}}",
+    "disputeLabel": "Why is this record wrong?",
+    "disputePlaceholder": "Explain what actually happened that day.",
+    "valueValues": {
+      "PRESENT": "Present",
+      "ABSENT": "Absent",
+      "EXCUSED": "Excused"
+    },
+    "statusValues": {
+      "RECORDED": "Awaiting confirmation",
+      "CONFIRMED": "Confirmed",
+      "DISPUTED": "Disputed",
+      "RESOLVED": "Resolved"
+    },
+    "actions": {
+      "record": "Record",
+      "confirm": "Confirm",
+      "dispute": "Dispute",
+      "confirmDispute": "Submit dispute",
+      "resolve": "Resolve"
+    },
+    "errors": {
+      "ATTENDANCE_ALREADY_RECORDED": "Attendance for that date has already been recorded.",
+      "ATTENDANCE_DATE_OUT_OF_RANGE": "That date is outside this internship period.",
+      "ATTENDANCE_INVALID_TRANSITION": "This record cannot be changed that way.",
+      "ATTENDANCE_NOT_FOUND": "Attendance record not found.",
+      "PLACEMENT_NOT_ACTIVE": "This internship is not running, so attendance cannot be changed.",
+      "ACCESS_DENIED": "You do not have permission to do that.",
+      "VALIDATION_FAILED": "Please check the form and try again.",
+      "generic": "The attendance record could not be saved. Please try again."
+    }
+  },
+  "evaluation": {
+    "title": "Organization evaluation",
+    "notAvailable": "The organization has not shared an evaluation yet.",
+    "notRated": "Not rated",
+    "chooseRating": "Choose a rating",
+    "ratingOf": "{{value}} of 5",
+    "sealed": "This evaluation is final and can no longer be changed.",
+    "stateValues": {
+      "DRAFT": "Draft",
+      "SUBMITTED": "Submitted",
+      "FINAL": "Final"
+    },
+    "fields": {
+      "professionalismRating": "Professionalism",
+      "reliabilityRating": "Attendance and reliability",
+      "communicationRating": "Communication",
+      "workPerformanceRating": "Work performance",
+      "teamworkRating": "Teamwork",
+      "overallRating": "Overall performance",
+      "strengths": "Strengths",
+      "improvementAreas": "Areas to improve",
+      "finalComments": "Final comments"
+    },
+    "actions": {
+      "saveDraft": "Save draft",
+      "submit": "Submit evaluation",
+      "finalize": "Finalize evaluation"
+    },
+    "errors": {
+      "EVALUATION_INCOMPLETE": "Give every rating before submitting the evaluation.",
+      "EVALUATION_INVALID_TRANSITION": "This evaluation can no longer be changed that way.",
+      "EVALUATION_NOT_FOUND": "No evaluation has been started yet.",
+      "PLACEMENT_NOT_ACTIVE": "This internship is not running, so the evaluation cannot be changed.",
+      "ACCESS_DENIED": "Only the assigned organization supervisor can write this evaluation.",
+      "VALIDATION_FAILED": "Ratings must be between 1 and 5.",
+      "generic": "The evaluation could not be saved. Please try again."
+    }
+  },
+  "finalReport": {
+    "title": "Final report",
+    "notSubmittedYet": "The student has not submitted a final report yet.",
+    "uploadLabel": "Report document",
+    "uploadHint": "PDF only, up to 15 MB.",
+    "documentSize": "{{size}} KB",
+    "reviewComment": "Reviewer feedback: {{comment}}",
+    "revisionLabel": "What should the student revise?",
+    "revisionPlaceholder": "Explain what needs to change before you can approve it.",
+    "approvedConfirmation": "Final report approved",
+    "stateValues": {
+      "DRAFT": "Draft",
+      "SUBMITTED": "Awaiting review",
+      "NEEDS_REVISION": "Revision requested",
+      "APPROVED": "Approved"
+    },
+    "actions": {
+      "download": "Download",
+      "submit": "Submit for review",
+      "approve": "Approve report",
+      "requestRevision": "Request revision",
+      "confirmRevision": "Send back to student"
+    },
+    "errors": {
+      "FINAL_REPORT_FILE_INVALID": "That document is not an accepted PDF.",
+      "FILE_TOO_LARGE": "That document is larger than the 15 MB limit.",
+      "FINAL_REPORT_FILE_MISSING": "Attach the report document first.",
+      "FINAL_REPORT_INVALID_TRANSITION": "The report can no longer be changed that way.",
+      "FINAL_REPORT_NOT_FOUND": "No final report has been started yet.",
+      "FILE_NOT_FOUND": "The document is no longer available.",
+      "FILE_STORAGE_UNAVAILABLE": "Document storage is temporarily unavailable. Please try again.",
+      "PLACEMENT_NOT_ACTIVE": "This internship is not running, so the report cannot be changed.",
+      "PLACEMENT_NOT_FOUND": "Placement not found.",
+      "ACCESS_DENIED": "You do not have permission to open this report.",
+      "VALIDATION_FAILED": "Please check the form and try again.",
+      "generic": "The final report could not be saved. Please try again."
+    }
+  },
+  "defense": {
+    "title": "Defense",
+    "historyNote": "Every attempt is kept, including previous ones.",
+    "empty": "No defense has been scheduled yet.",
+    "attemptHeading": "Attempt {{number}}",
+    "scheduledAt": "Date and time",
+    "location": "Location or meeting details",
+    "locationPlaceholder": "Room, building or meeting link",
+    "resultLabel": "Result",
+    "panelNotes": "Panel notes",
+    "retakeNote": "Recording a retake completes this attempt. Schedule a new one afterwards; this one is kept as it is.",
+    "stateValues": {
+      "SCHEDULED": "Scheduled",
+      "COMPLETED": "Completed",
+      "CANCELLED": "Cancelled"
+    },
+    "resultValues": {
+      "PASSED": "Passed",
+      "FAILED": "Failed",
+      "RETAKE_REQUIRED": "Retake required"
+    },
+    "actions": {
+      "schedule": "Schedule defense",
+      "scheduleRetake": "Schedule a retake",
+      "confirmSchedule": "Schedule",
+      "recordResult": "Record result",
+      "confirmResult": "Save result",
+      "cancelAttempt": "Cancel this attempt"
+    },
+    "errors": {
+      "DEFENSE_ATTEMPT_ALREADY_OPEN": "A defense is already scheduled for this internship.",
+      "DEFENSE_ATTEMPT_ALREADY_EXISTS": "That defense attempt has already been created.",
+      "DEFENSE_INVALID_TRANSITION": "This attempt can no longer be changed that way.",
+      "DEFENSE_ATTEMPT_NOT_FOUND": "Defense attempt not found.",
+      "ACCESS_DENIED": "You do not have permission to manage this defense.",
+      "VALIDATION_FAILED": "Please check the form and try again.",
+      "generic": "The defense could not be updated. Please try again."
+    }
+  },
+  "completion": {
+    "title": "Internship completion",
+    "readyBadge": "Ready to complete",
+    "outstandingBadge": "{{count}} outstanding",
+    "noRequirements": "This internship has no completion requirements.",
+    "satisfied": "completed",
+    "outstanding": "outstanding",
+    "alreadyComplete": "This internship is complete.",
+    "completedConfirmation": "Internship completed successfully",
+    "blockedHint": "Every requirement above must be completed first.",
+    "requirements": {
+      "WEEKLY_LOGS": "Weekly logs reviewed",
+      "ATTENDANCE": "Attendance settled",
+      "ORGANIZATION_EVALUATION": "Organization evaluation finalized",
+      "FINAL_REPORT": "Final report approved",
+      "DEFENSE": "Defense passed"
+    },
+    "detail": {
+      "MISSING": "not started",
+      "NOT_PASSED": "not passed yet",
+      "PASSED": "passed",
+      "DRAFT": "draft",
+      "SUBMITTED": "awaiting review",
+      "NEEDS_REVISION": "revision requested",
+      "APPROVED": "approved",
+      "FINAL": "final"
+    },
+    "actions": {
+      "complete": "Complete internship"
+    },
+    "errors": {
+      "WEEKLY_LOGS_INCOMPLETE": "Every weekly log must be reviewed.",
+      "ATTENDANCE_INCOMPLETE": "Attendance must be recorded and every record settled.",
+      "ORGANIZATION_EVALUATION_INCOMPLETE": "The organization evaluation must be finalized.",
+      "FINAL_REPORT_NOT_APPROVED": "The final report must be approved.",
+      "DEFENSE_NOT_PASSED": "A defense must be passed.",
+      "PLACEMENT_INVALID_TRANSITION": "Only an internship awaiting completion can be completed.",
+      "PLACEMENT_COMPLETION_REQUIREMENTS_NOT_MET": "This internship still has outstanding requirements.",
+      "ACCESS_DENIED": "You do not have permission to complete this internship.",
+      "generic": "The internship could not be completed. Please try again."
+    }
+  },
+  "policy": {
+    "title": "Internship requirements",
+    "description": "Choose what students must complete before an internship can be marked complete.",
+    "noMembership": "You are not a member of a university.",
+    "level": "Applies to",
+    "universityLevel": "Whole university",
+    "requirements": "Completion requirements",
+    "readOnly": "Only a university admin can change the university-wide requirements.",
+    "saved": "Requirements saved.",
+    "historicalNote": "Changing these affects internships that start from now on. Internships already under way keep the requirements that applied when they began.",
+    "sourceValues": {
+      "DEPARTMENT": "Set by this department",
+      "UNIVERSITY": "Following the university default",
+      "PLATFORM_DEFAULT": "Nothing configured yet"
+    },
+    "fields": {
+      "weeklyLogsRequired": {
+        "label": "Weekly logs",
+        "hint": "Every week of the internship must have a reviewed log."
+      },
+      "attendanceRequired": {
+        "label": "Attendance",
+        "hint": "Attendance must be recorded, and every record confirmed or its dispute resolved."
+      },
+      "organizationEvaluationRequired": {
+        "label": "Organization evaluation",
+        "hint": "The host organization's evaluation must be finalized."
+      },
+      "finalReportRequired": {
+        "label": "Final report",
+        "hint": "The student's final report must be approved."
+      },
+      "defenseRequired": {
+        "label": "Defense",
+        "hint": "The student must pass a defense."
+      }
+    },
+    "actions": {
+      "save": "Save requirements",
+      "clearOverride": "Follow the university default"
+    },
+    "errors": {
+      "DEPARTMENT_NOT_FOUND": "Department not found.",
+      "ACCESS_DENIED": "You do not have permission to change these requirements.",
+      "VALIDATION_FAILED": "Please check the form and try again.",
+      "generic": "The requirements could not be saved. Please try again."
+    }
+  }
+}
