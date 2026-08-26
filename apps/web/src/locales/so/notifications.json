@@ -1,0 +1,45 @@
+{
+  "title": "Ogeysiisyada",
+  "empty": "Weli ogeysiis kuma lihid.",
+  "emptyUnread": "Ma jiraan ogeysiisyo aan la akhrin.",
+  "unread": "Cusub",
+  "open": "Fur",
+  "markRead": "Calaamadee inaad akhriday",
+  "markAllRead": "Calaamadee dhammaan inaad akhriday",
+  "viewAll": "Eeg dhammaan ogeysiisyada",
+  "bell": {
+    "label": "Ogeysiisyada",
+    "labelWithCount": "Ogeysiisyada, {{count}} oo aan la akhrin"
+  },
+  "filter": {
+    "unreadOnly": "Muuji kuwa aan la akhrin oo keliya",
+    "showAll": "Muuji dhammaan"
+  },
+  "types": {
+    "GENERIC": "Waxaa kuu yimid war cusub oo FursadHub ah.",
+    "STUDENT_VERIFICATION_NEEDS_MORE_EVIDENCE": "Jaamacaddaadu waxay u baahan tahay caddayn dheeraad ah ka hor inta aan la xaqiijin diiwaangelintaada.",
+    "STUDENT_VERIFICATION_VERIFIED": "Diiwaangelintaada jaamacadeed waa la xaqiijiyay.",
+    "STUDENT_VERIFICATION_REJECTED": "Xaqiijinta diiwaangelintaada lama ansixin.",
+    "ORGANIZATION_VERIFIED": "{{organizationName}} waa la xaqiijiyay.",
+    "ORGANIZATION_VERIFICATION_CHANGES_REQUESTED": "{{organizationName}} waxay u baahan tahay isbeddel ka hor inta aan la xaqiijin.",
+    "ORGANIZATION_VERIFICATION_REJECTED": "Xaqiijinta {{organizationName}} lama ansixin.",
+    "ORGANIZATION_VERIFICATION_SUSPENDED": "Xaqiijinta {{organizationName}} waa la hakiyay.",
+    "ORGANIZATION_VERIFICATION_REVOKED": "Xaqiijinta {{organizationName}} waa la burburiyay.",
+    "WEEKLY_LOG_RETURNED": "Toddobaadka {{weekNumber}} ee diiwaanka tababarkaaga waxaa loo soo celiyay in wax laga beddelo.",
+    "WEEKLY_LOG_REVIEWED": "Toddobaadka {{weekNumber}} ee diiwaanka tababarkaaga waa la eegay.",
+    "ATTENDANCE_DISPUTED": "Arday ayaa ka doodday diiwaan imaanshaha oo ku saabsan meel aad kormeerto.",
+    "ATTENDANCE_RESOLVED": "Doodda imaanshahaaga waa la xalliyay.",
+    "EVALUATION_FINALIZED": "Qiimaynta tababarkaaga hadda waa diyaar.",
+    "FINAL_REPORT_REVISION_REQUESTED": "Warbixintaada ugu dambaysa waxaa loo soo celiyay in wax laga beddelo.",
+    "FINAL_REPORT_APPROVED": "Warbixintaada ugu dambaysa waa la ansixiyay.",
+    "DEFENSE_SCHEDULED": "Isku daygii difaaca ee {{attemptNumber}} waa la qorsheeyay.",
+    "DEFENSE_RESULT_RECORDED": "Natiijada isku daygii difaaca ee {{attemptNumber}} waa la diiwaangeliyay.",
+    "PLACEMENT_COMPLETED": "Tababarkaaga waxaa lagu calaamadeeyay inuu dhammaaday.",
+    "ACCOUNT_SUSPENDED": "Akoonkaaga FursadHub waa la hakiyay.",
+    "ACCOUNT_REACTIVATED": "Akoonkaaga FursadHub mar kale waa firfircoon yahay.",
+    "PRIVACY_REQUEST_RECEIVED": "Waan helnay codsigaaga asturnaanta.",
+    "PRIVACY_REQUEST_COMPLETED": "Codsigaaga asturnaanta waa la dhammeeyay.",
+    "PRIVACY_REQUEST_REJECTED": "Codsigaaga asturnaanta lama aqbalin.",
+    "LEGAL_DOCUMENT_UPDATED": "FursadHub waxay daabacday shuruudo cusub oo aad dib u eegto."
+  }
+}

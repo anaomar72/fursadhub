@@ -1,0 +1,228 @@
+{
+  "nav": {
+    "dashboard": "Dashboard",
+    "organizations": "Organizations",
+    "escalations": "Escalations",
+    "users": "Accounts",
+    "privacyRequests": "Privacy requests",
+    "legalDocuments": "Legal documents",
+    "audit": "Audit",
+    "platformRoles": "Platform roles",
+    "noAccess": "You do not have platform administration access."
+  },
+  "dashboard": {
+    "title": "Platform overview",
+    "unavailable": "Statistics are not available right now.",
+    "needsAttention": "Needs attention",
+    "platform": "Platform",
+    "needsAction": "Needs action",
+    "clear": "Nothing outstanding",
+    "openPrivacyRequests": "Open privacy requests",
+    "escalatedCases": "Escalated verification cases",
+    "failedEmails": "Failed email deliveries",
+    "recentLoginFailures": "Login failures (24h)",
+    "accounts": "Accounts",
+    "organizations": "Organizations",
+    "placements": "Placements",
+    "opportunities": "Opportunities",
+    "universities": "Universities",
+    "candidacies": "Candidacies"
+  },
+  "organizations": {
+    "title": "Organization verification",
+    "statusFilter": "Status",
+    "allStatuses": "All statuses",
+    "searchLabel": "Organization name",
+    "searchPlaceholder": "Search by name",
+    "search": "Search",
+    "empty": "No organizations match these filters.",
+    "noActions": "No actions are available from this state.",
+    "notePlaceholder": "Explain your decision",
+    "confirm": "Confirm",
+    "cancel": "Cancel",
+    "actions": {
+      "begin-review": "Begin review",
+      "verify": "Verify",
+      "request-changes": "Request changes",
+      "reject": "Reject",
+      "suspend": "Suspend",
+      "revoke": "Revoke"
+    },
+    "errors": {
+      "generic": "That action could not be completed. Please try again.",
+      "ORGANIZATION_NOT_FOUND": "That organization could not be found.",
+      "ORGANIZATION_INVALID_TRANSITION": "That change is not allowed from the organization's current state.",
+      "ACCESS_DENIED": "You do not have access to this action."
+    }
+  },
+  "organizationTypes": {
+    "COMPANY": "Company",
+    "NGO": "NGO",
+    "GOVERNMENT": "Government",
+    "OTHER": "Other"
+  },
+  "escalations": {
+    "title": "Escalated verification cases",
+    "description": "Cases a university could not resolve on its own. Resolving one here uses the same steps the university would have used.",
+    "empty": "There are no escalated cases.",
+    "unknownStudent": "Unknown student",
+    "enrollment": "Student number {{studentNumber}} · {{program}} · {{year}}",
+    "reason": "Why it was escalated",
+    "downloadEvidence": "Download evidence",
+    "noEvidence": "No evidence uploaded",
+    "notePlaceholder": "Explain your decision",
+    "confirm": "Confirm",
+    "cancel": "Cancel",
+    "actions": {
+      "verify": "Verify enrollment",
+      "reject": "Reject",
+      "request-more-evidence": "Request more evidence"
+    },
+    "errors": {
+      "generic": "That action could not be completed. Please try again.",
+      "VERIFICATION_CASE_NOT_FOUND": "That case could not be found.",
+      "VERIFICATION_CASE_ALREADY_RESOLVED": "That case has already been resolved.",
+      "VERIFICATION_EVIDENCE_MISSING": "No evidence has been uploaded for this case.",
+      "VALIDATION_FAILED": "A reason is required for this action."
+    }
+  },
+  "verificationStatuses": {
+    "DRAFT": "Draft",
+    "SUBMITTED": "Submitted",
+    "UNDER_REVIEW": "Under review",
+    "NEEDS_MORE_EVIDENCE": "Needs more evidence",
+    "VERIFIED": "Verified",
+    "REJECTED": "Rejected",
+    "REVOKED": "Revoked"
+  },
+  "users": {
+    "title": "Accounts",
+    "searchLabel": "Email",
+    "searchPlaceholder": "Search by email",
+    "statusFilter": "Status",
+    "allStatuses": "All statuses",
+    "search": "Search",
+    "empty": "No accounts match these filters.",
+    "email": "Email",
+    "status": "Status",
+    "created": "Created",
+    "actions": "Actions",
+    "suspend": "Suspend",
+    "reactivate": "Reactivate",
+    "confirmSuspend": "Confirm suspension",
+    "cancel": "Cancel",
+    "noActions": "No actions",
+    "reasonLabel": "Reason for suspension",
+    "reasonPlaceholder": "Internal reason (not shown to the account holder)",
+    "errors": {
+      "generic": "That action could not be completed. Please try again.",
+      "USER_NOT_FOUND": "That account could not be found.",
+      "USER_CLOSED": "A closed account cannot be changed.",
+      "CANNOT_SUSPEND_SELF": "You cannot suspend your own account."
+    }
+  },
+  "privacyRequests": {
+    "title": "Privacy requests",
+    "description": "Every request is handled by a person. Recording an outcome here does not delete or export anything on its own.",
+    "stateFilter": "State",
+    "allStates": "All states",
+    "empty": "There are no requests matching these filters.",
+    "submittedAt": "Submitted {{date}}",
+    "outcome": "Outcome",
+    "notePlaceholder": "Describe what was done, or why it could not be.",
+    "confirm": "Confirm",
+    "cancel": "Cancel",
+    "actions": {
+      "begin-review": "Begin review",
+      "complete": "Mark completed",
+      "reject": "Reject"
+    },
+    "errors": {
+      "generic": "That action could not be completed. Please try again.",
+      "PRIVACY_REQUEST_NOT_FOUND": "That request could not be found.",
+      "PRIVACY_REQUEST_INVALID_TRANSITION": "That request has already been resolved.",
+      "VALIDATION_FAILED": "A reason is required when rejecting a request."
+    }
+  },
+  "legalDocuments": {
+    "title": "Legal documents",
+    "description": "Documents are versioned. A published version can never be edited — publish a new version instead.",
+    "publishHeading": "Publish a new version",
+    "documentType": "Document",
+    "locale": "Language",
+    "version": "Version",
+    "versionPlaceholder": "e.g. 2026-01",
+    "effectiveFrom": "Effective from",
+    "documentTitle": "Title",
+    "body": "Text",
+    "immutableNotice": "Once published, this version cannot be edited or deleted. Corrections require a new version.",
+    "publish": "Publish",
+    "published": "Published versions",
+    "empty": "No legal documents have been published yet.",
+    "summary": "{{type}} · version {{version}} · {{locale}} · effective {{date}}",
+    "statusPublished": "Published",
+    "statusDraft": "Draft",
+    "errors": {
+      "generic": "The document could not be published. Please try again.",
+      "LEGAL_DOCUMENT_VERSION_EXISTS": "That version already exists in this language. Use a new version number.",
+      "VALIDATION_FAILED": "Please check the fields you entered."
+    }
+  },
+  "audit": {
+    "title": "Audit trail",
+    "description": "A permanent, append-only record of security and business actions. It cannot be edited or deleted.",
+    "typeFilter": "Event type",
+    "allTypes": "All event types",
+    "empty": "No audit events match these filters.",
+    "occurredAt": "When",
+    "eventType": "Event",
+    "actor": "Acting user",
+    "metadata": "Details",
+    "system": "System"
+  },
+  "platformRoles": {
+    "title": "Platform roles",
+    "description": "Platform roles are granted to individual accounts and can be revoked at any time. Revoked grants stay listed as history.",
+    "userId": "Account ID",
+    "userIdPlaceholder": "Paste the account ID from the Accounts page",
+    "role": "Role",
+    "grant": "Grant role",
+    "revoke": "Revoke",
+    "active": "Active",
+    "revoked": "Revoked",
+    "grantedAt": "{{role}} · granted {{date}}",
+    "errors": {
+      "generic": "That action could not be completed. Please try again.",
+      "USER_NOT_FOUND": "That account could not be found.",
+      "USER_NOT_ACTIVE": "Only an active account can be granted a platform role.",
+      "LAST_SUPER_ADMIN": "The last super admin cannot be revoked. Grant the role to another account first.",
+      "PLATFORM_ROLE_NOT_FOUND": "That grant could not be found.",
+      "VALIDATION_FAILED": "Please check the account ID you entered."
+    }
+  },
+  "platformRoleNames": {
+    "SUPER_ADMIN": "Super admin",
+    "VERIFICATION_OFFICER": "Verification officer"
+  },
+  "statusLabels": {
+    "PENDING_CONTACT_VERIFICATION": "Awaiting email verification",
+    "ACTIVE": "Active",
+    "SUSPENDED": "Suspended",
+    "CLOSED": "Closed",
+    "DRAFT": "Draft",
+    "SUBMITTED": "Submitted",
+    "UNDER_REVIEW": "Under review",
+    "NEEDS_CHANGES": "Needs changes",
+    "VERIFIED": "Verified",
+    "REJECTED": "Rejected",
+    "REVOKED": "Revoked",
+    "PUBLISHED": "Published",
+    "PAUSED": "Paused",
+    "CLOSED_OPPORTUNITY": "Closed",
+    "CANCELLED": "Cancelled",
+    "PLANNED": "Planned",
+    "COMPLETION_PENDING": "Completion pending",
+    "COMPLETED": "Completed",
+    "TERMINATED": "Terminated"
+  }
+}

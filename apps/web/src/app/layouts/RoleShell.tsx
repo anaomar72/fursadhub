@@ -1,21 +1,31 @@
-import { Outlet, useNavigate } from 'react-router-dom'
+import type { ReactNode } from 'react'
+import { Link, Outlet, useNavigate } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import { BrandLogo } from '../../components/ui'
+import { NotificationBell } from '../../features/notifications/components/NotificationBell'
 import { useAuth } from '../../lib/auth/AuthContext'
 
 interface RoleShellProps {
   /** Role-area label shown next to the brand mark, e.g. "Student". Translated by the caller. */
   areaLabel: string
+  /**
+   * Optional body. When omitted the shell renders the route {@code <Outlet />} itself, which is what
+   * every role area does; the account area passes its own sub-navigation plus an Outlet instead.
+   */
+  children?: ReactNode
 }
 
 /**
  * Shared topbar/content shell for the role-scoped areas (Student, University,
- * Organization, Admin). Navigation content differs per role and is supplied
+ * Organization, Admin) and the account area. Navigation content differs per area and is supplied
  * by each area's own routes/features — this only establishes the consistent
  * chrome so every area clearly belongs to one FursadHub product
  * (BRAND_AND_UI_GUIDELINES.md section 6). Not exported outside app/layouts.
+ *
+ * <p>Phase 7 put the notification bell here rather than in each area, so a student who is also
+ * university staff sees the same unread count wherever they happen to be.
  */
-export function RoleShell({ areaLabel }: RoleShellProps) {
+export function RoleShell({ areaLabel, children }: RoleShellProps) {
   const { t } = useTranslation()
   const { signOut } = useAuth()
   const navigate = useNavigate()
@@ -35,19 +45,26 @@ export function RoleShell({ areaLabel }: RoleShellProps) {
               {areaLabel}
             </span>
           </div>
-          <button
-            type="button"
-            onClick={handleSignOut}
-            className="text-sm font-medium text-foreground-secondary hover:text-foreground"
-          >
-            {t('auth:session.signOut')}
-          </button>
+          <div className="flex items-center gap-1">
+            <NotificationBell />
+            <Link
+              to="/account/privacy"
+              className="rounded-md px-2 py-1.5 text-sm font-medium text-foreground-secondary hover:text-foreground"
+            >
+              {t('nav.account')}
+            </Link>
+            <button
+              type="button"
+              onClick={handleSignOut}
+              className="rounded-md px-2 py-1.5 text-sm font-medium text-foreground-secondary hover:text-foreground"
+            >
+              {t('auth:session.signOut')}
+            </button>
+          </div>
         </div>
       </header>
 
-      <main className="flex-1">
-        <Outlet />
-      </main>
+      <main className="flex-1">{children ?? <Outlet />}</main>
     </div>
   )
 }

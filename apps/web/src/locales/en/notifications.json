@@ -1,0 +1,45 @@
+{
+  "title": "Notifications",
+  "empty": "You have no notifications yet.",
+  "emptyUnread": "You have no unread notifications.",
+  "unread": "New",
+  "open": "Open",
+  "markRead": "Mark as read",
+  "markAllRead": "Mark all as read",
+  "viewAll": "View all notifications",
+  "bell": {
+    "label": "Notifications",
+    "labelWithCount": "Notifications, {{count}} unread"
+  },
+  "filter": {
+    "unreadOnly": "Show unread only",
+    "showAll": "Show all"
+  },
+  "types": {
+    "GENERIC": "You have a new update on FursadHub.",
+    "STUDENT_VERIFICATION_NEEDS_MORE_EVIDENCE": "Your university needs more evidence before it can verify your enrollment.",
+    "STUDENT_VERIFICATION_VERIFIED": "Your university enrollment has been verified.",
+    "STUDENT_VERIFICATION_REJECTED": "Your enrollment verification was not approved.",
+    "ORGANIZATION_VERIFIED": "{{organizationName}} has been verified.",
+    "ORGANIZATION_VERIFICATION_CHANGES_REQUESTED": "{{organizationName}} needs changes before it can be verified.",
+    "ORGANIZATION_VERIFICATION_REJECTED": "Verification for {{organizationName}} was not approved.",
+    "ORGANIZATION_VERIFICATION_SUSPENDED": "Verification for {{organizationName}} has been suspended.",
+    "ORGANIZATION_VERIFICATION_REVOKED": "Verification for {{organizationName}} has been revoked.",
+    "WEEKLY_LOG_RETURNED": "Week {{weekNumber}} of your internship log has been returned for changes.",
+    "WEEKLY_LOG_REVIEWED": "Week {{weekNumber}} of your internship log has been reviewed.",
+    "ATTENDANCE_DISPUTED": "A student has disputed an attendance record on a placement you supervise.",
+    "ATTENDANCE_RESOLVED": "Your attendance dispute has been resolved.",
+    "EVALUATION_FINALIZED": "Your internship evaluation is now available.",
+    "FINAL_REPORT_REVISION_REQUESTED": "Your final report has been returned for revision.",
+    "FINAL_REPORT_APPROVED": "Your final report has been approved.",
+    "DEFENSE_SCHEDULED": "Defense attempt {{attemptNumber}} has been scheduled.",
+    "DEFENSE_RESULT_RECORDED": "The result of defense attempt {{attemptNumber}} has been recorded.",
+    "PLACEMENT_COMPLETED": "Your internship has been marked complete.",
+    "ACCOUNT_SUSPENDED": "Your FursadHub account has been suspended.",
+    "ACCOUNT_REACTIVATED": "Your FursadHub account is active again.",
+    "PRIVACY_REQUEST_RECEIVED": "We have received your privacy request.",
+    "PRIVACY_REQUEST_COMPLETED": "Your privacy request has been completed.",
+    "PRIVACY_REQUEST_REJECTED": "Your privacy request was not accepted.",
+    "LEGAL_DOCUMENT_UPDATED": "FursadHub has published new terms for you to review."
+  }
+}

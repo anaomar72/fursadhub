@@ -98,6 +98,13 @@ fursadhub:
   notification:
     from-address: ${SMTP_FROM:no-reply@fursadhub.local}
     app-base-url: ${APP_BASE_URL:http://localhost:5173}
+  # Solves the first-admin problem (CLAUDE.md section 23): platform roles can only be granted by an
+  # existing SUPER_ADMIN, so with an empty table nobody could ever become one. When this names an
+  # ALREADY REGISTERED account and no active platform grant exists yet, startup promotes that one
+  # account. It is inert once any admin exists, so it cannot later be used to quietly restore
+  # platform authority to an account someone deliberately revoked. Blank by default.
+  administration:
+    bootstrap-super-admin-email: ${BOOTSTRAP_SUPER_ADMIN_EMAIL:}
   # Private S3-compatible object storage for student documents (CLAUDE.md section 47, ADR-004).
   # The `filesystem` provider is for local development only and is refused outright in staging and
   # production by StorageConfig.

@@ -73,13 +73,32 @@ public class User {
         this.updatedAt = Instant.now();
     }
 
-    /** State transition only — the admin endpoint that triggers this is out of scope until Phase 7. */
+    /** Blocks authentication without destroying the account. Driven by the Phase 7 admin console. */
     public void suspend() {
         this.status = UserStatus.SUSPENDED;
         this.updatedAt = Instant.now();
     }
 
-    /** State transition only — the admin endpoint that triggers this is out of scope until Phase 7. */
+    /**
+     * Lifts a suspension (Phase 7 admin console).
+     *
+     * <p>Only ever from SUSPENDED, and it returns false rather than throwing when the account is in
+     * any other state, so the caller decides what that means. A CLOSED account stays closed —
+     * closure is the user's own decision about their account and an administrator must not be able
+     * to silently reopen it. An account suspended before it ever verified its email returns to
+     * PENDING_CONTACT_VERIFICATION rather than ACTIVE, so reactivation can never be used to skip
+     * email verification (CLAUDE.md section 13).
+     */
+    public boolean reactivate() {
+        if (this.status != UserStatus.SUSPENDED) {
+            return false;
+        }
+        this.status = isEmailVerified() ? UserStatus.ACTIVE : UserStatus.PENDING_CONTACT_VERIFICATION;
+        this.updatedAt = Instant.now();
+        return true;
+    }
+
+    /** Closes the account permanently. Driven by the Phase 7 admin console. */
     public void close() {
         this.status = UserStatus.CLOSED;
         this.updatedAt = Instant.now();

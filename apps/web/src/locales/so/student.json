@@ -62,5 +62,35 @@
       "VALIDATION_FAILED": "Fadlan hubi faahfaahinta oo isku day mar kale.",
       "generic": "Wax baa qaldamay. Fadlan isku day mar kale."
     }
+  },
+  "documents": {
+    "onFile": "Waa la keydiyay",
+    "notUploaded": "Lama soo gelin",
+    "upload": "Soo geli",
+    "replace": "Beddel",
+    "download": "Soo dejiso",
+    "remove": "Ka saar"
+  },
+  "cv": {
+    "title": "CV-gaaga",
+    "description": "PDF oo keliya, ilaa 5 MB. Adiga iyo qorayaasha shaqada ee hay'adaha aad codsatay ama lagugu magacaabay oo keliya ayaa furi kara.",
+    "errors": {
+      "generic": "CV-gaaga lama keydin karin. Fadlan mar kale isku day.",
+      "CV_FILE_INVALID": "Faylkaas lama aqbalin. Soo geli PDF.",
+      "FILE_TOO_LARGE": "Faylkaas aad buu u weyn yahay. Xadka ugu badan waa 5 MB.",
+      "CV_NOT_FOUND": "Weli CV lama soo gelin.",
+      "STUDENT_PROFILE_NOT_FOUND": "Marka hore keydi faahfaahinta profile-kaaga."
+    }
+  },
+  "evidence": {
+    "title": "Caddaynta xaqiijinta",
+    "description": "PDF ama sawir kaadhkaaga ardayga ama warqadda diiwaangelinta, ilaa 10 MB. Adiga, dib-u-eegayaasha jaamacaddaada iyo shaqaalaha xaqiijinta FursadHub oo keliya ayaa furi kara.",
+    "errors": {
+      "generic": "Caddayntaada lama keydin karin. Fadlan mar kale isku day.",
+      "EVIDENCE_FILE_INVALID": "Faylkaas lama aqbalin. Soo geli PDF, JPEG ama PNG.",
+      "FILE_TOO_LARGE": "Faylkaas aad buu u weyn yahay. Xadka ugu badan waa 10 MB.",
+      "VERIFICATION_EVIDENCE_MISSING": "Weli caddayn lama soo gelin.",
+      "VERIFICATION_CASE_NOT_FOUND": "Marka hore u gudbi diiwaangelintaada xaqiijin."
+    }
   }
 }

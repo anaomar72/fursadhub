@@ -94,13 +94,11 @@ public class FinalReportService {
         }
         StoredFile file = fileService.metadata(report.getStoredFileId());
 
-        // Every read of a private document is auditable (CLAUDE.md section 47/51). The event carries
-        // identifiers only — never the storage key and never any document content.
-        audit.record("PRIVATE_FILE_ACCESSED", actingUserId, ipAddress, userAgent,
-                "storedFileId=" + file.getId() + ";classification=" + file.getClassification()
-                        + ";placementId=" + placementId);
-
-        return new Document(file, fileService.open(file));
+        // Every read of a private document is auditable (CLAUDE.md section 47/51). Phase 7 moved the
+        // audit itself into the file module so every private document is recorded the same way; the
+        // event carries identifiers only, never the storage key and never any content.
+        return new Document(file, fileService.openAudited(
+                file, actingUserId, "placementId=" + placementId, ipAddress, userAgent));
     }
 
     /** A private document being streamed back to an authorized caller. */

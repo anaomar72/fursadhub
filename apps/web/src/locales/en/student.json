@@ -62,5 +62,35 @@
       "VALIDATION_FAILED": "Please check the details and try again.",
       "generic": "Something went wrong. Please try again."
     }
+  },
+  "documents": {
+    "onFile": "On file",
+    "notUploaded": "Not uploaded",
+    "upload": "Upload",
+    "replace": "Replace",
+    "download": "Download",
+    "remove": "Remove"
+  },
+  "cv": {
+    "title": "Your CV",
+    "description": "PDF only, up to 5 MB. Only you and recruiters at organizations where you have applied or been nominated can open it.",
+    "errors": {
+      "generic": "Your CV could not be saved. Please try again.",
+      "CV_FILE_INVALID": "That file was not accepted. Upload a PDF.",
+      "FILE_TOO_LARGE": "That file is too large. The maximum size is 5 MB.",
+      "CV_NOT_FOUND": "No CV has been uploaded yet.",
+      "STUDENT_PROFILE_NOT_FOUND": "Save your profile details first."
+    }
+  },
+  "evidence": {
+    "title": "Verification evidence",
+    "description": "A PDF or photo of your student card or enrollment letter, up to 10 MB. Only you, your university's reviewers and FursadHub verification staff can open it.",
+    "errors": {
+      "generic": "Your evidence could not be saved. Please try again.",
+      "EVIDENCE_FILE_INVALID": "That file was not accepted. Upload a PDF, JPEG or PNG.",
+      "FILE_TOO_LARGE": "That file is too large. The maximum size is 10 MB.",
+      "VERIFICATION_EVIDENCE_MISSING": "No evidence has been uploaded yet.",
+      "VERIFICATION_CASE_NOT_FOUND": "Submit your enrollment for verification first."
+    }
   }
 }

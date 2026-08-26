@@ -4,6 +4,8 @@ import { zodResolver } from '@hookform/resolvers/zod'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { useTranslation } from 'react-i18next'
 import * as studentApi from '../api/studentApi'
+import * as documentsApi from '../api/documentsApi'
+import { PrivateDocumentUpload } from '../components/PrivateDocumentUpload'
 import * as universityApi from '../../university/api/universityApi'
 import type { StudentEnrollmentResponse } from '../types'
 import { enrollmentSchema, type EnrollmentFormValues } from '../schemas/enrollmentSchema'
@@ -108,6 +110,28 @@ export function EnrollmentPage() {
           </button>
         )}
       </div>
+
+      {/*
+        Phase 7 evidence. Offered from the moment a case exists and while it is still open, since
+        "more evidence needed" is the commonest reason a case stalls. The document is private:
+        readable only by the student, a scoped reviewer at their own university, and a platform
+        verification officer — never by any organization user (CLAUDE.md sections 31, 60).
+      */}
+      {caseQuery.data && !['VERIFIED', 'REJECTED', 'REVOKED'].includes(enrollment.verificationStatus) && (
+        <div className="mt-6">
+          <PrivateDocumentUpload
+            title={t('student:evidence.title')}
+            description={t('student:evidence.description')}
+            present={caseQuery.data.hasEvidence}
+            accept="application/pdf,image/jpeg,image/png"
+            errorPage="evidence"
+            invalidateKeys={[['student', 'verification-case']]}
+            onUpload={documentsApi.uploadMyEvidence}
+            onDownload={documentsApi.downloadMyEvidence}
+            downloadFilename="verification-evidence"
+          />
+        </div>
+      )}
 
       {enrollment.verificationStatus === 'DRAFT' && (
         <div className="mt-6">

@@ -4,6 +4,8 @@ import { zodResolver } from '@hookform/resolvers/zod'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { useTranslation } from 'react-i18next'
 import * as studentApi from '../api/studentApi'
+import * as documentsApi from '../api/documentsApi'
+import { PrivateDocumentUpload } from '../components/PrivateDocumentUpload'
 import { profileSchema, type ProfileFormValues } from '../schemas/profileSchema'
 import { apiErrorMessage } from '../../../lib/api/errorMessage'
 import { ApiError } from '../../../lib/api/client'
@@ -16,6 +18,13 @@ export function StudentProfilePage() {
   const profileQuery = useQuery({
     queryKey: ['student', 'profile'],
     queryFn: studentApi.getMyProfile,
+    retry: false,
+  })
+
+  // Metadata only — whether a CV exists. The bytes come from the download route.
+  const cvQuery = useQuery({
+    queryKey: ['student', 'cv'],
+    queryFn: documentsApi.getMyCv,
     retry: false,
   })
 
@@ -83,6 +92,26 @@ export function StudentProfilePage() {
           {t('student:profile.submit')}
         </Button>
       </form>
+
+      {/*
+        Phase 7. The CV is private: it is never given a URL, and the only people who can read it are
+        the student and recruiters at organizations where they have a candidacy — reached through
+        that candidacy, never through the student (CLAUDE.md section 47).
+      */}
+      <div className="mt-6">
+        <PrivateDocumentUpload
+          title={t('student:cv.title')}
+          description={t('student:cv.description')}
+          present={cvQuery.data?.present ?? false}
+          accept="application/pdf"
+          errorPage="cv"
+          invalidateKeys={[['student', 'cv']]}
+          onUpload={documentsApi.uploadMyCv}
+          onDownload={documentsApi.downloadMyCv}
+          onRemove={documentsApi.removeMyCv}
+          downloadFilename="cv.pdf"
+        />
+      </div>
     </div>
   )
 }

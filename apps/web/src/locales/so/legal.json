@@ -1,0 +1,26 @@
+{
+  "documentTypes": {
+    "TERMS": "Shuruudaha iyo Xaaladaha",
+    "PRIVACY_POLICY": "Siyaasadda Asturnaanta",
+    "COOKIE_POLICY": "Ogeysiiska Cookies-ka"
+  },
+  "versionEffective": "Nooca {{version}} · wuxuu shaqeeyaa {{date}}",
+  "translationUnavailable": "Dukumentigan weli laguma heli karo Soomaali, sidaas darteed waxaa la muujinayaa nooca Ingiriisiga.",
+  "notPublished": "Dukumentigan weli lama daabicin.",
+  "loadFailed": "Dukumentigan lama soo qaadi karin. Fadlan mar kale isku day.",
+  "acceptance": {
+    "title": "Fadlan dib u eeg oo aqbal",
+    "body": "FursadHub waxay daabacday {{document}} nooca {{version}}. Fadlan akhri oo aqbal si aad u sii wadato.",
+    "remaining": "Waxaa jira 1 dukumenti oo kale oo aad aqbali doonto kaddib kan.",
+    "remaining_other": "Waxaa jira {{count}} dukumenti oo kale oo aad aqbali doonto kaddib kan.",
+    "read": "Akhri dukumentiga oo dhan",
+    "accept": "Waan aqbalay",
+    "errors": {
+      "generic": "Aqbalaaddaada lama diiwaangelin karin. Fadlan mar kale isku day.",
+      "LEGAL_DOCUMENT_NOT_FOUND": "Dukumentigaas lama helin.",
+      "LEGAL_DOCUMENT_NOT_IN_FORCE": "Nooca dukumentigaas lama aqbali karo.",
+      "LEGAL_DOCUMENT_NOT_ACCEPTABLE": "Dukumentigaas ma u baahna aqbalaad.",
+      "TERMS_ALREADY_ACCEPTED": "Horey ayaad u aqbashay dukumentigan."
+    }
+  }
+}

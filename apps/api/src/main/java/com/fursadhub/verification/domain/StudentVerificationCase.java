@@ -47,6 +47,32 @@ public class StudentVerificationCase {
     @Column(name = "reviewed_at")
     private Instant reviewedAt;
 
+    /**
+     * Evidence supporting the enrollment claim (Phase 7). Private: readable only by scoped university
+     * reviewers and platform verification officers, and never by any organization user
+     * (CLAUDE.md sections 31, 60).
+     */
+    @Column(name = "evidence_stored_file_id")
+    private UUID evidenceStoredFileId;
+
+    @Column(name = "evidence_uploaded_at")
+    private Instant evidenceUploadedAt;
+
+    /**
+     * Escalation to the platform (Phase 7). NOT a status: the frozen state machine in
+     * {@link StudentVerificationStatus} is untouched, and an escalated case still moves through the
+     * same states. This flag only changes WHO may act on it — a university that cannot resolve a case
+     * hands it to a platform verification officer, who works it with the same transitions.
+     */
+    @Column(name = "escalated_at")
+    private Instant escalatedAt;
+
+    @Column(name = "escalated_by_user_id")
+    private UUID escalatedByUserId;
+
+    @Column(name = "escalation_reason", length = 2000)
+    private String escalationReason;
+
     @Column(name = "created_at", nullable = false)
     private Instant createdAt;
 
@@ -54,6 +80,48 @@ public class StudentVerificationCase {
     private Instant updatedAt;
 
     protected StudentVerificationCase() {
+    }
+
+    /** Attaches or replaces the evidence document. The previous file is removed by the service. */
+    public void attachEvidence(UUID storedFileId) {
+        this.evidenceStoredFileId = storedFileId;
+        this.evidenceUploadedAt = Instant.now();
+        this.updatedAt = this.evidenceUploadedAt;
+    }
+
+    /** Hands the case to the platform. Idempotent — re-escalating keeps the original record. */
+    public void escalate(UUID staffUserId, String reason) {
+        if (escalatedAt != null) {
+            return;
+        }
+        this.escalatedAt = Instant.now();
+        this.escalatedByUserId = staffUserId;
+        this.escalationReason = reason;
+        this.updatedAt = this.escalatedAt;
+    }
+
+    public boolean isEscalated() {
+        return escalatedAt != null;
+    }
+
+    public UUID getEvidenceStoredFileId() {
+        return evidenceStoredFileId;
+    }
+
+    public Instant getEvidenceUploadedAt() {
+        return evidenceUploadedAt;
+    }
+
+    public Instant getEscalatedAt() {
+        return escalatedAt;
+    }
+
+    public UUID getEscalatedByUserId() {
+        return escalatedByUserId;
+    }
+
+    public String getEscalationReason() {
+        return escalationReason;
     }
 
     public static StudentVerificationCase submit(UUID enrollmentId) {
