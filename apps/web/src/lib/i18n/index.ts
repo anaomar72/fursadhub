@@ -30,6 +30,8 @@ import privacyEn from '../../locales/en/privacy.json'
 import privacySo from '../../locales/so/privacy.json'
 import adminEn from '../../locales/en/admin.json'
 import adminSo from '../../locales/so/admin.json'
+import accountEn from '../../locales/en/account.json'
+import accountSo from '../../locales/so/account.json'
 
 export const defaultNamespace = 'common'
 
@@ -53,6 +55,7 @@ void i18n
         legal: legalEn,
         privacy: privacyEn,
         admin: adminEn,
+        account: accountEn,
       },
       so: {
         common: commonSo,
@@ -69,6 +72,7 @@ void i18n
         legal: legalSo,
         privacy: privacySo,
         admin: adminSo,
+        account: accountSo,
       },
     },
     ns: [
@@ -87,6 +91,8 @@ void i18n
       'legal',
       'privacy',
       'admin',
+      // Phase 8
+      'account',
     ],
     fallbackLng: 'en',
     supportedLngs: ['en', 'so'],

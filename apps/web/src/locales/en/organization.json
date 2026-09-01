@@ -1,8 +1,19 @@
 {
   "nav": {
+    "dashboard": "Dashboard",
     "opportunities": "Opportunities",
     "profile": "Organization",
     "staff": "Staff"
+  },
+  "dashboard": {
+    "title": "Your dashboard",
+    "publishedOpportunities": "Published opportunities",
+    "draftOpportunities": "Drafts",
+    "placements": "Placements",
+    "live": "Live",
+    "active": "Active",
+    "needsPublishing": "Needs publishing",
+    "clear": "Nothing outstanding"
   },
   "setup": {
     "title": "Set up your organization",
@@ -17,6 +28,10 @@
       "VALIDATION_FAILED": "Please check the form and try again.",
       "generic": "Something went wrong. Please try again."
     }
+  },
+  "publicProfile": {
+    "notFound": "This organization could not be found.",
+    "viewOpportunities": "View opportunities"
   },
   "profile": {
     "title": "Organization profile",
@@ -37,12 +52,26 @@
       "REVOKED": "Revoked"
     },
     "verifiedLabel": "Verified organization",
+    "logo": {
+      "hint": "JPEG or PNG, up to 3MB. Shown publicly on your opportunities and your profile."
+    },
     "saveChanges": "Save changes",
     "submitForVerification": "Submit for verification",
     "submitForVerificationBody": "Your organization must be verified before you can publish opportunities.",
+    "evidence": {
+      "label": "Business or registration license",
+      "hint": "Upload a PDF of your organization's business or registration license.",
+      "attached": "A license document is on file.",
+      "uploading": "Uploading…",
+      "required": "Attach your license document before submitting for verification."
+    },
     "errors": {
       "ACCESS_DENIED": "You do not have access to this organization.",
       "ORGANIZATION_VERIFICATION_INVALID_TRANSITION": "This organization can't be submitted for verification from its current state.",
+      "ORGANIZATION_VERIFICATION_EVIDENCE_REQUIRED": "Attach your license document before submitting for verification.",
+      "ORGANIZATION_EVIDENCE_FILE_INVALID": "That file isn't accepted — upload a PDF under 10MB.",
+      "ORGANIZATION_LOGO_FILE_INVALID": "That file isn't accepted — upload a JPEG or PNG under 3MB.",
+      "FILE_TOO_LARGE": "That file is larger than the maximum allowed size.",
       "VALIDATION_FAILED": "Please check the form and try again.",
       "generic": "Something went wrong. Please try again."
     }
@@ -50,20 +79,39 @@
   "staff": {
     "title": "Staff",
     "emailLabel": "Email address",
+    "passwordLabel": "Temporary password",
+    "confirmPasswordLabel": "Confirm password",
     "roleLabel": "Role",
     "roles": {
       "ORGANIZATION_ADMIN": "Organization admin",
       "RECRUITER": "Recruiter",
       "ORGANIZATION_SUPERVISOR": "Organization supervisor"
     },
-    "assignSubmit": "Assign staff role",
+    "createSubmit": "Create staff account",
+    "changeRole": "Change role",
+    "saveRole": "Save",
+    "suspend": "Suspend",
+    "reactivate": "Reactivate",
+    "resetPassword": "Reset password",
+    "resetPasswordOnceWarning": "This password is shown only once. Share it with the staff member now.",
+    "copyCredentials": "Copy",
+    "dismiss": "Dismiss",
+    "statusValues": {
+      "PENDING_CONTACT_VERIFICATION": "Awaiting email verification",
+      "ACTIVE": "Active",
+      "SUSPENDED": "Suspended",
+      "CLOSED": "Closed"
+    },
     "revoke": "Revoke",
-    "empty": "No staff assigned yet.",
+    "empty": "No staff created yet.",
     "errors": {
-      "STAFF_USER_NOT_FOUND": "No account exists for this email.",
-      "STAFF_USER_NOT_ACTIVE": "This account must be active before it can be assigned a staff role.",
-      "STAFF_ALREADY_ASSIGNED": "This user already has an active staff role at this organization.",
+      "STAFF_EMAIL_ALREADY_EXISTS": "An account with this email already exists.",
+      "STAFF_ROLE_NOT_ASSIGNABLE": "Organization admins may only assign Recruiter or Organization Supervisor.",
+      "STAFF_PASSWORD_CONFIRMATION_MISMATCH": "Password and confirmation do not match.",
+      "STAFF_MEMBERSHIP_NOT_FOUND": "Staff membership not found.",
+      "USER_CLOSED": "A closed account cannot be suspended or reactivated.",
       "ACCESS_DENIED": "Only an organization admin can manage staff.",
+      "VALIDATION_FAILED": "Please check the form and try again.",
       "generic": "Something went wrong. Please try again."
     }
   }

@@ -1,11 +1,56 @@
 export type UniversityRole = 'UNIVERSITY_ADMIN' | 'DEPARTMENT_COORDINATOR' | 'UNIVERSITY_SUPERVISOR'
 
+export type InstitutionVerificationStatus =
+  | 'DRAFT'
+  | 'SUBMITTED'
+  | 'UNDER_REVIEW'
+  | 'NEEDS_CHANGES'
+  | 'VERIFIED'
+  | 'REJECTED'
+  | 'SUSPENDED'
+  | 'REVOKED'
+
 export interface UniversityResponse {
   id: string
   name: string
   slug: string
   city: string | null
   status: string
+}
+
+/** Management view of a university — its own staff, and the registering user. */
+export interface UniversityDetailResponse {
+  id: string
+  name: string
+  slug: string
+  city: string | null
+  registrationNumber: string | null
+  website: string | null
+  description: string | null
+  status: InstitutionVerificationStatus
+  hasEvidence: boolean
+  evidenceUploadedAt: string | null
+  hasLogo: boolean
+  logoUploadedAt: string | null
+  verifiedAt: string | null
+  createdAt: string
+  updatedAt: string
+}
+
+export interface UniversityEvidenceResponse {
+  present: boolean
+}
+
+/** What anyone browsing FursadHub — signed in or not — sees of a university (Phase 8). */
+export interface PublicUniversityResponse {
+  id: string
+  name: string
+  slug: string
+  city: string | null
+  website: string | null
+  description: string | null
+  verified: boolean
+  hasLogo: boolean
 }
 
 export interface DepartmentResponse {
@@ -21,13 +66,23 @@ export interface MyMembershipResponse {
   departmentIds: string[]
 }
 
+export type UserAccountStatus = 'PENDING_CONTACT_VERIFICATION' | 'ACTIVE' | 'SUSPENDED' | 'CLOSED'
+
 export interface StaffMemberResponse {
   membershipId: string
   userId: string
   email: string | null
   role: UniversityRole
+  status: UserAccountStatus | null
   departmentIds: string[]
   assignedAt: string
+}
+
+/** A server-generated temporary credential, returned exactly once after a staff password reset. */
+export interface TemporaryCredentialResponse {
+  membershipId: string
+  email: string
+  temporaryPassword: string
 }
 
 export interface StudentRowResponse {

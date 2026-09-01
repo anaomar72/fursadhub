@@ -1,6 +1,7 @@
 package com.fursadhub.university;
 
 import com.fursadhub.identity.AbstractIdentityIT;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
@@ -23,9 +24,20 @@ import static org.assertj.core.api.Assertions.assertThat;
  */
 class UniversityVerificationAuthorizationIT extends AbstractIdentityIT {
 
-    private static final UUID JAMHURIYA_UNIVERSITY_ID = UUID.fromString("11111111-1111-4111-8111-111111111111");
-    private static final UUID CS_DEPARTMENT_ID = UUID.fromString("11111111-1111-4111-8111-1111111110c1");
-    private static final UUID BA_DEPARTMENT_ID = UUID.fromString("11111111-1111-4111-8111-1111111110c2");
+    /**
+     * Phase 8 removed the seeded pilot tenant — every test gets its own fresh, already-VERIFIED
+     * university and two departments instead of sharing one Flyway-seeded row.
+     */
+    private UUID defaultUniversityId;
+    private UUID csDepartmentId;
+    private UUID baDepartmentId;
+
+    @BeforeEach
+    void setUpDefaultUniversity() {
+        defaultUniversityId = insertVerifiedUniversity("Test University " + UUID.randomUUID());
+        csDepartmentId = insertDepartment(defaultUniversityId, "Computer Science", "CS");
+        baDepartmentId = insertDepartment(defaultUniversityId, "Business Administration", "BA");
+    }
 
     @Test
     void universityAdminCannotReadAnotherUniversitysStaff() {
@@ -34,7 +46,7 @@ class UniversityVerificationAuthorizationIT extends AbstractIdentityIT {
         String adminEmail = uniqueEmail("uni-a-admin");
         register(adminEmail, "Password123");
         UUID adminId = userIdOf(adminEmail);
-        insertMembership(JAMHURIYA_UNIVERSITY_ID, adminId, "UNIVERSITY_ADMIN");
+        insertMembership(defaultUniversityId, adminId, "UNIVERSITY_ADMIN");
         String adminToken = loginAndExtractAccessToken(adminEmail, "Password123");
 
         ResponseEntity<Map> response = authorizedGet("/api/v1/universities/" + universityB + "/staff", adminToken);
@@ -48,12 +60,12 @@ class UniversityVerificationAuthorizationIT extends AbstractIdentityIT {
         String coordinatorEmail = uniqueEmail("cs-coordinator");
         register(coordinatorEmail, "Password123");
         UUID coordinatorId = userIdOf(coordinatorEmail);
-        UUID membershipId = insertMembership(JAMHURIYA_UNIVERSITY_ID, coordinatorId, "DEPARTMENT_COORDINATOR");
-        insertMembershipDepartment(membershipId, CS_DEPARTMENT_ID);
+        UUID membershipId = insertMembership(defaultUniversityId, coordinatorId, "DEPARTMENT_COORDINATOR");
+        insertMembershipDepartment(membershipId, csDepartmentId);
         String coordinatorToken = loginAndExtractAccessToken(coordinatorEmail, "Password123");
 
         ResponseEntity<Map> response = authorizedGet(
-                "/api/v1/universities/" + JAMHURIYA_UNIVERSITY_ID + "/students?departmentId=" + BA_DEPARTMENT_ID, coordinatorToken);
+                "/api/v1/universities/" + defaultUniversityId + "/students?departmentId=" + baDepartmentId, coordinatorToken);
 
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.FORBIDDEN);
         assertThat(response.getBody().get("code")).isEqualTo("ACCESS_DENIED");
@@ -64,18 +76,18 @@ class UniversityVerificationAuthorizationIT extends AbstractIdentityIT {
         String studentEmail = uniqueEmail("ba-student");
         register(studentEmail, "Password123");
         String studentToken = loginAndExtractAccessToken(studentEmail, "Password123");
-        claimAndSubmit(studentToken, BA_DEPARTMENT_ID, "BA-" + UUID.randomUUID().toString().substring(0, 8));
+        claimAndSubmit(studentToken, baDepartmentId, "BA-" + UUID.randomUUID().toString().substring(0, 8));
         UUID caseId = caseIdForEnrollmentOwnedBy(studentEmail);
 
         String coordinatorEmail = uniqueEmail("cs-only-coordinator");
         register(coordinatorEmail, "Password123");
         UUID coordinatorId = userIdOf(coordinatorEmail);
-        UUID membershipId = insertMembership(JAMHURIYA_UNIVERSITY_ID, coordinatorId, "DEPARTMENT_COORDINATOR");
-        insertMembershipDepartment(membershipId, CS_DEPARTMENT_ID);
+        UUID membershipId = insertMembership(defaultUniversityId, coordinatorId, "DEPARTMENT_COORDINATOR");
+        insertMembershipDepartment(membershipId, csDepartmentId);
         String coordinatorToken = loginAndExtractAccessToken(coordinatorEmail, "Password123");
 
         ResponseEntity<Map> response = authorizedPost(
-                "/api/v1/universities/" + JAMHURIYA_UNIVERSITY_ID + "/verification-cases/" + caseId + "/begin-review",
+                "/api/v1/universities/" + defaultUniversityId + "/verification-cases/" + caseId + "/begin-review",
                 coordinatorToken, null);
 
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.FORBIDDEN);
@@ -87,12 +99,12 @@ class UniversityVerificationAuthorizationIT extends AbstractIdentityIT {
         String supervisorEmail = uniqueEmail("supervisor");
         register(supervisorEmail, "Password123");
         UUID supervisorId = userIdOf(supervisorEmail);
-        UUID membershipId = insertMembership(JAMHURIYA_UNIVERSITY_ID, supervisorId, "UNIVERSITY_SUPERVISOR");
-        insertMembershipDepartment(membershipId, CS_DEPARTMENT_ID);
+        UUID membershipId = insertMembership(defaultUniversityId, supervisorId, "UNIVERSITY_SUPERVISOR");
+        insertMembershipDepartment(membershipId, csDepartmentId);
         String supervisorToken = loginAndExtractAccessToken(supervisorEmail, "Password123");
 
         ResponseEntity<Map> response = authorizedGet(
-                "/api/v1/universities/" + JAMHURIYA_UNIVERSITY_ID + "/verification-cases", supervisorToken);
+                "/api/v1/universities/" + defaultUniversityId + "/verification-cases", supervisorToken);
 
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.FORBIDDEN);
         assertThat(response.getBody().get("code")).isEqualTo("ACCESS_DENIED");
@@ -106,7 +118,7 @@ class UniversityVerificationAuthorizationIT extends AbstractIdentityIT {
         register(firstEmail, "Password123");
         String firstToken = loginAndExtractAccessToken(firstEmail, "Password123");
         ResponseEntity<Map> first = authorizedPost("/api/v1/students/me/enrollment", firstToken,
-                Map.of("universityId", JAMHURIYA_UNIVERSITY_ID.toString(), "departmentId", CS_DEPARTMENT_ID.toString(),
+                Map.of("universityId", defaultUniversityId.toString(), "departmentId", csDepartmentId.toString(),
                         "studentNumber", sharedNumber, "program", "BSc Computer Science", "academicYear", "2025/2026"));
         assertThat(first.getStatusCode()).isEqualTo(HttpStatus.CREATED);
 
@@ -114,7 +126,7 @@ class UniversityVerificationAuthorizationIT extends AbstractIdentityIT {
         register(secondEmail, "Password123");
         String secondToken = loginAndExtractAccessToken(secondEmail, "Password123");
         ResponseEntity<Map> second = authorizedPost("/api/v1/students/me/enrollment", secondToken,
-                Map.of("universityId", JAMHURIYA_UNIVERSITY_ID.toString(), "departmentId", BA_DEPARTMENT_ID.toString(),
+                Map.of("universityId", defaultUniversityId.toString(), "departmentId", baDepartmentId.toString(),
                         "studentNumber", sharedNumber, "program", "BBA", "academicYear", "2025/2026"));
 
         assertThat(second.getStatusCode()).isEqualTo(HttpStatus.CONFLICT);
@@ -126,7 +138,7 @@ class UniversityVerificationAuthorizationIT extends AbstractIdentityIT {
         String studentEmail = uniqueEmail("expired-challenge-student");
         register(studentEmail, "Password123");
         String studentToken = loginAndExtractAccessToken(studentEmail, "Password123");
-        claimAndSubmit(studentToken, CS_DEPARTMENT_ID, "EXP-" + UUID.randomUUID().toString().substring(0, 8));
+        claimAndSubmit(studentToken, csDepartmentId, "EXP-" + UUID.randomUUID().toString().substring(0, 8));
         UUID caseId = caseIdForEnrollmentOwnedBy(studentEmail);
 
         ResponseEntity<Map> issued = authorizedPost("/api/v1/students/me/verification/challenges", studentToken, null);
@@ -136,7 +148,7 @@ class UniversityVerificationAuthorizationIT extends AbstractIdentityIT {
 
         String adminToken = provisionUniversityAdmin();
         ResponseEntity<Map> response = authorizedPost(
-                "/api/v1/universities/" + JAMHURIYA_UNIVERSITY_ID + "/verification-cases/" + caseId + "/consume-challenge",
+                "/api/v1/universities/" + defaultUniversityId + "/verification-cases/" + caseId + "/consume-challenge",
                 adminToken, Map.of("code", code));
 
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.BAD_REQUEST);
@@ -148,7 +160,7 @@ class UniversityVerificationAuthorizationIT extends AbstractIdentityIT {
         String studentEmail = uniqueEmail("replay-challenge-student");
         register(studentEmail, "Password123");
         String studentToken = loginAndExtractAccessToken(studentEmail, "Password123");
-        claimAndSubmit(studentToken, CS_DEPARTMENT_ID, "REPLAY-" + UUID.randomUUID().toString().substring(0, 8));
+        claimAndSubmit(studentToken, csDepartmentId, "REPLAY-" + UUID.randomUUID().toString().substring(0, 8));
         UUID caseId = caseIdForEnrollmentOwnedBy(studentEmail);
 
         ResponseEntity<Map> issued = authorizedPost("/api/v1/students/me/verification/challenges", studentToken, null);
@@ -156,12 +168,12 @@ class UniversityVerificationAuthorizationIT extends AbstractIdentityIT {
 
         String adminToken = provisionUniversityAdmin();
         ResponseEntity<Map> firstConsume = authorizedPost(
-                "/api/v1/universities/" + JAMHURIYA_UNIVERSITY_ID + "/verification-cases/" + caseId + "/consume-challenge",
+                "/api/v1/universities/" + defaultUniversityId + "/verification-cases/" + caseId + "/consume-challenge",
                 adminToken, Map.of("code", code));
         assertThat(firstConsume.getStatusCode()).isEqualTo(HttpStatus.OK);
 
         ResponseEntity<Map> replay = authorizedPost(
-                "/api/v1/universities/" + JAMHURIYA_UNIVERSITY_ID + "/verification-cases/" + caseId + "/consume-challenge",
+                "/api/v1/universities/" + defaultUniversityId + "/verification-cases/" + caseId + "/consume-challenge",
                 adminToken, Map.of("code", code));
 
         assertThat(replay.getStatusCode()).isEqualTo(HttpStatus.BAD_REQUEST);
@@ -173,16 +185,16 @@ class UniversityVerificationAuthorizationIT extends AbstractIdentityIT {
         String studentEmail = uniqueEmail("already-resolved-student");
         register(studentEmail, "Password123");
         String studentToken = loginAndExtractAccessToken(studentEmail, "Password123");
-        claimAndSubmit(studentToken, CS_DEPARTMENT_ID, "RESOLVED-" + UUID.randomUUID().toString().substring(0, 8));
+        claimAndSubmit(studentToken, csDepartmentId, "RESOLVED-" + UUID.randomUUID().toString().substring(0, 8));
         UUID caseId = caseIdForEnrollmentOwnedBy(studentEmail);
 
         String adminToken = provisionUniversityAdmin();
         ResponseEntity<Map> firstVerify = authorizedPost(
-                "/api/v1/universities/" + JAMHURIYA_UNIVERSITY_ID + "/verification-cases/" + caseId + "/verify", adminToken, null);
+                "/api/v1/universities/" + defaultUniversityId + "/verification-cases/" + caseId + "/verify", adminToken, null);
         assertThat(firstVerify.getStatusCode()).isEqualTo(HttpStatus.OK);
 
         ResponseEntity<Map> secondVerify = authorizedPost(
-                "/api/v1/universities/" + JAMHURIYA_UNIVERSITY_ID + "/verification-cases/" + caseId + "/verify", adminToken, null);
+                "/api/v1/universities/" + defaultUniversityId + "/verification-cases/" + caseId + "/verify", adminToken, null);
 
         assertThat(secondVerify.getStatusCode()).isEqualTo(HttpStatus.CONFLICT);
         assertThat(secondVerify.getBody().get("code")).isEqualTo("VERIFICATION_CASE_ALREADY_RESOLVED");
@@ -194,13 +206,13 @@ class UniversityVerificationAuthorizationIT extends AbstractIdentityIT {
         String email = uniqueEmail("admin");
         register(email, "Password123");
         UUID adminId = userIdOf(email);
-        insertMembership(JAMHURIYA_UNIVERSITY_ID, adminId, "UNIVERSITY_ADMIN");
+        insertMembership(defaultUniversityId, adminId, "UNIVERSITY_ADMIN");
         return loginAndExtractAccessToken(email, "Password123");
     }
 
     private void claimAndSubmit(String studentToken, UUID departmentId, String studentNumber) {
         ResponseEntity<Map> claim = authorizedPost("/api/v1/students/me/enrollment", studentToken,
-                Map.of("universityId", JAMHURIYA_UNIVERSITY_ID.toString(), "departmentId", departmentId.toString(),
+                Map.of("universityId", defaultUniversityId.toString(), "departmentId", departmentId.toString(),
                         "studentNumber", studentNumber, "program", "Programme", "academicYear", "2025/2026"));
         if (claim.getStatusCode() != HttpStatus.CREATED) {
             throw new IllegalStateException("Enrollment claim failed: " + claim.getBody());
@@ -249,6 +261,14 @@ class UniversityVerificationAuthorizationIT extends AbstractIdentityIT {
                 "INSERT INTO universities (id, name, slug, city, status, created_at, updated_at) VALUES (?, ?, ?, ?, 'VERIFIED', now(), now())",
                 universityId, name, "univ-" + universityId, "Testville");
         return universityId;
+    }
+
+    private UUID insertDepartment(UUID universityId, String name, String code) {
+        UUID departmentId = UUID.randomUUID();
+        jdbcTemplate.update(
+                "INSERT INTO departments (id, university_id, name, code, created_at) VALUES (?, ?, ?, ?, now())",
+                departmentId, universityId, name, code);
+        return departmentId;
     }
 
     private ResponseEntity<Map> authorizedGet(String path, String accessToken) {

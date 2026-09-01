@@ -3,7 +3,7 @@ import { useQuery } from '@tanstack/react-query'
 import { useTranslation } from 'react-i18next'
 import * as universityApi from '../api/universityApi'
 import { useUniversityMembership } from '../components/UniversityMembershipContext'
-import { LoadingSpinner, Select, StatusBadge } from '../../../components/ui'
+import { LoadingSpinner, PageHeader, Select, StatusBadge } from '../../../components/ui'
 import type { StatusTone } from '../../../components/ui'
 
 const STATUS_TONE: Record<string, StatusTone> = {
@@ -33,7 +33,7 @@ export function StudentsPage() {
   return (
     <div className="mx-auto max-w-5xl px-4 py-8 sm:px-6">
       <div className="flex flex-wrap items-center justify-between gap-3">
-        <h1 className="text-xl font-semibold text-foreground">{t('university:students.title')}</h1>
+        <PageHeader title={t('university:students.title')} />
         <Select className="w-auto" value={departmentId} onChange={(e) => setDepartmentId(e.target.value)}>
           <option value="">{t('university:students.allDepartments')}</option>
           {visibleDepartments?.map((d) => (

@@ -159,6 +159,27 @@ public abstract class AbstractPhase7IT extends AbstractPhase6IT {
         return multipartPost("/api/v1/students/me/verification/evidence", token, filename, contentType, content);
     }
 
+    protected ResponseEntity<Map> uploadOrganizationEvidence(
+            String token, UUID organizationId, String filename, String contentType, byte[] content) {
+        return multipartPost(
+                "/api/v1/organizations/" + organizationId + "/verification/evidence",
+                token, filename, contentType, content);
+    }
+
+    /**
+     * Attaches a license and submits the organization for review — the only route to SUBMITTED since
+     * Phase 7.5. Tests that care about the license gate call the two steps separately; everyone else
+     * just wants an organization sitting in the reviewer's queue.
+     */
+    protected void submitOrganizationForVerification(String adminToken, UUID organizationId) {
+        requireOk(uploadOrganizationEvidence(
+                adminToken, organizationId, "license.pdf", "application/pdf", validPdfBytes()),
+                "Upload organization license");
+        requireOk(authorizedPost(
+                "/api/v1/organizations/" + organizationId + "/verification/submit", adminToken, null),
+                "Submit for verification");
+    }
+
     protected ResponseEntity<Map> multipartPost(
             String path, String token, String filename, String contentType, byte[] content) {
         MultiValueMap<String, Object> body = new LinkedMultiValueMap<>();

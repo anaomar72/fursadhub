@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { useTranslation } from 'react-i18next'
-import { Button, FormField, Input, LoadingSpinner, Select, StatusBadge, Textarea } from '../../../components/ui'
+import { Button, EmptyState, FormField, Input, LoadingSpinner, PageHeader, Select, StatusBadge, Textarea } from '../../../components/ui'
 import { apiErrorMessage } from '../../../lib/api/errorMessage'
 import type { LegalDocumentType } from '../../legal/types'
 import * as adminApi from '../api/adminApi'
@@ -53,7 +53,7 @@ export function AdminLegalDocumentsPage() {
   return (
     <div className="flex flex-col gap-6">
       <div>
-        <h1 className="text-lg font-semibold text-foreground">{t('admin:legalDocuments.title')}</h1>
+        <PageHeader title={t('admin:legalDocuments.title')} />
         <p className="mt-1 text-sm text-foreground-secondary">{t('admin:legalDocuments.description')}</p>
       </div>
 
@@ -150,7 +150,7 @@ export function AdminLegalDocumentsPage() {
         {documentsQuery.isLoading ? (
           <LoadingSpinner />
         ) : (documentsQuery.data ?? []).length === 0 ? (
-          <p className="text-sm text-foreground-secondary">{t('admin:legalDocuments.empty')}</p>
+          <EmptyState title={t('admin:legalDocuments.empty')} />
         ) : (
           <ul className="divide-y divide-border overflow-hidden rounded-lg border border-border bg-surface">
             {(documentsQuery.data ?? []).map((document) => (

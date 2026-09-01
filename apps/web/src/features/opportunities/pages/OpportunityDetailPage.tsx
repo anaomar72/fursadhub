@@ -11,7 +11,7 @@ import { opportunityFormSchema, type OpportunityFormValues } from '../schemas/op
 import { targetFormSchema, type TargetFormValues } from '../schemas/targetFormSchema'
 import { useOrganizationMembership } from '../../organization/components/OrganizationMembershipContext'
 import { apiErrorMessage } from '../../../lib/api/errorMessage'
-import { Button, FormField, Input, LoadingSpinner, Select, StatusBadge } from '../../../components/ui'
+import { Button, FormField, Input, LoadingSpinner, PageHeader, Select, StatusBadge } from '../../../components/ui'
 import type { StatusTone } from '../../../components/ui'
 import { OpportunityFormFields } from '../components/OpportunityFormFields'
 import type { OpportunityStatus } from '../types'
@@ -93,7 +93,7 @@ export function OpportunityDetailPage() {
   return (
     <div className="mx-auto max-w-2xl px-4 py-8 sm:px-6">
       <div className="flex flex-wrap items-center justify-between gap-3">
-        <h1 className="text-xl font-semibold text-foreground">{opportunity.title}</h1>
+        <PageHeader title={opportunity.title} />
         <StatusBadge tone={STATUS_TONE[opportunity.status]}>{t(`opportunities:statusValues.${opportunity.status}`)}</StatusBadge>
       </div>
 

@@ -5,6 +5,7 @@ import com.fursadhub.university.domain.Department;
 import com.fursadhub.university.domain.DepartmentRepository;
 import com.fursadhub.university.domain.University;
 import com.fursadhub.university.domain.UniversityRepository;
+import com.fursadhub.verification.domain.InstitutionVerificationStatus;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -18,14 +19,40 @@ public class UniversityQueryService {
 
     private final UniversityRepository universities;
     private final DepartmentRepository departments;
+    private final UniversityAuthorization authorization;
 
-    public UniversityQueryService(UniversityRepository universities, DepartmentRepository departments) {
+    public UniversityQueryService(
+            UniversityRepository universities, DepartmentRepository departments, UniversityAuthorization authorization) {
         this.universities = universities;
         this.departments = departments;
+        this.authorization = authorization;
     }
 
+    /**
+     * Management detail: requires the caller to hold an active membership at this university —
+     * the exact counterpart of {@code OrganizationQueryService.getForMember}. Unlike
+     * {@link #getUniversity}, which the public directory and department listing also use, this
+     * exposes registration number, description and evidence state, which are the tenant's own
+     * administrative data.
+     */
+    public University getForMember(UUID actingUserId, UUID universityId) {
+        authorization.requireMembership(actingUserId, universityId);
+        return getUniversity(universityId);
+    }
+
+    /**
+     * The directory used to pick a university — a student claiming enrollment, an organization
+     * targeting an opportunity. Phase 7.5 made universities self-registering, so this now filters to
+     * {@code VERIFIED} only: an unverified university cannot legitimately receive either kind of
+     * pick, and listing it here would offer a choice that fails downstream anyway (a student would
+     * enroll somewhere the platform hasn't attested to; an organization would hit
+     * {@code TARGET_UNIVERSITY_NOT_VERIFIED} only after selecting it). The single VERIFIED pilot
+     * tenant is unaffected.
+     */
     public List<University> listUniversities() {
-        return universities.findAll();
+        return universities.findAll().stream()
+                .filter(university -> university.getStatus() == InstitutionVerificationStatus.VERIFIED)
+                .toList();
     }
 
     public University getUniversity(UUID universityId) {

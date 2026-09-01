@@ -1,8 +1,19 @@
 {
   "nav": {
+    "dashboard": "Guddoomiye",
     "opportunities": "Fursadaha",
     "profile": "Ururka",
     "staff": "Shaqaalaha"
+  },
+  "dashboard": {
+    "title": "Guddoomahaaga",
+    "publishedOpportunities": "Fursadaha la daabacay",
+    "draftOpportunities": "Qabyaalaha",
+    "placements": "Meel dhigidda",
+    "live": "Firfircoon",
+    "active": "Firfircoon",
+    "needsPublishing": "Waxay u baahan tahay daabacaad",
+    "clear": "Waxba ma harin"
   },
   "setup": {
     "title": "Diyaari ururkaaga",
@@ -17,6 +28,10 @@
       "VALIDATION_FAILED": "Fadlan hubi foomka oo isku day mar kale.",
       "generic": "Wax baa qaldamay. Fadlan isku day mar kale."
     }
+  },
+  "publicProfile": {
+    "notFound": "Ururkan lama helin.",
+    "viewOpportunities": "Eeg fursadaha"
   },
   "profile": {
     "title": "Astaanta ururka",
@@ -37,12 +52,26 @@
       "REVOKED": "Waa la baabi'iyay"
     },
     "verifiedLabel": "Urur la xaqiijiyay",
+    "logo": {
+      "hint": "JPEG ama PNG, ilaa 3MB. Waxaa si guud loogu muujiyaa fursadahaaga iyo astaantaada."
+    },
     "saveChanges": "Kaydi isbeddelada",
     "submitForVerification": "U gudbi xaqiijinta",
     "submitForVerificationBody": "Ururkaaga waa in la xaqiijiyaa ka hor inta aadan daabicin fursadaha.",
+    "evidence": {
+      "label": "Shatiga ganacsiga ama diiwaangelinta",
+      "hint": "Soo geli PDF ka mid ah shatiga ganacsiga ama diiwaangelinta ururkaaga.",
+      "attached": "Dukumeenti shati ah ayaa la diiwaangeliyay.",
+      "uploading": "Waa la soo geli karaa…",
+      "required": "Ku lifaaq dukumeentigaaga shatiga ka hor inta aadan u gudbin xaqiijinta."
+    },
     "errors": {
       "ACCESS_DENIED": "Ma lihid ogolaanshaha ururkan.",
       "ORGANIZATION_VERIFICATION_INVALID_TRANSITION": "Ururkan lagama gudbin karo xaqiijinta xaaladdiisa hadda.",
+      "ORGANIZATION_VERIFICATION_EVIDENCE_REQUIRED": "Ku lifaaq dukumeentigaaga shatiga ka hor inta aadan u gudbin xaqiijinta.",
+      "ORGANIZATION_EVIDENCE_FILE_INVALID": "Faylkaasi lama aqbalo — soo geli PDF ka yar 10MB.",
+      "ORGANIZATION_LOGO_FILE_INVALID": "Faylkaasi lama aqbalo — soo geli JPEG ama PNG ka yar 3MB.",
+      "FILE_TOO_LARGE": "Faylku wuu ka weyn yahay xadka ugu badan ee la ogol yahay.",
       "VALIDATION_FAILED": "Fadlan hubi foomka oo isku day mar kale.",
       "generic": "Wax baa qaldamay. Fadlan isku day mar kale."
     }
@@ -50,20 +79,39 @@
   "staff": {
     "title": "Shaqaalaha",
     "emailLabel": "Cinwaanka iimaylka",
+    "passwordLabel": "Furaha sirta ah ee ku-meel-gaarka ah",
+    "confirmPasswordLabel": "Xaqiiji furaha sirta ah",
     "roleLabel": "Doorka",
     "roles": {
       "ORGANIZATION_ADMIN": "Maamulaha ururka",
       "RECRUITER": "Qaadaha shaqaalaha",
       "ORGANIZATION_SUPERVISOR": "Kormeeraha ururka"
     },
-    "assignSubmit": "U meelee doorka shaqaalaha",
+    "createSubmit": "Abuur akoonka shaqaalaha",
+    "changeRole": "Beddel doorka",
+    "saveRole": "Kaydi",
+    "suspend": "Hakiso",
+    "reactivate": "Dib u firfircooni",
+    "resetPassword": "Dib u deji furaha sirta ah",
+    "resetPasswordOnceWarning": "Furahan sirta ah hal mar ayaa la muujinayaa. Hadda la wadaag shaqaalaha.",
+    "copyCredentials": "Koobi",
+    "dismiss": "Xir",
+    "statusValues": {
+      "PENDING_CONTACT_VERIFICATION": "Sugaya xaqiijinta iimaylka",
+      "ACTIVE": "Firfircoon",
+      "SUSPENDED": "La hakiyay",
+      "CLOSED": "La xiray"
+    },
     "revoke": "Baabi'i",
-    "empty": "Weli shaqaale lama meelayn.",
+    "empty": "Weli shaqaale lama abuurin.",
     "errors": {
-      "STAFF_USER_NOT_FOUND": "Iimaylkan akoon uma jiro.",
-      "STAFF_USER_NOT_ACTIVE": "Akoonkan waa inuu firfircoon yahay ka hor inta doorka shaqaalaha loo meelayn.",
-      "STAFF_ALREADY_ASSIGNED": "Isticmaalahani horeba wuxuu leeyahay door shaqaale oo firfircoon oo ururkan ku jira.",
+      "STAFF_EMAIL_ALREADY_EXISTS": "Iimaylkan akoon horeba u leeyahay.",
+      "STAFF_ROLE_NOT_ASSIGNABLE": "Maamulaha ururka wuxuu kaliya u meelin karaa Qaadaha shaqaalaha ama Kormeeraha ururka.",
+      "STAFF_PASSWORD_CONFIRMATION_MISMATCH": "Furaha sirta ah iyo xaqiijintiisu isku mid ma aha.",
+      "STAFF_MEMBERSHIP_NOT_FOUND": "Xubinnimada shaqaalaha lama helin.",
+      "USER_CLOSED": "Akoon la xiray lama hakin karo ama dib looma firfircoonayn karo.",
       "ACCESS_DENIED": "Kaliya maamulaha ururka ayaa maamuli kara shaqaalaha.",
+      "VALIDATION_FAILED": "Fadlan hubi foomka oo isku day mar kale.",
       "generic": "Wax baa qaldamay. Fadlan isku day mar kale."
     }
   }

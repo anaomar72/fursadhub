@@ -1,13 +1,7 @@
-import { NavLink, Outlet } from 'react-router-dom'
+import { Outlet } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
-import { cn } from '../../lib/utils/cn'
 import { RoleShell } from './RoleShell'
-
-const navLinkClasses = ({ isActive }: { isActive: boolean }) =>
-  cn(
-    'rounded-md px-3 py-1.5 text-sm font-medium transition-colors',
-    isActive ? 'bg-brand-primary text-on-brand' : 'text-foreground-secondary hover:bg-surface-muted',
-  )
+import { AreaTabs } from './AreaTabs'
 
 /**
  * The role-neutral account area: notifications, privacy and consents.
@@ -22,16 +16,13 @@ export function AccountLayout() {
 
   return (
     <RoleShell areaLabel={t('nav.account')}>
-      <div className="border-b border-border bg-surface">
-        <nav className="mx-auto flex max-w-7xl gap-2 overflow-x-auto px-4 py-3 sm:px-6">
-          <NavLink to="/account/notifications" className={navLinkClasses}>
-            {t('notifications:title')}
-          </NavLink>
-          <NavLink to="/account/privacy" className={navLinkClasses}>
-            {t('privacy:nav.privacy')}
-          </NavLink>
-        </nav>
-      </div>
+      <AreaTabs
+        items={[
+          { to: '/account/profile', label: t('account:nav.profile') },
+          { to: '/account/notifications', label: t('notifications:title') },
+          { to: '/account/privacy', label: t('privacy:nav.privacy') },
+        ]}
+      />
       <div className="mx-auto max-w-3xl px-4 py-6 sm:px-6">
         <Outlet />
       </div>

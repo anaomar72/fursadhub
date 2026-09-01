@@ -8,6 +8,10 @@ import java.time.Instant;
  * Management view of an organization, for authorized members only. Never returned from public
  * endpoints (CLAUDE.md section 4 — public/private organization data must stay separate); use
  * {@link OrganizationSummaryResponse} there instead.
+ *
+ * <p>{@code hasEvidence} is a flag, never the stored-file id: the setup wizard needs to know whether
+ * the license step is already done after a reload, and a file id would imply a generic file route
+ * that deliberately does not exist.
  */
 public record OrganizationResponse(
         String id,
@@ -19,6 +23,10 @@ public record OrganizationResponse(
         String description,
         String verificationStatus,
         Instant verifiedAt,
+        boolean hasEvidence,
+        Instant evidenceUploadedAt,
+        boolean hasLogo,
+        Instant logoUploadedAt,
         Instant createdAt,
         Instant updatedAt) {
 
@@ -33,6 +41,10 @@ public record OrganizationResponse(
                 organization.getDescription(),
                 organization.getVerificationStatus().name(),
                 organization.getVerifiedAt(),
+                organization.getEvidenceStoredFileId() != null,
+                organization.getEvidenceUploadedAt(),
+                organization.getLogoStoredFileId() != null,
+                organization.getLogoUploadedAt(),
                 organization.getCreatedAt(),
                 organization.getUpdatedAt());
     }

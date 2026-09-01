@@ -4,7 +4,7 @@ import { useTranslation } from 'react-i18next'
 import { Link } from 'react-router-dom'
 import * as universityApi from '../api/universityApi'
 import { useUniversityMembership } from '../components/UniversityMembershipContext'
-import { LoadingSpinner, Select, StatusBadge } from '../../../components/ui'
+import { EmptyState, LoadingSpinner, PageHeader, Select, StatusBadge } from '../../../components/ui'
 import type { StatusTone } from '../../../components/ui'
 
 const STATUS_TONE: Record<string, StatusTone> = {
@@ -29,7 +29,7 @@ export function VerificationQueuePage() {
   return (
     <div className="mx-auto max-w-4xl px-4 py-8 sm:px-6">
       <div className="flex flex-wrap items-center justify-between gap-3">
-        <h1 className="text-xl font-semibold text-foreground">{t('university:verificationQueue.title')}</h1>
+        <PageHeader title={t('university:verificationQueue.title')} />
         <Select className="w-auto" value={status} onChange={(e) => setStatus(e.target.value)}>
           <option value="">{t('university:verificationQueue.allStatuses')}</option>
           <option value="SUBMITTED">{t('university:students.statusValues.SUBMITTED')}</option>
@@ -44,6 +44,8 @@ export function VerificationQueuePage() {
         <div className="flex justify-center py-10">
           <LoadingSpinner size="lg" />
         </div>
+      ) : queueQuery.data?.length === 0 ? (
+        <EmptyState className="mt-6" title={t('university:verificationQueue.empty')} />
       ) : (
         <ul className="mt-6 divide-y divide-border rounded-lg border border-border bg-surface">
           {queueQuery.data?.map((row) => (
@@ -64,9 +66,6 @@ export function VerificationQueuePage() {
               </Link>
             </li>
           ))}
-          {queueQuery.data?.length === 0 && (
-            <li className="px-4 py-6 text-center text-sm text-foreground-secondary">{t('university:verificationQueue.empty')}</li>
-          )}
         </ul>
       )}
     </div>

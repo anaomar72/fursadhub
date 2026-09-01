@@ -43,7 +43,7 @@ spring:
       mail.smtp.writetimeout: 5000
 
 server:
-  port: 8080
+  port: ${SERVER_PORT:8080}
   error:
     include-message: never
     include-binding-errors: never
@@ -113,6 +113,11 @@ fursadhub:
     endpoint: ${STORAGE_ENDPOINT:http://localhost:9000}
     region: ${STORAGE_REGION:us-east-1}
     bucket: ${STORAGE_BUCKET:fursadhub-local}
-    access-key: ${STORAGE_ACCESS_KEY:}
-    secret-key: ${STORAGE_SECRET_KEY:}
+    # Same local MinIO convention as infra/compose.yaml's object-storage service and .env.example —
+    # blank here (as before) left StorageConfig's S3 client with no credentials provider at all,
+    # falling back to the AWS default chain (env vars/profile/IMDS), all of which fail on a bare
+    # local host and surface as SdkClientException on every upload. Staging/production still
+    # override these via real STORAGE_ACCESS_KEY/STORAGE_SECRET_KEY env vars, same as the rest.
+    access-key: ${STORAGE_ACCESS_KEY:fursadhub}
+    secret-key: ${STORAGE_SECRET_KEY:fursadhub-local-secret}
     filesystem-directory: ${STORAGE_FILESYSTEM_DIRECTORY:}

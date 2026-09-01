@@ -3,7 +3,7 @@ import { useQuery } from '@tanstack/react-query'
 import { useTranslation } from 'react-i18next'
 import * as opportunityApi from '../api/opportunityApi'
 import { useOrganizationMembership } from '../../organization/components/OrganizationMembershipContext'
-import { LoadingSpinner, StatusBadge } from '../../../components/ui'
+import { EmptyState, LoadingSpinner, PageHeader, StatusBadge } from '../../../components/ui'
 import type { StatusTone } from '../../../components/ui'
 import type { OpportunityStatus } from '../types'
 
@@ -28,7 +28,7 @@ export function OpportunityListPage() {
   return (
     <div className="mx-auto max-w-5xl px-4 py-8 sm:px-6">
       <div className="flex flex-wrap items-center justify-between gap-3">
-        <h1 className="text-xl font-semibold text-foreground">{t('opportunities:list.title')}</h1>
+        <PageHeader title={t('opportunities:list.title')} />
         {canManage && (
           <Link
             to="/organization/opportunities/new"
@@ -43,6 +43,8 @@ export function OpportunityListPage() {
         <div className="flex justify-center py-10">
           <LoadingSpinner size="lg" />
         </div>
+      ) : opportunitiesQuery.data?.length === 0 ? (
+        <EmptyState className="mt-6" title={t('opportunities:list.empty')} />
       ) : (
         <ul className="mt-6 divide-y divide-border rounded-lg border border-border bg-surface">
           {opportunitiesQuery.data?.map((opportunity) => (
@@ -61,9 +63,6 @@ export function OpportunityListPage() {
               </Link>
             </li>
           ))}
-          {opportunitiesQuery.data?.length === 0 && (
-            <li className="px-4 py-6 text-center text-sm text-foreground-secondary">{t('opportunities:list.empty')}</li>
-          )}
         </ul>
       )}
     </div>

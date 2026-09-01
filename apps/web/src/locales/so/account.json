@@ -1,0 +1,15 @@
+{
+  "nav": {
+    "profile": "Astaanta"
+  },
+  "profile": {
+    "title": "Astaantaada",
+    "uploading": "Waa la soo geli karaa…",
+    "hint": "JPEG ama PNG, ilaa 3MB. Waxaa arki kara qof kasta oo ku saxiixan FursadHub.",
+    "errors": {
+      "AVATAR_FILE_INVALID": "Faylkaasi lama aqbalo — soo geli JPEG ama PNG ka yar 3MB.",
+      "FILE_TOO_LARGE": "Faylku wuu ka weyn yahay xadka ugu badan ee la ogol yahay.",
+      "generic": "Wax baa qaldamay. Fadlan isku day mar kale."
+    }
+  }
+}

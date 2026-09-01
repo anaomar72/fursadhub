@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { useTranslation } from 'react-i18next'
-import { Button, FormField, Input, LoadingSpinner, StatusBadge } from '../../../components/ui'
+import { Button, EmptyState, FormField, Input, LoadingSpinner, PageHeader, StatusBadge } from '../../../components/ui'
 import { apiErrorMessage } from '../../../lib/api/errorMessage'
 import * as adminApi from '../api/adminApi'
 
@@ -75,7 +75,7 @@ export function AdminEscalationsPage() {
   return (
     <div className="flex flex-col gap-4">
       <div>
-        <h1 className="text-lg font-semibold text-foreground">{t('admin:escalations.title')}</h1>
+        <PageHeader title={t('admin:escalations.title')} />
         <p className="mt-1 text-sm text-foreground-secondary">{t('admin:escalations.description')}</p>
       </div>
 
@@ -86,7 +86,7 @@ export function AdminEscalationsPage() {
       )}
 
       {cases.length === 0 ? (
-        <p className="text-sm text-foreground-secondary">{t('admin:escalations.empty')}</p>
+        <EmptyState title={t('admin:escalations.empty')} />
       ) : (
         <ul className="flex flex-col gap-3">
           {cases.map((escalated) => (

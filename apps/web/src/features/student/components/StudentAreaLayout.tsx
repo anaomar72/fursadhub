@@ -1,36 +1,21 @@
-import { NavLink, Outlet } from 'react-router-dom'
+import { Outlet } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
-import { cn } from '../../../lib/utils/cn'
-
-const navLinkClasses = ({ isActive }: { isActive: boolean }) =>
-  cn(
-    'rounded-md px-3 py-1.5 text-sm font-medium transition-colors',
-    isActive ? 'bg-brand-primary text-on-brand' : 'text-foreground-secondary hover:bg-surface-muted',
-  )
+import { AreaTabs } from '../../../app/layouts/AreaTabs'
 
 export function StudentAreaLayout() {
   const { t } = useTranslation()
   return (
     <>
-      <div className="border-b border-border bg-surface">
-        <nav className="mx-auto flex max-w-7xl gap-2 overflow-x-auto px-4 py-3 sm:px-6">
-          <NavLink to="/student/enrollment" className={navLinkClasses}>
-            {t('student:nav.enrollment')}
-          </NavLink>
-          <NavLink to="/student/applications" className={navLinkClasses}>
-            {t('recruitment:nav.applications')}
-          </NavLink>
-          <NavLink to="/student/nominations" className={navLinkClasses}>
-            {t('recruitment:nav.nominations')}
-          </NavLink>
-          <NavLink to="/student/placements" className={navLinkClasses}>
-            {t('placements:nav.myPlacements')}
-          </NavLink>
-          <NavLink to="/student/profile" className={navLinkClasses}>
-            {t('student:nav.profile')}
-          </NavLink>
-        </nav>
-      </div>
+      <AreaTabs
+        items={[
+          { to: '/student/dashboard', label: t('student:nav.dashboard') },
+          { to: '/student/enrollment', label: t('student:nav.enrollment') },
+          { to: '/student/applications', label: t('recruitment:nav.applications') },
+          { to: '/student/nominations', label: t('recruitment:nav.nominations') },
+          { to: '/student/placements', label: t('placements:nav.myPlacements') },
+          { to: '/student/profile', label: t('student:nav.profile') },
+        ]}
+      />
       <Outlet />
     </>
   )

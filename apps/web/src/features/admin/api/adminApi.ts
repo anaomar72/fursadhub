@@ -6,6 +6,7 @@ import type { PrivacyRequest, PrivacyRequestState } from '../../privacy/types'
 import type {
   AdminOrganization,
   AdminSession,
+  AdminUniversity,
   AdminUser,
   AuditEvent,
   EscalatedCase,
@@ -97,6 +98,40 @@ export function organizationTransition(
   })
 }
 
+/** Fetches the organization's license as a blob through the authorized, audited reviewer route. */
+export function downloadOrganizationEvidence(organizationId: string) {
+  return downloadBlob(`/admin/organizations/${organizationId}/verification/evidence/document`)
+}
+
+// ---------------------------------------------------------------- universities
+
+export function listUniversities(
+  options: { status?: InstitutionVerificationStatus; query?: string; page?: number } = {},
+) {
+  const params = new URLSearchParams()
+  if (options.status) params.set('status', options.status)
+  if (options.query) params.set('query', options.query)
+  if (options.page !== undefined) params.set('page', String(options.page))
+  const query = params.toString()
+  return apiFetch<Page<AdminUniversity>>(`/admin/universities${query ? `?${query}` : ''}`)
+}
+
+export function universityTransition(
+  universityId: string,
+  action: 'begin-review' | 'verify' | 'request-changes' | 'reject' | 'suspend' | 'revoke',
+  note?: string,
+) {
+  return apiFetch<AdminUniversity>(`/admin/universities/${universityId}/${action}`, {
+    method: 'POST',
+    body: note === undefined ? undefined : { note },
+  })
+}
+
+/** Fetches the university's registration/accreditation document as a blob, same as above. */
+export function downloadUniversityEvidence(universityId: string) {
+  return downloadBlob(`/admin/universities/${universityId}/verification/evidence/document`)
+}
+
 // ---------------------------------------------------------------- verification escalations
 
 export function listEscalations() {
@@ -114,22 +149,24 @@ export function resolveEscalation(
   })
 }
 
+/** Fetches the student's private evidence as a blob. */
+export function downloadEscalationEvidence(caseId: string) {
+  return downloadBlob(`/admin/verification-escalations/${caseId}/evidence/document`)
+}
+
 /**
- * Fetches the student's private evidence as a blob.
+ * Shared transport for every admin evidence download.
  *
  * <p>Deliberately not an anchor pointing at object storage: the bytes stream through the API, which
  * re-authorizes the reviewer and audits the read every time (CLAUDE.md sections 31, 47).
  */
-export async function downloadEscalationEvidence(caseId: string) {
+async function downloadBlob(path: string): Promise<Blob> {
   const accessToken = getAccessToken()
-  const response = await fetch(
-    `${env.apiBaseUrl}/admin/verification-escalations/${caseId}/evidence/document`,
-    {
-      method: 'GET',
-      credentials: 'include',
-      headers: accessToken ? { Authorization: `Bearer ${accessToken}` } : {},
-    },
-  )
+  const response = await fetch(`${env.apiBaseUrl}${path}`, {
+    method: 'GET',
+    credentials: 'include',
+    headers: accessToken ? { Authorization: `Bearer ${accessToken}` } : {},
+  })
 
   if (!response.ok) {
     const errorBody = await response.json().catch(() => null)

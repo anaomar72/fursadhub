@@ -11,4 +11,6 @@ interface JpaDepartmentRepository extends JpaRepository<Department, UUID> {
     List<Department> findByUniversityId(UUID universityId);
 
     boolean existsByIdAndUniversityId(UUID id, UUID universityId);
+
+    boolean existsByUniversityIdAndCode(UUID universityId, String code);
 }

@@ -9,14 +9,14 @@ name: fursadhub
 
 services:
   postgres:
-    image: postgres:16-alpine
+    image: postgres:16
     restart: unless-stopped
     environment:
       POSTGRES_DB: ${DB_NAME:-fursadhub}
       POSTGRES_USER: ${DB_USERNAME:-fursadhub}
-      POSTGRES_PASSWORD: ${DB_PASSWORD:-fursadhub}
+      POSTGRES_PASSWORD: ${DB_PASSWORD:-postgres}
     ports:
-      - "${DB_PORT:-5433}:5432"
+      - "${DB_PORT:-5432}:5432"
     volumes:
       - fursadhub-postgres-data:/var/lib/postgresql/data
     healthcheck:
@@ -43,6 +43,21 @@ services:
       interval: 5s
       timeout: 5s
       retries: 10
+
+  # One-shot: creates the private bucket the API writes to. object-storage's own volume starts
+  # empty on every fresh `docker compose up`, and MinIO does not create buckets on its own, so
+  # without this step every upload fails until someone creates the bucket by hand.
+  object-storage-init:
+    image: minio/mc:latest
+    restart: "no"
+    depends_on:
+      object-storage:
+        condition: service_healthy
+    entrypoint: >
+      sh -c "
+      mc alias set local http://object-storage:9000 ${STORAGE_ACCESS_KEY:-fursadhub} ${STORAGE_SECRET_KEY:-fursadhub-local-secret} &&
+      mc mb --ignore-existing local/${STORAGE_BUCKET:-fursadhub-local}
+      "
 
   # Local mail catcher — captures outbound mail without sending real email.
   mailcatcher:

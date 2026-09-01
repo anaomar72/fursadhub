@@ -5,7 +5,7 @@ import { useParams } from 'react-router-dom'
 import * as universityApi from '../api/universityApi'
 import { useUniversityMembership } from '../components/UniversityMembershipContext'
 import { apiErrorMessage } from '../../../lib/api/errorMessage'
-import { AnimatedCheck, Button, FormField, Input, LoadingSpinner, StatusBadge, Textarea } from '../../../components/ui'
+import { AnimatedCheck, Button, FormField, Input, LoadingSpinner, PageHeader, StatusBadge, Textarea } from '../../../components/ui'
 import type { StatusTone } from '../../../components/ui'
 
 const STATUS_TONE: Record<string, StatusTone> = {
@@ -82,7 +82,7 @@ export function VerificationCaseDetailPage() {
   return (
     <div className="mx-auto max-w-2xl px-4 py-8 sm:px-6">
       <div className="flex items-center justify-between gap-3">
-        <h1 className="text-xl font-semibold text-foreground">{verificationCase.studentEmail}</h1>
+        <PageHeader title={verificationCase.studentEmail ?? ''} />
         <StatusBadge tone={STATUS_TONE[status] ?? 'neutral'}>{t(`university:students.statusValues.${status}`)}</StatusBadge>
       </div>
 

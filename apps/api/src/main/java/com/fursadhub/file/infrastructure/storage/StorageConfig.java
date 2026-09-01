@@ -8,6 +8,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.core.env.Environment;
 import software.amazon.awssdk.auth.credentials.AwsBasicCredentials;
 import software.amazon.awssdk.auth.credentials.StaticCredentialsProvider;
+import software.amazon.awssdk.core.checksums.RequestChecksumCalculation;
 import software.amazon.awssdk.http.urlconnection.UrlConnectionHttpClient;
 import software.amazon.awssdk.regions.Region;
 import software.amazon.awssdk.services.s3.S3Client;
@@ -47,6 +48,13 @@ public class StorageConfig {
         S3ClientBuilder builder = S3Client.builder()
                 .region(Region.of(properties.getRegion()))
                 .httpClient(UrlConnectionHttpClient.builder().build())
+                // Since SDK 2.25 the default (WHEN_SUPPORTED) attaches a trailing CRC32 checksum to
+                // every PutObject via chunked transfer-encoding. UrlConnectionHttpClient — chosen
+                // above to avoid pulling in Netty/Apache for a handful of small sync calls — cannot
+                // unmarshal MinIO's response to that trailer format, which surfaces as an uncaught
+                // SdkClientException (not S3Exception) on every upload. WHEN_REQUIRED skips the
+                // trailer unless an operation specifically demands a checksum, which none here do.
+                .requestChecksumCalculation(RequestChecksumCalculation.WHEN_REQUIRED)
                 // MinIO and most self-hosted S3-compatible servers do not implement virtual-host
                 // style addressing, so keys are addressed as <endpoint>/<bucket>/<key>.
                 .serviceConfiguration(S3Configuration.builder().pathStyleAccessEnabled(true).build());

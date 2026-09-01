@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { useTranslation } from 'react-i18next'
-import { Button, FormField, Input, LoadingSpinner, Pagination, Select, StatusBadge } from '../../../components/ui'
+import { Button, EmptyState, FormField, Input, LoadingSpinner, Pagination, PageHeader, Select, StatusBadge } from '../../../components/ui'
 import type { StatusTone } from '../../../components/ui'
 import { apiErrorMessage } from '../../../lib/api/errorMessage'
 import * as adminApi from '../api/adminApi'
@@ -77,7 +77,7 @@ export function AdminUsersPage() {
 
   return (
     <div className="flex flex-col gap-4">
-      <h1 className="text-lg font-semibold text-foreground">{t('admin:users.title')}</h1>
+      <PageHeader title={t('admin:users.title')} />
 
       <form
         className="flex flex-wrap items-end gap-3"
@@ -129,7 +129,7 @@ export function AdminUsersPage() {
           <LoadingSpinner size="lg" />
         </div>
       ) : (usersQuery.data?.content ?? []).length === 0 ? (
-        <p className="text-sm text-foreground-secondary">{t('admin:users.empty')}</p>
+        <EmptyState title={t('admin:users.empty')} />
       ) : (
         <div className="overflow-x-auto rounded-lg border border-border bg-surface">
           <table className="w-full min-w-[40rem] text-sm">

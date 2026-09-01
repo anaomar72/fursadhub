@@ -1,17 +1,11 @@
-import { NavLink, Outlet } from 'react-router-dom'
+import { Outlet } from 'react-router-dom'
 import { useQuery } from '@tanstack/react-query'
 import { useTranslation } from 'react-i18next'
 import * as organizationApi from '../api/organizationApi'
 import { OrganizationMembershipContext } from './OrganizationMembershipContext'
 import { OrganizationSetupPage } from '../pages/OrganizationSetupPage'
 import { LoadingSpinner } from '../../../components/ui'
-import { cn } from '../../../lib/utils/cn'
-
-const navLinkClasses = ({ isActive }: { isActive: boolean }) =>
-  cn(
-    'rounded-md px-3 py-1.5 text-sm font-medium transition-colors',
-    isActive ? 'bg-brand-primary text-on-brand' : 'text-foreground-secondary hover:bg-surface-muted',
-  )
+import { AreaTabs } from '../../../app/layouts/AreaTabs'
 
 /**
  * Resolves the caller's organization staff membership and shares it via context, mirroring
@@ -45,24 +39,15 @@ export function OrganizationAreaLayout() {
 
   return (
     <OrganizationMembershipContext.Provider value={membership}>
-      <div className="border-b border-border bg-surface">
-        <nav className="mx-auto flex max-w-7xl gap-2 overflow-x-auto px-4 py-3 sm:px-6">
-          <NavLink to="/organization/opportunities" className={navLinkClasses}>
-            {t('organization:nav.opportunities')}
-          </NavLink>
-          <NavLink to="/organization/placements" className={navLinkClasses}>
-            {t('placements:nav.placements')}
-          </NavLink>
-          <NavLink to="/organization/profile" className={navLinkClasses}>
-            {t('organization:nav.profile')}
-          </NavLink>
-          {isAdmin && (
-            <NavLink to="/organization/staff" className={navLinkClasses}>
-              {t('organization:nav.staff')}
-            </NavLink>
-          )}
-        </nav>
-      </div>
+      <AreaTabs
+        items={[
+          { to: '/organization/dashboard', label: t('organization:nav.dashboard') },
+          { to: '/organization/opportunities', label: t('organization:nav.opportunities') },
+          { to: '/organization/placements', label: t('placements:nav.placements') },
+          { to: '/organization/profile', label: t('organization:nav.profile') },
+          { to: '/organization/staff', label: t('organization:nav.staff'), hidden: !isAdmin },
+        ]}
+      />
       <Outlet />
     </OrganizationMembershipContext.Provider>
   )

@@ -11,7 +11,7 @@ import type { StudentEnrollmentResponse } from '../types'
 import { enrollmentSchema, type EnrollmentFormValues } from '../schemas/enrollmentSchema'
 import { apiErrorMessage } from '../../../lib/api/errorMessage'
 import { ApiError } from '../../../lib/api/client'
-import { AnimatedCheck, Button, FormField, Input, LoadingSpinner, Select, StatusBadge } from '../../../components/ui'
+import { AnimatedCheck, Button, FormField, Input, LoadingSpinner, PageHeader, Select, StatusBadge } from '../../../components/ui'
 import type { StatusTone } from '../../../components/ui'
 
 const STATUS_TONE: Record<string, StatusTone> = {
@@ -86,7 +86,7 @@ export function EnrollmentPage() {
 
   return (
     <div className="mx-auto max-w-lg px-4 py-10 sm:px-6">
-      <h1 className="text-xl font-semibold text-foreground">{t('student:enrollment.title')}</h1>
+      <PageHeader title={t('student:enrollment.title')} />
 
       <div className="mt-6 rounded-lg border border-border bg-surface p-5">
         <div className="flex items-center justify-between">
@@ -259,10 +259,10 @@ function ClaimForm({
 
   return (
     <div>
-      <h1 className="text-xl font-semibold text-foreground">
-        {t(existing ? 'student:enrollment.editTitle' : 'student:enrollment.claimTitle')}
-      </h1>
-      <p className="mt-1 text-sm text-foreground-secondary">{t('student:enrollment.claimSubtitle')}</p>
+      <PageHeader
+        title={t(existing ? 'student:enrollment.editTitle' : 'student:enrollment.claimTitle')}
+        description={t('student:enrollment.claimSubtitle')}
+      />
 
       <form className="mt-6 flex flex-col gap-4" noValidate onSubmit={form.handleSubmit((values) => mutation.mutate(values))}>
         <FormField label={t('student:enrollment.universityLabel')} htmlFor="universityId">

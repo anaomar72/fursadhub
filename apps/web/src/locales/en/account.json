@@ -1,0 +1,15 @@
+{
+  "nav": {
+    "profile": "Profile"
+  },
+  "profile": {
+    "title": "Your profile",
+    "uploading": "Uploading…",
+    "hint": "JPEG or PNG, up to 3MB. Visible to anyone signed in to FursadHub.",
+    "errors": {
+      "AVATAR_FILE_INVALID": "That file isn't accepted — upload a JPEG or PNG under 3MB.",
+      "FILE_TOO_LARGE": "That file is larger than the maximum allowed size.",
+      "generic": "Something went wrong. Please try again."
+    }
+  }
+}

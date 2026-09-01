@@ -2,6 +2,7 @@
   "nav": {
     "dashboard": "Guudmarka",
     "organizations": "Hay'adaha",
+    "universities": "Jaamacadaha",
     "escalations": "Kor-u-qaadista",
     "users": "Akoonnada",
     "privacyRequests": "Codsiyada asturnaanta",
@@ -37,6 +38,7 @@
     "search": "Raadi",
     "empty": "Ma jirto hay'ad ku habboon miirayaashan.",
     "noActions": "Xaaladdan wax tallaabo ah lagama qaadi karo.",
+    "viewLicense": "Eeg shatiga",
     "notePlaceholder": "Sharax go'aankaaga",
     "confirm": "Xaqiiji",
     "cancel": "Jooji",
@@ -52,6 +54,35 @@
       "generic": "Tallaabadaas lama dhammayn karin. Fadlan mar kale isku day.",
       "ORGANIZATION_NOT_FOUND": "Hay'addaas lama helin.",
       "ORGANIZATION_INVALID_TRANSITION": "Isbeddelkaas laguma oggola xaaladda hadda ee hay'adda.",
+      "ACCESS_DENIED": "Ma haysatid gelitaan tallaabadan."
+    }
+  },
+  "universities": {
+    "title": "Xaqiijinta jaamacadaha",
+    "statusFilter": "Xaaladda",
+    "allStatuses": "Dhammaan xaaladaha",
+    "searchLabel": "Magaca jaamacadda",
+    "searchPlaceholder": "Ku raadi magaca",
+    "search": "Raadi",
+    "empty": "Ma jirto jaamacad ku habboon miirayaashan.",
+    "noActions": "Xaaladdan wax tallaabo ah lagama qaadi karo.",
+    "viewLicense": "Eeg shatiga",
+    "notePlaceholder": "Sharax go'aankaaga",
+    "confirm": "Xaqiiji",
+    "cancel": "Jooji",
+    "actions": {
+      "begin-review": "Bilow dib u eegis",
+      "verify": "Xaqiiji",
+      "request-changes": "Codso isbeddel",
+      "reject": "Diid",
+      "suspend": "Haki",
+      "revoke": "Burburi"
+    },
+    "errors": {
+      "generic": "Tallaabadaas lama dhammayn karin. Fadlan mar kale isku day.",
+      "UNIVERSITY_NOT_FOUND": "Jaamacaddaas lama helin.",
+      "UNIVERSITY_VERIFICATION_INVALID_TRANSITION": "Isbeddelkaas laguma oggola xaaladda hadda ee jaamacadda.",
+      "UNIVERSITY_VERIFICATION_EVIDENCE_MISSING": "Jaamacaddan dukumeenti diiwaangelin ah looma soo gelin.",
       "ACCESS_DENIED": "Ma haysatid gelitaan tallaabadan."
     }
   },

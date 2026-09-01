@@ -3,7 +3,7 @@ import { useTranslation } from 'react-i18next'
 import { Link, useParams } from 'react-router-dom'
 import * as publicOpportunityApi from '../api/publicOpportunityApi'
 import { useAuth } from '../../../lib/auth/AuthContext'
-import { LoadingSpinner } from '../../../components/ui'
+import { LoadingSpinner, PageHeader, VerifiedBadge } from '../../../components/ui'
 
 export function PublicOpportunityDetailPage() {
   const { t } = useTranslation()
@@ -39,8 +39,16 @@ export function PublicOpportunityDetailPage() {
 
   return (
     <article className="mx-auto max-w-2xl px-4 py-10 sm:px-6">
-      <p className="text-sm font-medium text-foreground-secondary">{opportunity.organization.name}</p>
-      <h1 className="mt-1 text-2xl font-semibold text-foreground">{opportunity.title}</h1>
+      <div className="flex items-center gap-2">
+        <Link
+          to={`/organizations/${opportunity.organization.id}`}
+          className="text-sm font-medium text-foreground-secondary hover:text-foreground hover:underline"
+        >
+          {opportunity.organization.name}
+        </Link>
+        {opportunity.organization.verified && <VerifiedBadge />}
+      </div>
+      <PageHeader title={opportunity.title} />
 
       <dl className="mt-6 grid grid-cols-1 gap-2 rounded-lg border border-border bg-surface p-4 text-sm">
         <Row label={t('opportunities:form.workModeLabel')} value={t(`opportunities:workModeValues.${opportunity.workMode}`)} />

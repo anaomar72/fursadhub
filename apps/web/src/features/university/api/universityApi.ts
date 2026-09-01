@@ -1,9 +1,15 @@
-import { apiFetch } from '../../../lib/api/client'
+import { env } from '../../../app/config/env'
+import { ApiError, apiFetch } from '../../../lib/api/client'
+import { getAccessToken } from '../../../lib/auth/tokenStore'
 import type {
   DepartmentResponse,
   MyMembershipResponse,
+  PublicUniversityResponse,
   StaffMemberResponse,
   StudentRowResponse,
+  TemporaryCredentialResponse,
+  UniversityDetailResponse,
+  UniversityEvidenceResponse,
   UniversityResponse,
   VerificationCaseResponse,
   UniversityRole,
@@ -18,16 +24,144 @@ export function listDepartments(universityId: string) {
   return apiFetch<DepartmentResponse[]>(`/universities/${universityId}/departments`, { method: 'GET' })
 }
 
+/** UNIVERSITY_ADMIN only — standing up a new department is a whole-university act. */
+export function createDepartment(universityId: string, input: { name: string; code: string }) {
+  return apiFetch<DepartmentResponse>(`/universities/${universityId}/departments`, { method: 'POST', body: input })
+}
+
+/** UNIVERSITY_ADMIN, or the department's own DEPARTMENT_COORDINATOR. */
+export function updateDepartment(universityId: string, departmentId: string, input: { name: string }) {
+  return apiFetch<DepartmentResponse>(`/universities/${universityId}/departments/${departmentId}`, {
+    method: 'PATCH',
+    body: input,
+  })
+}
+
 export function getMyMembership() {
   return apiFetch<MyMembershipResponse>('/university-memberships/me', { method: 'GET' })
+}
+
+// ---------------------------------------------------------------- self-service registration
+
+export function createUniversity(input: {
+  name: string
+  city?: string
+  registrationNumber?: string
+  website?: string
+  description?: string
+}) {
+  return apiFetch<UniversityDetailResponse>('/universities', { method: 'POST', body: input })
+}
+
+export function getUniversityDetail(universityId: string) {
+  return apiFetch<UniversityDetailResponse>(`/universities/${universityId}`, { method: 'GET' })
+}
+
+export function updateUniversity(
+  universityId: string,
+  input: { name: string; city?: string; registrationNumber?: string; website?: string; description?: string },
+) {
+  return apiFetch<UniversityDetailResponse>(`/universities/${universityId}`, { method: 'PATCH', body: input })
+}
+
+export function submitUniversityForVerification(universityId: string) {
+  return apiFetch<UniversityDetailResponse>(`/universities/${universityId}/verification/submit`, { method: 'POST' })
+}
+
+/**
+ * Uploads or replaces the university's registration/accreditation document. PDF only; private,
+ * random storage key, never given a URL (CLAUDE.md sections 47-48). Bypasses {@code apiFetch}
+ * because a multipart body must let the browser set its own boundary.
+ */
+export async function uploadUniversityEvidence(universityId: string, file: File): Promise<UniversityEvidenceResponse> {
+  const body = new FormData()
+  body.append('file', file)
+
+  const accessToken = getAccessToken()
+  const response = await fetch(`${env.apiBaseUrl}/universities/${universityId}/verification/evidence`, {
+    method: 'POST',
+    credentials: 'include',
+    headers: accessToken ? { Authorization: `Bearer ${accessToken}` } : {},
+    body,
+  })
+
+  if (!response.ok) {
+    const errorBody = await response.json().catch(() => null)
+    if (errorBody) throw new ApiError(errorBody)
+    throw new Error(`Upload failed with status ${response.status}`)
+  }
+  return (await response.json()) as UniversityEvidenceResponse
+}
+
+// ---------------------------------------------------------------- public logo
+
+interface UniversityLogoResponse {
+  present: boolean
+}
+
+/** Uploads or replaces the university's public logo. `UNIVERSITY_ADMIN` only. */
+export async function uploadUniversityLogo(universityId: string, file: File): Promise<UniversityLogoResponse> {
+  const body = new FormData()
+  body.append('file', file)
+
+  const accessToken = getAccessToken()
+  const response = await fetch(`${env.apiBaseUrl}/universities/${universityId}/logo`, {
+    method: 'POST',
+    credentials: 'include',
+    headers: accessToken ? { Authorization: `Bearer ${accessToken}` } : {},
+    body,
+  })
+
+  if (!response.ok) {
+    const errorBody = await response.json().catch(() => null)
+    if (errorBody) throw new ApiError(errorBody)
+    throw new Error(`Upload failed with status ${response.status}`)
+  }
+  return (await response.json()) as UniversityLogoResponse
+}
+
+/** Public, unauthenticated, cacheable — safe to use directly as an `<img src>`. */
+export function universityLogoUrl(universityId: string): string {
+  return `${env.apiBaseUrl}/public/universities/${universityId}/logo/document`
+}
+
+// ---------------------------------------------------------------- public profile
+
+export function getPublicUniversity(universityId: string) {
+  return apiFetch<PublicUniversityResponse>(`/public/universities/${universityId}`, { method: 'GET' })
 }
 
 export function listStaff(universityId: string) {
   return apiFetch<StaffMemberResponse[]>(`/universities/${universityId}/staff`, { method: 'GET' })
 }
 
-export function assignStaff(universityId: string, input: { email: string; role: UniversityRole; departmentIds: string[] }) {
+/** Creates a brand-new staff account — the email does not need to belong to an existing user. */
+export function createStaff(
+  universityId: string,
+  input: { email: string; password: string; confirmPassword: string; role: UniversityRole; departmentIds: string[] },
+) {
   return apiFetch<StaffMemberResponse>(`/universities/${universityId}/staff`, { method: 'POST', body: input })
+}
+
+export function changeStaffRole(
+  universityId: string,
+  membershipId: string,
+  input: { role: UniversityRole; departmentIds: string[] },
+) {
+  return apiFetch<StaffMemberResponse>(`/universities/${universityId}/staff/${membershipId}/role`, { method: 'POST', body: input })
+}
+
+export function suspendStaff(universityId: string, membershipId: string) {
+  return apiFetch<MessageResponse>(`/universities/${universityId}/staff/${membershipId}/suspend`, { method: 'POST' })
+}
+
+export function reactivateStaff(universityId: string, membershipId: string) {
+  return apiFetch<MessageResponse>(`/universities/${universityId}/staff/${membershipId}/reactivate`, { method: 'POST' })
+}
+
+/** Server-generates a fresh temporary password, returned exactly once. */
+export function resetStaffPassword(universityId: string, membershipId: string) {
+  return apiFetch<TemporaryCredentialResponse>(`/universities/${universityId}/staff/${membershipId}/reset-password`, { method: 'POST' })
 }
 
 export function revokeStaff(universityId: string, membershipId: string) {

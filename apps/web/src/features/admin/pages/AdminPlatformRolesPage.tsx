@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { useTranslation } from 'react-i18next'
-import { Button, FormField, Input, LoadingSpinner, Select, StatusBadge } from '../../../components/ui'
+import { Button, FormField, Input, LoadingSpinner, PageHeader, Select, StatusBadge } from '../../../components/ui'
 import { apiErrorMessage } from '../../../lib/api/errorMessage'
 import * as adminApi from '../api/adminApi'
 import type { PlatformRole } from '../types'
@@ -64,7 +64,7 @@ export function AdminPlatformRolesPage() {
   return (
     <div className="flex flex-col gap-6">
       <div>
-        <h1 className="text-lg font-semibold text-foreground">{t('admin:platformRoles.title')}</h1>
+        <PageHeader title={t('admin:platformRoles.title')} />
         <p className="mt-1 text-sm text-foreground-secondary">{t('admin:platformRoles.description')}</p>
       </div>
 

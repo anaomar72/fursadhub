@@ -1,13 +1,94 @@
 {
   "nav": {
+    "dashboard": "Dashboard",
     "students": "Students",
     "verificationQueue": "Verification queue",
     "departments": "Departments",
+    "profile": "University",
     "staff": "Staff",
     "noMembership": "You don't have an active staff role at a university."
   },
+  "dashboard": {
+    "title": "Your dashboard",
+    "verificationQueue": "Verification queue",
+    "opportunityRequests": "Opportunity requests",
+    "nominations": "Nominations",
+    "placements": "Placements",
+    "active": "Active",
+    "awaitingStudent": "Awaiting student response",
+    "needsAction": "Needs review",
+    "clear": "Nothing outstanding"
+  },
+  "setup": {
+    "title": "Register your university",
+    "body": "Register your university to start managing student verification and internship placements. You can invite colleagues once it's created.",
+    "nameLabel": "University name",
+    "cityLabel": "City",
+    "registrationNumberLabel": "Registration/accreditation number",
+    "websiteLabel": "Website",
+    "descriptionLabel": "About the university",
+    "submit": "Register university",
+    "errors": {
+      "VALIDATION_FAILED": "Please check the form and try again.",
+      "generic": "Something went wrong. Please try again."
+    }
+  },
+  "publicProfile": {
+    "notFound": "This university could not be found."
+  },
+  "profile": {
+    "title": "University profile",
+    "verificationStatusValues": {
+      "DRAFT": "Not submitted",
+      "SUBMITTED": "Submitted",
+      "UNDER_REVIEW": "Under review",
+      "NEEDS_CHANGES": "Changes needed",
+      "VERIFIED": "Verified",
+      "REJECTED": "Rejected",
+      "SUSPENDED": "Suspended",
+      "REVOKED": "Revoked"
+    },
+    "verifiedLabel": "Verified university",
+    "logo": {
+      "hint": "JPEG or PNG, up to 3MB. Shown publicly on your profile."
+    },
+    "saveChanges": "Save changes",
+    "submitForVerification": "Submit for verification",
+    "submitForVerificationBody": "Your university must be verified before it can be targeted by internship opportunities.",
+    "evidence": {
+      "label": "Registration or accreditation license",
+      "hint": "Upload a PDF of your university's registration or accreditation document.",
+      "attached": "A license document is on file.",
+      "uploading": "Uploading…",
+      "required": "Attach your license document before submitting for verification."
+    },
+    "errors": {
+      "ACCESS_DENIED": "You do not have access to this university.",
+      "UNIVERSITY_VERIFICATION_INVALID_TRANSITION": "This university can't be submitted for verification from its current state.",
+      "UNIVERSITY_VERIFICATION_EVIDENCE_REQUIRED": "Attach your license document before submitting for verification.",
+      "UNIVERSITY_EVIDENCE_FILE_INVALID": "That file isn't accepted — upload a PDF under 10MB.",
+      "UNIVERSITY_LOGO_FILE_INVALID": "That file isn't accepted — upload a JPEG or PNG under 3MB.",
+      "FILE_TOO_LARGE": "That file is larger than the maximum allowed size.",
+      "VALIDATION_FAILED": "Please check the form and try again.",
+      "generic": "Something went wrong. Please try again."
+    }
+  },
   "departments": {
-    "title": "Departments"
+    "title": "Departments",
+    "empty": "No departments yet.",
+    "nameLabel": "Department name",
+    "codeLabel": "Code",
+    "addSubmit": "Add department",
+    "rename": "Rename",
+    "save": "Save",
+    "cancel": "Cancel",
+    "errors": {
+      "DEPARTMENT_CODE_ALREADY_EXISTS": "A department with this code already exists at your university.",
+      "DEPARTMENT_NOT_FOUND": "That department could not be found.",
+      "ACCESS_DENIED": "You do not have access to manage this department.",
+      "VALIDATION_FAILED": "Please check the form and try again.",
+      "generic": "Something went wrong. Please try again."
+    }
   },
   "students": {
     "title": "Students",
@@ -56,6 +137,8 @@
   "staff": {
     "title": "Staff",
     "emailLabel": "Email address",
+    "passwordLabel": "Temporary password",
+    "confirmPasswordLabel": "Confirm password",
     "roleLabel": "Role",
     "roles": {
       "UNIVERSITY_ADMIN": "University admin",
@@ -63,15 +146,33 @@
       "UNIVERSITY_SUPERVISOR": "University supervisor"
     },
     "departmentsLabel": "Departments",
-    "assignSubmit": "Assign staff role",
+    "createSubmit": "Create staff account",
+    "changeRole": "Change role",
+    "saveRole": "Save",
+    "suspend": "Suspend",
+    "reactivate": "Reactivate",
+    "resetPassword": "Reset password",
+    "resetPasswordOnceWarning": "This password is shown only once. Share it with the staff member now.",
+    "copyCredentials": "Copy",
+    "dismiss": "Dismiss",
+    "statusValues": {
+      "PENDING_CONTACT_VERIFICATION": "Awaiting email verification",
+      "ACTIVE": "Active",
+      "SUSPENDED": "Suspended",
+      "CLOSED": "Closed"
+    },
     "revoke": "Revoke",
-    "empty": "No staff assigned yet.",
+    "empty": "No staff created yet.",
     "errors": {
-      "STAFF_USER_NOT_FOUND": "No account exists for this email.",
-      "STAFF_USER_NOT_ACTIVE": "This account must be active before it can be assigned a staff role.",
-      "STAFF_ALREADY_ASSIGNED": "This user already has an active staff role at this university.",
+      "departmentsRequired": "Select at least one department.",
+      "STAFF_EMAIL_ALREADY_EXISTS": "An account with this email already exists.",
+      "STAFF_ROLE_NOT_ASSIGNABLE": "University admins may only assign Department Coordinator or University Supervisor.",
+      "STAFF_SCOPE_REQUIRED": "Please select at least one department.",
+      "STAFF_PASSWORD_CONFIRMATION_MISMATCH": "Password and confirmation do not match.",
+      "STAFF_MEMBERSHIP_NOT_FOUND": "Staff membership not found.",
+      "USER_CLOSED": "A closed account cannot be suspended or reactivated.",
       "DEPARTMENT_NOT_IN_UNIVERSITY": "One or more departments do not belong to this university.",
-      "VALIDATION_FAILED": "Please select at least one department.",
+      "VALIDATION_FAILED": "Please check the form and try again.",
       "generic": "Something went wrong. Please try again."
     }
   }

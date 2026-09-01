@@ -6,7 +6,8 @@ import java.util.List;
 import java.util.UUID;
 
 public record StaffMemberResponse(
-        String membershipId, String userId, String email, String role, List<UUID> departmentIds, String assignedAt) {
+        String membershipId, String userId, String email, String role, String status,
+        List<UUID> departmentIds, String assignedAt) {
 
     public static StaffMemberResponse from(UniversityStaffService.StaffMember staffMember) {
         return new StaffMemberResponse(
@@ -14,6 +15,7 @@ public record StaffMemberResponse(
                 staffMember.membership().getUserId().toString(),
                 staffMember.email(),
                 staffMember.membership().getRole().name(),
+                staffMember.status() == null ? null : staffMember.status().name(),
                 staffMember.departmentIds(),
                 staffMember.membership().getAssignedAt().toString());
     }

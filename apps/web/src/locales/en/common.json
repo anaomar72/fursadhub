@@ -3,13 +3,83 @@
     "name": "FursadHub",
     "tagline": "Opening doors to your future."
   },
+  "landing": {
+    "eyebrow": "FursadHub · Somalia",
+    "subhead": "FursadHub connects students, universities and organizations around one internship pipeline — from first application to final defense.",
+    "doors": {
+      "student": {
+        "title": "For students",
+        "body": "Find and apply to verified internships with organizations and universities across Somalia.",
+        "cta": "Find internships"
+      },
+      "organization": {
+        "title": "For organizations",
+        "body": "Source and recruit students from verified universities, then manage the whole placement.",
+        "cta": "Recruit students"
+      },
+      "university": {
+        "title": "For universities",
+        "body": "Oversee your students' internships from nomination through to their final defense.",
+        "cta": "Register your university"
+      }
+    },
+    "howItWorks": {
+      "title": "How it works",
+      "steps": {
+        "sourcing": {
+          "title": "Post or discover",
+          "body": "Organizations publish opportunities; students apply directly or are nominated by their university."
+        },
+        "recruitment": {
+          "title": "Get matched",
+          "body": "Public applications and university nominations feed one candidate pipeline through to an offer."
+        },
+        "placement": {
+          "title": "Placement to completion",
+          "body": "Weekly logs, attendance, supervision and evaluation carry the internship through to its defense."
+        }
+      }
+    },
+    "trustLine": "Built for Somalia's universities, organizations and students.",
+    "secondaryCta": "See how it works",
+    "lifecycle": {
+      "title": "One pipeline, start to finish",
+      "body": "A placement doesn't end at the offer. FursadHub carries it through weekly logs, attendance, supervision from both sides, evaluation and a final defense — so universities and organizations can see real progress, not just a hire date.",
+      "items": {
+        "logs": "Weekly logs",
+        "attendance": "Attendance",
+        "supervision": "Dual supervision",
+        "evaluation": "Evaluation",
+        "defense": "Final defense"
+      }
+    },
+    "cta": {
+      "title": "Ready to get started?",
+      "body": "Registration is free during the pilot — create an account as a student, organization, or university.",
+      "primary": "Create an account",
+      "secondary": "Sign in"
+    }
+  },
+  "footer": {
+    "legalNav": "Legal",
+    "siteNav": "Site",
+    "description": "One internship pipeline for Somalia's students, universities and organizations — from first application to final defense.",
+    "home": "Home",
+    "howItWorks": "How it works",
+    "opportunities": "Opportunities",
+    "copyright": "© {{year}} FursadHub. All rights reserved."
+  },
   "nav": {
     "home": "Home",
     "student": "Student",
     "university": "University",
     "organization": "Organization",
     "admin": "Admin",
-    "account": "Account"
+    "account": "Account",
+    "howItWorks": "How it works",
+    "register": "Register",
+    "openMenu": "Open menu",
+    "closeMenu": "Close menu"
   },
   "status": {
     "loading": "Loading",

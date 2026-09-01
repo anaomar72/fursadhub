@@ -45,6 +45,11 @@ public class UniversityMembershipDepartment {
         return scope;
     }
 
+    /** Ends this department's scope without deleting the row, preserving assignment history. */
+    public void remove() {
+        this.removedAt = Instant.now();
+    }
+
     public UUID getId() {
         return id;
     }

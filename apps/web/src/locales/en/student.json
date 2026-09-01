@@ -1,7 +1,22 @@
 {
   "nav": {
+    "dashboard": "Dashboard",
     "enrollment": "Enrollment",
     "profile": "Profile"
+  },
+  "dashboard": {
+    "title": "Your dashboard",
+    "enrollment": "Enrollment",
+    "verified": "Verified",
+    "notVerified": "Not yet verified",
+    "applications": "Applications",
+    "inProgress": "In progress",
+    "nominations": "Nominations",
+    "offers": "Offers",
+    "placements": "Placements",
+    "active": "Active",
+    "needsAction": "Needs your response",
+    "clear": "Nothing outstanding"
   },
   "profile": {
     "title": "Your profile",

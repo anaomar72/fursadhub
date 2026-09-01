@@ -9,7 +9,7 @@ import { PrivateDocumentUpload } from '../components/PrivateDocumentUpload'
 import { profileSchema, type ProfileFormValues } from '../schemas/profileSchema'
 import { apiErrorMessage } from '../../../lib/api/errorMessage'
 import { ApiError } from '../../../lib/api/client'
-import { Button, FormField, Input, LoadingSpinner } from '../../../components/ui'
+import { Button, FormField, Input, LoadingSpinner, PageHeader } from '../../../components/ui'
 
 export function StudentProfilePage() {
   const { t } = useTranslation()
@@ -58,8 +58,7 @@ export function StudentProfilePage() {
 
   return (
     <div className="mx-auto max-w-lg px-4 py-10 sm:px-6">
-      <h1 className="text-xl font-semibold text-foreground">{t('student:profile.title')}</h1>
-      <p className="mt-1 text-sm text-foreground-secondary">{t('student:profile.subtitle')}</p>
+      <PageHeader title={t('student:profile.title')} description={t('student:profile.subtitle')} />
 
       <form
         className="mt-6 flex flex-col gap-4"

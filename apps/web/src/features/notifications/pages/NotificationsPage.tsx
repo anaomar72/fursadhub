@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { useTranslation } from 'react-i18next'
-import { Button, LoadingSpinner, Pagination } from '../../../components/ui'
+import { Button, LoadingSpinner, PageHeader, Pagination } from '../../../components/ui'
 import * as notificationsApi from '../api/notificationsApi'
 import { NotificationList } from '../components/NotificationList'
 
@@ -33,7 +33,7 @@ export function NotificationsPage() {
   return (
     <div className="flex flex-col gap-4">
       <div className="flex flex-wrap items-center justify-between gap-3">
-        <h1 className="text-lg font-semibold text-foreground">{t('notifications:title')}</h1>
+        <PageHeader title={t('notifications:title')} />
         <div className="flex flex-wrap items-center gap-2">
           <Button
             type="button"

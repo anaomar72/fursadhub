@@ -27,5 +27,12 @@ public enum RetentionCategory {
      * Academic output such as the final internship report. Retained with the placement it belongs
      * to, because it is part of the university's record of a completed internship.
      */
-    ACADEMIC_RECORD
+    ACADEMIC_RECORD,
+
+    /**
+     * A personal profile picture or an organization's/university's own logo — identity the account
+     * or tenant presents to others, not evidence gathered to prove a claim. Retained while the
+     * account/tenant exists; replaceable at any time by whoever owns it.
+     */
+    ACCOUNT_ASSET
 }

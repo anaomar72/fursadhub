@@ -53,6 +53,23 @@ export interface AdminOrganization {
   website: string | null
   verificationStatus: InstitutionVerificationStatus
   verifiedAt: string | null
+  /** Whether a license document is on file — a flag, not a file id (CLAUDE.md section 47). */
+  hasEvidence: boolean
+  evidenceUploadedAt: string | null
+  createdAt: string
+}
+
+export interface AdminUniversity {
+  id: string
+  name: string
+  slug: string
+  city: string | null
+  registrationNumber: string | null
+  website: string | null
+  verificationStatus: InstitutionVerificationStatus
+  hasEvidence: boolean
+  evidenceUploadedAt: string | null
+  verifiedAt: string | null
   createdAt: string
 }
 

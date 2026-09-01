@@ -3,15 +3,19 @@ package com.fursadhub.administration.api;
 import com.fursadhub.administration.application.AdminInstitutionVerificationService;
 import com.fursadhub.common.api.PageResponse;
 import com.fursadhub.common.web.RequestMetadata;
+import com.fursadhub.file.api.PrivateDocumentResponses;
+import com.fursadhub.organization.application.OrganizationVerificationEvidenceService;
 import com.fursadhub.organization.domain.Organization;
 import com.fursadhub.verification.domain.InstitutionVerificationStatus;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
+import org.springframework.core.io.InputStreamResource;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.web.PageableDefault;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -39,9 +43,13 @@ public class AdminOrganizationController {
     private static final int MAX_PAGE_SIZE = 100;
 
     private final AdminInstitutionVerificationService verificationService;
+    private final OrganizationVerificationEvidenceService evidenceService;
 
-    public AdminOrganizationController(AdminInstitutionVerificationService verificationService) {
+    public AdminOrganizationController(
+            AdminInstitutionVerificationService verificationService,
+            OrganizationVerificationEvidenceService evidenceService) {
         this.verificationService = verificationService;
+        this.evidenceService = evidenceService;
     }
 
     @GetMapping
@@ -58,6 +66,19 @@ public class AdminOrganizationController {
     public OrganizationVerificationResponse get(
             @AuthenticationPrincipal Jwt jwt, @PathVariable UUID organizationId) {
         return OrganizationVerificationResponse.from(verificationService.get(currentUserId(jwt), organizationId));
+    }
+
+    /**
+     * The organization's registration license — the document the whole review is about. Audited like
+     * every other private read (CLAUDE.md sections 47, 51).
+     */
+    @GetMapping("/{organizationId}/verification/evidence/document")
+    public ResponseEntity<InputStreamResource> downloadEvidence(
+            @AuthenticationPrincipal Jwt jwt, @PathVariable UUID organizationId, HttpServletRequest httpRequest) {
+        OrganizationVerificationEvidenceService.Document document = evidenceService.openForPlatformReviewer(
+                currentUserId(jwt), organizationId,
+                RequestMetadata.clientIp(httpRequest), RequestMetadata.userAgent(httpRequest));
+        return PrivateDocumentResponses.attachment(document.metadata(), document.content());
     }
 
     @PostMapping("/{organizationId}/begin-review")

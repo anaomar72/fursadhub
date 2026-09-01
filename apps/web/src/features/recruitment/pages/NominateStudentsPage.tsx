@@ -4,7 +4,7 @@ import { useParams } from 'react-router-dom'
 import * as recruitmentApi from '../api/recruitmentApi'
 import { useUniversityMembership } from '../../university/components/UniversityMembershipContext'
 import { apiErrorMessage } from '../../../lib/api/errorMessage'
-import { Button, LoadingSpinner, StatusBadge } from '../../../components/ui'
+import { Button, EmptyState, LoadingSpinner, PageHeader, StatusBadge } from '../../../components/ui'
 
 /**
  * Nominating eligible students for one targeted opportunity (CLAUDE.md Phase 4 section 26).
@@ -65,8 +65,7 @@ export function NominateStudentsPage() {
 
   return (
     <div className="mx-auto max-w-3xl px-4 py-8 sm:px-6">
-      <h1 className="text-xl font-semibold text-foreground">{request.opportunityTitle}</h1>
-      <p className="mt-1 text-sm text-foreground-secondary">{request.organizationName}</p>
+      <PageHeader title={request.opportunityTitle} description={request.organizationName} />
       <p className="mt-3 text-sm text-foreground-secondary">
         {t('recruitment:requests.progress', {
           current: request.liveNominationCount,
@@ -79,7 +78,7 @@ export function NominateStudentsPage() {
       <p className="mt-1 text-sm text-foreground-secondary">{t('recruitment:nominate.eligibleExplainer')}</p>
 
       {students.length === 0 ? (
-        <p className="mt-8 text-center text-sm text-foreground-secondary">{t('recruitment:nominate.empty')}</p>
+        <EmptyState className="mt-8" title={t('recruitment:nominate.empty')} />
       ) : (
         <ul className="mt-4 flex flex-col gap-2">
           {students.map((student) => (

@@ -56,6 +56,11 @@ public class UniversityMembership {
         this.revokedAt = Instant.now();
     }
 
+    /** Changes the staff role in place, preserving the membership row's identity and history. */
+    public void changeRole(UniversityRole newRole) {
+        this.role = newRole;
+    }
+
     public boolean isActive() {
         return revokedAt == null;
     }

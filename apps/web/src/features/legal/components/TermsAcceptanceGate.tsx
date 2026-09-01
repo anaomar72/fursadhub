@@ -4,6 +4,8 @@ import { useTranslation } from 'react-i18next'
 import { Button } from '../../../components/ui'
 import { apiErrorMessage } from '../../../lib/api/errorMessage'
 import * as legalApi from '../api/legalApi'
+import * as universityApi from '../../university/api/universityApi'
+import * as organizationApi from '../../organization/api/organizationApi'
 
 interface TermsAcceptanceGateProps {
   children: ReactNode
@@ -21,6 +23,13 @@ interface TermsAcceptanceGateProps {
  * <p>Fails OPEN. If the status call errors, the app renders normally rather than locking everyone
  * out of FursadHub because one endpoint is unavailable — this is a compliance prompt, not an
  * authorization boundary, and the backend enforces nothing on the strength of it.
+ *
+ * <p>Managed staff (CLAUDE.md section 26A) never saw this prompt at sign-up — they never went
+ * through public self-registration to begin with, since an admin created their account directly.
+ * {@code DEPARTMENT_COORDINATOR}/{@code UNIVERSITY_SUPERVISOR}/{@code RECRUITER}/
+ * {@code ORGANIZATION_SUPERVISOR} are exactly the roles that can only exist through that
+ * admin-provisioning path (never through self-registration), so holding one of them is a reliable
+ * signal to skip the gate entirely rather than surface a prompt with nowhere it came from.
  */
 export function TermsAcceptanceGate({ children }: TermsAcceptanceGateProps) {
   const { t, i18n } = useTranslation()
@@ -28,10 +37,25 @@ export function TermsAcceptanceGate({ children }: TermsAcceptanceGateProps) {
   const locale = i18n.resolvedLanguage ?? 'en'
   const [error, setError] = useState<string | null>(null)
 
+  const universityMembershipQuery = useQuery({
+    queryKey: ['university', 'my-membership'],
+    queryFn: universityApi.getMyMembership,
+    retry: false,
+  })
+  const organizationMembershipsQuery = useQuery({
+    queryKey: ['organization', 'my-memberships'],
+    queryFn: organizationApi.getMyMemberships,
+    retry: false,
+  })
+  const isManagedStaff =
+    (universityMembershipQuery.data && universityMembershipQuery.data.role !== 'UNIVERSITY_ADMIN') ||
+    (organizationMembershipsQuery.data?.[0] && organizationMembershipsQuery.data[0].role !== 'ORGANIZATION_ADMIN')
+
   const statusQuery = useQuery({
     queryKey: ['legal-status', locale],
     queryFn: () => legalApi.getLegalStatus(locale),
     retry: false,
+    enabled: !isManagedStaff,
   })
 
   const acceptMutation = useMutation({
@@ -47,8 +71,8 @@ export function TermsAcceptanceGate({ children }: TermsAcceptanceGateProps) {
 
   const outstanding = statusQuery.data?.outstanding ?? []
 
-  // Still loading, errored, or nothing outstanding — get out of the way.
-  if (statusQuery.isLoading || statusQuery.isError || outstanding.length === 0) {
+  // Managed staff, still loading, errored, or nothing outstanding — get out of the way.
+  if (isManagedStaff || statusQuery.isLoading || statusQuery.isError || outstanding.length === 0) {
     return <>{children}</>
   }
 

@@ -33,12 +33,11 @@ import java.util.function.Consumer;
  * domain method, audit it and notify the organization's own admins — which is why an invalid
  * transition still fails inside the domain object rather than here.
  *
- * <p>Universities are deliberately NOT reviewable through this service. The pilot's universities are
- * seeded by Flyway as a fixed tenant and their entity is read-only from Java (see the Javadoc on
- * {@code University}); giving the admin console a write path to them would mean redesigning a Phase 2
- * decision, which is out of Phase 7 scope. The admin dashboard reports how many exist, and changing
- * one is an operational task performed through a migration — which is what "seeded fixed tenant"
- * means in practice.
+ * <p>This service handles ORGANIZATIONS only. Universities went through the same review from Phase
+ * 7.5 onwards, when they became self-registering, and have their own
+ * {@link AdminUniversityVerificationService} rather than sharing this one: the two tenants have
+ * different memberships to notify, different notification types, and different downstream
+ * consequences of being verified.
  */
 @Service
 public class AdminInstitutionVerificationService {

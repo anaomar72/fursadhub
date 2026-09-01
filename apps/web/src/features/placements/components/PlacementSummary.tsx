@@ -1,5 +1,5 @@
 import { useTranslation } from 'react-i18next'
-import { StatusBadge } from '../../../components/ui'
+import { PageHeader, StatusBadge } from '../../../components/ui'
 import { PLACEMENT_STATUS_TONE } from './statusTone'
 import type { PlacementResponse } from '../types'
 
@@ -33,7 +33,7 @@ export function PlacementSummary({ placement, audience }: PlacementSummaryProps)
     <div>
       <div className="flex flex-wrap items-start justify-between gap-3">
         <div>
-          <h1 className="text-xl font-semibold text-foreground">{heading}</h1>
+          <PageHeader title={heading} />
           {subheading && <p className="mt-1 text-sm text-foreground-secondary">{subheading}</p>}
         </div>
         <StatusBadge tone={PLACEMENT_STATUS_TONE[placement.status]}>

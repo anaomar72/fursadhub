@@ -7,7 +7,7 @@ import * as recruitmentApi from '../api/recruitmentApi'
 import { CANDIDACY_STATUS_TONE, OFFER_STATUS_TONE } from '../components/statusTone'
 import { offerFormSchema, type OfferFormValues } from '../schemas/offerFormSchema'
 import { apiErrorMessage } from '../../../lib/api/errorMessage'
-import { Button, FormField, Input, LoadingSpinner, StatusBadge, Textarea } from '../../../components/ui'
+import { Button, FormField, Input, LoadingSpinner, PageHeader, StatusBadge, Textarea } from '../../../components/ui'
 import type { CandidacyStatus } from '../types'
 
 /** Which stage commands make sense from the current state — UX only; the backend is authoritative. */
@@ -101,12 +101,10 @@ export function CandidateDetailPage() {
     <div className="mx-auto max-w-2xl px-4 py-8 sm:px-6">
       <div className="flex flex-wrap items-center justify-between gap-3">
         <div>
-          <h1 className="text-xl font-semibold text-foreground">
-            {candidate.studentFullName ?? candidate.studentEmail ?? candidate.studentUserId}
-          </h1>
-          <p className="mt-1 text-sm text-foreground-secondary">
-            {t(`recruitment:sourceValues.${candidate.source}`)}
-          </p>
+          <PageHeader
+            title={candidate.studentFullName ?? candidate.studentEmail ?? candidate.studentUserId}
+            description={t(`recruitment:sourceValues.${candidate.source}`)}
+          />
         </div>
         <StatusBadge tone={CANDIDACY_STATUS_TONE[candidate.status]}>
           {t(`recruitment:candidacyStatusValues.${candidate.status}`)}

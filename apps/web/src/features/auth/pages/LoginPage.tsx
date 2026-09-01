@@ -2,13 +2,16 @@ import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useMutation } from '@tanstack/react-query'
 import { useTranslation } from 'react-i18next'
-import { Link, useLocation, useNavigate } from 'react-router-dom'
+import { Link, useLocation, useNavigate, useSearchParams } from 'react-router-dom'
 import { loginSchema, type LoginFormValues } from '../schemas/loginSchema'
 import * as authApi from '../api/authApi'
 import { authErrorMessage } from '../api/errorMessage'
 import { AuthCard } from '../components/AuthCard'
 import { Button, FormField, Input } from '../../../components/ui'
 import { useAuth } from '../../../lib/auth/AuthContext'
+import { resolveConsolePath, roleLandingPath } from '../roleRedirect'
+import * as legalApi from '../../legal/api/legalApi'
+import { PENDING_TERMS_ACCEPTANCE_KEY } from '../../legal/pendingAcceptance'
 
 interface LocationState {
   from?: { pathname: string }
@@ -19,6 +22,8 @@ export function LoginPage() {
   const { signIn } = useAuth()
   const navigate = useNavigate()
   const location = useLocation()
+  const [searchParams] = useSearchParams()
+  const role = searchParams.get('role')
 
   const form = useForm<LoginFormValues>({
     resolver: zodResolver(loginSchema),
@@ -27,9 +32,12 @@ export function LoginPage() {
 
   const loginMutation = useMutation({
     mutationFn: authApi.login,
-    onSuccess: (data) => {
+    onSuccess: async (data) => {
       signIn(data.accessToken)
-      const redirectTo = (location.state as LocationState | null)?.from?.pathname ?? '/'
+      await submitPendingTermsAcceptance()
+
+      const redirectFrom = (location.state as LocationState | null)?.from?.pathname
+      const redirectTo = redirectFrom ?? roleLandingPath(role) ?? (await resolveConsolePath())
       navigate(redirectTo, { replace: true })
     },
   })
@@ -84,10 +92,30 @@ export function LoginPage() {
 
       <p className="mt-6 text-center text-sm text-foreground-secondary">
         {t('auth:login.noAccount')}{' '}
-        <Link to="/register" className="font-medium text-brand-primary hover:underline">
+        <Link to={role ? `/register?role=${role}` : '/register'} className="font-medium text-brand-primary hover:underline">
           {t('auth:login.createAccount')}
         </Link>
       </p>
     </AuthCard>
   )
+}
+
+/**
+ * Records, for real, the acceptances a visitor agreed to on the registration form — now that
+ * signing in has produced the authenticated session `POST /me/terms-acceptances` requires
+ * (CLAUDE.md sections 12, 49). Best-effort: a failure here must not block sign-in, since
+ * `TermsAcceptanceGate` will simply catch the still-outstanding document on the next screen and
+ * prompt normally, rather than the visitor being logged in with nowhere to go.
+ */
+async function submitPendingTermsAcceptance(): Promise<void> {
+  const raw = sessionStorage.getItem(PENDING_TERMS_ACCEPTANCE_KEY)
+  if (!raw) return
+  sessionStorage.removeItem(PENDING_TERMS_ACCEPTANCE_KEY)
+
+  try {
+    const documentIds = JSON.parse(raw) as string[]
+    await Promise.all(documentIds.map((id) => legalApi.acceptLegalDocument(id)))
+  } catch {
+    // Swallowed on purpose — see the doc comment above.
+  }
 }

@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { useTranslation } from 'react-i18next'
-import { Button, FormField, LoadingSpinner, Select, StatusBadge, Textarea } from '../../../components/ui'
+import { Button, EmptyState, FormField, LoadingSpinner, PageHeader, Select, StatusBadge, Textarea } from '../../../components/ui'
 import type { StatusTone } from '../../../components/ui'
 import { apiErrorMessage } from '../../../lib/api/errorMessage'
 import * as privacyApi from '../api/privacyApi'
@@ -73,7 +73,7 @@ export function PrivacyPage() {
       {/* ------------------------------------------------------------ consents */}
       <section className="flex flex-col gap-3">
         <div>
-          <h1 className="text-lg font-semibold text-foreground">{t('privacy:consents.title')}</h1>
+          <PageHeader title={t('privacy:consents.title')} />
           <p className="mt-1 text-sm text-foreground-secondary">{t('privacy:consents.description')}</p>
         </div>
 
@@ -167,7 +167,7 @@ export function PrivacyPage() {
         {requestsQuery.isLoading ? (
           <LoadingSpinner />
         ) : (requestsQuery.data ?? []).length === 0 ? (
-          <p className="text-sm text-foreground-secondary">{t('privacy:requests.empty')}</p>
+          <EmptyState title={t('privacy:requests.empty')} />
         ) : (
           <ul className="flex flex-col gap-3">
             {(requestsQuery.data ?? []).map((request) => (

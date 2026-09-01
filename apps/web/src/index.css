@@ -1,3 +1,5 @@
+/* Must be the very first statement in the bundled stylesheet — see the note in tokens.css. */
+@import url('https://fonts.googleapis.com/css2?family=Manrope:wght@500;600;700;800&family=Public+Sans:wght@400;500;600&display=swap');
 @import 'tailwindcss';
 @import './lib/design-system/tokens.css';
 
@@ -42,6 +44,9 @@
   --shadow-sm: var(--shadow-sm);
   --shadow-md: var(--shadow-md);
 
+  --font-display: var(--font-display);
+  --font-body: var(--font-body);
+
   /* One-time confirmation sequence for <AnimatedCheck /> — see
      docs/product/BRAND_AND_UI_GUIDELINES.md section 14. Reduced-motion users
      get the motion-reduce:animate-none override applied in the component. */
@@ -51,6 +56,15 @@
 
   /* One-time invalid-code feedback for <OtpCodeInput /> — a subtle wiggle, not a loop. */
   --animate-otp-shake: otp-shake var(--duration-normal) var(--ease-standard);
+
+  /* One orchestrated hero entrance on the landing page (BRAND_AND_UI_GUIDELINES.md section 12) —
+     plays once on mount, never on re-render, and is skipped entirely under reduced motion via the
+     motion-reduce:animate-none override applied where it's used. */
+  --animate-hero-fade: hero-fade-up var(--duration-slow) var(--ease-enter) both;
+
+  /* Popover open for <Menu /> — quick and small, matching the fast duration used for hover/focus
+     feedback rather than the slow one-time entrances above. */
+  --animate-menu-in: menu-in var(--duration-fast) var(--ease-enter) both;
 }
 
 @keyframes verified-circle-in {
@@ -84,6 +98,28 @@
   }
 }
 
+@keyframes hero-fade-up {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes menu-in {
+  from {
+    opacity: 0;
+    transform: scale(0.97) translateY(-2px);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
+}
+
 @keyframes otp-shake {
   0%,
   100% {
@@ -104,17 +140,24 @@
     border-color: var(--color-border);
   }
 
+  html {
+    scroll-behavior: smooth;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    html {
+      scroll-behavior: auto;
+    }
+  }
+
   body {
     background-color: var(--color-background);
     color: var(--color-text-primary);
-    /* Typography family is not yet locked by the FursadHub team (CLAUDE.md
-       section 57) — use the system font stack rather than inventing one. */
-    font-family:
-      system-ui,
-      -apple-system,
-      'Segoe UI',
-      Roboto,
-      sans-serif;
+    /* Provisional pairing awaiting FursadHub team confirmation — see the header
+       note in tokens.css. Headings use font-display (Manrope); this is the
+       body/UI default (Public Sans), with the same system-font fallback as
+       before if either fails to load. */
+    font-family: var(--font-body);
   }
 
   :focus-visible {

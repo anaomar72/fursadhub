@@ -4,7 +4,7 @@ import { useTranslation } from 'react-i18next'
 import { Link, useParams } from 'react-router-dom'
 import * as recruitmentApi from '../api/recruitmentApi'
 import { CANDIDACY_STATUS_TONE } from '../components/statusTone'
-import { LoadingSpinner, StatusBadge } from '../../../components/ui'
+import { EmptyState, LoadingSpinner, PageHeader, StatusBadge } from '../../../components/ui'
 import { cn } from '../../../lib/utils/cn'
 import type { CandidacySource } from '../types'
 
@@ -31,7 +31,7 @@ export function CandidatePoolPage() {
   return (
     <div className="mx-auto max-w-4xl px-4 py-8 sm:px-6">
       <div className="flex flex-wrap items-center justify-between gap-3">
-        <h1 className="text-xl font-semibold text-foreground">{t('recruitment:pool.title')}</h1>
+        <PageHeader title={t('recruitment:pool.title')} />
         <Link
           to={`/organization/opportunities/${opportunityId}`}
           className="text-sm font-medium text-brand-primary hover:underline"
@@ -62,7 +62,7 @@ export function CandidatePoolPage() {
           <LoadingSpinner size="lg" />
         </div>
       ) : (candidatesQuery.data?.length ?? 0) === 0 ? (
-        <p className="mt-10 text-center text-sm text-foreground-secondary">{t('recruitment:pool.empty')}</p>
+        <EmptyState className="mt-10" title={t('recruitment:pool.empty')} />
       ) : (
         <ul className="mt-6 flex flex-col gap-3">
           {candidatesQuery.data?.map((candidate) => (

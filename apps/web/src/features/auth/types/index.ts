@@ -15,6 +15,8 @@ export interface MeResponse {
   status: string
   preferredLocale: string
   emailVerifiedAt: string | null
+  /** A flag, not a file id — the picture is fetched through its own route (CLAUDE.md section 47). */
+  hasAvatar: boolean
 }
 
 export interface MessageResponse {

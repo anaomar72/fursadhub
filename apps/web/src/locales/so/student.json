@@ -1,7 +1,22 @@
 {
   "nav": {
+    "dashboard": "Guddoomiye",
     "enrollment": "Diiwaangelinta",
     "profile": "Astaanta shakhsi ahaaneed"
+  },
+  "dashboard": {
+    "title": "Guddoomahaaga",
+    "enrollment": "Diiwaangelinta",
+    "verified": "La xaqiijiyay",
+    "notVerified": "Weli lama xaqiijin",
+    "applications": "Codsiyada",
+    "inProgress": "Socda",
+    "nominations": "Magacaabista",
+    "offers": "Dalabyada",
+    "placements": "Meel dhigidda",
+    "active": "Firfircoon",
+    "needsAction": "Waxay u baahan tahay jawaabtaada",
+    "clear": "Waxba ma harin"
   },
   "profile": {
     "title": "Astaantaada",

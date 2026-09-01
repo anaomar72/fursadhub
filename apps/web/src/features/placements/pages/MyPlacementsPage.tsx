@@ -2,7 +2,7 @@ import { useQuery } from '@tanstack/react-query'
 import { useTranslation } from 'react-i18next'
 import * as placementsApi from '../api/placementsApi'
 import { PlacementList } from '../components/PlacementList'
-import { LoadingSpinner } from '../../../components/ui'
+import { LoadingSpinner, PageHeader } from '../../../components/ui'
 
 /**
  * The student's own internships (CLAUDE.md section 39). A student normally has one live placement
@@ -27,7 +27,7 @@ export function MyPlacementsPage() {
 
   return (
     <div className="mx-auto max-w-3xl px-4 py-8 sm:px-6">
-      <h1 className="text-xl font-semibold text-foreground">{t('placements:student.title')}</h1>
+      <PageHeader title={t('placements:student.title')} />
 
       <PlacementList
         placements={placementsQuery.data ?? []}

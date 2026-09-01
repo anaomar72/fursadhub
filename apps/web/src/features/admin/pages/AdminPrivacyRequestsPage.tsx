@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { useTranslation } from 'react-i18next'
-import { Button, FormField, LoadingSpinner, Pagination, Select, StatusBadge, Textarea } from '../../../components/ui'
+import { Button, EmptyState, FormField, LoadingSpinner, Pagination, PageHeader, Select, StatusBadge, Textarea } from '../../../components/ui'
 import type { StatusTone } from '../../../components/ui'
 import { apiErrorMessage } from '../../../lib/api/errorMessage'
 import type { PrivacyRequestState } from '../../privacy/types'
@@ -64,7 +64,7 @@ export function AdminPrivacyRequestsPage() {
   return (
     <div className="flex flex-col gap-4">
       <div>
-        <h1 className="text-lg font-semibold text-foreground">{t('admin:privacyRequests.title')}</h1>
+        <PageHeader title={t('admin:privacyRequests.title')} />
         <p className="mt-1 text-sm text-foreground-secondary">{t('admin:privacyRequests.description')}</p>
       </div>
 
@@ -97,7 +97,7 @@ export function AdminPrivacyRequestsPage() {
           <LoadingSpinner size="lg" />
         </div>
       ) : (requestsQuery.data?.content ?? []).length === 0 ? (
-        <p className="text-sm text-foreground-secondary">{t('admin:privacyRequests.empty')}</p>
+        <EmptyState title={t('admin:privacyRequests.empty')} />
       ) : (
         <ul className="flex flex-col gap-3">
           {requestsQuery.data!.content.map((request) => (

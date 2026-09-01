@@ -24,6 +24,7 @@ const RESEND_COOLDOWN_SECONDS = 60
 export function VerifyEmailPage() {
   const { t } = useTranslation()
   const [searchParams, setSearchParams] = useSearchParams()
+  const role = searchParams.get('role')
   const [email, setEmail] = useState(searchParams.get('email') ?? '')
   const [code, setCode] = useState('')
   const [cooldownEndsAt, setCooldownEndsAt] = useState<number | null>(email ? Date.now() + RESEND_COOLDOWN_SECONDS * 1000 : null)
@@ -119,7 +120,10 @@ export function VerifyEmailPage() {
       <AuthCard title={t('auth:verifyEmail.successTitle')}>
         <AnimatedCheck label={t('auth:verifyEmail.successTitle')} />
         <p className="mt-4 text-center text-sm text-foreground-secondary">{t('auth:verifyEmail.successBody')}</p>
-        <Link to="/login" className="mt-6 block text-center text-sm font-medium text-brand-primary hover:underline">
+        <Link
+          to={role ? `/login?role=${role}` : '/login'}
+          className="mt-6 block text-center text-sm font-medium text-brand-primary hover:underline"
+        >
           {t('auth:verifyEmail.continue')}
         </Link>
       </AuthCard>

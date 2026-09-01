@@ -5,7 +5,7 @@ import { useTranslation } from 'react-i18next'
 import * as organizationApi from '../api/organizationApi'
 import { createOrganizationSchema, type CreateOrganizationFormValues } from '../schemas/organizationProfileSchema'
 import { apiErrorMessage } from '../../../lib/api/errorMessage'
-import { Button, FormField, Input, Select, Textarea } from '../../../components/ui'
+import { Button, FormField, Input, PageHeader, Select, Textarea } from '../../../components/ui'
 
 const TYPES: CreateOrganizationFormValues['type'][] = ['COMPANY', 'NGO', 'GOVERNMENT', 'OTHER']
 
@@ -26,8 +26,7 @@ export function OrganizationSetupPage() {
 
   return (
     <div className="mx-auto max-w-xl px-4 py-10 sm:px-6">
-      <h1 className="text-xl font-semibold text-foreground">{t('organization:setup.title')}</h1>
-      <p className="mt-2 text-sm text-foreground-secondary">{t('organization:setup.body')}</p>
+      <PageHeader title={t('organization:setup.title')} description={t('organization:setup.body')} />
 
       <form
         className="mt-6 flex flex-col gap-4 rounded-lg border border-border bg-surface p-4"

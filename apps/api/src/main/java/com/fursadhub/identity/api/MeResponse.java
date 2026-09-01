@@ -8,5 +8,7 @@ public record MeResponse(
         String email,
         String status,
         String preferredLocale,
-        Instant emailVerifiedAt) {
+        Instant emailVerifiedAt,
+        /** A flag, not a file id — the picture is fetched through its own audited route (CLAUDE.md section 47). */
+        boolean hasAvatar) {
 }

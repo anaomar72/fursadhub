@@ -16,15 +16,19 @@ import { VerifyEmailPage } from '../../features/auth/pages/VerifyEmailPage'
 import { ForgotPasswordPage } from '../../features/auth/pages/ForgotPasswordPage'
 import { ResetPasswordPage } from '../../features/auth/pages/ResetPasswordPage'
 import { StudentAreaLayout } from '../../features/student/components/StudentAreaLayout'
+import { DashboardPage as StudentDashboardPage } from '../../features/student/pages/DashboardPage'
 import { StudentProfilePage } from '../../features/student/pages/ProfilePage'
 import { EnrollmentPage } from '../../features/student/pages/EnrollmentPage'
 import { UniversityAreaLayout } from '../../features/university/components/UniversityAreaLayout'
+import { DashboardPage as UniversityDashboardPage } from '../../features/university/pages/DashboardPage'
 import { DepartmentsPage } from '../../features/university/pages/DepartmentsPage'
+import { UniversityProfilePage } from '../../features/university/pages/UniversityProfilePage'
 import { StudentsPage } from '../../features/university/pages/StudentsPage'
 import { VerificationQueuePage } from '../../features/university/pages/VerificationQueuePage'
 import { VerificationCaseDetailPage } from '../../features/university/pages/VerificationCaseDetailPage'
 import { StaffPage } from '../../features/university/pages/StaffPage'
 import { OrganizationAreaLayout } from '../../features/organization/components/OrganizationAreaLayout'
+import { DashboardPage as OrganizationDashboardPage } from '../../features/organization/pages/DashboardPage'
 import { ProfilePage as OrganizationProfilePage } from '../../features/organization/pages/ProfilePage'
 import { StaffPage as OrganizationStaffPage } from '../../features/organization/pages/StaffPage'
 import { OpportunityListPage } from '../../features/opportunities/pages/OpportunityListPage'
@@ -32,6 +36,8 @@ import { CreateOpportunityPage } from '../../features/opportunities/pages/Create
 import { OpportunityDetailPage } from '../../features/opportunities/pages/OpportunityDetailPage'
 import { PublicOpportunityListPage } from '../../features/opportunities/pages/PublicOpportunityListPage'
 import { PublicOpportunityDetailPage } from '../../features/opportunities/pages/PublicOpportunityDetailPage'
+import { PublicOrganizationProfilePage } from '../../features/organization/pages/PublicOrganizationProfilePage'
+import { PublicUniversityProfilePage } from '../../features/university/pages/PublicUniversityProfilePage'
 import { ApplyPage } from '../../features/recruitment/pages/ApplyPage'
 import { MyApplicationsPage } from '../../features/recruitment/pages/MyApplicationsPage'
 import { CandidacyDetailPage } from '../../features/recruitment/pages/CandidacyDetailPage'
@@ -60,6 +66,7 @@ import { InternshipPolicyPage } from '../../features/university/pages/Internship
 import { AdminAreaLayout } from '../../features/admin/components/AdminAreaLayout'
 import { AdminDashboardPage } from '../../features/admin/pages/AdminDashboardPage'
 import { AdminOrganizationsPage } from '../../features/admin/pages/AdminOrganizationsPage'
+import { AdminUniversitiesPage } from '../../features/admin/pages/AdminUniversitiesPage'
 import { AdminEscalationsPage } from '../../features/admin/pages/AdminEscalationsPage'
 import { AdminUsersPage } from '../../features/admin/pages/AdminUsersPage'
 import { AdminPrivacyRequestsPage } from '../../features/admin/pages/AdminPrivacyRequestsPage'
@@ -67,6 +74,7 @@ import { AdminLegalDocumentsPage } from '../../features/admin/pages/AdminLegalDo
 import { AdminAuditPage } from '../../features/admin/pages/AdminAuditPage'
 import { AdminPlatformRolesPage } from '../../features/admin/pages/AdminPlatformRolesPage'
 // Phase 7 account area and public legal documents.
+import { AccountProfilePage } from '../../features/account/pages/AccountProfilePage'
 import { NotificationsPage } from '../../features/notifications/pages/NotificationsPage'
 import { PrivacyPage } from '../../features/privacy/pages/PrivacyPage'
 import { LegalDocumentPage } from '../../features/legal/pages/LegalDocumentPage'
@@ -85,6 +93,8 @@ export const router = createBrowserRouter([
       { index: true, element: <HomePage /> },
       { path: 'opportunities', element: <PublicOpportunityListPage /> },
       { path: 'opportunities/:opportunityId', element: <PublicOpportunityDetailPage /> },
+      { path: 'organizations/:organizationId', element: <PublicOrganizationProfilePage /> },
+      { path: 'universities/:universityId', element: <PublicUniversityProfilePage /> },
       { path: 'register', element: <RegisterPage /> },
       { path: 'login', element: <LoginPage /> },
       { path: 'verify-email', element: <VerifyEmailPage /> },
@@ -108,7 +118,8 @@ export const router = createBrowserRouter([
       {
         element: <StudentAreaLayout />,
         children: [
-          { index: true, element: <Navigate to="enrollment" replace /> },
+          { index: true, element: <Navigate to="dashboard" replace /> },
+          { path: 'dashboard', element: <StudentDashboardPage /> },
           { path: 'enrollment', element: <EnrollmentPage /> },
           { path: 'profile', element: <StudentProfilePage /> },
           // Phase 4 recruitment. The apply route lives under /student because it requires an
@@ -147,9 +158,11 @@ export const router = createBrowserRouter([
       {
         element: <UniversityAreaLayout />,
         children: [
-          { index: true, element: <Navigate to="students" replace /> },
+          { index: true, element: <Navigate to="dashboard" replace /> },
+          { path: 'dashboard', element: <UniversityDashboardPage /> },
           { path: 'students', element: <StudentsPage /> },
           { path: 'departments', element: <DepartmentsPage /> },
+          { path: 'profile', element: <UniversityProfilePage /> },
           { path: 'verification-cases', element: <VerificationQueuePage /> },
           { path: 'verification-cases/:caseId', element: <VerificationCaseDetailPage /> },
           { path: 'staff', element: <StaffPage /> },
@@ -188,7 +201,8 @@ export const router = createBrowserRouter([
       {
         element: <OrganizationAreaLayout />,
         children: [
-          { index: true, element: <Navigate to="opportunities" replace /> },
+          { index: true, element: <Navigate to="dashboard" replace /> },
+          { path: 'dashboard', element: <OrganizationDashboardPage /> },
           { path: 'opportunities', element: <OpportunityListPage /> },
           { path: 'opportunities/new', element: <CreateOpportunityPage /> },
           { path: 'opportunities/:opportunityId', element: <OpportunityDetailPage /> },
@@ -231,6 +245,7 @@ export const router = createBrowserRouter([
           { index: true, element: <Navigate to="organizations" replace /> },
           { path: 'dashboard', element: <AdminDashboardPage /> },
           { path: 'organizations', element: <AdminOrganizationsPage /> },
+          { path: 'universities', element: <AdminUniversitiesPage /> },
           { path: 'verification-escalations', element: <AdminEscalationsPage /> },
           { path: 'users', element: <AdminUsersPage /> },
           { path: 'privacy-requests', element: <AdminPrivacyRequestsPage /> },
@@ -252,6 +267,7 @@ export const router = createBrowserRouter([
     ),
     children: [
       { index: true, element: <Navigate to="notifications" replace /> },
+      { path: 'profile', element: <AccountProfilePage /> },
       { path: 'notifications', element: <NotificationsPage /> },
       { path: 'privacy', element: <PrivacyPage /> },
     ],

@@ -3,7 +3,7 @@ import { useTranslation } from 'react-i18next'
 import * as placementsApi from '../api/placementsApi'
 import { PlacementList } from '../components/PlacementList'
 import { useUniversityMembership } from '../../university/components/UniversityMembershipContext'
-import { LoadingSpinner } from '../../../components/ui'
+import { LoadingSpinner, PageHeader } from '../../../components/ui'
 
 /**
  * The university's view of its students' placements (CLAUDE.md section 25).
@@ -32,10 +32,7 @@ export function UniversityPlacementsPage() {
 
   return (
     <div className="mx-auto max-w-4xl px-4 py-8 sm:px-6">
-      <h1 className="text-xl font-semibold text-foreground">{t('placements:university.title')}</h1>
-      <p className="mt-1 text-sm text-foreground-secondary">
-        {t('placements:university.description')}
-      </p>
+      <PageHeader title={t('placements:university.title')} description={t('placements:university.description')} />
 
       <PlacementList
         placements={placementsQuery.data ?? []}

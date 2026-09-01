@@ -4,7 +4,7 @@ import { useParams } from 'react-router-dom'
 import * as recruitmentApi from '../api/recruitmentApi'
 import { CANDIDACY_STATUS_TONE, OFFER_STATUS_TONE } from '../components/statusTone'
 import { apiErrorMessage } from '../../../lib/api/errorMessage'
-import { AnimatedCheck, Button, LoadingSpinner, StatusBadge } from '../../../components/ui'
+import { AnimatedCheck, Button, LoadingSpinner, PageHeader, StatusBadge } from '../../../components/ui'
 
 /**
  * A student's own candidacy, including any live offer and the accept/decline decision
@@ -67,7 +67,7 @@ export function CandidacyDetailPage() {
   return (
     <div className="mx-auto max-w-2xl px-4 py-8 sm:px-6">
       <div className="flex flex-wrap items-center justify-between gap-3">
-        <h1 className="text-xl font-semibold text-foreground">{candidacy.opportunityTitle}</h1>
+        <PageHeader title={candidacy.opportunityTitle} />
         <StatusBadge tone={CANDIDACY_STATUS_TONE[candidacy.status]}>
           {t(`recruitment:candidacyStatusValues.${candidacy.status}`)}
         </StatusBadge>

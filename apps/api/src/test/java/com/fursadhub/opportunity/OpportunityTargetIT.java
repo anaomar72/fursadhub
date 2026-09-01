@@ -26,7 +26,7 @@ class OpportunityTargetIT extends AbstractPhase3IT {
         UUID secondDepartment = insertDepartment(secondUniversity, "Computer Science", "CS");
 
         ResponseEntity<Map> first = authorizedPost("/api/v1/opportunities/" + opportunityId + "/targets", adminToken,
-                targetBody(JAMHURIYA_UNIVERSITY_ID, List.of(CS_DEPARTMENT_ID), 5, LocalDate.now().plusDays(20)));
+                targetBody(defaultUniversityId, List.of(csDepartmentId), 5, LocalDate.now().plusDays(20)));
         ResponseEntity<Map> second = authorizedPost("/api/v1/opportunities/" + opportunityId + "/targets", adminToken,
                 targetBody(secondUniversity, List.of(secondDepartment), 3, LocalDate.now().plusDays(20)));
 
@@ -47,9 +47,9 @@ class OpportunityTargetIT extends AbstractPhase3IT {
         UUID opportunityId = createDraftOpportunity(adminToken, organizationId, "UNIVERSITY_TARGETED", Map.of());
 
         authorizedPost("/api/v1/opportunities/" + opportunityId + "/targets", adminToken,
-                targetBody(JAMHURIYA_UNIVERSITY_ID, List.of(CS_DEPARTMENT_ID), 5, LocalDate.now().plusDays(20)));
+                targetBody(defaultUniversityId, List.of(csDepartmentId), 5, LocalDate.now().plusDays(20)));
         ResponseEntity<Map> duplicate = authorizedPost("/api/v1/opportunities/" + opportunityId + "/targets", adminToken,
-                targetBody(JAMHURIYA_UNIVERSITY_ID, List.of(BA_DEPARTMENT_ID), 2, LocalDate.now().plusDays(25)));
+                targetBody(defaultUniversityId, List.of(baDepartmentId), 2, LocalDate.now().plusDays(25)));
 
         assertThat(duplicate.getStatusCode()).isEqualTo(HttpStatus.CONFLICT);
         assertThat(duplicate.getBody().get("code")).isEqualTo("OPPORTUNITY_TARGET_ALREADY_EXISTS");
@@ -64,7 +64,7 @@ class OpportunityTargetIT extends AbstractPhase3IT {
         UUID otherDepartment = insertDepartment(otherUniversity, "Other Dept", "OD");
 
         ResponseEntity<Map> response = authorizedPost("/api/v1/opportunities/" + opportunityId + "/targets", adminToken,
-                targetBody(JAMHURIYA_UNIVERSITY_ID, List.of(otherDepartment), 5, LocalDate.now().plusDays(20)));
+                targetBody(defaultUniversityId, List.of(otherDepartment), 5, LocalDate.now().plusDays(20)));
 
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.BAD_REQUEST);
         assertThat(response.getBody().get("code")).isEqualTo("DEPARTMENT_NOT_IN_UNIVERSITY");
@@ -77,7 +77,7 @@ class OpportunityTargetIT extends AbstractPhase3IT {
         UUID opportunityId = createDraftOpportunity(adminToken, organizationId, "UNIVERSITY_TARGETED", Map.of());
 
         Map<String, Object> body = new java.util.LinkedHashMap<>(targetBody(
-                JAMHURIYA_UNIVERSITY_ID, List.of(CS_DEPARTMENT_ID), 5, LocalDate.now().plusDays(20)));
+                defaultUniversityId, List.of(csDepartmentId), 5, LocalDate.now().plusDays(20)));
         body.put("requestedNominees", 0);
 
         ResponseEntity<Map> response = authorizedPost("/api/v1/opportunities/" + opportunityId + "/targets", adminToken, body);
@@ -92,7 +92,7 @@ class OpportunityTargetIT extends AbstractPhase3IT {
         UUID opportunityId = createDraftOpportunity(adminToken, organizationId, "UNIVERSITY_TARGETED", Map.of());
 
         ResponseEntity<Map> response = authorizedPost("/api/v1/opportunities/" + opportunityId + "/targets", adminToken,
-                targetBody(JAMHURIYA_UNIVERSITY_ID, List.of(CS_DEPARTMENT_ID), 5, LocalDate.now().plusMonths(3)));
+                targetBody(defaultUniversityId, List.of(csDepartmentId), 5, LocalDate.now().plusMonths(3)));
 
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.BAD_REQUEST);
         assertThat(response.getBody().get("code")).isEqualTo("VALIDATION_FAILED");

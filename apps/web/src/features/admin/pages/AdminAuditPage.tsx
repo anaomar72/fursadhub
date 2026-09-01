@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import { useQuery } from '@tanstack/react-query'
 import { useTranslation } from 'react-i18next'
-import { FormField, LoadingSpinner, Pagination, Select } from '../../../components/ui'
+import { EmptyState, FormField, LoadingSpinner, Pagination, PageHeader, Select } from '../../../components/ui'
 import * as adminApi from '../api/adminApi'
 
 /**
@@ -29,7 +29,7 @@ export function AdminAuditPage() {
   return (
     <div className="flex flex-col gap-4">
       <div>
-        <h1 className="text-lg font-semibold text-foreground">{t('admin:audit.title')}</h1>
+        <PageHeader title={t('admin:audit.title')} />
         <p className="mt-1 text-sm text-foreground-secondary">{t('admin:audit.description')}</p>
       </div>
 
@@ -56,7 +56,7 @@ export function AdminAuditPage() {
           <LoadingSpinner size="lg" />
         </div>
       ) : (eventsQuery.data?.content ?? []).length === 0 ? (
-        <p className="text-sm text-foreground-secondary">{t('admin:audit.empty')}</p>
+        <EmptyState title={t('admin:audit.empty')} />
       ) : (
         <div className="overflow-x-auto rounded-lg border border-border bg-surface">
           <table className="w-full min-w-[48rem] text-sm">

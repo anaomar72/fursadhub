@@ -4,7 +4,7 @@ import { useTranslation } from 'react-i18next'
 import * as recruitmentApi from '../api/recruitmentApi'
 import { NOMINATION_STATUS_TONE } from '../components/statusTone'
 import { apiErrorMessage } from '../../../lib/api/errorMessage'
-import { AnimatedCheck, Button, LoadingSpinner, StatusBadge } from '../../../components/ui'
+import { AnimatedCheck, Button, EmptyState, LoadingSpinner, PageHeader, StatusBadge } from '../../../components/ui'
 
 /**
  * The student's nomination inbox and consent decision (CLAUDE.md section 35, Phase 4 section 25).
@@ -56,10 +56,10 @@ export function MyNominationsPage() {
 
   return (
     <div className="mx-auto max-w-3xl px-4 py-8 sm:px-6">
-      <h1 className="text-xl font-semibold text-foreground">{t('recruitment:nominations.title')}</h1>
+      <PageHeader title={t('recruitment:nominations.title')} />
 
       {nominations.length === 0 && (
-        <p className="mt-8 text-center text-sm text-foreground-secondary">{t('recruitment:nominations.empty')}</p>
+        <EmptyState className="mt-8" title={t('recruitment:nominations.empty')} />
       )}
 
       {pending.length > 0 && (

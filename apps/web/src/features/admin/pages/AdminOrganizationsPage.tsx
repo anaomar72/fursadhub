@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { useTranslation } from 'react-i18next'
-import { Button, FormField, Input, LoadingSpinner, Pagination, Select, StatusBadge } from '../../../components/ui'
+import { Button, EmptyState, FormField, Input, LoadingSpinner, Pagination, PageHeader, Select, StatusBadge } from '../../../components/ui'
 import type { StatusTone } from '../../../components/ui'
 import { apiErrorMessage } from '../../../lib/api/errorMessage'
 import * as adminApi from '../api/adminApi'
@@ -69,6 +69,22 @@ export function AdminOrganizationsPage() {
       }),
   })
 
+  const downloadMutation = useMutation({
+    mutationFn: async (organizationId: string) => {
+      setError(null)
+      const blob = await adminApi.downloadOrganizationEvidence(organizationId).catch((cause) => {
+        setError(apiErrorMessage(t, 'admin', 'organizations', cause))
+        throw cause
+      })
+      const objectUrl = URL.createObjectURL(blob)
+      const anchor = document.createElement('a')
+      anchor.href = objectUrl
+      anchor.download = 'organization-license'
+      anchor.click()
+      URL.revokeObjectURL(objectUrl)
+    },
+  })
+
   const transitionMutation = useMutation({
     mutationFn: ({
       organizationId,
@@ -104,7 +120,7 @@ export function AdminOrganizationsPage() {
 
   return (
     <div className="flex flex-col gap-4">
-      <h1 className="text-lg font-semibold text-foreground">{t('admin:organizations.title')}</h1>
+      <PageHeader title={t('admin:organizations.title')} />
 
       <form
         className="flex flex-wrap items-end gap-3"
@@ -156,7 +172,7 @@ export function AdminOrganizationsPage() {
           <LoadingSpinner size="lg" />
         </div>
       ) : (organizationsQuery.data?.content ?? []).length === 0 ? (
-        <p className="text-sm text-foreground-secondary">{t('admin:organizations.empty')}</p>
+        <EmptyState title={t('admin:organizations.empty')} />
       ) : (
         <ul className="flex flex-col gap-3">
           {organizationsQuery.data!.content.map((organization) => (
@@ -209,6 +225,17 @@ export function AdminOrganizationsPage() {
                 </form>
               ) : (
                 <div className="flex flex-wrap gap-2">
+                  {organization.hasEvidence && (
+                    <Button
+                      type="button"
+                      size="sm"
+                      variant="outline"
+                      loading={downloadMutation.isPending && downloadMutation.variables === organization.id}
+                      onClick={() => downloadMutation.mutate(organization.id)}
+                    >
+                      {t('admin:organizations.viewLicense')}
+                    </Button>
+                  )}
                   {ACTIONS[organization.verificationStatus].map((action) => (
                     <Button
                       key={action}

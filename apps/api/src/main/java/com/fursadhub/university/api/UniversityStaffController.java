@@ -1,6 +1,7 @@
 package com.fursadhub.university.api;
 
 import com.fursadhub.common.api.MessageResponse;
+import com.fursadhub.common.api.TemporaryCredentialResponse;
 import com.fursadhub.common.web.RequestMetadata;
 import com.fursadhub.university.application.UniversityStaffService;
 import jakarta.servlet.http.HttpServletRequest;
@@ -19,7 +20,7 @@ import org.springframework.web.bind.annotation.RestController;
 import java.util.List;
 import java.util.UUID;
 
-/** University-admin-only staff management for the caller's own university (CLAUDE.md section 25). */
+/** University-admin-only managed staff provisioning for the caller's own university (CLAUDE.md section 26A). */
 @RestController
 @RequestMapping("/api/v1/universities/{universityId}/staff")
 public class UniversityStaffController {
@@ -35,16 +36,66 @@ public class UniversityStaffController {
         return staffService.listStaff(currentUserId(jwt), universityId).stream().map(StaffMemberResponse::from).toList();
     }
 
+    /** Creates a brand-new staff account — the email does not need to belong to an existing user. */
     @PostMapping
-    public ResponseEntity<StaffMemberResponse> assign(
+    public ResponseEntity<StaffMemberResponse> create(
             @AuthenticationPrincipal Jwt jwt,
             @PathVariable UUID universityId,
-            @Valid @RequestBody AssignStaffRequest request,
+            @Valid @RequestBody CreateStaffRequest request,
             HttpServletRequest httpRequest) {
-        UniversityStaffService.StaffMember staffMember = staffService.assign(
-                currentUserId(jwt), universityId, request.email(), request.role(), request.departmentIds(),
+        UniversityStaffService.StaffMember staffMember = staffService.create(
+                currentUserId(jwt), universityId, request.email(), request.password(), request.confirmPassword(),
+                request.role(), request.departmentIds(),
                 RequestMetadata.clientIp(httpRequest), RequestMetadata.userAgent(httpRequest));
         return ResponseEntity.status(HttpStatus.CREATED).body(StaffMemberResponse.from(staffMember));
+    }
+
+    @PostMapping("/{membershipId}/role")
+    public StaffMemberResponse changeRole(
+            @AuthenticationPrincipal Jwt jwt,
+            @PathVariable UUID universityId,
+            @PathVariable UUID membershipId,
+            @Valid @RequestBody ChangeStaffRoleRequest request,
+            HttpServletRequest httpRequest) {
+        UniversityStaffService.StaffMember staffMember = staffService.changeRole(
+                currentUserId(jwt), universityId, membershipId, request.role(), request.departmentIds(),
+                RequestMetadata.clientIp(httpRequest), RequestMetadata.userAgent(httpRequest));
+        return StaffMemberResponse.from(staffMember);
+    }
+
+    @PostMapping("/{membershipId}/suspend")
+    public MessageResponse suspend(
+            @AuthenticationPrincipal Jwt jwt,
+            @PathVariable UUID universityId,
+            @PathVariable UUID membershipId,
+            HttpServletRequest httpRequest) {
+        staffService.suspend(currentUserId(jwt), universityId, membershipId,
+                RequestMetadata.clientIp(httpRequest), RequestMetadata.userAgent(httpRequest));
+        return new MessageResponse("Staff account suspended.");
+    }
+
+    @PostMapping("/{membershipId}/reactivate")
+    public MessageResponse reactivate(
+            @AuthenticationPrincipal Jwt jwt,
+            @PathVariable UUID universityId,
+            @PathVariable UUID membershipId,
+            HttpServletRequest httpRequest) {
+        staffService.reactivate(currentUserId(jwt), universityId, membershipId,
+                RequestMetadata.clientIp(httpRequest), RequestMetadata.userAgent(httpRequest));
+        return new MessageResponse("Staff account reactivated.");
+    }
+
+    /** Issues a fresh server-generated temporary password, returned exactly once in this response. */
+    @PostMapping("/{membershipId}/reset-password")
+    public TemporaryCredentialResponse resetPassword(
+            @AuthenticationPrincipal Jwt jwt,
+            @PathVariable UUID universityId,
+            @PathVariable UUID membershipId,
+            HttpServletRequest httpRequest) {
+        UniversityStaffService.StaffCredential credential = staffService.resetPassword(
+                currentUserId(jwt), universityId, membershipId,
+                RequestMetadata.clientIp(httpRequest), RequestMetadata.userAgent(httpRequest));
+        return new TemporaryCredentialResponse(membershipId.toString(), credential.email(), credential.temporaryPassword());
     }
 
     @PostMapping("/{membershipId}/revoke")

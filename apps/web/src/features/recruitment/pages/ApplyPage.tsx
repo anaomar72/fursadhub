@@ -6,7 +6,7 @@ import * as recruitmentApi from '../api/recruitmentApi'
 import * as publicOpportunityApi from '../../opportunities/api/publicOpportunityApi'
 import { ScreeningQuestionFields } from '../components/ScreeningQuestionFields'
 import { apiErrorMessage } from '../../../lib/api/errorMessage'
-import { AnimatedCheck, Button, LoadingSpinner } from '../../../components/ui'
+import { AnimatedCheck, Button, LoadingSpinner, PageHeader } from '../../../components/ui'
 import type { ScreeningQuestionResponse } from '../types'
 
 /**
@@ -102,12 +102,10 @@ export function ApplyPage() {
 
   return (
     <div className="mx-auto max-w-lg px-4 py-10 sm:px-6">
-      <h1 className="text-xl font-semibold text-foreground">{t('recruitment:apply.title')}</h1>
-      {opportunity && (
-        <p className="mt-1 text-sm text-foreground-secondary">
-          {opportunity.title} · {opportunity.organization.name}
-        </p>
-      )}
+      <PageHeader
+        title={t('recruitment:apply.title')}
+        description={opportunity ? `${opportunity.title} · ${opportunity.organization.name}` : undefined}
+      />
 
       <form className="mt-6 flex flex-col gap-5" noValidate onSubmit={handleSubmit}>
         <ScreeningQuestionFields

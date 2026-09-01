@@ -3,7 +3,7 @@ import { useTranslation } from 'react-i18next'
 import { Link } from 'react-router-dom'
 import * as recruitmentApi from '../api/recruitmentApi'
 import { CANDIDACY_STATUS_TONE } from '../components/statusTone'
-import { LoadingSpinner, StatusBadge } from '../../../components/ui'
+import { LoadingSpinner, PageHeader, StatusBadge } from '../../../components/ui'
 
 /**
  * The student's own applications and nominations-turned-candidacies, in ONE list — mirroring the
@@ -30,7 +30,7 @@ export function MyApplicationsPage() {
 
   return (
     <div className="mx-auto max-w-3xl px-4 py-8 sm:px-6">
-      <h1 className="text-xl font-semibold text-foreground">{t('recruitment:applications.title')}</h1>
+      <PageHeader title={t('recruitment:applications.title')} />
 
       {candidacies.length === 0 ? (
         <p className="mt-8 text-center text-sm text-foreground-secondary">

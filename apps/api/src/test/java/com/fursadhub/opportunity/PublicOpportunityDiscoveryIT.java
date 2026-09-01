@@ -84,7 +84,7 @@ class PublicOpportunityDiscoveryIT extends AbstractPhase3IT {
         UUID organizationId = createVerifiedOrganization(adminToken, "Targeted Hidden Org " + UUID.randomUUID());
         UUID opportunityId = createDraftOpportunity(adminToken, organizationId, "UNIVERSITY_TARGETED", Map.of());
         authorizedPost("/api/v1/opportunities/" + opportunityId + "/targets", adminToken,
-                targetBody(JAMHURIYA_UNIVERSITY_ID, java.util.List.of(CS_DEPARTMENT_ID), 5, java.time.LocalDate.now().plusDays(20)));
+                targetBody(defaultUniversityId, java.util.List.of(csDepartmentId), 5, java.time.LocalDate.now().plusDays(20)));
         authorizedPost("/api/v1/opportunities/" + opportunityId + "/publish", adminToken, null);
 
         ResponseEntity<Map> detail = unauthenticatedGet("/api/v1/public/opportunities/" + opportunityId);
@@ -106,7 +106,10 @@ class PublicOpportunityDiscoveryIT extends AbstractPhase3IT {
 
         @SuppressWarnings("unchecked")
         Map<String, Object> organization = (Map<String, Object>) response.getBody().get("organization");
-        assertThat(organization.keySet()).containsExactlyInAnyOrder("id", "name", "slug", "type");
+        // "verified" is a Phase 8 addition — intentional, not a leak: the verified badge on an
+        // opportunity card is the whole point (CLAUDE.md section 26 "build trust"). Every other
+        // field on this list stays a deliberate allowlist this test protects.
+        assertThat(organization.keySet()).containsExactlyInAnyOrder("id", "name", "slug", "type", "verified");
         assertThat(response.getBody()).doesNotContainKey("createdBy");
     }
 

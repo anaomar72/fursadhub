@@ -1,7 +1,7 @@
 import { useContext, useEffect, useState } from 'react'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { useTranslation } from 'react-i18next'
-import { Button, LoadingSpinner, Select, StatusBadge } from '../../../components/ui'
+import { Button, LoadingSpinner, PageHeader, Select, StatusBadge } from '../../../components/ui'
 import { apiErrorMessage } from '../../../lib/api/errorMessage'
 import * as placementsApi from '../../placements/api/placementsApi'
 import type { InternshipPolicyInput } from '../../placements/types'
@@ -38,19 +38,29 @@ export function InternshipPolicyPage() {
   const { t } = useTranslation()
   const queryClient = useQueryClient()
   const membership = useContext(UniversityMembershipContext)
-  const [departmentId, setDepartmentId] = useState<string>(UNIVERSITY_LEVEL)
+  const isAdmin = membership?.role === 'UNIVERSITY_ADMIN'
+  // A non-admin (department coordinator) has no authority at all at the whole-university level
+  // (InternshipManagementAuthorization.requirePolicyAuthority requires UNIVERSITY_ADMIN there) —
+  // defaulting them there the way an admin defaults would 403 on the very first load. Land them on
+  // their own scoped department instead.
+  const [departmentId, setDepartmentId] = useState<string>(
+    () => (!isAdmin && membership?.departmentIds[0]) || UNIVERSITY_LEVEL,
+  )
   const [draft, setDraft] = useState<InternshipPolicyInput | null>(null)
   const [error, setError] = useState<string | null>(null)
   const [saved, setSaved] = useState(false)
 
   const universityId = membership?.universityId
-  const isAdmin = membership?.role === 'UNIVERSITY_ADMIN'
 
   const departmentsQuery = useQuery({
     queryKey: ['departments', universityId],
     queryFn: () => universityApi.listDepartments(universityId!),
     enabled: !!universityId,
   })
+  // A coordinator only ever sees/uses their own scoped departments, never the whole university list.
+  const visibleDepartments = isAdmin
+    ? (departmentsQuery.data ?? [])
+    : (departmentsQuery.data ?? []).filter((department) => membership?.departmentIds.includes(department.id))
 
   const policyQuery = useQuery({
     queryKey: ['internship-policy', universityId, departmentId],
@@ -115,6 +125,14 @@ export function InternshipPolicyPage() {
     )
   }
 
+  if (policyQuery.isError) {
+    return (
+      <p className="px-4 py-10 text-center text-sm text-danger" role="alert">
+        {apiErrorMessage(t, 'internship', 'policy', policyQuery.error)}
+      </p>
+    )
+  }
+
   if (policyQuery.isLoading || !draft) {
     return (
       <div className="flex justify-center py-16">
@@ -128,10 +146,7 @@ export function InternshipPolicyPage() {
 
   return (
     <div className="mx-auto flex max-w-2xl flex-col gap-6 px-4 py-8 sm:px-6">
-      <div>
-        <h1 className="text-xl font-semibold text-foreground">{t('internship:policy.title')}</h1>
-        <p className="mt-1 text-sm text-foreground-secondary">{t('internship:policy.description')}</p>
-      </div>
+      <PageHeader title={t('internship:policy.title')} description={t('internship:policy.description')} />
 
       <div className="flex flex-col gap-2">
         <label htmlFor="policy-level" className="text-sm font-medium text-foreground">
@@ -142,8 +157,8 @@ export function InternshipPolicyPage() {
           value={departmentId}
           onChange={(event) => setDepartmentId(event.target.value)}
         >
-          <option value={UNIVERSITY_LEVEL}>{t('internship:policy.universityLevel')}</option>
-          {(departmentsQuery.data ?? []).map((department) => (
+          {isAdmin && <option value={UNIVERSITY_LEVEL}>{t('internship:policy.universityLevel')}</option>}
+          {visibleDepartments.map((department) => (
             <option key={department.id} value={department.id}>
               {department.name}
             </option>

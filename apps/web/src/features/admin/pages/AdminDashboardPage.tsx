@@ -1,6 +1,6 @@
 import { useQuery } from '@tanstack/react-query'
 import { useTranslation } from 'react-i18next'
-import { LoadingSpinner, StatusIndicator } from '../../../components/ui'
+import { LoadingSpinner, PageHeader, StatusIndicator } from '../../../components/ui'
 import * as adminApi from '../api/adminApi'
 
 /**
@@ -34,7 +34,7 @@ export function AdminDashboardPage() {
 
   return (
     <div className="flex flex-col gap-6">
-      <h1 className="text-lg font-semibold text-foreground">{t('admin:dashboard.title')}</h1>
+      <PageHeader title={t('admin:dashboard.title')} />
 
       <section aria-labelledby="admin-attention" className="flex flex-col gap-3">
         <h2 id="admin-attention" className="text-sm font-medium text-foreground-secondary">

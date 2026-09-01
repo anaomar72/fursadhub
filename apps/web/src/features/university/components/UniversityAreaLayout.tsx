@@ -1,16 +1,11 @@
-import { NavLink, Outlet } from 'react-router-dom'
+import { Outlet } from 'react-router-dom'
 import { useQuery } from '@tanstack/react-query'
 import { useTranslation } from 'react-i18next'
 import * as universityApi from '../api/universityApi'
 import { UniversityMembershipContext } from './UniversityMembershipContext'
+import { UniversitySetupPage } from '../pages/UniversitySetupPage'
 import { LoadingSpinner } from '../../../components/ui'
-import { cn } from '../../../lib/utils/cn'
-
-const navLinkClasses = ({ isActive }: { isActive: boolean }) =>
-  cn(
-    'rounded-md px-3 py-1.5 text-sm font-medium transition-colors',
-    isActive ? 'bg-brand-primary text-on-brand' : 'text-foreground-secondary hover:bg-surface-muted',
-  )
+import { AreaTabs } from '../../../app/layouts/AreaTabs'
 
 /**
  * Resolves the caller's active university staff membership once and shares it with every
@@ -30,47 +25,31 @@ export function UniversityAreaLayout() {
   }
 
   if (!membershipQuery.data) {
-    return <p className="px-4 py-10 text-center text-sm text-foreground-secondary">{t('university:nav.noMembership')}</p>
+    return <UniversitySetupPage />
   }
 
   const isAdmin = membershipQuery.data.role === 'UNIVERSITY_ADMIN'
 
   return (
     <UniversityMembershipContext.Provider value={membershipQuery.data}>
-      <div className="border-b border-border bg-surface">
-        <nav className="mx-auto flex max-w-7xl gap-2 overflow-x-auto px-4 py-3 sm:px-6">
-          <NavLink to="/university/students" className={navLinkClasses}>
-            {t('university:nav.students')}
-          </NavLink>
-          <NavLink to="/university/verification-cases" className={navLinkClasses}>
-            {t('university:nav.verificationQueue')}
-          </NavLink>
-          <NavLink to="/university/opportunity-requests" className={navLinkClasses}>
-            {t('recruitment:nav.opportunityRequests')}
-          </NavLink>
-          <NavLink to="/university/nominations" className={navLinkClasses}>
-            {t('recruitment:nav.nominations')}
-          </NavLink>
-          <NavLink to="/university/placements" className={navLinkClasses}>
-            {t('placements:nav.placements')}
-          </NavLink>
-          <NavLink to="/university/departments" className={navLinkClasses}>
-            {t('university:nav.departments')}
-          </NavLink>
-          {/*
-            Phase 6 internship requirements. Visible to admins and coordinators alike: a coordinator
-            configures their own departments, and the backend refuses anything wider.
-          */}
-          <NavLink to="/university/internship-policy" className={navLinkClasses}>
-            {t('internship:policy.title')}
-          </NavLink>
-          {isAdmin && (
-            <NavLink to="/university/staff" className={navLinkClasses}>
-              {t('university:nav.staff')}
-            </NavLink>
-          )}
-        </nav>
-      </div>
+      <AreaTabs
+        items={[
+          { to: '/university/dashboard', label: t('university:nav.dashboard') },
+          { to: '/university/students', label: t('university:nav.students') },
+          { to: '/university/verification-cases', label: t('university:nav.verificationQueue') },
+          { to: '/university/opportunity-requests', label: t('recruitment:nav.opportunityRequests') },
+          { to: '/university/nominations', label: t('recruitment:nav.nominations') },
+          { to: '/university/placements', label: t('placements:nav.placements') },
+          { to: '/university/departments', label: t('university:nav.departments') },
+          { to: '/university/profile', label: t('university:nav.profile') },
+          // Phase 6 internship requirements. Visible to admins and coordinators alike: a coordinator
+          // configures their own departments, and the backend refuses anything wider. A supervisor
+          // has no policy authority at all (InternshipManagementAuthorization.requirePolicyAuthority
+          // only allows UNIVERSITY_ADMIN/DEPARTMENT_COORDINATOR), so the tab must not offer it.
+          { to: '/university/internship-policy', label: t('internship:policy.title'), hidden: membershipQuery.data.role === 'UNIVERSITY_SUPERVISOR' },
+          { to: '/university/staff', label: t('university:nav.staff'), hidden: !isAdmin },
+        ]}
+      />
       <Outlet />
     </UniversityMembershipContext.Provider>
   )

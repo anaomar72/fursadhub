@@ -21,6 +21,8 @@ public class MeController {
     @GetMapping("/api/v1/me")
     public MeResponse me(@AuthenticationPrincipal Jwt jwt) {
         User user = meQueryService.getById(UUID.fromString(jwt.getSubject()));
-        return new MeResponse(user.getId(), user.getEmail(), user.getStatus().name(), user.getPreferredLocale(), user.getEmailVerifiedAt());
+        return new MeResponse(
+                user.getId(), user.getEmail(), user.getStatus().name(), user.getPreferredLocale(),
+                user.getEmailVerifiedAt(), user.getAvatarStoredFileId() != null);
     }
 }

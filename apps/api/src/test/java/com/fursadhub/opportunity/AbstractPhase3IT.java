@@ -1,6 +1,7 @@
 package com.fursadhub.opportunity;
 
 import com.fursadhub.identity.AbstractIdentityIT;
+import org.junit.jupiter.api.BeforeEach;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
@@ -21,9 +22,21 @@ import java.util.UUID;
  */
 abstract class AbstractPhase3IT extends AbstractIdentityIT {
 
-    static final UUID JAMHURIYA_UNIVERSITY_ID = UUID.fromString("11111111-1111-4111-8111-111111111111");
-    static final UUID CS_DEPARTMENT_ID = UUID.fromString("11111111-1111-4111-8111-1111111110c1");
-    static final UUID BA_DEPARTMENT_ID = UUID.fromString("11111111-1111-4111-8111-1111111110c2");
+    /**
+     * Phase 8 removed the seeded pilot tenant — universities are fully self-registering now, so
+     * every test gets its own fresh, already-VERIFIED university and two departments instead of
+     * sharing one Flyway-seeded row (which no longer exists).
+     */
+    UUID defaultUniversityId;
+    UUID csDepartmentId;
+    UUID baDepartmentId;
+
+    @BeforeEach
+    void setUpDefaultUniversity() {
+        defaultUniversityId = insertVerifiedUniversity("Test University " + UUID.randomUUID());
+        csDepartmentId = insertDepartment(defaultUniversityId, "Computer Science", "CS");
+        baDepartmentId = insertDepartment(defaultUniversityId, "Business Administration", "BA");
+    }
 
     protected ResponseEntity<Map> authorizedGet(String path, String accessToken) {
         HttpHeaders headers = new HttpHeaders();

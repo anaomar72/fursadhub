@@ -45,8 +45,7 @@ class AdminInstitutionVerificationIT extends AbstractPhase7IT {
         String ownerToken = registerVerifiedAndLogin("inst-owner");
         UUID ownerUserId = currentUserId(ownerToken);
         UUID organizationId = createOrganization(ownerToken, "Notified Org " + UUID.randomUUID());
-        requireOk(authorizedPost("/api/v1/organizations/" + organizationId + "/verification/submit",
-                ownerToken, null), "Submit for verification");
+        submitOrganizationForVerification(ownerToken, organizationId);
 
         requireOk(authorizedPost("/api/v1/admin/organizations/" + organizationId + "/verify",
                 officer.token(), null), "Verify");
@@ -91,8 +90,7 @@ class AdminInstitutionVerificationIT extends AbstractPhase7IT {
     void selfVerificationIsRefused() {
         String ownerToken = registerVerifiedAndLogin("self-verify");
         UUID organizationId = createOrganization(ownerToken, "Self Org " + UUID.randomUUID());
-        requireOk(authorizedPost("/api/v1/organizations/" + organizationId + "/verification/submit",
-                ownerToken, null), "Submit");
+        submitOrganizationForVerification(ownerToken, organizationId);
 
         ResponseEntity<Map> response = authorizedPost(
                 "/api/v1/admin/organizations/" + organizationId + "/verify", ownerToken, null);
@@ -119,12 +117,33 @@ class AdminInstitutionVerificationIT extends AbstractPhase7IT {
                 assertThat(((Map<?, ?>) entry).get("id")).isEqualTo(organizationId.toString()));
     }
 
+    @Test
+    @DisplayName("The queue reports whether a license is attached, and the reviewer can open it")
+    void reviewerSeesAndReadsTheLicense() {
+        Staff officer = verificationOfficer("license-officer");
+        String ownerToken = registerVerifiedAndLogin("license-owner");
+        UUID organizationId = createOrganization(ownerToken, "Licensed Org " + UUID.randomUUID());
+        submitOrganizationForVerification(ownerToken, organizationId);
+
+        ResponseEntity<Map> detail = authorizedGet(
+                "/api/v1/admin/organizations/" + organizationId, officer.token());
+        requireOk(detail, "Organization detail");
+        assertThat(detail.getBody().get("hasEvidence")).isEqualTo(true);
+        assertThat(detail.getBody().get("evidenceUploadedAt")).isNotNull();
+
+        ResponseEntity<byte[]> download = downloadDocument(
+                "/api/v1/admin/organizations/" + organizationId + "/verification/evidence/document",
+                officer.token());
+
+        assertThat(download.getStatusCode()).isEqualTo(HttpStatus.OK);
+        assertThat(download.getBody()).isEqualTo(validPdfBytes());
+    }
+
     /** An organization created through the real endpoints and submitted for verification. */
     private UUID submittedOrganization(String prefix) {
         String ownerToken = registerVerifiedAndLogin(prefix);
         UUID organizationId = createOrganization(ownerToken, "Org " + UUID.randomUUID());
-        requireOk(authorizedPost("/api/v1/organizations/" + organizationId + "/verification/submit",
-                ownerToken, null), "Submit for verification");
+        submitOrganizationForVerification(ownerToken, organizationId);
         return organizationId;
     }
 

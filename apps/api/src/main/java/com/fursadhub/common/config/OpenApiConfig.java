@@ -15,7 +15,7 @@ public class OpenApiConfig {
         return new OpenAPI()
                 .info(new Info()
                         .title("FursadHub API")
-                        .description("Internship-management platform API for Somalia (pilot: Jamhuriya University).")
+                        .description("Internship-management platform API for Somalia.")
                         .version("v1"))
                 .components(new Components()
                         .addSecuritySchemes("bearerAuth", new SecurityScheme()

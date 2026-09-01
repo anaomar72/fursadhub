@@ -37,7 +37,43 @@ public enum FileClassification {
     VERIFICATION_EVIDENCE(
             Set.of("application/pdf", "image/jpeg", "image/png"),
             10L * 1024 * 1024,
-            RetentionCategory.VERIFICATION_EVIDENCE);
+            RetentionCategory.VERIFICATION_EVIDENCE),
+
+    /**
+     * An organization's business/registration license, attached before it may submit for institution
+     * verification (CLAUDE.md sections 26, 31).
+     *
+     * <p>PDF only, unlike the student evidence above: a registration license is an official document
+     * the registrant already holds as a scan or an export, so accepting phone photos here would widen
+     * the upload surface for no realistic gain.
+     */
+    ORGANIZATION_VERIFICATION_EVIDENCE(
+            Set.of("application/pdf"), 10L * 1024 * 1024, RetentionCategory.VERIFICATION_EVIDENCE),
+
+    /**
+     * A university's registration/accreditation license, attached before it may submit for
+     * institution verification. Same policy as {@link #ORGANIZATION_VERIFICATION_EVIDENCE}, kept
+     * separate so each stays reachable only through the resource that owns it.
+     */
+    UNIVERSITY_VERIFICATION_EVIDENCE(
+            Set.of("application/pdf"), 10L * 1024 * 1024, RetentionCategory.VERIFICATION_EVIDENCE),
+
+    /**
+     * A person's own profile picture (Phase 8). Small and image-only — this is a headshot, not a
+     * document — and unlike {@link #VERIFICATION_EVIDENCE} it is never private: any authenticated
+     * user may view another's avatar, the same way a name is visible platform-wide.
+     */
+    PROFILE_PICTURE(Set.of("image/jpeg", "image/png"), 3L * 1024 * 1024, RetentionCategory.ACCOUNT_ASSET),
+
+    /**
+     * An organization's own logo (Phase 8) — brand identity it presents publicly, which is why this
+     * is reachable with no authentication at all through its public profile route, unlike every
+     * other classification here.
+     */
+    ORGANIZATION_LOGO(Set.of("image/jpeg", "image/png"), 3L * 1024 * 1024, RetentionCategory.ACCOUNT_ASSET),
+
+    /** A university's own logo. Same policy as {@link #ORGANIZATION_LOGO}. */
+    UNIVERSITY_LOGO(Set.of("image/jpeg", "image/png"), 3L * 1024 * 1024, RetentionCategory.ACCOUNT_ASSET);
 
     private final Set<String> permittedContentTypes;
     private final long maxSizeBytes;
@@ -71,6 +107,11 @@ public enum FileClassification {
             case FINAL_REPORT -> "FINAL_REPORT_FILE_INVALID";
             case CV -> "CV_FILE_INVALID";
             case VERIFICATION_EVIDENCE -> "EVIDENCE_FILE_INVALID";
+            case ORGANIZATION_VERIFICATION_EVIDENCE -> "ORGANIZATION_EVIDENCE_FILE_INVALID";
+            case UNIVERSITY_VERIFICATION_EVIDENCE -> "UNIVERSITY_EVIDENCE_FILE_INVALID";
+            case PROFILE_PICTURE -> "AVATAR_FILE_INVALID";
+            case ORGANIZATION_LOGO -> "ORGANIZATION_LOGO_FILE_INVALID";
+            case UNIVERSITY_LOGO -> "UNIVERSITY_LOGO_FILE_INVALID";
         };
     }
 }

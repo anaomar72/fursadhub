@@ -21,12 +21,15 @@ import java.util.UUID;
  * (CLAUDE.md section 31) rather than being read-only from Java.
  *
  * <p>Reviewing a submitted organization (SUBMITTED -&gt; UNDER_REVIEW -&gt; VERIFIED/REJECTED, or
- * later SUSPENDED/REVOKED) requires a privileged reviewer actor (SUPER_ADMIN/VERIFICATION_OFFICER)
- * that does not exist yet in this codebase — that role and the admin console are Phase 7 scope
- * (docs/CLAUDE_IMPLEMENTATION_PHASES.md Phase 7 "Admin: institution verification"). Phase 3
- * therefore only wires the organization's own {@link #submitForVerification()} transition to an
- * HTTP endpoint; the remaining transitions are implemented here as centralized/testable domain
- * logic (CLAUDE.md section 75) ready for Phase 7 to call.
+ * later SUSPENDED/REVOKED) is driven by a platform reviewer (SUPER_ADMIN/VERIFICATION_OFFICER)
+ * through the Phase 7 admin console. The transitions live here rather than in that console so the
+ * frozen state machine (CLAUDE.md section 31) is enforced in one place regardless of which endpoint
+ * calls it — connecting an endpoint to a state machine must never loosen it.
+ *
+ * <p>Phase 7.5 added the registration license the reviewer actually reads. It is a precondition of
+ * {@link #submitForVerification()} rather than of registration, so signing up stays a plain JSON
+ * call and the upload stays multipart; the effect is the same, because nothing reaches a reviewer's
+ * queue without it.
  */
 @Entity
 @Table(name = "organizations")
@@ -61,6 +64,23 @@ public class Organization {
     @Column(name = "verified_at")
     private Instant verifiedAt;
 
+    /**
+     * The registration/business license backing the verification claim (Phase 7.5). Private: readable
+     * only by this organization's own members and by platform reviewers, never through a URL
+     * (CLAUDE.md sections 31, 47).
+     */
+    @Column(name = "evidence_stored_file_id")
+    private UUID evidenceStoredFileId;
+
+    @Column(name = "evidence_uploaded_at")
+    private Instant evidenceUploadedAt;
+
+    @Column(name = "logo_stored_file_id")
+    private UUID logoStoredFileId;
+
+    @Column(name = "logo_uploaded_at")
+    private Instant logoUploadedAt;
+
     @Column(name = "created_at", nullable = false)
     private Instant createdAt;
 
@@ -94,7 +114,32 @@ public class Organization {
         this.updatedAt = Instant.now();
     }
 
+    /** Attaches or replaces the license document. The previous file is removed by the service. */
+    public void attachEvidence(UUID storedFileId) {
+        this.evidenceStoredFileId = storedFileId;
+        this.evidenceUploadedAt = Instant.now();
+        this.updatedAt = this.evidenceUploadedAt;
+    }
+
+    /** Attaches or replaces the organization's public logo. The previous file is removed by the service. */
+    public void attachLogo(UUID storedFileId) {
+        this.logoStoredFileId = storedFileId;
+        this.logoUploadedAt = Instant.now();
+        this.updatedAt = this.logoUploadedAt;
+    }
+
+    /**
+     * Hands the organization to the platform review queue.
+     *
+     * <p>The evidence check comes first on purpose: "you have not attached your license yet" is the
+     * accurate answer for a DRAFT organization with nothing on file, and reporting an invalid
+     * transition instead would send the registrant looking for a state problem they do not have.
+     */
     public void submitForVerification() {
+        if (evidenceStoredFileId == null) {
+            throw new ApiException("ORGANIZATION_VERIFICATION_EVIDENCE_REQUIRED", HttpStatus.CONFLICT,
+                    "Attach your registration license before submitting for verification.");
+        }
         if (verificationStatus != InstitutionVerificationStatus.DRAFT
                 && verificationStatus != InstitutionVerificationStatus.NEEDS_CHANGES) {
             throw invalidTransition();
@@ -198,6 +243,22 @@ public class Organization {
 
     public Instant getVerifiedAt() {
         return verifiedAt;
+    }
+
+    public UUID getEvidenceStoredFileId() {
+        return evidenceStoredFileId;
+    }
+
+    public Instant getEvidenceUploadedAt() {
+        return evidenceUploadedAt;
+    }
+
+    public UUID getLogoStoredFileId() {
+        return logoStoredFileId;
+    }
+
+    public Instant getLogoUploadedAt() {
+        return logoUploadedAt;
     }
 
     public Instant getCreatedAt() {

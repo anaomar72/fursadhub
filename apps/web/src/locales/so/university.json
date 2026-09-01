@@ -1,13 +1,94 @@
 {
   "nav": {
+    "dashboard": "Guddoomiye",
     "students": "Ardayda",
     "verificationQueue": "Safka xaqiijinta",
     "departments": "Qaybaha",
+    "profile": "Jaamacadda",
     "staff": "Shaqaalaha",
     "noMembership": "Kama qaybgalayso shaqaale ahaan jaamacad."
   },
+  "dashboard": {
+    "title": "Guddoomahaaga",
+    "verificationQueue": "Safka xaqiijinta",
+    "opportunityRequests": "Codsiyada fursadaha",
+    "nominations": "Magacaabista",
+    "placements": "Meel dhigidda",
+    "active": "Firfircoon",
+    "awaitingStudent": "Sugaya jawaabta ardayga",
+    "needsAction": "Waxay u baahan tahay dib u eegis",
+    "clear": "Waxba ma harin"
+  },
+  "setup": {
+    "title": "Diiwaangeli jaamacaddaada",
+    "body": "Diiwaan geli jaamacaddaada si aad u bilowdo maamulka xaqiijinta ardayda iyo meel dhigidda tababarka. Waxaad casumi kartaa asxaabtaada marka la abuuro.",
+    "nameLabel": "Magaca jaamacadda",
+    "cityLabel": "Magaalada",
+    "registrationNumberLabel": "Lambarka diiwaangelinta/aqoonsiga",
+    "websiteLabel": "Websaydka",
+    "descriptionLabel": "Ku saabsan jaamacadda",
+    "submit": "Diiwaangeli jaamacadda",
+    "errors": {
+      "VALIDATION_FAILED": "Fadlan hubi foomka oo isku day mar kale.",
+      "generic": "Wax baa qaldamay. Fadlan isku day mar kale."
+    }
+  },
+  "publicProfile": {
+    "notFound": "Jaamacaddan lama helin."
+  },
+  "profile": {
+    "title": "Astaanta jaamacadda",
+    "verificationStatusValues": {
+      "DRAFT": "Lama gudbin",
+      "SUBMITTED": "Waa la gudbiyay",
+      "UNDER_REVIEW": "Waa la eegayaa",
+      "NEEDS_CHANGES": "Waxaa loo baahan yahay isbeddel",
+      "VERIFIED": "Waa la xaqiijiyay",
+      "REJECTED": "Waa la diiday",
+      "SUSPENDED": "Waa la hakiyay",
+      "REVOKED": "Waa la baabi'iyay"
+    },
+    "verifiedLabel": "Jaamacad la xaqiijiyay",
+    "logo": {
+      "hint": "JPEG ama PNG, ilaa 3MB. Waxaa si guud loogu muujiyaa astaantaada."
+    },
+    "saveChanges": "Kaydi isbeddelada",
+    "submitForVerification": "U gudbi xaqiijinta",
+    "submitForVerificationBody": "Jaamacaddaadu waa in la xaqiijiyaa ka hor inta ay fursado tababar ku bareeri karaan.",
+    "evidence": {
+      "label": "Shatiga diiwaangelinta ama aqoonsiga",
+      "hint": "Soo geli PDF ka mid ah dukumeentiga diiwaangelinta ama aqoonsiga jaamacaddaada.",
+      "attached": "Dukumeenti shati ah ayaa la diiwaangeliyay.",
+      "uploading": "Waa la soo geli karaa…",
+      "required": "Ku lifaaq dukumeentigaaga shatiga ka hor inta aadan u gudbin xaqiijinta."
+    },
+    "errors": {
+      "ACCESS_DENIED": "Ma lihid ogolaanshaha jaamacaddan.",
+      "UNIVERSITY_VERIFICATION_INVALID_TRANSITION": "Jaamacaddan lagama gudbin karo xaqiijinta xaaladdeeda hadda.",
+      "UNIVERSITY_VERIFICATION_EVIDENCE_REQUIRED": "Ku lifaaq dukumeentigaaga shatiga ka hor inta aadan u gudbin xaqiijinta.",
+      "UNIVERSITY_EVIDENCE_FILE_INVALID": "Faylkaasi lama aqbalo — soo geli PDF ka yar 10MB.",
+      "UNIVERSITY_LOGO_FILE_INVALID": "Faylkaasi lama aqbalo — soo geli JPEG ama PNG ka yar 3MB.",
+      "FILE_TOO_LARGE": "Faylku wuu ka weyn yahay xadka ugu badan ee la ogol yahay.",
+      "VALIDATION_FAILED": "Fadlan hubi foomka oo isku day mar kale.",
+      "generic": "Wax baa qaldamay. Fadlan isku day mar kale."
+    }
+  },
   "departments": {
-    "title": "Qaybaha"
+    "title": "Qaybaha",
+    "empty": "Weli qaybo lama helin.",
+    "nameLabel": "Magaca qaybta",
+    "codeLabel": "Koodhka",
+    "addSubmit": "Ku dar qayb",
+    "rename": "Bedel magaca",
+    "save": "Kaydi",
+    "cancel": "Jooji",
+    "errors": {
+      "DEPARTMENT_CODE_ALREADY_EXISTS": "Qayb koodhkan leh ayaa hore ugu jirta jaamacaddaada.",
+      "DEPARTMENT_NOT_FOUND": "Qaybtaas lama helin.",
+      "ACCESS_DENIED": "Ma haysatid ogolaanshaha maamulka qaybtan.",
+      "VALIDATION_FAILED": "Fadlan hubi foomka oo isku day mar kale.",
+      "generic": "Wax baa qaldamay. Fadlan isku day mar kale."
+    }
   },
   "students": {
     "title": "Ardayda",
@@ -56,6 +137,8 @@
   "staff": {
     "title": "Shaqaalaha",
     "emailLabel": "Cinwaanka iimaylka",
+    "passwordLabel": "Furaha sirta ah ee ku-meel-gaarka ah",
+    "confirmPasswordLabel": "Xaqiiji furaha sirta ah",
     "roleLabel": "Doorka",
     "roles": {
       "UNIVERSITY_ADMIN": "Maamulaha jaamacadda",
@@ -63,15 +146,33 @@
       "UNIVERSITY_SUPERVISOR": "Kormeeraha jaamacadda"
     },
     "departmentsLabel": "Qaybaha",
-    "assignSubmit": "U meelee doorka shaqaalaha",
+    "createSubmit": "Abuur akoonka shaqaalaha",
+    "changeRole": "Beddel doorka",
+    "saveRole": "Kaydi",
+    "suspend": "Hakiso",
+    "reactivate": "Dib u firfircooni",
+    "resetPassword": "Dib u deji furaha sirta ah",
+    "resetPasswordOnceWarning": "Furahan sirta ah hal mar ayaa la muujinayaa. Hadda la wadaag shaqaalaha.",
+    "copyCredentials": "Koobi",
+    "dismiss": "Xir",
+    "statusValues": {
+      "PENDING_CONTACT_VERIFICATION": "Sugaya xaqiijinta iimaylka",
+      "ACTIVE": "Firfircoon",
+      "SUSPENDED": "La hakiyay",
+      "CLOSED": "La xiray"
+    },
     "revoke": "Baabi'i",
-    "empty": "Weli shaqaale lama meelayn.",
+    "empty": "Weli shaqaale lama abuurin.",
     "errors": {
-      "STAFF_USER_NOT_FOUND": "Iimaylkan akoon uma jiro.",
-      "STAFF_USER_NOT_ACTIVE": "Akoonkan waa inuu firfircoon yahay ka hor inta doorka shaqaalaha loo meelayn.",
-      "STAFF_ALREADY_ASSIGNED": "Isticmaalahani horeba wuxuu leeyahay door shaqaale oo firfircoon oo jaamacaddan ku jira.",
+      "departmentsRequired": "Dooro ugu yaraan hal qaybood.",
+      "STAFF_EMAIL_ALREADY_EXISTS": "Iimaylkan akoon horeba u leeyahay.",
+      "STAFF_ROLE_NOT_ASSIGNABLE": "Maamulaha jaamacadda wuxuu kaliya u meelin karaa Isku-duwaha qaybta ama Kormeeraha jaamacadda.",
+      "STAFF_SCOPE_REQUIRED": "Fadlan dooro ugu yaraan hal qaybood.",
+      "STAFF_PASSWORD_CONFIRMATION_MISMATCH": "Furaha sirta ah iyo xaqiijintiisu isku mid ma aha.",
+      "STAFF_MEMBERSHIP_NOT_FOUND": "Xubinnimada shaqaalaha lama helin.",
+      "USER_CLOSED": "Akoon la xiray lama hakin karo ama dib looma firfircoonayn karo.",
       "DEPARTMENT_NOT_IN_UNIVERSITY": "Hal ama in ka badan oo qaybo ah kama tirsana jaamacaddan.",
-      "VALIDATION_FAILED": "Fadlan dooro ugu yaraan hal qaybood.",
+      "VALIDATION_FAILED": "Fadlan hubi foomka oo isku day mar kale.",
       "generic": "Wax baa qaldamay. Fadlan isku day mar kale."
     }
   }

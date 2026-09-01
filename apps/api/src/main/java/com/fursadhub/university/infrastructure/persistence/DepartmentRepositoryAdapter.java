@@ -18,6 +18,11 @@ class DepartmentRepositoryAdapter implements DepartmentRepository {
     }
 
     @Override
+    public Department save(Department department) {
+        return jpaRepository.save(department);
+    }
+
+    @Override
     public Optional<Department> findById(UUID id) {
         return jpaRepository.findById(id);
     }
@@ -30,5 +35,10 @@ class DepartmentRepositoryAdapter implements DepartmentRepository {
     @Override
     public boolean existsByIdAndUniversityId(UUID id, UUID universityId) {
         return jpaRepository.existsByIdAndUniversityId(id, universityId);
+    }
+
+    @Override
+    public boolean existsByUniversityIdAndCode(UUID universityId, String code) {
+        return jpaRepository.existsByUniversityIdAndCode(universityId, code);
     }
 }

@@ -38,6 +38,12 @@ public class User {
     @Column(name = "email_verified_at")
     private Instant emailVerifiedAt;
 
+    @Column(name = "avatar_stored_file_id")
+    private UUID avatarStoredFileId;
+
+    @Column(name = "avatar_uploaded_at")
+    private Instant avatarUploadedAt;
+
     @Column(name = "created_at", nullable = false)
     private Instant createdAt;
 
@@ -106,6 +112,21 @@ public class User {
 
     public boolean isEmailVerified() {
         return emailVerifiedAt != null;
+    }
+
+    /** Points the account at its (newly stored) profile picture, replacing any previous one. */
+    public void attachAvatar(UUID storedFileId) {
+        this.avatarStoredFileId = storedFileId;
+        this.avatarUploadedAt = Instant.now();
+        this.updatedAt = this.avatarUploadedAt;
+    }
+
+    public UUID getAvatarStoredFileId() {
+        return avatarStoredFileId;
+    }
+
+    public Instant getAvatarUploadedAt() {
+        return avatarUploadedAt;
     }
 
     public UUID getId() {

@@ -3,13 +3,83 @@
     "name": "FursadHub",
     "tagline": "Furaya albaabbada mustaqbalkaaga."
   },
+  "landing": {
+    "eyebrow": "FursadHub · Soomaaliya",
+    "subhead": "FursadHub waxay isku xirtaa ardayda, jaamacadaha iyo ururrada hal habka tababarka — laga bilaabo codsiga ugu horreeya ilaa difaaca ugu dambeeya.",
+    "doors": {
+      "student": {
+        "title": "Ardayda",
+        "body": "Hel oo u codso tababaro la xaqiijiyay oo ay bixiyaan ururro iyo jaamacado ku yaal Soomaaliya.",
+        "cta": "Hel tababaro"
+      },
+      "organization": {
+        "title": "Ururrada",
+        "body": "Ka helia oo ka shaqaaleysii ardayda jaamacadaha la xaqiijiyay, kadibna maamul meel dhigidda oo dhan.",
+        "cta": "Shaqaaleysii ardayda"
+      },
+      "university": {
+        "title": "Jaamacadaha",
+        "body": "La socod tababarka ardaydaada laga bilaabo magacaabidda ilaa difaacooda ugu dambeeya.",
+        "cta": "Diiwaangeli jaamacaddaada"
+      }
+    },
+    "howItWorks": {
+      "title": "Sida ay u shaqeyso",
+      "steps": {
+        "sourcing": {
+          "title": "Dir ama hel",
+          "body": "Ururradu waxay daabacaan fursado; ardayduna si toos ah ayey ugu codsadaan ama waxaa magacaabo jaamacaddoodu."
+        },
+        "recruitment": {
+          "title": "La is xir",
+          "body": "Codsiyada guud iyo magacaabista jaamacadaha waxay isku biiraan hal socod musharrax oo geeya ilaa dalab shaqo."
+        },
+        "placement": {
+          "title": "Meel dhigidda ilaa dhammaystirka",
+          "body": "Diiwaanka usbuucyada, imaanshaha, kormeerka iyo qiimeynta ayaa tababarka geeya ilaa difaaciisa."
+        }
+      }
+    },
+    "trustLine": "Loogu talagalay jaamacadaha, ururrada iyo ardayda Soomaaliya.",
+    "secondaryCta": "Eeg sida ay u shaqeyso",
+    "lifecycle": {
+      "title": "Hal socod, laga bilaabo ilaa dhammaystirka",
+      "body": "Meel dhigiddu kuma dhamaato dalabka shaqada oo keliya. FursadHub wuxuu socodsiiyaa diiwaanka usbuucyada, imaanshaha, kormeerka labada dhinac, qiimeynta iyo difaaca ugu dambeeya — si jaamacadaha iyo ururradu u arkaan horumar dhab ah.",
+      "items": {
+        "logs": "Diiwaanka usbuucyada",
+        "attendance": "Imaanshaha",
+        "supervision": "Kormeer labo-dhinac ah",
+        "evaluation": "Qiimeynta",
+        "defense": "Difaaca ugu dambeeya"
+      }
+    },
+    "cta": {
+      "title": "Ma diyaar u tahay inaad bilowdo?",
+      "body": "Diiwaan-gelintu waa bilaash intii lagu jiro tijaabada — samee akoon adigoo arday, urur, ama jaamacad ah.",
+      "primary": "Samee akoon",
+      "secondary": "Gal"
+    }
+  },
+  "footer": {
+    "legalNav": "Sharciga",
+    "siteNav": "Bogagga",
+    "description": "Hal habka tababarka ee ardayda, jaamacadaha iyo ururrada Soomaaliya — laga bilaabo codsiga ugu horreeya ilaa difaaca ugu dambeeya.",
+    "home": "Bogga hore",
+    "howItWorks": "Sida ay u shaqeyso",
+    "opportunities": "Fursadaha",
+    "copyright": "© {{year}} FursadHub. Dhammaan xuquuqda way dhowran tahay."
+  },
   "nav": {
     "home": "Bogga hore",
     "student": "Arday",
     "university": "Jaamacad",
     "organization": "Ururka",
     "admin": "Maamule",
-    "account": "Akoonka"
+    "account": "Akoonka",
+    "howItWorks": "Sida ay u shaqeyso",
+    "register": "Diiwaangeli",
+    "openMenu": "Fur liiska",
+    "closeMenu": "Xir liiska"
   },
   "status": {
     "loading": "Waa la soo raray",

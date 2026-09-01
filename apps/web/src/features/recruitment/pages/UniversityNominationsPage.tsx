@@ -4,7 +4,7 @@ import * as recruitmentApi from '../api/recruitmentApi'
 import { useUniversityMembership } from '../../university/components/UniversityMembershipContext'
 import { NOMINATION_STATUS_TONE } from '../components/statusTone'
 import { apiErrorMessage } from '../../../lib/api/errorMessage'
-import { Button, LoadingSpinner, StatusBadge } from '../../../components/ui'
+import { Button, LoadingSpinner, PageHeader, StatusBadge } from '../../../components/ui'
 
 /**
  * Nomination list and withdrawal for university staff (CLAUDE.md Phase 4 section 26).
@@ -43,7 +43,7 @@ export function UniversityNominationsPage() {
 
   return (
     <div className="mx-auto max-w-3xl px-4 py-8 sm:px-6">
-      <h1 className="text-xl font-semibold text-foreground">{t('recruitment:universityNominations.title')}</h1>
+      <PageHeader title={t('recruitment:universityNominations.title')} />
 
       {nominations.length === 0 ? (
         <p className="mt-8 text-center text-sm text-foreground-secondary">

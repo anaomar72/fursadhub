@@ -37,6 +37,19 @@ function stubFetch(outstanding: LegalDocument[], onAccept?: () => Promise<Respon
     if (url.includes('/me/legal-status')) {
       return jsonResponse({ acceptanceRequired: outstanding.length > 0, outstanding })
     }
+    // Matches the real backend contract for a caller with no staff membership: 404 for the
+    // university side, an empty array for the organization side — not the generic {} fallback,
+    // which would otherwise look like a truthy (if role-less) membership to the gate's
+    // managed-staff check.
+    if (url.includes('/university-memberships/me')) {
+      return jsonResponse(
+        { code: 'UNIVERSITY_MEMBERSHIP_NOT_FOUND', message: 'x', status: 404, path: '/x', timestamp: 'now', fieldErrors: [] },
+        404,
+      )
+    }
+    if (url.includes('/organization-memberships/me')) {
+      return jsonResponse([])
+    }
     return jsonResponse({})
   })
   vi.stubGlobal('fetch', fetchMock)
@@ -63,6 +76,27 @@ describe('TermsAcceptanceGate', () => {
 
   it('stays out of the way when nothing is outstanding', async () => {
     stubFetch([])
+    renderGate()
+
+    expect(await screen.findByText('Protected content')).toBeInTheDocument()
+    expect(screen.queryByRole('dialog')).not.toBeInTheDocument()
+  })
+
+  it('never prompts a managed staff member, even with an outstanding document', async () => {
+    const fetchMock = stubFetch([document()])
+    fetchMock.mockImplementation((input: RequestInfo | URL, init?: RequestInit) => {
+      const url = String(input)
+      if (url.includes('/university-memberships/me')) {
+        return jsonResponse({ universityId: 'univ-1', role: 'DEPARTMENT_COORDINATOR', departmentIds: ['dept-1'] })
+      }
+      if (url.includes('/me/legal-status')) {
+        return jsonResponse({ acceptanceRequired: true, outstanding: [document()] })
+      }
+      if (init?.method === 'POST') {
+        return jsonResponse({ message: 'Accepted.' })
+      }
+      return jsonResponse({})
+    })
     renderGate()
 
     expect(await screen.findByText('Protected content')).toBeInTheDocument()

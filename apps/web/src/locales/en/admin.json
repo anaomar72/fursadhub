@@ -2,6 +2,7 @@
   "nav": {
     "dashboard": "Dashboard",
     "organizations": "Organizations",
+    "universities": "Universities",
     "escalations": "Escalations",
     "users": "Accounts",
     "privacyRequests": "Privacy requests",
@@ -37,6 +38,7 @@
     "search": "Search",
     "empty": "No organizations match these filters.",
     "noActions": "No actions are available from this state.",
+    "viewLicense": "View license",
     "notePlaceholder": "Explain your decision",
     "confirm": "Confirm",
     "cancel": "Cancel",
@@ -52,6 +54,35 @@
       "generic": "That action could not be completed. Please try again.",
       "ORGANIZATION_NOT_FOUND": "That organization could not be found.",
       "ORGANIZATION_INVALID_TRANSITION": "That change is not allowed from the organization's current state.",
+      "ACCESS_DENIED": "You do not have access to this action."
+    }
+  },
+  "universities": {
+    "title": "University verification",
+    "statusFilter": "Status",
+    "allStatuses": "All statuses",
+    "searchLabel": "University name",
+    "searchPlaceholder": "Search by name",
+    "search": "Search",
+    "empty": "No universities match these filters.",
+    "noActions": "No actions are available from this state.",
+    "viewLicense": "View license",
+    "notePlaceholder": "Explain your decision",
+    "confirm": "Confirm",
+    "cancel": "Cancel",
+    "actions": {
+      "begin-review": "Begin review",
+      "verify": "Verify",
+      "request-changes": "Request changes",
+      "reject": "Reject",
+      "suspend": "Suspend",
+      "revoke": "Revoke"
+    },
+    "errors": {
+      "generic": "That action could not be completed. Please try again.",
+      "UNIVERSITY_NOT_FOUND": "That university could not be found.",
+      "UNIVERSITY_VERIFICATION_INVALID_TRANSITION": "That change is not allowed from the university's current state.",
+      "UNIVERSITY_VERIFICATION_EVIDENCE_MISSING": "No registration document has been uploaded for this university.",
       "ACCESS_DENIED": "You do not have access to this action."
     }
   },

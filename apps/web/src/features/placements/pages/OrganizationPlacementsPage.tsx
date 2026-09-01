@@ -3,7 +3,7 @@ import { useTranslation } from 'react-i18next'
 import * as placementsApi from '../api/placementsApi'
 import { PlacementList } from '../components/PlacementList'
 import { useOrganizationMembership } from '../../organization/components/OrganizationMembershipContext'
-import { LoadingSpinner } from '../../../components/ui'
+import { LoadingSpinner, PageHeader } from '../../../components/ui'
 
 /**
  * The organization's placements (CLAUDE.md section 26).
@@ -32,10 +32,7 @@ export function OrganizationPlacementsPage() {
 
   return (
     <div className="mx-auto max-w-4xl px-4 py-8 sm:px-6">
-      <h1 className="text-xl font-semibold text-foreground">{t('placements:organization.title')}</h1>
-      <p className="mt-1 text-sm text-foreground-secondary">
-        {t('placements:organization.description')}
-      </p>
+      <PageHeader title={t('placements:organization.title')} description={t('placements:organization.description')} />
 
       <PlacementList
         placements={placementsQuery.data ?? []}

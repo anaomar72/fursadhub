@@ -4,7 +4,8 @@
     "invalid": "Geli ciwaan email oo saxan."
   },
   "field": {
-    "required": "Goobtan waa lagama maarmaan."
+    "required": "Goobtan waa lagama maarmaan.",
+    "tooLong": "Taasi aad bay u dheer tahay."
   },
   "password": {
     "weak": "Furaha sirta ah waa inuu ka koobnaadaa ugu yaraan 8 xaraf, wuxuuna ka kooban yahay xaraf iyo lambar.",

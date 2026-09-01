@@ -3,7 +3,7 @@ import { useTranslation } from 'react-i18next'
 import { Link } from 'react-router-dom'
 import * as recruitmentApi from '../api/recruitmentApi'
 import { useUniversityMembership } from '../../university/components/UniversityMembershipContext'
-import { LoadingSpinner, StatusBadge } from '../../../components/ui'
+import { EmptyState, LoadingSpinner, PageHeader, StatusBadge } from '../../../components/ui'
 
 /**
  * Published opportunities targeting this university, awaiting nominations
@@ -30,10 +30,10 @@ export function OpportunityRequestsPage() {
 
   return (
     <div className="mx-auto max-w-3xl px-4 py-8 sm:px-6">
-      <h1 className="text-xl font-semibold text-foreground">{t('recruitment:requests.title')}</h1>
+      <PageHeader title={t('recruitment:requests.title')} />
 
       {requests.length === 0 ? (
-        <p className="mt-8 text-center text-sm text-foreground-secondary">{t('recruitment:requests.empty')}</p>
+        <EmptyState className="mt-8" title={t('recruitment:requests.empty')} />
       ) : (
         <ul className="mt-6 flex flex-col gap-3">
           {requests.map((request) => (
