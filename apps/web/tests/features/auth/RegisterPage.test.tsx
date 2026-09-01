@@ -38,6 +38,9 @@ describe('RegisterPage', () => {
         if (url.includes('/auth/register')) {
           return jsonResponse({ email: 'student@example.com', status: 'PENDING_CONTACT_VERIFICATION' }, 201)
         }
+        if (url.includes('/public/legal-documents')) {
+          return jsonResponse([], 200)
+        }
         return jsonResponse({}, 200)
       }),
     )
