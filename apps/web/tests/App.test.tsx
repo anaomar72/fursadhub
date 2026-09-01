@@ -6,7 +6,7 @@ describe('App', () => {
   it('renders the FursadHub home page through the full provider/router stack', async () => {
     render(<App />)
 
-    expect(await screen.findByRole('heading', { name: 'FursadHub' })).toBeInTheDocument()
-    expect(screen.getAllByText('Opening doors to your future.').length).toBeGreaterThan(0)
+    expect(await screen.findByRole('heading', { name: 'Opening doors to your future.' })).toBeInTheDocument()
+    expect(screen.getAllByText(/FursadHub/).length).toBeGreaterThan(0)
   })
 })
