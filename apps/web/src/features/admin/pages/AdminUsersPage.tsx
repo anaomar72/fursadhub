@@ -1,38 +1,49 @@
 import { useState } from 'react'
-import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
+import { useQuery } from '@tanstack/react-query'
 import { useTranslation } from 'react-i18next'
-import { Button, EmptyState, FormField, Input, LoadingSpinner, Pagination, PageHeader, Select, StatusBadge } from '../../../components/ui'
-import type { StatusTone } from '../../../components/ui'
-import { apiErrorMessage } from '../../../lib/api/errorMessage'
+import { Link } from 'react-router-dom'
+import {
+  Alert,
+  DataTable,
+  EmptyState,
+  ErrorState,
+  FilterBar,
+  LoadingState,
+  PageHeader,
+  Pagination,
+  SearchInput,
+  Select,
+  StatusBadge,
+  type DataTableColumn,
+} from '../../../components/ui'
 import * as adminApi from '../api/adminApi'
-import type { UserStatus } from '../types'
-
-const STATUS_TONE: Record<UserStatus, StatusTone> = {
-  PENDING_CONTACT_VERIFICATION: 'warning',
-  ACTIVE: 'success',
-  SUSPENDED: 'danger',
-  CLOSED: 'neutral',
-}
+import { USER_STATUS_TONE } from '../statusTone'
+import { formatDate } from '../../../lib/utils/formatDate'
+import type { AdminUser, UserStatus } from '../types'
 
 const FILTER_STATUSES: UserStatus[] = ['ACTIVE', 'SUSPENDED', 'PENDING_CONTACT_VERIFICATION', 'CLOSED']
 
 /**
- * Account administration (Phase 7 "Admin: account suspension").
+ * Every account on the platform (Phase 7 "Admin: account administration").
  *
- * <p>There is no impersonation control here and none anywhere else: Phase 7 forbids it, and an
- * administrator who could act as another user would make every audit event ambiguous about who
- * really acted.
+ * <p>A directory, not a control panel: the row-level actions that used to live here have moved to
+ * the account's own page, where the administrator can see what they are about to suspend. Search,
+ * status filter and paging are all the server's — {@code AdminController.searchUsers} takes `query`,
+ * `status` and a {@code Pageable} — so nothing is filtered client-side over a partial page.
+ *
+ * <p>There is no impersonation control here and none anywhere else in FursadHub. Phase 7 forbids it,
+ * and an administrator who could act as another user would make every audit event in the system
+ * ambiguous about who really did the thing.
+ *
+ * <p>The table shows no password material of any kind, because {@code AdminUserResponse} carries
+ * none — not the hash, not token state, nothing (CLAUDE.md section 68).
  */
 export function AdminUsersPage() {
   const { t } = useTranslation()
-  const queryClient = useQueryClient()
   const [query, setQuery] = useState('')
   const [submittedQuery, setSubmittedQuery] = useState('')
   const [status, setStatus] = useState<UserStatus | ''>('')
   const [page, setPage] = useState(0)
-  const [error, setError] = useState<string | null>(null)
-  const [suspending, setSuspending] = useState<string | null>(null)
-  const [reason, setReason] = useState('')
 
   const usersQuery = useQuery({
     queryKey: ['admin', 'users', submittedQuery, status, page],
@@ -44,61 +55,84 @@ export function AdminUsersPage() {
       }),
   })
 
-  function invalidate() {
-    void queryClient.invalidateQueries({ queryKey: ['admin', 'users'] })
-    void queryClient.invalidateQueries({ queryKey: ['admin', 'statistics'] })
-  }
+  const columns: DataTableColumn<AdminUser>[] = [
+    {
+      key: 'email',
+      header: t('admin:users.email'),
+      render: (user) => (
+        <Link
+          to={`/admin/users/${user.id}`}
+          className="rounded font-medium text-foreground hover:text-link hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus-ring"
+        >
+          {user.email}
+        </Link>
+      ),
+    },
+    {
+      key: 'status',
+      header: t('admin:users.status'),
+      render: (user) => (
+        <StatusBadge tone={USER_STATUS_TONE[user.status]}>
+          {t(`admin:statusLabels.${user.status}`)}
+        </StatusBadge>
+      ),
+    },
+    {
+      key: 'emailVerified',
+      header: t('admin:users.emailVerified'),
+      render: (user) =>
+        user.emailVerifiedAt ? (
+          <span className="text-foreground-secondary">{formatDate(user.emailVerifiedAt)}</span>
+        ) : (
+          <span className="text-muted">{t('admin:users.notVerified')}</span>
+        ),
+    },
+    {
+      key: 'locale',
+      header: t('admin:users.locale'),
+      render: (user) => (
+        <span className="text-foreground-secondary">
+          {t(`admin:locales.${user.preferredLocale}`, user.preferredLocale)}
+        </span>
+      ),
+    },
+    {
+      key: 'createdAt',
+      header: t('admin:users.registered'),
+      render: (user) => <span className="text-foreground-secondary">{formatDate(user.createdAt)}</span>,
+    },
+  ]
 
-  const suspendMutation = useMutation({
-    mutationFn: ({ userId, note }: { userId: string; note: string }) => {
-      setError(null)
-      return adminApi.suspendUser(userId, note).catch((cause) => {
-        setError(apiErrorMessage(t, 'admin', 'users', cause))
-        throw cause
-      })
-    },
-    onSuccess: () => {
-      setSuspending(null)
-      setReason('')
-      invalidate()
-    },
-  })
-
-  const reactivateMutation = useMutation({
-    mutationFn: (userId: string) => {
-      setError(null)
-      return adminApi.reactivateUser(userId).catch((cause) => {
-        setError(apiErrorMessage(t, 'admin', 'users', cause))
-        throw cause
-      })
-    },
-    onSuccess: invalidate,
-  })
+  const data = usersQuery.data
 
   return (
-    <div className="flex flex-col gap-4">
-      <PageHeader title={t('admin:users.title')} />
+    <div className="flex flex-col gap-6">
+      <PageHeader
+        eyebrow={t('admin:dashboard.eyebrow')}
+        title={t('admin:users.title')}
+        description={t('admin:users.description')}
+      />
 
       <form
-        className="flex flex-wrap items-end gap-3"
         onSubmit={(event) => {
           event.preventDefault()
           setSubmittedQuery(query)
           setPage(0)
         }}
       >
-        <FormField label={t('admin:users.searchLabel')} htmlFor="user-query" className="w-64">
-          <Input
-            id="user-query"
-            type="email"
-            value={query}
-            onChange={(event) => setQuery(event.target.value)}
-            placeholder={t('admin:users.searchPlaceholder')}
-          />
-        </FormField>
-        <FormField label={t('admin:users.statusFilter')} htmlFor="user-status" className="w-48">
+        <FilterBar
+          search={
+            <SearchInput
+              label={t('admin:users.searchLabel')}
+              placeholder={t('admin:users.searchPlaceholder')}
+              value={query}
+              onChange={(event) => setQuery(event.target.value)}
+            />
+          }
+        >
           <Select
-            id="user-status"
+            aria-label={t('admin:users.statusFilter')}
+            className="sm:w-56"
             value={status}
             onChange={(event) => {
               setStatus(event.target.value as UserStatus | '')
@@ -112,114 +146,44 @@ export function AdminUsersPage() {
               </option>
             ))}
           </Select>
-        </FormField>
-        <Button type="submit" variant="outline">
-          {t('admin:users.search')}
-        </Button>
+        </FilterBar>
       </form>
 
-      {error && (
-        <p role="alert" className="text-sm text-danger">
-          {error}
-        </p>
-      )}
-
       {usersQuery.isLoading ? (
-        <div className="flex justify-center py-16">
-          <LoadingSpinner size="lg" />
-        </div>
-      ) : (usersQuery.data?.content ?? []).length === 0 ? (
-        <EmptyState title={t('admin:users.empty')} />
+        <LoadingState label={t('common:status.loading')} />
+      ) : usersQuery.isError ? (
+        <ErrorState
+          title={t('common:status.error')}
+          onRetry={() => void usersQuery.refetch()}
+          retryLabel={t('common:actions.retry')}
+        />
       ) : (
-        <div className="overflow-x-auto rounded-lg border border-border bg-surface">
-          <table className="w-full min-w-[40rem] text-sm">
-            <thead className="border-b border-border text-left text-foreground-secondary">
-              <tr>
-                <th scope="col" className="px-4 py-2 font-medium">
-                  {t('admin:users.email')}
-                </th>
-                <th scope="col" className="px-4 py-2 font-medium">
-                  {t('admin:users.status')}
-                </th>
-                <th scope="col" className="px-4 py-2 font-medium">
-                  {t('admin:users.created')}
-                </th>
-                <th scope="col" className="px-4 py-2 font-medium">
-                  <span className="sr-only">{t('admin:users.actions')}</span>
-                </th>
-              </tr>
-            </thead>
-            <tbody className="divide-y divide-border">
-              {usersQuery.data!.content.map((user) => (
-                <tr key={user.id}>
-                  <td className="px-4 py-2 text-foreground">{user.email}</td>
-                  <td className="px-4 py-2">
-                    <StatusBadge tone={STATUS_TONE[user.status]}>
-                      {t(`admin:statusLabels.${user.status}`)}
-                    </StatusBadge>
-                  </td>
-                  <td className="px-4 py-2 text-foreground-secondary">
-                    {new Date(user.createdAt).toLocaleDateString()}
-                  </td>
-                  <td className="px-4 py-2">
-                    {suspending === user.id ? (
-                      <form
-                        className="flex flex-wrap items-center gap-2"
-                        onSubmit={(event) => {
-                          event.preventDefault()
-                          suspendMutation.mutate({ userId: user.id, note: reason })
-                        }}
-                      >
-                        <Input
-                          value={reason}
-                          onChange={(event) => setReason(event.target.value)}
-                          placeholder={t('admin:users.reasonPlaceholder')}
-                          aria-label={t('admin:users.reasonLabel')}
-                          maxLength={500}
-                          className="w-56"
-                        />
-                        <Button type="submit" size="sm" variant="danger" loading={suspendMutation.isPending}>
-                          {t('admin:users.confirmSuspend')}
-                        </Button>
-                        <Button type="button" size="sm" variant="ghost" onClick={() => setSuspending(null)}>
-                          {t('admin:users.cancel')}
-                        </Button>
-                      </form>
-                    ) : user.status === 'SUSPENDED' ? (
-                      <Button
-                        type="button"
-                        size="sm"
-                        variant="outline"
-                        onClick={() => reactivateMutation.mutate(user.id)}
-                        disabled={reactivateMutation.isPending}
-                      >
-                        {t('admin:users.reactivate')}
-                      </Button>
-                    ) : user.status === 'CLOSED' ? (
-                      <span className="text-xs text-foreground-secondary">{t('admin:users.noActions')}</span>
-                    ) : (
-                      <Button
-                        type="button"
-                        size="sm"
-                        variant="outline"
-                        onClick={() => {
-                          setSuspending(user.id)
-                          setReason('')
-                        }}
-                      >
-                        {t('admin:users.suspend')}
-                      </Button>
-                    )}
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
-      )}
+        <>
+          <p className="text-sm text-foreground-secondary" aria-live="polite">
+            {t('admin:users.resultCount', { count: data?.totalElements ?? 0 })}
+          </p>
 
-      {(usersQuery.data?.totalPages ?? 0) > 1 && (
-        <Pagination page={page} totalPages={usersQuery.data!.totalPages} onPageChange={setPage} />
+          {data && data.totalElements > 0 && data.content.length === 0 && (
+            <Alert tone="info">{t('admin:users.pageEmpty')}</Alert>
+          )}
+
+          <DataTable
+            caption={t('admin:users.title')}
+            columns={columns}
+            rows={data?.content ?? []}
+            rowKey={(user) => user.id}
+            empty={
+              <EmptyState
+                title={t('admin:users.empty')}
+                description={t('admin:users.emptyHint')}
+              />
+            }
+          />
+
+          {(data?.totalPages ?? 0) > 1 && (
+            <Pagination page={page} totalPages={data!.totalPages} onPageChange={setPage} />
+          )}
+        </>
       )}
     </div>
   )

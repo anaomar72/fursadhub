@@ -1,27 +1,58 @@
 import { useState } from 'react'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { useTranslation } from 'react-i18next'
-import { Button, EmptyState, FormField, LoadingSpinner, Pagination, PageHeader, Select, StatusBadge, Textarea } from '../../../components/ui'
-import type { StatusTone } from '../../../components/ui'
+import {
+  Alert,
+  Button,
+  Card,
+  DataTable,
+  Drawer,
+  EmptyState,
+  ErrorState,
+  FilterBar,
+  FormField,
+  LoadingState,
+  PageHeader,
+  Pagination,
+  Select,
+  StatusBadge,
+  Textarea,
+  type DataTableColumn,
+} from '../../../components/ui'
 import { apiErrorMessage } from '../../../lib/api/errorMessage'
-import type { PrivacyRequestState } from '../../privacy/types'
 import * as adminApi from '../api/adminApi'
+import { DetailField } from '../components/DetailField'
+import { PRIVACY_REQUEST_TONE } from '../statusTone'
+import { formatDateTime } from '../../../lib/utils/formatDate'
+import type { PrivacyRequest, PrivacyRequestState } from '../../privacy/types'
 
-const STATE_TONE: Record<PrivacyRequestState, StatusTone> = {
-  SUBMITTED: 'info',
-  IN_REVIEW: 'warning',
-  COMPLETED: 'success',
-  REJECTED: 'danger',
-}
+type PrivacyAction = 'begin-review' | 'complete' | 'reject'
+
+/** Rejecting a data-subject request must say why; the other two need no explanation. */
+const NEEDS_NOTE = new Set<PrivacyAction>(['reject'])
 
 const FILTER_STATES: PrivacyRequestState[] = ['SUBMITTED', 'IN_REVIEW', 'COMPLETED', 'REJECTED']
 
 /**
- * The data-subject request queue (CLAUDE.md section 50).
+ * Which commands each state offers.
  *
- * <p>Processing is MANUAL for the pilot: an administrator does the work outside the system and
- * records what was done. Nothing on this page deletes or exports anything on its own — an automated
- * ERASURE would happily destroy records tied to a live placement or an open verification case.
+ * <p>The frozen machine of CLAUDE.md section 50 lives on the backend and refuses anything invalid
+ * regardless of what this map renders — {@code COMPLETED} and {@code REJECTED} are terminal.
+ */
+const ACTIONS: Record<PrivacyRequestState, PrivacyAction[]> = {
+  SUBMITTED: ['begin-review', 'complete', 'reject'],
+  IN_REVIEW: ['complete', 'reject'],
+  COMPLETED: [],
+  REJECTED: [],
+}
+
+/**
+ * Data-subject requests (CLAUDE.md sections 49-50).
+ *
+ * <p>Manual admin processing is what the pilot calls for: the platform records the request and its
+ * outcome, and a person does the work. There is deliberately no "export this person's data" button
+ * here, because no endpoint behind one exists — inventing it would promise an automated erasure or
+ * portability run that FursadHub does not perform.
  */
 export function AdminPrivacyRequestsPage() {
   const { t } = useTranslation()
@@ -29,13 +60,17 @@ export function AdminPrivacyRequestsPage() {
   const [state, setState] = useState<PrivacyRequestState | ''>('SUBMITTED')
   const [page, setPage] = useState(0)
   const [error, setError] = useState<string | null>(null)
-  const [resolving, setResolving] = useState<{ id: string; action: 'complete' | 'reject' } | null>(null)
+  const [openId, setOpenId] = useState<string | null>(null)
+  const [prompting, setPrompting] = useState<PrivacyAction | null>(null)
   const [note, setNote] = useState('')
 
   const requestsQuery = useQuery({
     queryKey: ['admin', 'privacy-requests', state, page],
     queryFn: () => adminApi.listPrivacyRequests({ state: state === '' ? undefined : state, page }),
   })
+
+  const requests = requestsQuery.data?.content ?? []
+  const openRequest = requests.find((request) => request.id === openId) ?? null
 
   const resolveMutation = useMutation({
     mutationFn: ({
@@ -44,7 +79,7 @@ export function AdminPrivacyRequestsPage() {
       resolutionNote,
     }: {
       requestId: string
-      action: 'begin-review' | 'complete' | 'reject'
+      action: PrivacyAction
       resolutionNote?: string
     }) => {
       setError(null)
@@ -54,23 +89,77 @@ export function AdminPrivacyRequestsPage() {
       })
     },
     onSuccess: () => {
-      setResolving(null)
+      setPrompting(null)
       setNote('')
       void queryClient.invalidateQueries({ queryKey: ['admin', 'privacy-requests'] })
       void queryClient.invalidateQueries({ queryKey: ['admin', 'statistics'] })
     },
   })
 
-  return (
-    <div className="flex flex-col gap-4">
-      <div>
-        <PageHeader title={t('admin:privacyRequests.title')} />
-        <p className="mt-1 text-sm text-foreground-secondary">{t('admin:privacyRequests.description')}</p>
-      </div>
+  const columns: DataTableColumn<PrivacyRequest>[] = [
+    {
+      key: 'type',
+      header: t('admin:privacyRequests.requestType'),
+      render: (request) => (
+        <span className="font-medium text-foreground">
+          {t(`privacy:requestTypes.${request.requestType}`)}
+        </span>
+      ),
+    },
+    {
+      key: 'state',
+      header: t('admin:privacyRequests.stateFilter'),
+      render: (request) => (
+        <StatusBadge tone={PRIVACY_REQUEST_TONE[request.state]}>
+          {t(`privacy:requestStates.${request.state}`)}
+        </StatusBadge>
+      ),
+    },
+    {
+      key: 'submittedAt',
+      header: t('admin:privacyRequests.submittedAt'),
+      className: 'whitespace-nowrap',
+      render: (request) => (
+        <span className="text-foreground-secondary">{formatDateTime(request.submittedAt)}</span>
+      ),
+    },
+    {
+      key: 'reviewedAt',
+      header: t('admin:privacyRequests.reviewedAt'),
+      className: 'whitespace-nowrap',
+      render: (request) => (
+        <span className="text-foreground-secondary">
+          {request.reviewedAt ? formatDateTime(request.reviewedAt) : '—'}
+        </span>
+      ),
+    },
+    {
+      key: 'open',
+      header: <span className="sr-only">{t('admin:privacyRequests.open')}</span>,
+      render: (request) => (
+        <Button size="sm" variant="outline" onClick={() => setOpenId(request.id)}>
+          {t('admin:privacyRequests.open')}
+        </Button>
+      ),
+    },
+  ]
 
-      <FormField label={t('admin:privacyRequests.stateFilter')} htmlFor="privacy-state" className="w-56">
+  const data = requestsQuery.data
+
+  return (
+    <div className="flex flex-col gap-6">
+      <PageHeader
+        eyebrow={t('admin:dashboard.eyebrow')}
+        title={t('admin:privacyRequests.title')}
+        description={t('admin:privacyRequests.description')}
+      />
+
+      {error && !openRequest && <Alert tone="danger">{error}</Alert>}
+
+      <FilterBar>
         <Select
-          id="privacy-state"
+          aria-label={t('admin:privacyRequests.stateFilter')}
+          className="sm:w-56"
           value={state}
           onChange={(event) => {
             setState(event.target.value as PrivacyRequestState | '')
@@ -84,134 +173,146 @@ export function AdminPrivacyRequestsPage() {
             </option>
           ))}
         </Select>
-      </FormField>
-
-      {error && (
-        <p role="alert" className="text-sm text-danger">
-          {error}
-        </p>
-      )}
+      </FilterBar>
 
       {requestsQuery.isLoading ? (
-        <div className="flex justify-center py-16">
-          <LoadingSpinner size="lg" />
-        </div>
-      ) : (requestsQuery.data?.content ?? []).length === 0 ? (
-        <EmptyState title={t('admin:privacyRequests.empty')} />
+        <LoadingState label={t('common:status.loading')} />
+      ) : requestsQuery.isError ? (
+        <ErrorState
+          title={t('common:status.error')}
+          onRetry={() => void requestsQuery.refetch()}
+          retryLabel={t('common:actions.retry')}
+        />
       ) : (
-        <ul className="flex flex-col gap-3">
-          {requestsQuery.data!.content.map((request) => (
-            <li key={request.id} className="flex flex-col gap-3 rounded-lg border border-border bg-surface p-4">
-              <div className="flex flex-wrap items-start justify-between gap-2">
-                <div className="min-w-0">
-                  <h2 className="text-sm font-medium text-foreground">
-                    {t(`privacy:requestTypes.${request.requestType}`)}
-                  </h2>
-                  <p className="text-xs text-foreground-secondary">
-                    {t('admin:privacyRequests.submittedAt', {
-                      date: new Date(request.submittedAt).toLocaleString(),
-                    })}
-                  </p>
-                </div>
-                <StatusBadge tone={STATE_TONE[request.state]}>
-                  {t(`privacy:requestStates.${request.state}`)}
-                </StatusBadge>
-              </div>
+        <>
+          <p className="text-sm text-foreground-secondary" aria-live="polite">
+            {t('admin:privacyRequests.resultCount', { count: data?.totalElements ?? 0 })}
+          </p>
+          <DataTable
+            caption={t('admin:privacyRequests.title')}
+            columns={columns}
+            rows={requests}
+            rowKey={(request) => request.id}
+            empty={<EmptyState title={t('admin:privacyRequests.empty')} />}
+          />
+          {(data?.totalPages ?? 0) > 1 && (
+            <Pagination page={page} totalPages={data!.totalPages} onPageChange={setPage} />
+          )}
+        </>
+      )}
 
-              {request.details && <p className="text-sm text-foreground">{request.details}</p>}
+      <Drawer
+        open={openRequest !== null}
+        onClose={() => {
+          setOpenId(null)
+          setPrompting(null)
+        }}
+        closeLabel={t('common:actions.close')}
+        title={t('admin:privacyRequests.open')}
+      >
+        {openRequest && (
+          <div className="flex flex-col gap-4">
+            {error && <Alert tone="danger">{error}</Alert>}
 
-              {request.resolutionNote && (
-                <p className="rounded-md bg-surface-muted px-3 py-2 text-sm text-foreground">
-                  <span className="font-medium">{t('admin:privacyRequests.outcome')}: </span>
-                  {request.resolutionNote}
-                </p>
-              )}
+            <Card padding="md">
+              <dl className="grid gap-3 sm:grid-cols-2">
+                <DetailField label={t('admin:privacyRequests.requestType')}>
+                  {t(`privacy:requestTypes.${openRequest.requestType}`)}
+                </DetailField>
+                <DetailField label={t('admin:privacyRequests.stateFilter')}>
+                  <StatusBadge tone={PRIVACY_REQUEST_TONE[openRequest.state]}>
+                    {t(`privacy:requestStates.${openRequest.state}`)}
+                  </StatusBadge>
+                </DetailField>
+                <DetailField label={t('admin:privacyRequests.submittedAt')}>
+                  {formatDateTime(openRequest.submittedAt)}
+                </DetailField>
+                <DetailField label={t('admin:privacyRequests.reviewedAt')}>
+                  {openRequest.reviewedAt ? formatDateTime(openRequest.reviewedAt) : '—'}
+                </DetailField>
+              </dl>
+            </Card>
 
-              {resolving?.id === request.id ? (
-                <form
-                  className="flex flex-col gap-2"
-                  onSubmit={(event) => {
-                    event.preventDefault()
-                    resolveMutation.mutate({
-                      requestId: request.id,
-                      action: resolving.action,
-                      resolutionNote: note,
-                    })
-                  }}
+            {openRequest.details && (
+              <Card padding="md">
+                <h3 className="text-sm font-semibold text-foreground">
+                  {t('admin:privacyRequests.details')}
+                </h3>
+                <p className="mt-1 text-sm text-foreground-secondary">{openRequest.details}</p>
+              </Card>
+            )}
+
+            {openRequest.resolutionNote && (
+              <Card padding="md">
+                <h3 className="text-sm font-semibold text-foreground">
+                  {t('admin:privacyRequests.outcome')}
+                </h3>
+                <p className="mt-1 text-sm text-foreground-secondary">{openRequest.resolutionNote}</p>
+              </Card>
+            )}
+
+            {prompting ? (
+              <form
+                className="flex flex-col gap-3"
+                onSubmit={(event) => {
+                  event.preventDefault()
+                  resolveMutation.mutate({
+                    requestId: openRequest.id,
+                    action: prompting,
+                    resolutionNote: note,
+                  })
+                }}
+              >
+                <FormField
+                  label={t(`admin:privacyRequests.actions.${prompting}`)}
+                  htmlFor="privacy-note"
+                  hint={t('admin:privacyRequests.noteHint')}
                 >
-                  <FormField
-                    label={t(`admin:privacyRequests.actions.${resolving.action}`)}
-                    htmlFor={`privacy-note-${request.id}`}
+                  <Textarea
+                    id="privacy-note"
+                    rows={3}
+                    maxLength={2000}
+                    value={note}
+                    onChange={(event) => setNote(event.target.value)}
+                    placeholder={t('admin:privacyRequests.notePlaceholder')}
+                  />
+                </FormField>
+                <div className="flex gap-2">
+                  <Button type="submit" size="sm" variant="danger" loading={resolveMutation.isPending}>
+                    {t('common:actions.confirm')}
+                  </Button>
+                  <Button type="button" size="sm" variant="ghost" onClick={() => setPrompting(null)}>
+                    {t('common:actions.cancel')}
+                  </Button>
+                </div>
+              </form>
+            ) : ACTIONS[openRequest.state].length === 0 ? (
+              <p className="text-sm text-muted">{t('admin:privacyRequests.noActions')}</p>
+            ) : (
+              <div className="flex flex-wrap gap-2">
+                {ACTIONS[openRequest.state].map((action) => (
+                  <Button
+                    key={action}
+                    size="sm"
+                    variant={action === 'reject' ? 'danger' : action === 'complete' ? 'primary' : 'outline'}
+                    disabled={resolveMutation.isPending}
+                    onClick={() => {
+                      if (NEEDS_NOTE.has(action)) {
+                        setNote('')
+                        setPrompting(action)
+                        return
+                      }
+                      resolveMutation.mutate({ requestId: openRequest.id, action })
+                    }}
                   >
-                    <Textarea
-                      id={`privacy-note-${request.id}`}
-                      value={note}
-                      onChange={(event) => setNote(event.target.value)}
-                      rows={3}
-                      maxLength={4000}
-                      placeholder={t('admin:privacyRequests.notePlaceholder')}
-                    />
-                  </FormField>
-                  <div className="flex gap-2">
-                    <Button type="submit" size="sm" loading={resolveMutation.isPending}>
-                      {t('admin:privacyRequests.confirm')}
-                    </Button>
-                    <Button type="button" size="sm" variant="ghost" onClick={() => setResolving(null)}>
-                      {t('admin:privacyRequests.cancel')}
-                    </Button>
-                  </div>
-                </form>
-              ) : (
-                request.state !== 'COMPLETED' &&
-                request.state !== 'REJECTED' && (
-                  <div className="flex flex-wrap gap-2">
-                    {request.state === 'SUBMITTED' && (
-                      <Button
-                        type="button"
-                        size="sm"
-                        variant="outline"
-                        onClick={() =>
-                          resolveMutation.mutate({ requestId: request.id, action: 'begin-review' })
-                        }
-                        disabled={resolveMutation.isPending}
-                      >
-                        {t('admin:privacyRequests.actions.begin-review')}
-                      </Button>
-                    )}
-                    <Button
-                      type="button"
-                      size="sm"
-                      onClick={() => {
-                        setResolving({ id: request.id, action: 'complete' })
-                        setNote('')
-                      }}
-                      disabled={resolveMutation.isPending}
-                    >
-                      {t('admin:privacyRequests.actions.complete')}
-                    </Button>
-                    <Button
-                      type="button"
-                      size="sm"
-                      variant="outline"
-                      onClick={() => {
-                        setResolving({ id: request.id, action: 'reject' })
-                        setNote('')
-                      }}
-                      disabled={resolveMutation.isPending}
-                    >
-                      {t('admin:privacyRequests.actions.reject')}
-                    </Button>
-                  </div>
-                )
-              )}
-            </li>
-          ))}
-        </ul>
-      )}
-
-      {(requestsQuery.data?.totalPages ?? 0) > 1 && (
-        <Pagination page={page} totalPages={requestsQuery.data!.totalPages} onPageChange={setPage} />
-      )}
+                    {t(`admin:privacyRequests.actions.${action}`)}
+                  </Button>
+                ))}
+              </div>
+            )}
+          </div>
+        )}
+      </Drawer>
     </div>
   )
 }

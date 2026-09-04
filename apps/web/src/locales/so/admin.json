@@ -9,7 +9,9 @@
     "legalDocuments": "Dukumentiyada sharciga",
     "audit": "Hanti-dhawrka",
     "platformRoles": "Doorarka madasha",
-    "noAccess": "Ma haysatid gelitaan maamulka madasha."
+    "noAccess": "Ma haysatid gelitaan maamulka madasha.",
+    "verification": "Xaqiijinta",
+    "platform": "Nidaamka"
   },
   "dashboard": {
     "title": "Guudmarka madasha",
@@ -27,7 +29,40 @@
     "placements": "Meelaynta",
     "opportunities": "Fursadaha",
     "universities": "Jaamacadaha",
-    "candidacies": "Musharraxnimada"
+    "candidacies": "Musharraxnimada",
+    "eyebrow": "Nidaamka",
+    "subtitle": "Ku soo dhawoow. Halkan waa xaaladda FursadHub hadda.",
+    "viewAll": "Dhammaan eeg",
+    "byStatus": "Sida xaaladdoodu tahay",
+    "noRecords": "Weli diiwaan ma jiro.",
+    "statesCount_one": "Waxay ku baahsan yihiin {{count}} xaaladood",
+    "statesCount_other": "Waxay ku baahsan yihiin {{count}} xaaladood",
+    "counts": {
+      "users": "Wadarta xisaabaadka",
+      "universities": "Jaamacadaha",
+      "organizations": "Hay’adaha",
+      "opportunities": "Tababarrada",
+      "candidacies": "Codsiyada",
+      "placements": "Meelaynta"
+    },
+    "activity": {
+      "title": "Dhaqdhaqaaqa nidaamka",
+      "subtitle": "Dhacdooyinka la diiwaangeliyay {{count}}-kii bilood ee la soo dhaafay.",
+      "eventType": "Nooca dhacdada",
+      "series": "Bisha",
+      "events": "Dhacdooyin",
+      "caption": "Dhacdooyinka la diiwaangeliyay bishiiba",
+      "showTable": "Tirooyinka muuji",
+      "empty": "Weli waxba lama diiwaangelin.",
+      "partialError": "Bilaha qaarkood lama tirin karin, sidaas awgeed xariiqdani ma buuxsami karto.",
+      "unavailable": "Dhaqdhaqaaqa nidaamka lama tirin karin. Raadinta raad-raacu waxay soo celinaysaa khalad."
+    },
+    "recent": {
+      "title": "Isdiiwaangelinta ugu dambeysay",
+      "empty": "Weli xisaab lama abuurin.",
+      "unavailable": "Isdiiwaangelinta ugu dambeysay lama akhriyi karin."
+    },
+    "monitoring": "La eegayo"
   },
   "organizations": {
     "title": "Xaqiijinta hay'adaha",
@@ -35,13 +70,10 @@
     "allStatuses": "Dhammaan xaaladaha",
     "searchLabel": "Magaca hay'adda",
     "searchPlaceholder": "Ku raadi magaca",
-    "search": "Raadi",
     "empty": "Ma jirto hay'ad ku habboon miirayaashan.",
     "noActions": "Xaaladdan wax tallaabo ah lagama qaadi karo.",
     "viewLicense": "Eeg shatiga",
     "notePlaceholder": "Sharax go'aankaaga",
-    "confirm": "Xaqiiji",
-    "cancel": "Jooji",
     "actions": {
       "begin-review": "Bilow dib u eegis",
       "verify": "Xaqiiji",
@@ -55,6 +87,35 @@
       "ORGANIZATION_NOT_FOUND": "Hay'addaas lama helin.",
       "ORGANIZATION_INVALID_TRANSITION": "Isbeddelkaas laguma oggola xaaladda hadda ee hay'adda.",
       "ACCESS_DENIED": "Ma haysatid gelitaan tallaabadan."
+    },
+    "description": "Hay’adaha sugaya xaqiijinta, iyo mid kasta oo horey loo eegay.",
+    "organization": "Hay’adda",
+    "name": "Hay’adda",
+    "type": "Nooca",
+    "details": "Faahfaahinta hay’adda",
+    "registrationNumber": "Lambarka diiwaangelinta",
+    "website": "Websaydka",
+    "registered": "La diiwaangeliyay",
+    "verifiedAt": "La xaqiijiyay taariikhda",
+    "notVerified": "Lama xaqiijin",
+    "notFound": "Hay’addan lama helin.",
+    "evidence": "Shatiga",
+    "noEvidence": "Mid ma jiro",
+    "noEvidenceHint": "Shati looma soo gelin hay’addan.",
+    "evidenceUploaded": "La soo geliyay {{date}}",
+    "review": "Go’aanka xaqiijinta",
+    "resultCount_one": "{{count}} hay’ad",
+    "resultCount_other": "{{count}} hay’adood",
+    "emptyHint": "Isku day xaalad kale, ama nadiifi raadinta.",
+    "noteLabel": "Qoraal loo dirayo hay’adda",
+    "noteHint": "Hay’adda way arki doontaa, sidaas darteed sheeg waxa ay samayn karto.",
+    "confirmations": {
+      "begin-review": "Tani waxay hay’adda u calaamadaynaysaa mid la eegayo.",
+      "verify": "Tani way xaqiijinaysaa hay’adda oo waxay u oggolaanaysaa inay FursadHub ka shaqayso.",
+      "request-changes": "Hay’adda waxaa laga codsanayaa inay wixii ay soo gudbisay saxdo.",
+      "reject": "Hay’adda waxaa loo sheegayaa in codsigeeda la diiday.",
+      "suspend": "Hay’ad la xaqiijiyay way lumin doontaa gelitaanka ilaa hakintu ka qaadmayso.",
+      "revoke": "Tani si joogto ah ayey uga qaadaysaa hay’adda xaqiijinteeda."
     }
   },
   "universities": {
@@ -63,13 +124,10 @@
     "allStatuses": "Dhammaan xaaladaha",
     "searchLabel": "Magaca jaamacadda",
     "searchPlaceholder": "Ku raadi magaca",
-    "search": "Raadi",
     "empty": "Ma jirto jaamacad ku habboon miirayaashan.",
     "noActions": "Xaaladdan wax tallaabo ah lagama qaadi karo.",
     "viewLicense": "Eeg shatiga",
     "notePlaceholder": "Sharax go'aankaaga",
-    "confirm": "Xaqiiji",
-    "cancel": "Jooji",
     "actions": {
       "begin-review": "Bilow dib u eegis",
       "verify": "Xaqiiji",
@@ -84,6 +142,35 @@
       "UNIVERSITY_VERIFICATION_INVALID_TRANSITION": "Isbeddelkaas laguma oggola xaaladda hadda ee jaamacadda.",
       "UNIVERSITY_VERIFICATION_EVIDENCE_MISSING": "Jaamacaddan dukumeenti diiwaangelin ah looma soo gelin.",
       "ACCESS_DENIED": "Ma haysatid gelitaan tallaabadan."
+    },
+    "description": "Jaamacadaha sugaya xaqiijinta, iyo mid kasta oo horey loo eegay.",
+    "university": "Jaamacadda",
+    "name": "Jaamacadda",
+    "city": "Magaalada",
+    "details": "Faahfaahinta jaamacadda",
+    "registrationNumber": "Lambarka diiwaangelinta",
+    "website": "Websaydka",
+    "registered": "La diiwaangeliyay",
+    "verifiedAt": "La xaqiijiyay taariikhda",
+    "notVerified": "Lama xaqiijin",
+    "notFound": "Jaamacaddan lama helin.",
+    "evidence": "Dukumentiga diiwaangelinta",
+    "noEvidence": "Mid ma jiro",
+    "noEvidenceHint": "Dukumenti diiwaangelin looma soo gelin jaamacaddan.",
+    "evidenceUploaded": "La soo geliyay {{date}}",
+    "review": "Go’aanka xaqiijinta",
+    "resultCount_one": "{{count}} jaamacad",
+    "resultCount_other": "{{count}} jaamacadood",
+    "emptyHint": "Isku day xaalad kale, ama nadiifi raadinta.",
+    "noteLabel": "Qoraal loo dirayo jaamacadda",
+    "noteHint": "Jaamacadda way arki doontaa, sidaas darteed sheeg waxa ay samayn karto.",
+    "confirmations": {
+      "begin-review": "Tani waxay jaamacadda u calaamadaynaysaa mid la eegayo.",
+      "verify": "Tani way xaqiijinaysaa jaamacadda oo waxay u oggolaanaysaa inay FursadHub ka shaqayso.",
+      "request-changes": "Jaamacadda waxaa laga codsanayaa inay wixii ay soo gudbisay saxdo.",
+      "reject": "Jaamacadda waxaa loo sheegayaa in codsigeeda la diiday.",
+      "suspend": "Jaamacad la xaqiijiyay way lumin doontaa gelitaanka ilaa hakintu ka qaadmayso.",
+      "revoke": "Tani si joogto ah ayey uga qaadaysaa jaamacadda xaqiijinteeda."
     }
   },
   "organizationTypes": {
@@ -98,12 +185,8 @@
     "empty": "Ma jiraan kiisas kor loo qaaday.",
     "unknownStudent": "Arday aan la aqoon",
     "enrollment": "Lambarka ardayga {{studentNumber}} · {{program}} · {{year}}",
-    "reason": "Sababta kor loogu qaaday",
-    "downloadEvidence": "Soo dejiso caddaynta",
     "noEvidence": "Caddayn lama soo gelin",
     "notePlaceholder": "Sharax go'aankaaga",
-    "confirm": "Xaqiiji",
-    "cancel": "Jooji",
     "actions": {
       "verify": "Xaqiiji diiwaangelinta",
       "reject": "Diid",
@@ -115,7 +198,25 @@
       "VERIFICATION_CASE_ALREADY_RESOLVED": "Kiiskaas horey ayaa loo xalliyay.",
       "VERIFICATION_EVIDENCE_MISSING": "Kiiskan caddayn looma soo gelin.",
       "VALIDATION_FAILED": "Tallaabadan waxay u baahan tahay sabab."
-    }
+    },
+    "student": "Ardayga",
+    "status": "Xaaladda kiiska",
+    "studentNumber": "Lambarka ardayga",
+    "program": "Barnaamijka",
+    "academicYear": "Sannad-dugsiyeedka",
+    "submittedAt": "La gudbiyay",
+    "escalatedAt": "Kor loo qaaday",
+    "escalationReason": "Sababta kor loogu qaaday",
+    "reviewNotes": "Qoraallada eegista",
+    "evidence": "Caddaynta",
+    "hasEvidence": "Way jirtaa",
+    "noEvidenceHint": "Dukumenti caddayn ah kiiskan lagumaa lifaaqin.",
+    "viewEvidence": "Fur caddaynta",
+    "review": "Eeg kiiska",
+    "resultCount_one": "{{count}} kiis oo sugaya",
+    "resultCount_other": "{{count}} kiis oo sugaya",
+    "emptyHint": "Waxba kor loogumaa qaadin nidaamka in la eego.",
+    "noteHint": "Ardayga wuu arki doonaa, sidaas darteed sheeg waxa uu samayn karo."
   },
   "verificationStatuses": {
     "DRAFT": "Qabyo",
@@ -128,28 +229,49 @@
   },
   "users": {
     "title": "Akoonnada",
-    "searchLabel": "Iimaylka",
+    "searchLabel": "Raadi xisaabaad",
     "searchPlaceholder": "Ku raadi iimaylka",
-    "statusFilter": "Xaaladda",
+    "statusFilter": "Xaaladda xisaabta",
     "allStatuses": "Dhammaan xaaladaha",
-    "search": "Raadi",
-    "empty": "Ma jiro akoon ku habboon miirayaashan.",
+    "empty": "Ma jiro xisaab ku habboon shaandhadan",
     "email": "Iimaylka",
     "status": "Xaaladda",
-    "created": "La abuuray",
-    "actions": "Tallaabooyinka",
-    "suspend": "Haki",
-    "reactivate": "Dib u firfircooni",
-    "confirmSuspend": "Xaqiiji hakinta",
-    "cancel": "Jooji",
-    "noActions": "Wax tallaabo ah ma jiraan",
-    "reasonLabel": "Sababta hakinta",
-    "reasonPlaceholder": "Sabab gudaha ah (lama tuso qofka akoonka leh)",
+    "actions": {
+      "suspend": "Xisaabta haki",
+      "reactivate": "Xisaabta dib u kici"
+    },
+    "reasonLabel": "Sababta",
+    "reasonPlaceholder": "Muxuu yahay sababta xisaabtan loo hakinayo?",
     "errors": {
-      "generic": "Tallaabadaas lama dhammayn karin. Fadlan mar kale isku day.",
-      "USER_NOT_FOUND": "Akoonkaas lama helin.",
-      "USER_CLOSED": "Akoon xiran lama beddeli karo.",
-      "CANNOT_SUSPEND_SELF": "Ma hakin kartid akoonkaaga."
+      "generic": "Xisaabtaas lama cusboonaysiin karin. Fadlan mar kale isku day.",
+      "USER_NOT_FOUND": "Xisaab noocaas ah ma jirto.",
+      "USER_CLOSED": "Xisaab la xiray lama hakin karo lamana kicin karo.",
+      "CANNOT_SUSPEND_SELF": "Xisaabtaada ma hakin kartid.",
+      "ACCESS_DENIED": "Uma lihid awood aad xisaabaadka ku maamusho.",
+      "VALIDATION_FAILED": "Fadlan sababta hubi kadibna mar kale isku day."
+    },
+    "description": "Xisaab kasta oo FursadHub ku jirta, doorkeeda kasta ha ahaadee.",
+    "account": "Xisaabta",
+    "accountDetails": "Faahfaahinta xisaabta",
+    "locale": "Luqadda",
+    "registered": "La diiwaangeliyay",
+    "emailVerified": "Iimaylka la xaqiijiyay",
+    "notVerified": "Lama xaqiijin",
+    "notFound": "Xisaabtan lama helin.",
+    "resultCount_one": "{{count}} xisaab",
+    "resultCount_other": "{{count}} xisaabaad",
+    "emptyHint": "Isku day xaalad kale, ama nadiifi raadinta.",
+    "pageEmpty": "Boggani waa madhan yahay. Bog dib ugu noqo si aad natiijooyinka u aragto.",
+    "closedNoActions": "Xisaab la xiray lama hakin karo lamana kicin karo.",
+    "suspendTitle": "Ma hakinaysaa xisaabtan?",
+    "suspendDescription": "Isla markiiba meel kasta waa laga saarayaa, mana geli karo ilaa hakintu ka qaadmayso.",
+    "reactivateTitle": "Ma dib u kicinaysaa xisaabtan?",
+    "reactivateDescription": "Isla markiiba mar kale way geli kartaa.",
+    "reasonHint": "Waxaa lagu diiwaangelinayaa raad-raaca. Milkiilaha xisaabta lama tuso.",
+    "notShown": {
+      "title": "Waxa aan halkan lagu muujin",
+      "body": "FursadHub weligeed maamule ma tuso furaha sirta ah, lambarka la qariyay, ama wax calaamad ah — sidaas awgeed midna boggan kama muuqdo.",
+      "memberships": "Xubinnimada jaamacadda iyo hay’adda waxaa maamula maamulaha kooxda, oo lagama heli karo hal meel oo guud."
     }
   },
   "privacyRequests": {
@@ -161,8 +283,6 @@
     "submittedAt": "La gudbiyay {{date}}",
     "outcome": "Natiijada",
     "notePlaceholder": "Sharax waxa la sameeyay, ama sababta aan loo samayn karin.",
-    "confirm": "Xaqiiji",
-    "cancel": "Jooji",
     "actions": {
       "begin-review": "Bilow dib u eegis",
       "complete": "Calaamadee la dhammeeyay",
@@ -173,7 +293,15 @@
       "PRIVACY_REQUEST_NOT_FOUND": "Codsigaas lama helin.",
       "PRIVACY_REQUEST_INVALID_TRANSITION": "Codsigaas horey ayaa loo xalliyay.",
       "VALIDATION_FAILED": "Marka la diidayo codsi waxaa loo baahan yahay sabab."
-    }
+    },
+    "requestType": "Codsiga",
+    "reviewedAt": "La eegay",
+    "open": "Fur codsiga",
+    "details": "Waxa qofku codsaday",
+    "noteHint": "Waxaa loo diiwaangelinayaa natiijada codsigan.",
+    "noActions": "Codsigan horey ayaa loo xalliyay.",
+    "resultCount_one": "{{count}} codsi",
+    "resultCount_other": "{{count}} codsi"
   },
   "legalDocuments": {
     "title": "Dukumentiyada sharciga",
@@ -209,7 +337,16 @@
     "eventType": "Dhacdada",
     "actor": "Isticmaalaha wax qabtay",
     "metadata": "Faahfaahin",
-    "system": "Nidaamka"
+    "system": "Nidaamka",
+    "ipAddress": "Cinwaanka IP",
+    "actorFilter": "Qofka falay",
+    "actorPlaceholder": "Ku shaandhee aqoonsiga xisaabta",
+    "from": "Laga bilaabo",
+    "to": "Ilaa",
+    "invalidRange": "Taariikhda bilowga waa inay ka horreysaa tan dhammaadka.",
+    "resultCount_one": "{{count}} dhacdo",
+    "resultCount_other": "{{count}} dhacdo",
+    "emptyHint": "Ma jirto dhacdo la diiwaangeliyay oo ku habboon shaandhadan."
   },
   "platformRoles": {
     "title": "Doorarka madasha",
@@ -228,7 +365,25 @@
       "USER_NOT_ACTIVE": "Akoon firfircoon oo keliya ayaa la siin karaa door madasha.",
       "LAST_SUPER_ADMIN": "Maamulaha sare ee ugu dambeeya lama qaadi karo. Marka hore door sii akoon kale.",
       "PLATFORM_ROLE_NOT_FOUND": "Siintaas lama helin.",
-      "VALIDATION_FAILED": "Fadlan hubi aqoonsiga akoonka aad gelisay."
+      "VALIDATION_FAILED": "Fadlan hubi aqoonsiga akoonka aad gelisay.",
+      "PLATFORM_ROLE_CONFLICT": "Xisaabtaas horey ayey u haysataa doorkan nidaamka."
+    },
+    "holder": "Xisaabta",
+    "unknownAccount": "Xisaab aan la garanayn",
+    "state": "Xaaladda",
+    "revokedAt": "La qaaday",
+    "grantTitle": "Sii doorka nidaamka",
+    "grantHint": "Marka hore xisaabta ka raadi Xisaabaadka kadibna aqoonsigeeda halkan ku dheji. FursadHub waxay leedahay laba door oo nidaam oo kaliya, waxa mid kastaa samayn karana waa mid API-ga ku go’an.",
+    "empty": "Weli doorar nidaam lama siin.",
+    "revokeTitle": "Ma qaadaysaa doorkan nidaamka?",
+    "revokeDescription": "Tani awoodda nidaamka way ka qaadaysaa {{holder}}. Siintu taariikhda way ku hadhaysaa.",
+    "roles": {
+      "SUPER_ADMIN": "Maamulaha sare",
+      "VERIFICATION_OFFICER": "Sarkaalka xaqiijinta"
+    },
+    "roleMeaning": {
+      "SUPER_ADMIN": "Awood nidaam oo buuxda: tirakoobka, xisaabaadka, doorarka nidaamka, hoggaaminta sharciga, raad-raaca, iyo saf kasta oo xaqiijin ah.",
+      "VERIFICATION_OFFICER": "Xaqiijin oo kaliya: safafka hay’adaha iyo jaamacadaha iyo kiisaska ardayda ee kor loo qaaday. Ma leh gelitaan xisaabaad, doorar nidaam, hoggaamin sharci ama raad-raac."
     }
   },
   "platformRoleNames": {
@@ -254,6 +409,14 @@
     "PLANNED": "La qorsheeyay",
     "COMPLETION_PENDING": "Sugaya dhammaystirka",
     "COMPLETED": "La dhammeeyay",
-    "TERMINATED": "La joojiyay"
+    "TERMINATED": "La joojiyay",
+    "NEEDS_MORE_EVIDENCE": "Caddayn dheeraad ah ayaa loo baahan yahay"
+  },
+  "verification": {
+    "eyebrow": "Xaqiijinta"
+  },
+  "locales": {
+    "en": "Ingiriisi",
+    "so": "Soomaali"
   }
 }

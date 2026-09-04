@@ -2,7 +2,8 @@
   "nav": {
     "dashboard": "Dashboard",
     "enrollment": "Enrollment",
-    "profile": "Profile"
+    "profile": "Profile",
+    "exploreInternships": "Explore internships"
   },
   "dashboard": {
     "title": "Your dashboard",
@@ -16,7 +17,23 @@
     "placements": "Placements",
     "active": "Active",
     "needsAction": "Needs your response",
-    "clear": "Nothing outstanding"
+    "clear": "Nothing outstanding",
+    "greeting": "Welcome back, {{name}}",
+    "greetingSubtitle": "Find an opportunity that moves your career forward.",
+    "interviews": "Interviews",
+    "viewAll": "View all",
+    "openInternships": "Open internships",
+    "recentApplications": "Recent applications",
+    "openPlacement": "Open my internship",
+    "readinessTitle": "Get ready to apply",
+    "readinessLabel": "Profile completion",
+    "readinessCta": "Complete the next step",
+    "readinessSteps": {
+      "profile": "Add your name and contact details",
+      "cv": "Upload your CV",
+      "enrollment": "Claim your university enrollment",
+      "verification": "Get your enrollment verified"
+    }
   },
   "profile": {
     "title": "Your profile",
@@ -28,7 +45,11 @@
     "createHint": "You don't have a profile yet — fill in the details below to create one.",
     "errors": {
       "generic": "Something went wrong. Please try again."
-    }
+    },
+    "detailsTitle": "Personal details",
+    "enrollmentHint": "Your university verifies these records, so they are managed on the enrollment page.",
+    "manageEnrollment": "Manage enrollment",
+    "claimEnrollment": "Claim your enrollment"
   },
   "enrollment": {
     "title": "University enrollment",

@@ -2,7 +2,7 @@ import { useState } from 'react'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { useTranslation } from 'react-i18next'
 import { useParams } from 'react-router-dom'
-import { Button, FormField, Input, LoadingSpinner, Select, StatusBadge, Textarea } from '../../../components/ui'
+import { Button, ErrorState, FormField, Input, LoadingState, Select, StatusBadge, Textarea } from '../../../components/ui'
 import type { StatusTone } from '../../../components/ui'
 import { apiErrorMessage } from '../../../lib/api/errorMessage'
 import * as attendanceApi from '../api/attendanceApi'
@@ -83,10 +83,16 @@ export function AttendancePage({ audience }: AttendancePageProps) {
   })
 
   if (attendanceQuery.isLoading) {
+    return <LoadingState label={t('common:status.loading')} />
+  }
+
+  if (attendanceQuery.isError) {
     return (
-      <div className="flex justify-center py-16">
-        <LoadingSpinner size="lg" />
-      </div>
+      <ErrorState
+        title={t('common:status.error')}
+        onRetry={() => void attendanceQuery.refetch()}
+        retryLabel={t('common:actions.retry')}
+      />
     )
   }
 

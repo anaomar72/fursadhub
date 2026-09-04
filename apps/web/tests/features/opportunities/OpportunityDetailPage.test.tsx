@@ -119,14 +119,14 @@ describe('OpportunityDetailPage', () => {
     renderPage()
 
     await screen.findByRole('button', { name: /^publish$/i })
-    expect(screen.queryByText(/target universities/i)).not.toBeInTheDocument()
+    expect(screen.queryByRole('heading', { name: /target universities/i })).not.toBeInTheDocument()
   })
 
   it('shows targeting controls for a UNIVERSITY_TARGETED draft', async () => {
     stubFetch(opportunity({ mode: 'UNIVERSITY_TARGETED', status: 'DRAFT' }))
     renderPage()
 
-    expect(await screen.findByText(/target universities/i)).toBeInTheDocument()
+    expect(await screen.findByRole('heading', { name: /target universities/i })).toBeInTheDocument()
     expect(screen.getByLabelText(/requested nominees/i)).toBeInTheDocument()
     expect(screen.getByLabelText(/nomination deadline/i)).toBeInTheDocument()
   })
@@ -135,7 +135,7 @@ describe('OpportunityDetailPage', () => {
     stubFetch(opportunity({ mode: 'HYBRID', status: 'DRAFT' }))
     renderPage()
 
-    expect(await screen.findByText(/target universities/i)).toBeInTheDocument()
+    expect(await screen.findByRole('heading', { name: /target universities/i })).toBeInTheDocument()
   })
 
   it('hides management actions from an organization supervisor', async () => {

@@ -4,6 +4,7 @@ import { beforeEach, describe, expect, it, vi } from 'vitest'
 import { MemoryRouter, Route, Routes } from 'react-router-dom'
 import { AppProviders } from '../../../src/app/providers/AppProviders'
 import { CandidateDetailPage } from '../../../src/features/recruitment/pages/CandidateDetailPage'
+import { OrganizationMembershipContext } from '../../../src/features/organization/components/OrganizationMembershipContext'
 import i18n from '../../../src/lib/i18n'
 
 function jsonResponse(body: unknown, status = 200) {
@@ -32,8 +33,18 @@ function stubFetch(detail: unknown, postHandler?: (url: string) => Promise<Respo
     if (init?.method === 'POST' && url.includes('/candidacies/')) {
       return postHandler ? postHandler(url) : jsonResponse({ id: 'cand-1', status: 'OFFERED' })
     }
+    // The page resolves the screening-question PROMPTS and the internship title too — before it
+    // did, it rendered raw question UUIDs where the questions should be.
+    if (url.includes('/screening-questions')) {
+      return jsonResponse([
+        { id: 'q1', prompt: 'Why this internship?', type: 'LONG_TEXT', required: true, position: 1, choices: [] },
+      ])
+    }
     if (url.includes('/candidacies/cand-1')) {
       return jsonResponse(detail)
+    }
+    if (url.includes('/opportunities/')) {
+      return jsonResponse({ id: 'opp-1', title: 'Backend Intern', status: 'PUBLISHED', mode: 'PUBLIC' })
     }
     return jsonResponse({})
   })
@@ -45,9 +56,13 @@ function renderPage() {
   return render(
     <MemoryRouter initialEntries={['/organization/candidacies/cand-1']}>
       <AppProviders>
-        <Routes>
-          <Route path="/organization/candidacies/:candidacyId" element={<CandidateDetailPage />} />
-        </Routes>
+        {/* Recruitment actions are ORGANIZATION_ADMIN/RECRUITER only (CandidacyAuthorization), so
+            the page reads its capability from the membership the organization area provides. */}
+        <OrganizationMembershipContext.Provider value={{ organizationId: 'org-1', role: 'ORGANIZATION_ADMIN' }}>
+          <Routes>
+            <Route path="/organization/candidacies/:candidacyId" element={<CandidateDetailPage />} />
+          </Routes>
+        </OrganizationMembershipContext.Provider>
       </AppProviders>
     </MemoryRouter>,
   )
@@ -63,7 +78,7 @@ describe('CandidateDetailPage', () => {
     stubFetch(candidate)
     renderPage()
 
-    expect(await screen.findByText('Amina Yusuf')).toBeInTheDocument()
+    expect(await screen.findByRole('heading', { name: 'Amina Yusuf' })).toBeInTheDocument()
     expect(screen.getByText('Applied and nominated')).toBeInTheDocument()
     expect(screen.getByText(/i want to learn backend engineering/i)).toBeInTheDocument()
   })
@@ -73,7 +88,7 @@ describe('CandidateDetailPage', () => {
     stubFetch(candidate)
     renderPage()
 
-    await screen.findByText('Amina Yusuf')
+    await screen.findByRole('heading', { name: 'Amina Yusuf' })
 
     expect(screen.getByRole('button', { name: /move to interview/i })).toBeInTheDocument()
     expect(screen.getByRole('button', { name: /^reject$/i })).toBeInTheDocument()
@@ -87,7 +102,7 @@ describe('CandidateDetailPage', () => {
     const fetchMock = stubFetch(candidate)
     renderPage()
 
-    await screen.findByText('Amina Yusuf')
+    await screen.findByRole('heading', { name: 'Amina Yusuf' })
     await user.type(screen.getByLabelText(/start date/i), '2027-06-01')
     await user.type(screen.getByLabelText(/end date/i), '2027-03-01')
     await user.type(screen.getByLabelText(/respond by/i), '2027-02-01')
@@ -102,7 +117,7 @@ describe('CandidateDetailPage', () => {
     stubFetch(candidate)
     renderPage()
 
-    await screen.findByText('Amina Yusuf')
+    await screen.findByRole('heading', { name: 'Amina Yusuf' })
     await user.type(screen.getByLabelText(/start date/i), '2027-03-01')
     await user.type(screen.getByLabelText(/end date/i), '2027-06-01')
     await user.type(screen.getByLabelText(/respond by/i), '2027-04-01')
@@ -116,7 +131,7 @@ describe('CandidateDetailPage', () => {
     const fetchMock = stubFetch(candidate)
     renderPage()
 
-    await screen.findByText('Amina Yusuf')
+    await screen.findByRole('heading', { name: 'Amina Yusuf' })
     await user.type(screen.getByLabelText(/start date/i), '2027-03-01')
     await user.type(screen.getByLabelText(/end date/i), '2027-06-01')
     await user.type(screen.getByLabelText(/respond by/i), '2027-02-15')
@@ -146,7 +161,7 @@ describe('CandidateDetailPage', () => {
     )
     renderPage()
 
-    await screen.findByText('Amina Yusuf')
+    await screen.findByRole('heading', { name: 'Amina Yusuf' })
     await user.type(screen.getByLabelText(/start date/i), '2027-03-01')
     await user.type(screen.getByLabelText(/end date/i), '2027-06-01')
     await user.type(screen.getByLabelText(/respond by/i), '2027-02-15')

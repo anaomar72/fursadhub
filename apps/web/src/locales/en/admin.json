@@ -1,6 +1,6 @@
 {
   "nav": {
-    "dashboard": "Dashboard",
+    "dashboard": "Overview",
     "organizations": "Organizations",
     "universities": "Universities",
     "escalations": "Escalations",
@@ -9,7 +9,9 @@
     "legalDocuments": "Legal documents",
     "audit": "Audit",
     "platformRoles": "Platform roles",
-    "noAccess": "You do not have platform administration access."
+    "noAccess": "You do not have platform administration access.",
+    "verification": "Verification",
+    "platform": "Platform"
   },
   "dashboard": {
     "title": "Platform overview",
@@ -27,7 +29,40 @@
     "placements": "Placements",
     "opportunities": "Opportunities",
     "universities": "Universities",
-    "candidacies": "Candidacies"
+    "candidacies": "Candidacies",
+    "eyebrow": "Platform",
+    "subtitle": "Welcome back. Here is where FursadHub stands right now.",
+    "viewAll": "View all",
+    "byStatus": "By status",
+    "noRecords": "No records yet.",
+    "statesCount_one": "Across {{count}} state",
+    "statesCount_other": "Across {{count}} states",
+    "counts": {
+      "users": "Total accounts",
+      "universities": "Universities",
+      "organizations": "Organizations",
+      "opportunities": "Internships",
+      "candidacies": "Applications",
+      "placements": "Placements"
+    },
+    "activity": {
+      "title": "Platform activity",
+      "subtitle": "Recorded events over the last {{count}} months.",
+      "eventType": "Event type",
+      "series": "Month",
+      "events": "Events",
+      "caption": "Recorded events per month",
+      "showTable": "Show the numbers",
+      "empty": "Nothing has been recorded yet.",
+      "partialError": "Some months could not be counted, so this line may be incomplete.",
+      "unavailable": "Platform activity could not be counted. The audit search endpoint is returning an error."
+    },
+    "recent": {
+      "title": "Recent registrations",
+      "empty": "No accounts have been created yet.",
+      "unavailable": "Recent registrations could not be read."
+    },
+    "monitoring": "Monitoring"
   },
   "organizations": {
     "title": "Organization verification",
@@ -35,13 +70,10 @@
     "allStatuses": "All statuses",
     "searchLabel": "Organization name",
     "searchPlaceholder": "Search by name",
-    "search": "Search",
     "empty": "No organizations match these filters.",
     "noActions": "No actions are available from this state.",
     "viewLicense": "View license",
     "notePlaceholder": "Explain your decision",
-    "confirm": "Confirm",
-    "cancel": "Cancel",
     "actions": {
       "begin-review": "Begin review",
       "verify": "Verify",
@@ -55,6 +87,35 @@
       "ORGANIZATION_NOT_FOUND": "That organization could not be found.",
       "ORGANIZATION_INVALID_TRANSITION": "That change is not allowed from the organization's current state.",
       "ACCESS_DENIED": "You do not have access to this action."
+    },
+    "description": "Organizations awaiting verification, and every one already reviewed.",
+    "organization": "Organization",
+    "name": "Organization",
+    "type": "Type",
+    "details": "Organization details",
+    "registrationNumber": "Registration number",
+    "website": "Website",
+    "registered": "Registered",
+    "verifiedAt": "Verified on",
+    "notVerified": "Not verified",
+    "notFound": "This organization could not be found.",
+    "evidence": "License",
+    "noEvidence": "None on file",
+    "noEvidenceHint": "No license has been uploaded for this organization.",
+    "evidenceUploaded": "Uploaded {{date}}",
+    "review": "Verification decision",
+    "resultCount_one": "{{count}} organization",
+    "resultCount_other": "{{count}} organizations",
+    "emptyHint": "Try a different status, or clear the search.",
+    "noteLabel": "Note to the organization",
+    "noteHint": "The organization is shown this, so say what they need to do.",
+    "confirmations": {
+      "begin-review": "This marks the organization as under review.",
+      "verify": "This verifies the organization and lets it operate on FursadHub.",
+      "request-changes": "The organization will be asked to correct its submission.",
+      "reject": "The organization will be told its application was refused.",
+      "suspend": "A verified organization will lose access until the suspension is lifted.",
+      "revoke": "This permanently withdraws the organization’s verification."
     }
   },
   "universities": {
@@ -63,13 +124,10 @@
     "allStatuses": "All statuses",
     "searchLabel": "University name",
     "searchPlaceholder": "Search by name",
-    "search": "Search",
     "empty": "No universities match these filters.",
     "noActions": "No actions are available from this state.",
     "viewLicense": "View license",
     "notePlaceholder": "Explain your decision",
-    "confirm": "Confirm",
-    "cancel": "Cancel",
     "actions": {
       "begin-review": "Begin review",
       "verify": "Verify",
@@ -84,6 +142,35 @@
       "UNIVERSITY_VERIFICATION_INVALID_TRANSITION": "That change is not allowed from the university's current state.",
       "UNIVERSITY_VERIFICATION_EVIDENCE_MISSING": "No registration document has been uploaded for this university.",
       "ACCESS_DENIED": "You do not have access to this action."
+    },
+    "description": "Universities awaiting verification, and every one already reviewed.",
+    "university": "University",
+    "name": "University",
+    "city": "City",
+    "details": "University details",
+    "registrationNumber": "Registration number",
+    "website": "Website",
+    "registered": "Registered",
+    "verifiedAt": "Verified on",
+    "notVerified": "Not verified",
+    "notFound": "This university could not be found.",
+    "evidence": "Registration document",
+    "noEvidence": "None on file",
+    "noEvidenceHint": "No registration document has been uploaded for this university.",
+    "evidenceUploaded": "Uploaded {{date}}",
+    "review": "Verification decision",
+    "resultCount_one": "{{count}} university",
+    "resultCount_other": "{{count}} universities",
+    "emptyHint": "Try a different status, or clear the search.",
+    "noteLabel": "Note to the university",
+    "noteHint": "The university is shown this, so say what they need to do.",
+    "confirmations": {
+      "begin-review": "This marks the university as under review.",
+      "verify": "This verifies the university and lets it operate on FursadHub.",
+      "request-changes": "The university will be asked to correct its submission.",
+      "reject": "The university will be told its application was refused.",
+      "suspend": "A verified university will lose access until the suspension is lifted.",
+      "revoke": "This permanently withdraws the university’s verification."
     }
   },
   "organizationTypes": {
@@ -98,12 +185,8 @@
     "empty": "There are no escalated cases.",
     "unknownStudent": "Unknown student",
     "enrollment": "Student number {{studentNumber}} · {{program}} · {{year}}",
-    "reason": "Why it was escalated",
-    "downloadEvidence": "Download evidence",
     "noEvidence": "No evidence uploaded",
     "notePlaceholder": "Explain your decision",
-    "confirm": "Confirm",
-    "cancel": "Cancel",
     "actions": {
       "verify": "Verify enrollment",
       "reject": "Reject",
@@ -115,7 +198,25 @@
       "VERIFICATION_CASE_ALREADY_RESOLVED": "That case has already been resolved.",
       "VERIFICATION_EVIDENCE_MISSING": "No evidence has been uploaded for this case.",
       "VALIDATION_FAILED": "A reason is required for this action."
-    }
+    },
+    "student": "Student",
+    "status": "Case status",
+    "studentNumber": "Student number",
+    "program": "Program",
+    "academicYear": "Academic year",
+    "submittedAt": "Submitted",
+    "escalatedAt": "Escalated",
+    "escalationReason": "Why it was escalated",
+    "reviewNotes": "Review notes",
+    "evidence": "Evidence",
+    "hasEvidence": "On file",
+    "noEvidenceHint": "No evidence document was attached to this case.",
+    "viewEvidence": "Open evidence",
+    "review": "Review case",
+    "resultCount_one": "{{count}} case waiting",
+    "resultCount_other": "{{count}} cases waiting",
+    "emptyHint": "Nothing has been escalated to the platform for review.",
+    "noteHint": "The student is shown this, so say what they need to do."
   },
   "verificationStatuses": {
     "DRAFT": "Draft",
@@ -128,28 +229,49 @@
   },
   "users": {
     "title": "Accounts",
-    "searchLabel": "Email",
+    "searchLabel": "Search accounts",
     "searchPlaceholder": "Search by email",
-    "statusFilter": "Status",
+    "statusFilter": "Account status",
     "allStatuses": "All statuses",
-    "search": "Search",
-    "empty": "No accounts match these filters.",
+    "empty": "No accounts match these filters",
     "email": "Email",
     "status": "Status",
-    "created": "Created",
-    "actions": "Actions",
-    "suspend": "Suspend",
-    "reactivate": "Reactivate",
-    "confirmSuspend": "Confirm suspension",
-    "cancel": "Cancel",
-    "noActions": "No actions",
-    "reasonLabel": "Reason for suspension",
-    "reasonPlaceholder": "Internal reason (not shown to the account holder)",
+    "actions": {
+      "suspend": "Suspend account",
+      "reactivate": "Reactivate account"
+    },
+    "reasonLabel": "Reason",
+    "reasonPlaceholder": "Why is this account being suspended?",
     "errors": {
-      "generic": "That action could not be completed. Please try again.",
-      "USER_NOT_FOUND": "That account could not be found.",
-      "USER_CLOSED": "A closed account cannot be changed.",
-      "CANNOT_SUSPEND_SELF": "You cannot suspend your own account."
+      "generic": "That account could not be updated. Please try again.",
+      "USER_NOT_FOUND": "No such account.",
+      "USER_CLOSED": "A closed account cannot be suspended or reactivated.",
+      "CANNOT_SUSPEND_SELF": "You cannot suspend your own account.",
+      "ACCESS_DENIED": "You are not authorized to administer accounts.",
+      "VALIDATION_FAILED": "Please check the reason and try again."
+    },
+    "description": "Every account on FursadHub, whatever role it holds.",
+    "account": "Account",
+    "accountDetails": "Account details",
+    "locale": "Language",
+    "registered": "Registered",
+    "emailVerified": "Email verified",
+    "notVerified": "Not verified",
+    "notFound": "This account could not be found.",
+    "resultCount_one": "{{count}} account",
+    "resultCount_other": "{{count}} accounts",
+    "emptyHint": "Try a different status, or clear the search.",
+    "pageEmpty": "This page is empty. Go back a page to see the results.",
+    "closedNoActions": "A closed account cannot be suspended or reactivated.",
+    "suspendTitle": "Suspend this account?",
+    "suspendDescription": "They will be signed out everywhere immediately and will not be able to sign in again until the suspension is lifted.",
+    "reactivateTitle": "Reactivate this account?",
+    "reactivateDescription": "They will be able to sign in again straight away.",
+    "reasonHint": "Recorded in the audit trail. The account holder is not shown this.",
+    "notShown": {
+      "title": "Not shown here",
+      "body": "FursadHub never exposes a password, a password hash or any token material to an administrator, so none of it appears on this page.",
+      "memberships": "University and organization memberships are managed by each tenant admin and are not available through a platform-wide endpoint."
     }
   },
   "privacyRequests": {
@@ -161,8 +283,6 @@
     "submittedAt": "Submitted {{date}}",
     "outcome": "Outcome",
     "notePlaceholder": "Describe what was done, or why it could not be.",
-    "confirm": "Confirm",
-    "cancel": "Cancel",
     "actions": {
       "begin-review": "Begin review",
       "complete": "Mark completed",
@@ -173,7 +293,15 @@
       "PRIVACY_REQUEST_NOT_FOUND": "That request could not be found.",
       "PRIVACY_REQUEST_INVALID_TRANSITION": "That request has already been resolved.",
       "VALIDATION_FAILED": "A reason is required when rejecting a request."
-    }
+    },
+    "requestType": "Request",
+    "reviewedAt": "Reviewed",
+    "open": "Open request",
+    "details": "What the person asked for",
+    "noteHint": "Recorded as the outcome of this request.",
+    "noActions": "This request has already been resolved.",
+    "resultCount_one": "{{count}} request",
+    "resultCount_other": "{{count}} requests"
   },
   "legalDocuments": {
     "title": "Legal documents",
@@ -209,7 +337,16 @@
     "eventType": "Event",
     "actor": "Acting user",
     "metadata": "Details",
-    "system": "System"
+    "system": "System",
+    "ipAddress": "IP address",
+    "actorFilter": "Actor",
+    "actorPlaceholder": "Filter by account ID",
+    "from": "From",
+    "to": "To",
+    "invalidRange": "The start date must come before the end date.",
+    "resultCount_one": "{{count}} event",
+    "resultCount_other": "{{count}} events",
+    "emptyHint": "No recorded event matches these filters."
   },
   "platformRoles": {
     "title": "Platform roles",
@@ -228,7 +365,25 @@
       "USER_NOT_ACTIVE": "Only an active account can be granted a platform role.",
       "LAST_SUPER_ADMIN": "The last super admin cannot be revoked. Grant the role to another account first.",
       "PLATFORM_ROLE_NOT_FOUND": "That grant could not be found.",
-      "VALIDATION_FAILED": "Please check the account ID you entered."
+      "VALIDATION_FAILED": "Please check the account ID you entered.",
+      "PLATFORM_ROLE_CONFLICT": "That account already holds this platform role."
+    },
+    "holder": "Account",
+    "unknownAccount": "Unknown account",
+    "state": "State",
+    "revokedAt": "Revoked",
+    "grantTitle": "Grant a platform role",
+    "grantHint": "Look the account up under Accounts first and paste its ID here. FursadHub has only these two platform roles, and what each may do is fixed in the API.",
+    "empty": "No platform roles have been granted yet.",
+    "revokeTitle": "Revoke this platform role?",
+    "revokeDescription": "This removes platform authority from {{holder}}. The grant stays in the history.",
+    "roles": {
+      "SUPER_ADMIN": "Super admin",
+      "VERIFICATION_OFFICER": "Verification officer"
+    },
+    "roleMeaning": {
+      "SUPER_ADMIN": "Full platform authority: statistics, accounts, platform roles, compliance, the audit trail, and every verification queue.",
+      "VERIFICATION_OFFICER": "Verification only: the organization and university queues and escalated student cases. No access to accounts, platform roles, compliance or the audit trail."
     }
   },
   "platformRoleNames": {
@@ -254,6 +409,14 @@
     "PLANNED": "Planned",
     "COMPLETION_PENDING": "Completion pending",
     "COMPLETED": "Completed",
-    "TERMINATED": "Terminated"
+    "TERMINATED": "Terminated",
+    "NEEDS_MORE_EVIDENCE": "More evidence needed"
+  },
+  "verification": {
+    "eyebrow": "Verification"
+  },
+  "locales": {
+    "en": "English",
+    "so": "Somali"
   }
 }

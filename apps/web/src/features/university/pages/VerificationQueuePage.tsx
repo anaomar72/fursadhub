@@ -4,8 +4,9 @@ import { useTranslation } from 'react-i18next'
 import { Link } from 'react-router-dom'
 import * as universityApi from '../api/universityApi'
 import { useUniversityMembership } from '../components/UniversityMembershipContext'
-import { EmptyState, LoadingSpinner, PageHeader, Select, StatusBadge } from '../../../components/ui'
+import { EmptyState, ErrorState, LoadingState, PageHeader, Select, StatusBadge } from '../../../components/ui'
 import type { StatusTone } from '../../../components/ui'
+import { PageContainer } from '../../../app/layouts/PageContainer'
 
 const STATUS_TONE: Record<string, StatusTone> = {
   SUBMITTED: 'info',
@@ -27,7 +28,7 @@ export function VerificationQueuePage() {
   })
 
   return (
-    <div className="mx-auto max-w-4xl px-4 py-8 sm:px-6">
+    <PageContainer className="flex flex-col gap-6">
       <div className="flex flex-wrap items-center justify-between gap-3">
         <PageHeader title={t('university:verificationQueue.title')} />
         <Select className="w-auto" value={status} onChange={(e) => setStatus(e.target.value)}>
@@ -41,9 +42,13 @@ export function VerificationQueuePage() {
       </div>
 
       {queueQuery.isLoading ? (
-        <div className="flex justify-center py-10">
-          <LoadingSpinner size="lg" />
-        </div>
+        <LoadingState label={t('common:status.loading')} />
+      ) : queueQuery.isError ? (
+        <ErrorState
+          title={t('common:status.error')}
+          onRetry={() => void queueQuery.refetch()}
+          retryLabel={t('common:actions.retry')}
+        />
       ) : queueQuery.data?.length === 0 ? (
         <EmptyState className="mt-6" title={t('university:verificationQueue.empty')} />
       ) : (
@@ -68,6 +73,6 @@ export function VerificationQueuePage() {
           ))}
         </ul>
       )}
-    </div>
+    </PageContainer>
   )
 }

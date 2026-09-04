@@ -1,0 +1,4 @@
+import type { ReactNode } from 'react'
+import { Card } from './Card'
+export interface StatCardProps { label: string; value: ReactNode; icon?: ReactNode; trend?: ReactNode; className?: string }
+export function StatCard({ label,value,icon,trend,className }:StatCardProps){return <Card className={className}><div className="flex items-start justify-between gap-4"><div className="min-w-0"><p className="text-sm font-medium text-foreground-secondary">{label}</p><p className="mt-2 truncate text-2xl font-bold text-brand-navy dark:text-foreground">{value}</p>{trend && <div className="mt-2 text-xs text-muted">{trend}</div>}</div>{icon && <div className="flex size-10 shrink-0 items-center justify-center rounded-md bg-brand-blue-soft text-brand-primary dark:bg-info-bg dark:text-info">{icon}</div>}</div></Card>}

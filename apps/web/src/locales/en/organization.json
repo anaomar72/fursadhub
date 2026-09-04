@@ -1,19 +1,57 @@
 {
+  "typeValues": {
+    "COMPANY": "Company",
+    "NGO": "NGO",
+    "GOVERNMENT": "Government",
+    "OTHER": "Other"
+  },
   "nav": {
     "dashboard": "Dashboard",
-    "opportunities": "Opportunities",
+    "opportunities": "Internships",
     "profile": "Organization",
-    "staff": "Staff"
+    "staff": "Staff",
+    "interns": "Interns",
+    "partners": "University partners",
+    "organization": "Organization",
+    "myInterns": "My interns",
+    "supervision": "Supervision"
   },
   "dashboard": {
-    "title": "Your dashboard",
+    "title": "Organization overview",
     "publishedOpportunities": "Published opportunities",
     "draftOpportunities": "Drafts",
     "placements": "Placements",
     "live": "Live",
     "active": "Active",
     "needsPublishing": "Needs publishing",
-    "clear": "Nothing outstanding"
+    "clear": "Nothing outstanding",
+    "subtitle": "Here's what's happening with your internships.",
+    "activeInternships": "Active internships",
+    "applications": "Applications",
+    "shortlisted": "Shortlisted",
+    "currentInterns": "Current interns",
+    "currentInternsTitle": "Latest interns",
+    "needsSupervisor": "Placements without a supervisor",
+    "needsAction": "Needs action",
+    "recentApplications": "Recent applications",
+    "noApplications": "No applications yet.",
+    "activePosts": "Active internship posts",
+    "noActivePosts": "No internships are live right now.",
+    "applicationCount_one": "{{count}} application",
+    "applicationCount_other": "{{count}} applications",
+    "candidatePipeline": "Candidate pipeline",
+    "pipelineHint_one": "Across {{count}} internship currently recruiting.",
+    "pipelineHint_other": "Across {{count}} internships currently recruiting.",
+    "pipelineHintPartial": "Across the first {{scanned}} of {{total}} internships currently recruiting.",
+    "pipelineClosed_one": "{{count}} candidate has left the pipeline (rejected, withdrawn or offer not taken up).",
+    "pipelineClosed_other": "{{count}} candidates have left the pipeline (rejected, withdrawn or offer not taken up).",
+    "candidateCount_one": "{{count}} candidate",
+    "candidateCount_other": "{{count}} candidates",
+    "internshipOverview": "Internships by status",
+    "internshipOverviewHint": "Every internship you have posted, across its lifecycle.",
+    "noOpportunities": "No internships yet.",
+    "partialError": "Some candidate lists could not be read, so these totals may be incomplete.",
+    "viewAll": "View all"
   },
   "setup": {
     "title": "Set up your organization",
@@ -53,7 +91,8 @@
     },
     "verifiedLabel": "Verified organization",
     "logo": {
-      "hint": "JPEG or PNG, up to 3MB. Shown publicly on your opportunities and your profile."
+      "hint": "JPEG or PNG, up to 3MB. Shown publicly on your opportunities and your profile.",
+      "label": "Upload a logo"
     },
     "saveChanges": "Save changes",
     "submitForVerification": "Submit for verification",
@@ -74,7 +113,12 @@
       "FILE_TOO_LARGE": "That file is larger than the maximum allowed size.",
       "VALIDATION_FAILED": "Please check the form and try again.",
       "generic": "Something went wrong. Please try again."
-    }
+    },
+    "subtitle": "Your organization's public record and its verification status.",
+    "detailsTitle": "Organization details",
+    "detailsHint": "What students and universities see when they look you up.",
+    "verificationTitle": "Verification",
+    "verifiedOn": "Verified {{date}}"
   },
   "staff": {
     "title": "Staff",
@@ -113,6 +157,96 @@
       "ACCESS_DENIED": "Only an organization admin can manage staff.",
       "VALIDATION_FAILED": "Please check the form and try again.",
       "generic": "Something went wrong. Please try again."
-    }
+    },
+    "subtitle": "Create and manage internal organization staff accounts.",
+    "addStaff": "Add staff account",
+    "createTitle": "Create a staff account",
+    "createHint": "The account is created active and signs in through the normal FursadHub login. Staff never register themselves.",
+    "roleHint": "Recruiters run hiring; supervisors are assigned to individual interns.",
+    "allRoles": "All roles",
+    "assignedPlacements_one": "Supervising {{count}} intern",
+    "assignedPlacements_other": "Supervising {{count}} interns",
+    "emptyHint": "No staff accounts yet. Create one to delegate recruiting or supervision."
+  },
+  "partners": {
+    "title": "University partners",
+    "subtitle": "The universities whose students you have hosted.",
+    "empty": "No university partners yet",
+    "emptyHint": "A university appears here once one of its students takes up a placement with you.",
+    "unnamed": "Unnamed university",
+    "resultCount_one": "{{count}} university",
+    "resultCount_other": "{{count}} universities",
+    "studentCount_one": "{{count}} student hosted",
+    "studentCount_other": "{{count}} students hosted",
+    "placements": "Placements",
+    "live": "Live now",
+    "liveCount_one": "{{count}} live placement",
+    "liveCount_other": "{{count}} live placements"
+  },
+  "recruiterDashboard": {
+    "title": "Recruitment overview",
+    "subtitle": "Who is waiting on you, and who you are waiting on.",
+    "activeInternships": "Active internships",
+    "newApplications": "New applications",
+    "shortlisted": "Shortlisted",
+    "awaitingReview": "Awaiting your review",
+    "awaitingCandidate": "Awaiting candidate",
+    "waitingOnStudent": "With the student",
+    "needsAttention": "Needs your attention",
+    "needsAttentionHint": "Longest waiting first — the people who applied earliest.",
+    "nothingWaiting": "Nothing is waiting on you right now.",
+    "appliedOn": "applied {{date}}",
+    "liveOffers": "Live offers",
+    "liveOffersHint": "Soonest deadline first. The student decides from here.",
+    "noLiveOffers": "No offers are outstanding.",
+    "internshipLoad": "Your internships",
+    "awaitingCount_one": "{{count}} to review",
+    "awaitingCount_other": "{{count}} to review",
+    "respondBy": "By {{date}}"
+  },
+  "supervisorDashboard": {
+    "title": "Supervision overview",
+    "subtitle": "The interns you supervise, and what is waiting on you.",
+    "assignedInterns": "Assigned interns",
+    "runningNow": "Running now",
+    "attendanceToSettle": "Attendance to settle",
+    "evaluationsDue": "Evaluations to finish",
+    "currentInterns": "Currently supervising",
+    "noCurrentInterns": "No internship is running right now.",
+    "evaluationNotStarted": "Not started",
+    "evaluationProgress": "Evaluation progress",
+    "ratingsComplete": "{{done}} of {{total}} ratings",
+    "placementOverview": "Your placements by status",
+    "placementOverviewHint": "The placements you are assigned to, across their lifecycle.",
+    "noPlacements": "You have no assigned placements yet.",
+    "partialError": "Some records could not be read, so these totals may be incomplete."
+  },
+  "supervision": {
+    "eyebrow": "Supervision",
+    "title": "Your queue",
+    "subtitle": "Attendance and evaluations waiting on you, across the interns you supervise.",
+    "tabsLabel": "Supervision sections",
+    "tabs": {
+      "attendance": "Attendance",
+      "evaluation": "Evaluations"
+    },
+    "scanned_one": "Checked {{count}} running internship.",
+    "scanned_other": "Checked {{count}} running internships.",
+    "scannedPartial": "Checked the first {{scanned}} of {{total}} running internships.",
+    "partialError": "Some internships could not be read and are not shown here.",
+    "noRunningPlacements": "Nothing to do right now",
+    "noRunningPlacementsHint": "Only internships that are currently running can have records to settle.",
+    "attendanceUnconfirmed_one": "{{count}} day still to confirm",
+    "attendanceUnconfirmed_other": "{{count}} days still to confirm",
+    "attendanceDisputed_one": "{{count}} disputed day to resolve",
+    "attendanceDisputed_other": "{{count}} disputed days to resolve",
+    "oldestDate": "Oldest: {{date}}",
+    "attendanceClear": "Attendance is up to date",
+    "attendanceClearHint": "Every day you recorded has been confirmed or resolved.",
+    "evaluationNotStarted": "Evaluation not started",
+    "evaluationProgress": "{{done}} of {{total}} ratings filled in",
+    "submittedOn": "Submitted {{date}}",
+    "evaluationsClear": "Every evaluation is final",
+    "evaluationsClearHint": "Nothing left to write up for the interns you supervise."
   }
 }

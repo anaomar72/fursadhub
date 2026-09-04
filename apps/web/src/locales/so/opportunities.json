@@ -17,12 +17,27 @@
     "REMOTE": "Fog"
   },
   "list": {
-    "title": "Fursadaha",
-    "create": "Fursad cusub",
-    "empty": "Weli fursado ma jiraan."
+    "title": "Tababarrada",
+    "create": "Tababar cusub",
+    "empty": "Weli fursado ma jiraan.",
+    "subtitle": "Tababar kasta oo ururkaagu soo dhigay.",
+    "internship": "Tababarka",
+    "mode": "Habka helitaanka",
+    "workMode": "Habka shaqada",
+    "openings": "Booska",
+    "dates": "Taariikhaha",
+    "deadline": "Codso ka hor {{date}}",
+    "status": "Xaaladda",
+    "allStatuses": "Dhammaan xaaladaha",
+    "allModes": "Dhammaan habab helitaan",
+    "searchLabel": "Raadi tababarrada",
+    "searchPlaceholder": "Ku raadi cinwaan ama goob",
+    "resultCount_one": "{{count}} tababar",
+    "resultCount_other": "{{count}} tababar",
+    "emptyHint": "Soo dhig tababarkaagii ugu horreeyay si aad u bilowdo helitaanka musharraxiin."
   },
   "form": {
-    "createTitle": "Fursad cusub",
+    "createTitle": "Tababar cusub",
     "titleLabel": "Cinwaanka",
     "descriptionLabel": "Sharaxaad",
     "responsibilitiesLabel": "Mas'uuliyadaha",
@@ -50,7 +65,8 @@
       "OPPORTUNITY_NOT_EDITABLE": "Kaliya fursad qabyo ah ayaa la wax ka beddeli karaa.",
       "ACCESS_DENIED": "Ma lihid ogolaanshaha fursaddan.",
       "generic": "Wax baa qaldamay. Fadlan isku day mar kale."
-    }
+    },
+    "createHint": "Waxaa loo kaydinayaa qabyo — daabacaaddu waa tallaabo gooni ah marka uu diyaar noqdo."
   },
   "actions": {
     "publish": "Daabac",
@@ -88,17 +104,63 @@
       "OPPORTUNITY_NOT_EDITABLE": "Bartilmaameedyada waa la beddeli karaa kaliya inta fursaddu qabyo tahay.",
       "VALIDATION_FAILED": "Fadlan hubi foomka oo isku day mar kale.",
       "generic": "Wax baa qaldamay. Fadlan isku day mar kale."
-    }
+    },
+    "hint": "Jaamacadaha aad magacaabis ka codsatay, iyo intii aad mid walba ka codsatay.",
+    "departmentsHint": "Ka tag dhammaan iyagoo aan la calaamadin si aad u aqbasho waax kasta.",
+    "departmentCount_one": "{{count}} waax",
+    "departmentCount_other": "{{count}} waax",
+    "noDepartments": "Jaamacaddan weli waax ma laha."
   },
   "public": {
     "title": "Fursadaha tababarka",
+    "subtitle": "Hel fursadda ku habboon xirfadahaaga iyo yoolalkaaga shaqo.",
+    "searchLabel": "Raadi tababarro",
     "searchPlaceholder": "Ku raadi cinwaan ama eray",
+    "locationLabel": "Ku shaandhee goobta",
     "locationPlaceholder": "Goobta",
+    "workModeLabel": "Ku shaandhee habka shaqada",
     "allWorkModes": "Dhammaan habraacyada shaqada",
+    "loading": "Fursadaha tababarka waa la soo rarayaa…",
+    "error": "Fursadaha tababarka lama soo rari karin.",
+    "viewDetails": "Faahfaahinta eeg",
+    "applyBy": "Codso ka hor {{date}}",
+    "durationMonths_one": "{{count}} bil",
+    "durationMonths_other": "{{count}} bilood",
     "empty": "Ma jiraan fursado la mid ah raadintaada.",
     "apply": "Hadda codso",
     "signInToApply": "Gal si aad u codsato tababarkan",
     "notFound": "Fursaddan hadda lama heli karo.",
     "backToList": "Ku noqo dhammaan fursadaha"
+  },
+  "browse": {
+    "title": "Raadi tababarro",
+    "subtitle": "Dhammaan tababarrada la daabacay ee furan codsiyada tooska ah.",
+    "resultCount_other": "{{count}} tababar ayaa la helay",
+    "emptyHint": "Isku day eray raadin, goob ama hab shaqo kale.",
+    "deadline": "Codso ka hor {{date}}",
+    "startsOn": "Wuxuu bilaabmayaa {{date}}",
+    "openings_other": "{{count}} boos",
+    "applied": "Waa la codsaday",
+    "backToList": "Ku noqo tababarrada",
+    "viewApplication": "Fiiri codsigayga",
+    "goToEnrollment": "Aad diiwaangelinta",
+    "goToPlacement": "Fiiri tababarkayga",
+    "blockers": {
+      "STUDENT_NOT_VERIFIED": "Diiwaangelintaada jaamacadeed waa in la xaqiijiyaa ka hor inta aadan codsan.",
+      "STUDENT_NOT_AVAILABLE": "Waxaad hore u haysatay tababar firfircoon, sidaa darteed mid kale ma codsan kartid.",
+      "STUDENT_ALREADY_APPLIED": "Hore ayaad u codsatay tababarkan.",
+      "OPPORTUNITY_NOT_PUBLIC": "Tababarkani wuxuu qaataa oo keliya magacaabista jaamacadda.",
+      "OPPORTUNITY_DEADLINE_PASSED": "Wakhtigii codsiga tababarkan wuu dhacay."
+    },
+    "resultCount_one": "{{count}} tababar ayaa la helay",
+    "openings_one": "{{count}} boos"
+  },
+  "detail": {
+    "notFound": "Tababarka lama helin.",
+    "lifecycleTitle": "Xaaladda",
+    "lifecycleHint": "Isbeddel kastaa waa tallaabo gooni ah, si aan waxba si qalad ah u daabacmin ama u xidhmin.",
+    "editTitle": "Wax ka beddel tababarka",
+    "editHint": "Faahfaahinta waa la beddeli karaa inta uu tababarku qabyo yahay.",
+    "publishedAt": "La daabacay"
   }
 }

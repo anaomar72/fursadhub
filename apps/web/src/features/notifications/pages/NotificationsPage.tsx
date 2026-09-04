@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { useTranslation } from 'react-i18next'
-import { Button, LoadingSpinner, PageHeader, Pagination } from '../../../components/ui'
+import { Button, ErrorState, LoadingState, PageHeader, Pagination } from '../../../components/ui'
 import * as notificationsApi from '../api/notificationsApi'
 import { NotificationList } from '../components/NotificationList'
 
@@ -58,9 +58,13 @@ export function NotificationsPage() {
       </div>
 
       {listQuery.isLoading ? (
-        <div className="flex justify-center py-16">
-          <LoadingSpinner size="lg" />
-        </div>
+        <LoadingState label={t('common:status.loading')} />
+      ) : listQuery.isError ? (
+        <ErrorState
+          title={t('common:status.error')}
+          onRetry={() => void listQuery.refetch()}
+          retryLabel={t('common:actions.retry')}
+        />
       ) : (
         <>
           <div className="overflow-hidden rounded-lg border border-border bg-surface">

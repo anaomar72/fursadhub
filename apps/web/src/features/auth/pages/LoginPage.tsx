@@ -1,3 +1,4 @@
+import { useState } from 'react'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useMutation } from '@tanstack/react-query'
@@ -7,7 +8,7 @@ import { loginSchema, type LoginFormValues } from '../schemas/loginSchema'
 import * as authApi from '../api/authApi'
 import { authErrorMessage } from '../api/errorMessage'
 import { AuthCard } from '../components/AuthCard'
-import { Button, FormField, Input } from '../../../components/ui'
+import { Button, Checkbox, FormField, Input, PasswordInput } from '../../../components/ui'
 import { useAuth } from '../../../lib/auth/AuthContext'
 import { resolveConsolePath, roleLandingPath } from '../roleRedirect'
 import * as legalApi from '../../legal/api/legalApi'
@@ -17,6 +18,14 @@ interface LocationState {
   from?: { pathname: string }
 }
 
+/**
+ * "Remember me" has no backend counterpart — the refresh-token cookie already persists the
+ * session for its full lifetime regardless (CLAUDE.md section 17). Here it only controls whether
+ * this browser's last email is remembered locally to prefill the field next time; nothing
+ * security-relevant is stored.
+ */
+const REMEMBERED_EMAIL_KEY = 'fursadhub-remembered-email'
+
 export function LoginPage() {
   const { t } = useTranslation()
   const { signIn } = useAuth()
@@ -24,15 +33,23 @@ export function LoginPage() {
   const location = useLocation()
   const [searchParams] = useSearchParams()
   const role = searchParams.get('role')
+  const rememberedEmail = window.localStorage.getItem(REMEMBERED_EMAIL_KEY)
+  const [rememberMe, setRememberMe] = useState(!!rememberedEmail)
 
   const form = useForm<LoginFormValues>({
     resolver: zodResolver(loginSchema),
-    defaultValues: { email: '', password: '' },
+    defaultValues: { email: rememberedEmail ?? '', password: '' },
   })
 
   const loginMutation = useMutation({
     mutationFn: authApi.login,
-    onSuccess: async (data) => {
+    onSuccess: async (data, variables) => {
+      if (rememberMe) {
+        window.localStorage.setItem(REMEMBERED_EMAIL_KEY, variables.email)
+      } else {
+        window.localStorage.removeItem(REMEMBERED_EMAIL_KEY)
+      }
+
       signIn(data.accessToken)
       await submitPendingTermsAcceptance()
 
@@ -54,6 +71,7 @@ export function LoginPage() {
             id="email"
             type="email"
             autoComplete="email"
+            placeholder={t('auth:login.emailPlaceholder')}
             invalid={!!form.formState.errors.email}
             {...form.register('email')}
           />
@@ -64,17 +82,25 @@ export function LoginPage() {
           htmlFor="password"
           error={form.formState.errors.password && t(form.formState.errors.password.message ?? '')}
         >
-          <Input
+          <PasswordInput
             id="password"
-            type="password"
             autoComplete="current-password"
+            placeholder={t('auth:login.passwordPlaceholder')}
             invalid={!!form.formState.errors.password}
+            showLabel={t('common:password.show')}
+            hideLabel={t('common:password.hide')}
             {...form.register('password')}
           />
         </FormField>
 
-        <div className="text-right">
-          <Link to="/forgot-password" className="text-sm font-medium text-brand-primary hover:underline">
+        <div className="flex items-center justify-between gap-4">
+          <Checkbox
+            id="remember-me"
+            checked={rememberMe}
+            onChange={(event) => setRememberMe(event.target.checked)}
+            label={t('auth:login.rememberMe')}
+          />
+          <Link to="/forgot-password" className="shrink-0 text-sm font-medium text-link hover:underline">
             {t('auth:login.forgotPassword')}
           </Link>
         </div>
@@ -92,7 +118,7 @@ export function LoginPage() {
 
       <p className="mt-6 text-center text-sm text-foreground-secondary">
         {t('auth:login.noAccount')}{' '}
-        <Link to={role ? `/register?role=${role}` : '/register'} className="font-medium text-brand-primary hover:underline">
+        <Link to={role ? `/register?role=${role}` : '/register'} className="font-medium text-link hover:underline">
           {t('auth:login.createAccount')}
         </Link>
       </p>

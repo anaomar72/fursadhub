@@ -2,7 +2,7 @@ import { useState } from 'react'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { useTranslation } from 'react-i18next'
 import { useParams } from 'react-router-dom'
-import { Button, LoadingSpinner } from '../../../components/ui'
+import { Button, ErrorState, LoadingState } from '../../../components/ui'
 import { apiErrorMessage } from '../../../lib/api/errorMessage'
 import * as weeklyLogsApi from '../api/weeklyLogsApi'
 import { WeeklyLogCard } from '../components/WeeklyLogCard'
@@ -88,10 +88,16 @@ export function WeeklyLogsPage({ audience }: WeeklyLogsPageProps) {
   })
 
   if (logsQuery.isLoading) {
+    return <LoadingState label={t('common:status.loading')} />
+  }
+
+  if (logsQuery.isError) {
     return (
-      <div className="flex justify-center py-16">
-        <LoadingSpinner size="lg" />
-      </div>
+      <ErrorState
+        title={t('common:status.error')}
+        onRetry={() => void logsQuery.refetch()}
+        retryLabel={t('common:actions.retry')}
+      />
     )
   }
 

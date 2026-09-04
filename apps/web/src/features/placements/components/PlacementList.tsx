@@ -1,6 +1,7 @@
 import { useTranslation } from 'react-i18next'
 import { Link } from 'react-router-dom'
-import { StatusBadge } from '../../../components/ui'
+import { Card, EmptyState, StatusBadge } from '../../../components/ui'
+import { formatDate } from '../../../lib/utils/formatDate'
 import { PLACEMENT_STATUS_TONE } from './statusTone'
 import type { PlacementResponse } from '../types'
 
@@ -25,11 +26,11 @@ export function PlacementList({ placements, detailPath, audience, emptyMessage }
   const { t } = useTranslation()
 
   if (placements.length === 0) {
-    return <p className="mt-8 text-center text-sm text-foreground-secondary">{emptyMessage}</p>
+    return <EmptyState title={emptyMessage} />
   }
 
   return (
-    <ul className="mt-6 flex flex-col gap-3">
+    <ul className="flex flex-col gap-3">
       {placements.map((placement) => {
         const primary =
           audience === 'student'
@@ -42,17 +43,20 @@ export function PlacementList({ placements, detailPath, audience, emptyMessage }
             : (placement.opportunityTitle ?? t('placements:detail.untitledOpportunity'))
 
         return (
-          <li key={placement.id} className="rounded-lg border border-border bg-surface p-4">
+          <li key={placement.id}>
+            <Card interactive padding="lg" className="relative">
             <div className="flex flex-wrap items-start justify-between gap-3">
-              <div>
-                <Link to={detailPath(placement)} className="font-medium text-foreground hover:underline">
-                  {primary}
-                </Link>
-                {secondary && <p className="mt-1 text-xs text-foreground-secondary">{secondary}</p>}
-                <p className="mt-1 text-xs text-foreground-secondary">
+              <div className="min-w-0">
+                <h3 className="truncate font-semibold text-foreground">
+                  <Link to={detailPath(placement)} className="focus-visible:outline-none focus-visible:underline after:absolute after:inset-0">
+                    {primary}
+                  </Link>
+                </h3>
+                {secondary && <p className="mt-1 truncate text-sm text-foreground-secondary">{secondary}</p>}
+                <p className="mt-1 text-xs text-muted">
                   {t('placements:detail.dateRange', {
-                    start: placement.startDate,
-                    end: placement.endDate,
+                    start: formatDate(placement.startDate),
+                    end: formatDate(placement.endDate),
                   })}
                 </p>
               </div>
@@ -69,6 +73,7 @@ export function PlacementList({ placements, detailPath, audience, emptyMessage }
                   {t('placements:list.supervisorMissing')}
                 </p>
               )}
+            </Card>
           </li>
         )
       })}

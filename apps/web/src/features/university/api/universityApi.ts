@@ -1,5 +1,6 @@
 import { env } from '../../../app/config/env'
 import { ApiError, apiFetch } from '../../../lib/api/client'
+import { downloadPrivateDocument } from '../../../lib/api/privateDocument'
 import { getAccessToken } from '../../../lib/auth/tokenStore'
 import type {
   DepartmentResponse,
@@ -209,6 +210,35 @@ export function revokeCase(universityId: string, caseId: string, notes: string) 
     method: 'POST',
     body: { notes },
   })
+}
+
+/**
+ * Hands a case this university cannot resolve to the platform.
+ *
+ * <p>Does NOT change the case's status — the frozen state machine of CLAUDE.md section 30 is
+ * untouched. It changes who may act, so a coordinator facing a disputed identity has somewhere to
+ * send it, and the university keeps its own access throughout. This is what fills the platform's
+ * escalation queue; without it that queue can only ever be empty.
+ */
+export function escalateCase(universityId: string, caseId: string, notes: string) {
+  return apiFetch<MessageResponse>(`/universities/${universityId}/verification-cases/${caseId}/escalate`, {
+    method: 'POST',
+    body: { notes },
+  })
+}
+
+/**
+ * The student's private verification evidence, for a scoped university reviewer.
+ *
+ * <p>Three checks run inside {@code VerificationEvidenceService}: the case belongs to THIS
+ * university, the caller holds a reviewing role here, and a coordinator's assigned departments
+ * include this enrollment. Organization users have no route to this document at all
+ * (CLAUDE.md sections 31, 60).
+ */
+export function downloadCaseEvidence(universityId: string, caseId: string) {
+  return downloadPrivateDocument(
+    `/universities/${universityId}/verification-cases/${caseId}/evidence/document`,
+  )
 }
 
 export function consumeChallenge(universityId: string, caseId: string, code: string) {

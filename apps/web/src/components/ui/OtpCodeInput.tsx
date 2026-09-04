@@ -141,7 +141,7 @@ export function OtpCodeInput({
           className={cn(
             'size-14 rounded-md border bg-surface text-center text-2xl font-semibold text-foreground',
             'transition-colors duration-150 ease-in-out',
-            'focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-primary',
+            'focus:outline-none focus-visible:ring-2 focus-visible:ring-focus-ring',
             invalid ? 'border-danger' : 'border-border',
             disabled && 'opacity-60',
           )}
