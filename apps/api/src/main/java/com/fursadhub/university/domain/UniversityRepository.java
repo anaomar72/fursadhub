@@ -24,5 +24,14 @@ public interface UniversityRepository {
      */
     Page<University> search(InstitutionVerificationStatus status, String nameFragment, Pageable pageable);
 
+    /**
+     * The public university directory (Backend Phase B1).
+     *
+     * <p>Only {@code VERIFIED} universities are ever returned, enforced inside the query itself
+     * rather than by filtering a broader result. Unlike organizations there is no second admission
+     * rule: an unverified university must never appear in a public directory of institutions.
+     */
+    Page<University> searchPublicDirectory(String nameFragment, Pageable pageable);
+
     long countByStatus(InstitutionVerificationStatus status);
 }

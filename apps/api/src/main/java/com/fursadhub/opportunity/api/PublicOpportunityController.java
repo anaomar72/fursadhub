@@ -8,6 +8,7 @@ import com.fursadhub.opportunity.domain.PublicOpportunityFilter;
 import com.fursadhub.opportunity.domain.WorkMode;
 import com.fursadhub.organization.api.OrganizationSummaryResponse;
 import com.fursadhub.organization.application.OrganizationQueryService;
+import com.fursadhub.organization.domain.Organization;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -20,6 +21,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 
 /**
@@ -56,12 +58,23 @@ public class PublicOpportunityController {
         Pageable safePageable = capPageSize(pageable);
         PublicOpportunityFilter filter = new PublicOpportunityFilter(query, location, workMode, organization);
         Page<InternshipOpportunity> page = queryService.search(filter, safePageable);
-        return PageResponse.from(page, this::toResponse);
+
+        // ONE query for every organization on the page, instead of one per row (Backend Phase B1).
+        // Page.map preserves the page's own ordering, size and totals exactly — the response
+        // contract and the result order are unchanged.
+        Map<UUID, Organization> organizations = organizationQueryService.getAllByIds(
+                page.getContent().stream().map(InternshipOpportunity::getOrganizationId).distinct().toList());
+
+        return PageResponse.from(page, opportunity -> toResponse(
+                opportunity, organizationQueryService.requireFrom(organizations, opportunity.getOrganizationId())));
     }
 
     @GetMapping("/{opportunityId}")
     public PublicOpportunityResponse get(@PathVariable UUID opportunityId) {
-        return toResponse(queryService.getPublicOrThrow(opportunityId));
+        InternshipOpportunity opportunity = queryService.getPublicOrThrow(opportunityId);
+        // A single opportunity needs a single organization; the batch path would be one query either
+        // way, so this keeps reading as the simple lookup it is.
+        return toResponse(opportunity, organizationQueryService.getOrThrow(opportunity.getOrganizationId()));
     }
 
     /**
@@ -83,9 +96,7 @@ public class PublicOpportunityController {
         return PageRequest.of(pageable.getPageNumber(), size, sort);
     }
 
-    private PublicOpportunityResponse toResponse(InternshipOpportunity opportunity) {
-        OrganizationSummaryResponse organization =
-                OrganizationSummaryResponse.from(organizationQueryService.getOrThrow(opportunity.getOrganizationId()));
-        return PublicOpportunityResponse.from(opportunity, organization);
+    private PublicOpportunityResponse toResponse(InternshipOpportunity opportunity, Organization organization) {
+        return PublicOpportunityResponse.from(opportunity, OrganizationSummaryResponse.from(organization));
     }
 }

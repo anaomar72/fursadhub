@@ -53,6 +53,12 @@ export interface OrganizationSummaryResponse {
   slug: string
   type: OrganizationType
   verified: boolean
+  /**
+   * Backend Phase B1, additive. Whether a logo is on file — a flag, not a file id (CLAUDE.md
+   * section 47). Lets a card decide whether to render the public logo route or fall back to
+   * initials, instead of requesting an image that is known not to exist.
+   */
+  hasLogo: boolean
 }
 
 export interface MyOrganizationMembershipResponse {

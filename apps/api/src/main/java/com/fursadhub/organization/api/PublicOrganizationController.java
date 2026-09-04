@@ -1,9 +1,18 @@
 package com.fursadhub.organization.api;
 
+import com.fursadhub.common.api.PageResponse;
+import com.fursadhub.common.api.PublicPageRequests;
+import com.fursadhub.common.api.SortAllowlist;
 import com.fursadhub.organization.application.OrganizationLogoService;
 import com.fursadhub.organization.application.OrganizationQueryService;
+import com.fursadhub.organization.application.PublicOrganizationDirectoryService;
 import com.fursadhub.organization.domain.Organization;
+import com.fursadhub.organization.domain.OrganizationType;
+import com.fursadhub.organization.domain.PublicOrganizationFilter;
 import org.springframework.core.io.InputStreamResource;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.CacheControl;
 import org.springframework.http.ContentDisposition;
 import org.springframework.http.HttpHeaders;
@@ -12,6 +21,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.nio.charset.StandardCharsets;
@@ -33,12 +43,55 @@ import java.util.UUID;
 @RequestMapping("/api/v1/public/organizations")
 public class PublicOrganizationController {
 
+    /**
+     * Only these orderings are reachable. A raw {@code Pageable} would let an anonymous caller sort
+     * by {@code registrationNumber} or {@code verificationStatus} and infer private values from the
+     * resulting order without either field appearing in the body — see {@link SortAllowlist}.
+     *
+     * <p>Name-ascending is the default: a directory is browsed, and alphabetical is the ordering a
+     * visitor can predict. {@code recentlyVerified} sorts by the moment FursadHub attested to the
+     * organization, which is a public fact about a public verdict.
+     */
+    private static final SortAllowlist SORTS = SortAllowlist.forParameter("sort")
+            .allow("name", Sort.by(Sort.Direction.ASC, "name"))
+            .allow("nameDesc", Sort.by(Sort.Direction.DESC, "name"))
+            .allow("recentlyVerified", Sort.by(Sort.Direction.DESC, "verifiedAt").and(Sort.by(Sort.Direction.ASC, "name")))
+            .build();
+
     private final OrganizationQueryService queryService;
     private final OrganizationLogoService logoService;
+    private final PublicOrganizationDirectoryService directoryService;
 
-    public PublicOrganizationController(OrganizationQueryService queryService, OrganizationLogoService logoService) {
+    public PublicOrganizationController(
+            OrganizationQueryService queryService, OrganizationLogoService logoService,
+            PublicOrganizationDirectoryService directoryService) {
         this.queryService = queryService;
         this.logoService = logoService;
+        this.directoryService = directoryService;
+    }
+
+    /**
+     * The public organization directory (Backend Phase B1).
+     *
+     * <p>Lists ONLY {@code VERIFIED} organizations — enforced in the repository query, never by
+     * filtering a wider result here or in the browser. A verified organization with no current
+     * openings still appears: this directory is "organizations FursadHub has attested to", not
+     * "organizations hiring right now".
+     *
+     * <p>Sector, location and size filters are deliberately absent — those columns do not exist yet
+     * (Backend Phase B2), and a control with nothing behind it is worse than no control.
+     */
+    @GetMapping
+    public PageResponse<PublicOrganizationSummaryResponse> list(
+            @RequestParam(required = false) String query,
+            @RequestParam(required = false) OrganizationType type,
+            @RequestParam(required = false) String sort,
+            @RequestParam(required = false) Integer page,
+            @RequestParam(required = false) Integer size) {
+        Pageable pageable = PublicPageRequests.of(page, size, SORTS.resolve(sort));
+        Page<PublicOrganizationDirectoryService.DirectoryEntry> results =
+                directoryService.search(new PublicOrganizationFilter(query, type), pageable);
+        return PageResponse.from(results, PublicOrganizationSummaryResponse::from);
     }
 
     @GetMapping("/{organizationId}")

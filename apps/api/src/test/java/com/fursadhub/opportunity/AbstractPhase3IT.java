@@ -9,6 +9,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 import java.time.LocalDate;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -19,8 +21,12 @@ import java.util.UUID;
  * Shared HTTP/fixture helpers for Phase 3 (organizations/opportunities) integration tests.
  * Reuses {@link AbstractIdentityIT}'s Testcontainers PostgreSQL instance, mirroring the
  * Phase 2 {@code UniversityVerificationAuthorizationIT} pattern.
+ *
+ * <p>Public since Backend Phase B1: the public organization and university directory tests live in
+ * their own modules' packages but need exactly these organization/opportunity fixtures, and
+ * duplicating them would let the two copies drift.
  */
-abstract class AbstractPhase3IT extends AbstractIdentityIT {
+public abstract class AbstractPhase3IT extends AbstractIdentityIT {
 
     /**
      * Phase 8 removed the seeded pilot tenant — universities are fully self-registering now, so
@@ -100,6 +106,27 @@ abstract class AbstractPhase3IT extends AbstractIdentityIT {
                 "UPDATE organizations SET verification_status = 'VERIFIED', verified_at = now() WHERE id = ?", organizationId);
     }
 
+    /**
+     * Gives an organization a logo without going through the upload endpoint, so a test can assert
+     * on {@code hasLogo} without needing object storage. Only the metadata row matters here —
+     * {@code hasLogo} is derived from the pointer being non-null, never from the bytes.
+     */
+    protected void attachOrganizationLogo(UUID organizationId) {
+        UUID storedFileId = UUID.randomUUID();
+        UUID uploaderId = jdbcTemplate.queryForObject(
+                "SELECT user_id FROM organization_memberships WHERE organization_id = ? LIMIT 1",
+                UUID.class, organizationId);
+        jdbcTemplate.update("""
+                INSERT INTO stored_files
+                    (id, storage_key, original_filename, content_type, size_bytes, classification,
+                     retention_category, uploaded_by, created_at)
+                VALUES (?, ?, 'logo.png', 'image/png', 1024, 'ORGANIZATION_LOGO', 'ACCOUNT_ASSET', ?, now())
+                """, storedFileId, "test-logo-" + storedFileId, uploaderId);
+        jdbcTemplate.update(
+                "UPDATE organizations SET logo_stored_file_id = ?, logo_uploaded_at = now() WHERE id = ?",
+                storedFileId, organizationId);
+    }
+
     protected UUID insertOrganizationMembership(UUID organizationId, UUID userId, String role) {
         UUID membershipId = UUID.randomUUID();
         jdbcTemplate.update(
@@ -151,6 +178,42 @@ abstract class AbstractPhase3IT extends AbstractIdentityIT {
                 "INSERT INTO departments (id, university_id, name, code, created_at) VALUES (?, ?, ?, ?, now())",
                 departmentId, universityId, name, code);
         return departmentId;
+    }
+
+    // ---------------------------------------------------------------- paged public response helpers
+    //
+    // Added in Backend Phase B1 for the public directory tests. Every FursadHub list endpoint returns
+    // the same PageResponse envelope, so reading one is worth doing in exactly one place.
+
+    /** The {@code content} array of a {@code PageResponse} body. */
+    @SuppressWarnings("unchecked")
+    protected List<Map<String, Object>> rows(ResponseEntity<Map> response) {
+        if (response.getStatusCode() != HttpStatus.OK) {
+            throw new IllegalStateException("Expected 200 from a page endpoint but got " + response.getStatusCode()
+                    + ": " + response.getBody());
+        }
+        return (List<Map<String, Object>>) response.getBody().get("content");
+    }
+
+    protected List<String> ids(ResponseEntity<Map> response) {
+        return rows(response).stream().map(row -> (String) row.get("id")).toList();
+    }
+
+    protected List<String> names(ResponseEntity<Map> response) {
+        return rows(response).stream().map(row -> (String) row.get("name")).toList();
+    }
+
+    /**
+     * A name unique to one test run, so directory assertions can be exact even though every test in
+     * the suite shares one database and one directory.
+     */
+    protected String uniqueName(String prefix) {
+        return prefix + " " + UUID.randomUUID();
+    }
+
+    /** Query-string encoding, so a fixture name containing spaces survives the round trip. */
+    protected String encode(String value) {
+        return URLEncoder.encode(value, StandardCharsets.UTF_8);
     }
 
     protected Map<String, Object> targetBody(UUID universityId, List<UUID> departmentIds, int requestedNominees, LocalDate nominationDeadline) {

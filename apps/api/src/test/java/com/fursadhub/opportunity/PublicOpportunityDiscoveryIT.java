@@ -4,6 +4,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 
+import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
@@ -106,11 +107,16 @@ class PublicOpportunityDiscoveryIT extends AbstractPhase3IT {
 
         @SuppressWarnings("unchecked")
         Map<String, Object> organization = (Map<String, Object>) response.getBody().get("organization");
-        // "verified" is a Phase 8 addition — intentional, not a leak: the verified badge on an
-        // opportunity card is the whole point (CLAUDE.md section 26 "build trust"). Every other
-        // field on this list stays a deliberate allowlist this test protects.
-        assertThat(organization.keySet()).containsExactlyInAnyOrder("id", "name", "slug", "type", "verified");
+        // "verified" is a Phase 8 addition and "hasLogo" a Backend Phase B1 one — both intentional,
+        // neither a leak: the verified badge and the logo on an opportunity card are the whole point
+        // (CLAUDE.md section 26 "build trust"). Every other field on this list stays a deliberate
+        // allowlist this test protects.
+        assertThat(organization.keySet())
+                .containsExactlyInAnyOrder("id", "name", "slug", "type", "verified", "hasLogo");
         assertThat(response.getBody()).doesNotContainKey("createdBy");
+        // Never the registration number, the raw verification status, or any evidence/file pointer.
+        assertThat(organization).doesNotContainKeys(
+                "registrationNumber", "verificationStatus", "evidenceStoredFileId", "logoStoredFileId");
     }
 
     @Test
@@ -126,5 +132,84 @@ class PublicOpportunityDiscoveryIT extends AbstractPhase3IT {
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
         assertThat((Number) response.getBody().get("totalElements")).isEqualTo(1);
         assertThat(response.getBody()).containsKeys("content", "page", "size", "totalElements", "totalPages");
+    }
+
+    /**
+     * Backend Phase B1 replaced a per-row organization lookup with one batched query for the whole
+     * page. This pins the properties that change would be most likely to break: every row still
+     * carries its OWN organization (not a neighbour's), the embedded fields are still correct, and
+     * the page's ordering is untouched.
+     */
+    @Test
+    void batchedOrganizationResolutionKeepsEveryRowMatchedToItsOwnOrganization() {
+        String adminToken = registerAndLogin("batch-org-admin");
+        UUID firstOrganizationId = createVerifiedOrganization(adminToken, "Batch Alpha " + UUID.randomUUID());
+        UUID secondOrganizationId = createVerifiedOrganization(adminToken, "Batch Beta " + UUID.randomUUID());
+        // A logo on exactly one of them, so a mixed page proves hasLogo is per-row rather than
+        // copied from whichever organization happened to be resolved first.
+        attachOrganizationLogo(secondOrganizationId);
+
+        UUID firstOpportunityId = publishOpportunity(adminToken, firstOrganizationId, "PUBLIC");
+        UUID secondOpportunityId = publishOpportunity(adminToken, secondOrganizationId, "PUBLIC");
+
+        ResponseEntity<Map> response = unauthenticatedGet("/api/v1/public/opportunities?size=50");
+        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
+
+        @SuppressWarnings("unchecked")
+        List<Map<String, Object>> content = (List<Map<String, Object>>) response.getBody().get("content");
+
+        Map<String, Object> first = rowFor(content, firstOpportunityId);
+        Map<String, Object> second = rowFor(content, secondOpportunityId);
+
+        @SuppressWarnings("unchecked")
+        Map<String, Object> firstOrganization = (Map<String, Object>) first.get("organization");
+        @SuppressWarnings("unchecked")
+        Map<String, Object> secondOrganization = (Map<String, Object>) second.get("organization");
+
+        assertThat(firstOrganization.get("id")).isEqualTo(firstOrganizationId.toString());
+        assertThat(secondOrganization.get("id")).isEqualTo(secondOrganizationId.toString());
+        assertThat(firstOrganization.get("verified")).isEqualTo(true);
+        assertThat(secondOrganization.get("verified")).isEqualTo(true);
+        assertThat(firstOrganization.get("hasLogo")).isEqualTo(false);
+        assertThat(secondOrganization.get("hasLogo")).isEqualTo(true);
+    }
+
+    /**
+     * The default ordering is newest-published-first, and the batch change must not disturb it —
+     * {@code Page.map} preserves the page's own order, but that is exactly the kind of guarantee
+     * worth pinning rather than assuming.
+     */
+    @Test
+    void batchedResolutionPreservesPublishedAtDescendingOrder() {
+        String adminToken = registerAndLogin("batch-order-admin");
+        UUID organizationId = createVerifiedOrganization(adminToken, "Order Org " + UUID.randomUUID());
+
+        UUID older = publishOpportunity(adminToken, organizationId, "PUBLIC");
+        UUID newer = publishOpportunity(adminToken, organizationId, "PUBLIC");
+        // published_at is set by the application clock; force a deterministic gap rather than
+        // relying on two writes landing in different microseconds.
+        jdbcTemplate.update(
+                "UPDATE internship_opportunities SET published_at = now() - interval '1 day' WHERE id = ?", older);
+
+        ResponseEntity<Map> response =
+                unauthenticatedGet("/api/v1/public/opportunities?organization=" + organizationId + "&size=50");
+
+        @SuppressWarnings("unchecked")
+        List<Map<String, Object>> content = (List<Map<String, Object>>) response.getBody().get("content");
+        assertThat(content.stream().map(row -> row.get("id")).toList())
+                .containsExactly(newer.toString(), older.toString());
+    }
+
+    private UUID publishOpportunity(String accessToken, UUID organizationId, String mode) {
+        UUID opportunityId = createDraftOpportunity(accessToken, organizationId, mode, Map.of());
+        authorizedPost("/api/v1/opportunities/" + opportunityId + "/publish", accessToken, null);
+        return opportunityId;
+    }
+
+    private Map<String, Object> rowFor(List<Map<String, Object>> content, UUID opportunityId) {
+        return content.stream()
+                .filter(row -> opportunityId.toString().equals(row.get("id")))
+                .findFirst()
+                .orElseThrow(() -> new AssertionError("Opportunity " + opportunityId + " missing from the public page"));
     }
 }

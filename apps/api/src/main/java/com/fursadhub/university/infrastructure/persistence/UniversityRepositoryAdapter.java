@@ -48,6 +48,13 @@ class UniversityRepositoryAdapter implements UniversityRepository {
     }
 
     @Override
+    public Page<University> searchPublicDirectory(String nameFragment, Pageable pageable) {
+        // Empty string, never null — see the Javadoc on the query.
+        String fragment = (nameFragment == null || nameFragment.isBlank()) ? "" : nameFragment.trim();
+        return jpaRepository.searchPublicDirectory(fragment, pageable);
+    }
+
+    @Override
     public long countByStatus(InstitutionVerificationStatus status) {
         return jpaRepository.countByStatus(status);
     }

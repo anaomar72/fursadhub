@@ -1,9 +1,8 @@
 package com.fursadhub.opportunity.infrastructure.persistence;
 
 import com.fursadhub.opportunity.domain.InternshipOpportunity;
-import com.fursadhub.opportunity.domain.OpportunityMode;
-import com.fursadhub.opportunity.domain.OpportunityStatus;
 import com.fursadhub.opportunity.domain.PublicOpportunityFilter;
+import com.fursadhub.opportunity.domain.PublicOpportunityVisibility;
 import jakarta.persistence.criteria.Predicate;
 import org.springframework.data.jpa.domain.Specification;
 
@@ -21,10 +20,15 @@ final class InternshipOpportunitySpecifications {
     private InternshipOpportunitySpecifications() {
     }
 
+    /**
+     * The rule itself now lives in {@link PublicOpportunityVisibility} so the organization
+     * directory's {@code openOpportunityCount} counts exactly what this query returns. The
+     * predicate is unchanged — only its definition moved.
+     */
     static Specification<InternshipOpportunity> publiclyVisible() {
         return (root, query, cb) -> cb.and(
-                cb.equal(root.get("status"), OpportunityStatus.PUBLISHED),
-                root.get("mode").in(OpportunityMode.PUBLIC, OpportunityMode.HYBRID));
+                cb.equal(root.get("status"), PublicOpportunityVisibility.STATUS),
+                root.get("mode").in(PublicOpportunityVisibility.MODES));
     }
 
     static Specification<InternshipOpportunity> matching(PublicOpportunityFilter filter) {

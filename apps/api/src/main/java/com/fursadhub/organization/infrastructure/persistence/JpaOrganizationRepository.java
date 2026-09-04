@@ -1,6 +1,7 @@
 package com.fursadhub.organization.infrastructure.persistence;
 
 import com.fursadhub.organization.domain.Organization;
+import com.fursadhub.organization.domain.OrganizationType;
 import com.fursadhub.verification.domain.InstitutionVerificationStatus;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -33,6 +34,28 @@ interface JpaOrganizationRepository extends JpaRepository<Organization, UUID> {
             """)
     Page<Organization> search(
             @Param("status") InstitutionVerificationStatus status,
+            @Param("nameFragment") String nameFragment,
+            Pageable pageable);
+
+    /**
+     * The public directory query (Backend Phase B1).
+     *
+     * <p>{@code verificationStatus = VERIFIED} is a literal in the query, not a parameter: the
+     * caller cannot widen it, and no future refactor can accidentally pass a different status in.
+     * That is the whole security property of this endpoint, so it is not left to a call site.
+     *
+     * <p>{@code nameFragment} follows the same never-null contract as {@link #search} above — see
+     * its Javadoc for why a null parameter breaks {@code lower()} on PostgreSQL. {@code type} is an
+     * enum, not a string, so the {@code IS NULL OR} form is safe for it.
+     */
+    @Query("""
+            SELECT o FROM Organization o
+            WHERE o.verificationStatus = com.fursadhub.verification.domain.InstitutionVerificationStatus.VERIFIED
+              AND (:type IS NULL OR o.type = :type)
+              AND LOWER(o.name) LIKE LOWER(CONCAT('%', :nameFragment, '%'))
+            """)
+    Page<Organization> searchPublicDirectory(
+            @Param("type") OrganizationType type,
             @Param("nameFragment") String nameFragment,
             Pageable pageable);
 }
