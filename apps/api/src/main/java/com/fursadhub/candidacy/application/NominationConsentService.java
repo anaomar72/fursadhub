@@ -12,6 +12,7 @@ import com.fursadhub.identity.domain.User;
 import com.fursadhub.identity.domain.UserRepository;
 import com.fursadhub.opportunity.application.OpportunityQueryService;
 import com.fursadhub.opportunity.domain.InternshipOpportunity;
+import com.fursadhub.organization.application.OrganizationVerificationGuard;
 import com.fursadhub.organization.domain.OrganizationMembership;
 import com.fursadhub.organization.domain.OrganizationMembershipRepository;
 import com.fursadhub.student.domain.StudentEnrollment;
@@ -38,6 +39,7 @@ public class NominationConsentService {
     private final NominationRepository nominations;
     private final OpportunityQueryService opportunities;
     private final OpportunityApplicationRules applicationRules;
+    private final OrganizationVerificationGuard verificationGuard;
     private final StudentEligibility studentEligibility;
     private final CandidacyMerger candidacyMerger;
     private final OrganizationMembershipRepository organizationMemberships;
@@ -48,13 +50,15 @@ public class NominationConsentService {
 
     public NominationConsentService(
             NominationRepository nominations, OpportunityQueryService opportunities,
-            OpportunityApplicationRules applicationRules, StudentEligibility studentEligibility,
+            OpportunityApplicationRules applicationRules, OrganizationVerificationGuard verificationGuard,
+            StudentEligibility studentEligibility,
             CandidacyMerger candidacyMerger, OrganizationMembershipRepository organizationMemberships,
             UserRepository users, EmailOutboxService emailOutbox, RecruitmentEmailTemplates emailTemplates,
             AuditService audit) {
         this.nominations = nominations;
         this.opportunities = opportunities;
         this.applicationRules = applicationRules;
+        this.verificationGuard = verificationGuard;
         this.studentEligibility = studentEligibility;
         this.candidacyMerger = candidacyMerger;
         this.organizationMemberships = organizationMemberships;
@@ -76,6 +80,11 @@ public class NominationConsentService {
 
         InternshipOpportunity opportunity = opportunities.getOrThrow(nomination.getOpportunityId());
         applicationRules.requireOpenForNomination(opportunity);
+        // Backend Phase B1.5. This is the moment the candidacy is actually created and the
+        // organization first gains access to the student, so it needs the gate in its own right —
+        // the organization may have been suspended between nomination and consent. Gating only
+        // NominationService would leave that window open.
+        verificationGuard.requireVerifiedForCandidateIntake(opportunity.getOrganizationId());
 
         StudentEnrollment enrollment = studentEligibility.requireVerifiedEnrollment(studentUserId);
         studentEligibility.requireAvailable(studentUserId);

@@ -57,6 +57,7 @@
       "ACCOUNT_NOT_ACTIVE": "Your account must be active before you can apply.",
       "OPPORTUNITY_NOT_PUBLIC": "This opportunity only accepts university nominations.",
       "OPPORTUNITY_NOT_PUBLISHED": "This opportunity is not accepting applications right now.",
+      "ORGANIZATION_NOT_VERIFIED": "This organization is not currently accepting new candidates.",
       "OPPORTUNITY_DEADLINE_PASSED": "The application deadline for this opportunity has passed.",
       "CANDIDACY_ALREADY_CLOSED": "This application has already been closed.",
       "VALIDATION_FAILED": "Please check the form and try again.",
@@ -253,6 +254,7 @@
       "OPPORTUNITY_NOT_TARGETED_TO_UNIVERSITY": "This opportunity is not targeted to your university.",
       "OPPORTUNITY_DEADLINE_PASSED": "The nomination deadline has passed.",
       "OPPORTUNITY_NOT_PUBLISHED": "This opportunity is no longer accepting nominations.",
+      "ORGANIZATION_NOT_VERIFIED": "This organization is not currently accepting new candidates.",
       "ACCESS_DENIED": "You do not have access to nominate this student.",
       "generic": "Something went wrong. Please try again."
     }

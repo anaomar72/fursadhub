@@ -7,8 +7,7 @@ import com.fursadhub.opportunity.domain.InternshipOpportunityRepository;
 import com.fursadhub.opportunity.domain.OpportunityMode;
 import com.fursadhub.opportunity.domain.OpportunityTargetRepository;
 import com.fursadhub.organization.application.OrganizationAuthorization;
-import com.fursadhub.organization.application.OrganizationQueryService;
-import com.fursadhub.organization.domain.Organization;
+import com.fursadhub.organization.application.OrganizationVerificationGuard;
 import com.fursadhub.organization.domain.OrganizationRole;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
@@ -19,9 +18,12 @@ import java.util.function.Consumer;
 
 /**
  * Explicit opportunity lifecycle commands (CLAUDE.md section 7/33) — never arbitrary status
- * mutation. Publishing additionally requires the owning organization to be {@code VERIFIED}
- * (CLAUDE.md section 6) and, for {@code UNIVERSITY_TARGETED} opportunities, at least one target
- * university (otherwise there is nobody to nominate from).
+ * mutation. Publishing and resuming additionally require the owning organization to be currently
+ * {@code VERIFIED} (CLAUDE.md section 6), and publishing a {@code UNIVERSITY_TARGETED} opportunity
+ * requires at least one target university (otherwise there is nobody to nominate from).
+ *
+ * <p>Both availability-granting transitions go through {@link OrganizationVerificationGuard}; the
+ * withdrawing ones (pause, close, cancel) deliberately do not — see the note on {@link #pause}.
  */
 @Service
 public class OpportunityStateTransitionService {
@@ -29,18 +31,18 @@ public class OpportunityStateTransitionService {
     private final InternshipOpportunityRepository opportunities;
     private final OpportunityTargetRepository targets;
     private final OpportunityQueryService queryService;
-    private final OrganizationQueryService organizationQueryService;
+    private final OrganizationVerificationGuard verificationGuard;
     private final OrganizationAuthorization organizationAuthorization;
     private final AuditService audit;
 
     public OpportunityStateTransitionService(
             InternshipOpportunityRepository opportunities, OpportunityTargetRepository targets,
-            OpportunityQueryService queryService, OrganizationQueryService organizationQueryService,
+            OpportunityQueryService queryService, OrganizationVerificationGuard verificationGuard,
             OrganizationAuthorization organizationAuthorization, AuditService audit) {
         this.opportunities = opportunities;
         this.targets = targets;
         this.queryService = queryService;
-        this.organizationQueryService = organizationQueryService;
+        this.verificationGuard = verificationGuard;
         this.organizationAuthorization = organizationAuthorization;
         this.audit = audit;
     }
@@ -49,11 +51,10 @@ public class OpportunityStateTransitionService {
     public InternshipOpportunity publish(UUID actingUserId, UUID opportunityId, String ipAddress, String userAgent) {
         InternshipOpportunity opportunity = authorizeWrite(actingUserId, opportunityId);
 
-        Organization organization = organizationQueryService.getOrThrow(opportunity.getOrganizationId());
-        if (!organization.isVerified()) {
-            throw new ApiException("ORGANIZATION_NOT_VERIFIED", HttpStatus.CONFLICT,
-                    "Your organization must be verified before publishing opportunities.");
-        }
+        // Behaviour unchanged from Phase 3 — same code, same status, same message. Only the
+        // implementation moved, so publish and resume cannot answer this question differently.
+        verificationGuard.requireVerifiedForOwnAction(opportunity.getOrganizationId());
+
         if (opportunity.getMode() == OpportunityMode.UNIVERSITY_TARGETED && targets.findByOpportunityId(opportunityId).isEmpty()) {
             throw new ApiException("OPPORTUNITY_TARGET_REQUIRED", HttpStatus.CONFLICT,
                     "At least one target university is required before publishing a university-targeted opportunity.");
@@ -62,15 +63,32 @@ public class OpportunityStateTransitionService {
         return transition(opportunity, InternshipOpportunity::publish, "OPPORTUNITY_PUBLISHED", actingUserId, ipAddress, userAgent);
     }
 
+    /**
+     * Pausing is deliberately NOT gated. Withdrawing an opportunity from availability is always
+     * allowed — refusing it would trap a suspended organization's opportunity in a state it cannot
+     * leave, which is the opposite of what this invariant is for.
+     */
     @Transactional
     public InternshipOpportunity pause(UUID actingUserId, UUID opportunityId, String ipAddress, String userAgent) {
         return transition(authorizeWrite(actingUserId, opportunityId), InternshipOpportunity::pause,
                 "OPPORTUNITY_PAUSED", actingUserId, ipAddress, userAgent);
     }
 
+    /**
+     * Resuming makes an opportunity effectively available again, so it carries the same live
+     * verification prerequisite as publishing (Backend Phase B1.5).
+     *
+     * <p>Before B1.5 this was the sharpest edge of the gap: {@code requireMembership} checks only
+     * that the caller holds an active role, never the organization's verification status, so staff
+     * of a SUSPENDED organization could pause and resume an opportunity straight back into public
+     * discovery — re-publishing without ever calling publish.
+     */
     @Transactional
     public InternshipOpportunity resume(UUID actingUserId, UUID opportunityId, String ipAddress, String userAgent) {
-        return transition(authorizeWrite(actingUserId, opportunityId), InternshipOpportunity::resume,
+        InternshipOpportunity opportunity = authorizeWrite(actingUserId, opportunityId);
+        verificationGuard.requireVerifiedForOwnAction(opportunity.getOrganizationId());
+
+        return transition(opportunity, InternshipOpportunity::resume,
                 "OPPORTUNITY_RESUMED", actingUserId, ipAddress, userAgent);
     }
 

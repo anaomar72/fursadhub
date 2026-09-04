@@ -51,7 +51,8 @@ class InternshipOpportunityRepositoryAdapter implements InternshipOpportunityRep
 
     @Override
     public List<InternshipOpportunity> findPublishedTargetingUniversity(UUID universityId) {
-        return jpaRepository.findPublishedTargetingUniversity(universityId);
+        return jpaRepository.findPublishedTargetingUniversity(
+                universityId, PublicOpportunityVisibility.REQUIRED_ORGANIZATION_STATUS);
     }
 
     @Override
@@ -62,7 +63,10 @@ class InternshipOpportunityRepositoryAdapter implements InternshipOpportunityRep
         }
         return jpaRepository
                 .countPublicByOrganizationIds(
-                        organizationIds, PublicOpportunityVisibility.STATUS, PublicOpportunityVisibility.MODES)
+                        organizationIds,
+                        PublicOpportunityVisibility.STATUS,
+                        PublicOpportunityVisibility.MODES,
+                        PublicOpportunityVisibility.REQUIRED_ORGANIZATION_STATUS)
                 .stream()
                 .collect(Collectors.toMap(row -> (UUID) row[0], row -> (Long) row[1]));
     }
