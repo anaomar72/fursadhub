@@ -13,6 +13,7 @@ import { apiErrorMessage } from '../../../lib/api/errorMessage'
 import { ApiError } from '../../../lib/api/client'
 import { AnimatedCheck, Button, FormField, Input, LoadingSpinner, PageHeader, Select, StatusBadge } from '../../../components/ui'
 import type { StatusTone } from '../../../components/ui'
+import { formatTime } from '../../../lib/utils/formatDate'
 
 const STATUS_TONE: Record<string, StatusTone> = {
   DRAFT: 'neutral',
@@ -104,7 +105,7 @@ export function EnrollmentPage() {
           <button
             type="button"
             onClick={() => setEditing(true)}
-            className="mt-4 text-sm font-medium text-brand-primary hover:underline"
+            className="mt-4 text-sm font-medium text-link hover:underline"
           >
             {t('student:enrollment.editDetails')}
           </button>
@@ -171,7 +172,7 @@ export function EnrollmentPage() {
             <div className="mt-3 rounded-md bg-surface-muted p-4 text-center">
               <p className="text-2xl font-semibold tracking-widest text-foreground">{challengeMutation.data.code}</p>
               <p className="mt-1 text-xs text-foreground-secondary">
-                {t('student:enrollment.challengeExpires', { time: new Date(challengeMutation.data.expiresAt).toLocaleTimeString() })}
+                {t('student:enrollment.challengeExpires', { time: formatTime(challengeMutation.data.expiresAt) })}
               </p>
             </div>
           ) : (

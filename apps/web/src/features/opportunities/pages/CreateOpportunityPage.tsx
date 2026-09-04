@@ -7,9 +7,22 @@ import * as opportunityApi from '../api/opportunityApi'
 import { opportunityFormSchema, type OpportunityFormValues } from '../schemas/opportunityFormSchema'
 import { useOrganizationMembership } from '../../organization/components/OrganizationMembershipContext'
 import { apiErrorMessage } from '../../../lib/api/errorMessage'
-import { Button, PageHeader } from '../../../components/ui'
+import { Alert, Breadcrumbs, Button, ButtonLink, Card, PageHeader } from '../../../components/ui'
+import { PageContainer } from '../../../app/layouts/PageContainer'
 import { OpportunityFormFields } from '../components/OpportunityFormFields'
 
+/**
+ * Creating an internship.
+ *
+ * <p>Every field the backend contract carries is present — including the ones the prototype does
+ * not show — because {@code CreateOpportunityService} and {@code OpportunityFieldValidation} require
+ * them, and a form that omits a required field just produces a 400 the user cannot fix. The mode
+ * selector is first-class for the same reason: it decides whether the internship can be applied to
+ * directly, nominated into, or both, and it is not editable after publication.
+ *
+ * <p>The internship is created as a DRAFT (CLAUDE.md section 33) — publishing is a separate,
+ * explicit command on the detail page, so nothing goes live by filling in a form.
+ */
 export function CreateOpportunityPage() {
   const { t } = useTranslation()
   const navigate = useNavigate()
@@ -38,26 +51,38 @@ export function CreateOpportunityPage() {
   })
 
   return (
-    <div className="mx-auto max-w-2xl px-4 py-8 sm:px-6">
-      <PageHeader title={t('opportunities:form.createTitle')} />
+    <PageContainer className="flex flex-col gap-6">
+      <Breadcrumbs
+        items={[
+          { label: t('opportunities:list.title'), to: '/organization/opportunities' },
+          { label: t('opportunities:form.createTitle') },
+        ]}
+      />
 
-      <form
-        className="mt-6 flex flex-col gap-4 rounded-lg border border-border bg-surface p-4"
-        noValidate
-        onSubmit={form.handleSubmit((values) => createMutation.mutate(values))}
-      >
-        <OpportunityFormFields form={form} />
+      <PageHeader
+        eyebrow={t('organization:nav.opportunities')}
+        title={t('opportunities:form.createTitle')}
+        description={t('opportunities:form.createHint')}
+      />
 
-        {createMutation.isError && (
-          <p className="text-sm text-danger" role="alert">
-            {apiErrorMessage(t, 'opportunities', 'form', createMutation.error)}
-          </p>
-        )}
+      <form noValidate onSubmit={form.handleSubmit((values) => createMutation.mutate(values))}>
+        <Card padding="lg" className="flex flex-col gap-4">
+          <OpportunityFormFields form={form} />
 
-        <Button type="submit" loading={createMutation.isPending} className="w-full sm:w-auto">
-          {t('opportunities:form.createSubmit')}
-        </Button>
+          {createMutation.isError && (
+            <Alert tone="danger">{apiErrorMessage(t, 'opportunities', 'form', createMutation.error)}</Alert>
+          )}
+
+          <div className="flex flex-wrap gap-2 border-t border-border pt-4">
+            <Button type="submit" loading={createMutation.isPending}>
+              {t('opportunities:form.createSubmit')}
+            </Button>
+            <ButtonLink variant="ghost" to="/organization/opportunities">
+              {t('common:actions.cancel')}
+            </ButtonLink>
+          </div>
+        </Card>
       </form>
-    </div>
+    </PageContainer>
   )
 }

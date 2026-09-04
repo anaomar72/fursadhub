@@ -61,7 +61,7 @@ export function PublicUniversityProfilePage() {
           href={university.website}
           target="_blank"
           rel="noreferrer"
-          className="mt-4 inline-block text-sm font-medium text-brand-primary hover:underline"
+          className="mt-4 inline-block text-sm font-medium text-link hover:underline"
         >
           {university.website}
         </a>

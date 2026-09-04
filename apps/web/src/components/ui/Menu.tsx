@@ -18,7 +18,7 @@ export interface MenuProps {
 }
 
 /**
- * Small popover menu — the account control in `RoleShell` today, generic enough to reuse elsewhere
+ * Small popover menu — the account control in `Topbar` today, generic enough to reuse elsewhere
  * (BRAND_AND_UI_GUIDELINES.md section 4 lists Dropdown as a shared primitive). Deliberately minimal:
  * no submenus, no portal — a fixed-position panel under the trigger closes on outside click, on
  * Escape, or after an item is chosen.
@@ -57,7 +57,7 @@ export function Menu({ trigger, triggerLabel, items, align = 'end', className }:
         aria-expanded={open}
         aria-label={triggerLabel}
         onClick={() => setOpen((value) => !value)}
-        className="rounded-full transition-shadow duration-150 ease-in-out focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-primary"
+        className="rounded-full transition-shadow duration-150 ease-in-out focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus-ring"
       >
         {trigger}
       </button>

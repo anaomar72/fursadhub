@@ -1,15 +1,18 @@
 {
   "nav": {
-    "dashboard": "Guddoomiye",
+    "dashboard": "Guudmarka",
     "students": "Ardayda",
     "verificationQueue": "Safka xaqiijinta",
     "departments": "Qaybaha",
     "profile": "Jaamacadda",
     "staff": "Shaqaalaha",
-    "noMembership": "Kama qaybgalayso shaqaale ahaan jaamacad."
+    "noMembership": "Kama qaybgalayso shaqaale ahaan jaamacad.",
+    "partners": "Ururrada iskaashiga",
+    "myStudents": "Ardaydayda",
+    "supervision": "Kormeerka"
   },
   "dashboard": {
-    "title": "Guddoomahaaga",
+    "title": "Guudmarka jaamacadda",
     "verificationQueue": "Safka xaqiijinta",
     "opportunityRequests": "Codsiyada fursadaha",
     "nominations": "Magacaabista",
@@ -17,7 +20,23 @@
     "active": "Firfircoon",
     "awaitingStudent": "Sugaya jawaabta ardayga",
     "needsAction": "Waxay u baahan tahay dib u eegis",
-    "clear": "Waxba ma harin"
+    "clear": "Waxba ma harin",
+    "subtitle": "Kani waa guudmarka tababarrada iyo meelaynta.",
+    "totalStudents": "Wadarta ardayda",
+    "activePlacements": "Meelaynta firfircoon",
+    "placedStudents": "Ardayda la meelayay",
+    "partnerOrganizations": "Ururrada iskaashiga",
+    "placementOverview": "Meelaynta sida xaaladdoodu tahay",
+    "placementOverviewHint": "Dhammaan meelaynta jaamacaddaadu leedahay, marxaladahooda oo dhan.",
+    "noPlacements": "Weli ma jiraan meelayn.",
+    "verificationProgress": "Xaqiijinta diiwaangelinta",
+    "verificationProgressHint": "Intee ka mid ah ardaydaada ayaa haysta diiwaangelin la xaqiijiyay.",
+    "verifiedOf": "{{verified}} ka mid ah {{total}} ayaa la xaqiijiyay",
+    "verified": "La xaqiijiyay",
+    "departments": "Waaxyaha",
+    "recentNominations": "Magacaabisyada dhawaan",
+    "byDepartment": "Ardayda waax kasta",
+    "viewAll": "Fiiri dhammaan"
   },
   "setup": {
     "title": "Diiwaangeli jaamacaddaada",
@@ -88,7 +107,12 @@
       "ACCESS_DENIED": "Ma haysatid ogolaanshaha maamulka qaybtan.",
       "VALIDATION_FAILED": "Fadlan hubi foomka oo isku day mar kale.",
       "generic": "Wax baa qaldamay. Fadlan isku day mar kale."
-    }
+    },
+    "subtitle": "Waaxyaha ay tababarrada iyo doorarka shaqaaluhu ku dhisan yihiin.",
+    "emptyHint": "Ku dar waaxdaada ugu horreysa si aad u bilowdo qoondaynta.",
+    "addTitle": "Ku dar waax",
+    "students": "Ardayda",
+    "viewStudents": "Fiiri ardayda"
   },
   "students": {
     "title": "Ardayda",
@@ -106,7 +130,15 @@
       "VERIFIED": "Waa la xaqiijiyay",
       "REJECTED": "Waa la diiday",
       "REVOKED": "Waa la baabi'iyay"
-    }
+    },
+    "subtitle": "Ardayda diiwaangashan iyo xaaladda xaqiijinta diiwaangelintooda.",
+    "searchLabel": "Raadi ardayda",
+    "searchPlaceholder": "Ku raadi email, lambarka ardayga ama barnaamijka",
+    "departmentLabel": "Waaxda",
+    "department": "Waaxda",
+    "allStatuses": "Dhammaan xaaladaha",
+    "resultCount_one": "{{count}} arday",
+    "resultCount_other": "{{count}} arday"
   },
   "verificationQueue": {
     "title": "Safka xaqiijinta",
@@ -131,8 +163,30 @@
       "VERIFICATION_CASE_ALREADY_RESOLVED": "Xaaladdan horeba waa la xalliyay.",
       "VERIFICATION_CASE_INVALID_TRANSITION": "Ficilkan lama heli karo xaaladda hadda ee kiiskan.",
       "ACCESS_DENIED": "Ma lihid ogolaanshaha kiiskan.",
-      "generic": "Wax baa qaldamay. Fadlan isku day mar kale."
-    }
+      "generic": "Wax baa qaldamay. Fadlan isku day mar kale.",
+      "VERIFICATION_CASE_ALREADY_ESCALATED": "Kiiskan horey ayaa loo gudbiyay.",
+      "VERIFICATION_EVIDENCE_MISSING": "Kiiskan dukumenti caddayn ah looma hayo."
+    },
+    "case": "Kiiska xaqiijinta",
+    "eyebrow": "Xaqiijinta ardayga",
+    "notFound": "Kiiskan xaqiijinta lama helin.",
+    "claimTitle": "Waxa ardaygu sheegayo",
+    "submittedAt": "La gudbiyay",
+    "notesHint": "Ardayga wuu arki doonaa, sidaas darteed sheeg waxa uu samayn karo.",
+    "decisionTitle": "Go’aankaaga",
+    "evidenceTitle": "Caddaynta",
+    "evidenceBody": "Dukumentiga ardaygu soo geliyay si uu u taageero sheegashadan.",
+    "openEvidence": "Fur caddaynta",
+    "noEvidence": "Ardaygu dukumenti kama lifaaqin kiiskan.",
+    "escalateTitle": "Kiiskan u gudbi FursadHub",
+    "escalateBody": "Waa kiis jaamacaddaadu keligeed xallin karin — aqoonsi lagu muransan yahay, ama diiwaan aadan xaqiijin karin. Gelitaankaagu ma beddelmo, kiiskuna wuxuu sii hayaa xaaladdiisa hadda.",
+    "escalate": "U gudbi FursadHub",
+    "alreadyEscalated": "Horey ayaa loo gudbiyay",
+    "escalateConfirm": "Sarkaal xaqiijin oo FursadHub ah ayaa awoodi doona inuu eego oo xalliyo kiiskan. Adiguna gelitaankaaga waad sii haysataa.",
+    "escalationReasonLabel": "Maxaa halkan looga xallin karin kiiskan?",
+    "escalationReasonHint": "Eegaha nidaamku wuu akhrinayaa, sidaas darteed sii wixii uu ku qaadi karo.",
+    "escalatedTitle": "Waxaa loo gudbiyay FursadHub",
+    "escalatedOn": "Nidaamka waxaa loo gudbiyay {{date}}."
   },
   "staff": {
     "title": "Shaqaalaha",
@@ -174,6 +228,93 @@
       "DEPARTMENT_NOT_IN_UNIVERSITY": "Hal ama in ka badan oo qaybo ah kama tirsana jaamacaddan.",
       "VALIDATION_FAILED": "Fadlan hubi foomka oo isku day mar kale.",
       "generic": "Wax baa qaldamay. Fadlan isku day mar kale."
-    }
+    },
+    "subtitle": "Samee oo maamul akoonnada shaqaalaha gudaha jaamacadda.",
+    "createTitle": "Samee akoon shaqaale",
+    "createHint": "Akoonku wuxuu noqonayaa mid firfircoon, wuxuuna ku soo galayaa bogga caadiga ah ee FursadHub. Shaqaaluhu iskood isuma diiwaangeliyaan.",
+    "departmentsHint": "Ugu yaraan hal waax ayaa loo baahan yahay. Kani waa xadka uu server-ku dhaqan gelinayo.",
+    "scopeSummary": "Xadka: {{departments}}",
+    "emptyHint": "Weli ma jiraan akoonno shaqaale. Samee mid si aad u wareejiso isku-duwidda ama kormeerka.",
+    "noDepartmentsTitle": "Marka hore ku dar waax",
+    "noDepartmentsBody": "Dooraska shaqaale kastaa waa inuu ku xidhan yahay ugu yaraan hal waax, sidaa darteed marka hore samee waax.",
+    "addStaff": "Ku dar akoon shaqaale"
+  },
+  "partners": {
+    "title": "Ururrada iskaashiga",
+    "subtitle": "Ururrada hadda martida u ah ama hore u martigeliyay ardaydaada.",
+    "empty": "Weli ma jiraan ururro iskaashi.",
+    "emptyHint": "Ururku halkan ayuu ka muuqanayaa marka mid ka mid ah ardaydaada lagu meeleeyo.",
+    "unnamed": "Urur aan magac lahayn",
+    "placementCount_one": "{{count}} meelayn",
+    "placementCount_other": "{{count}} meelayn",
+    "liveCount_one": "{{count}} firfircoon",
+    "liveCount_other": "{{count}} firfircoon",
+    "noLive": "Ma jiraan meelayn firfircoon"
+  },
+  "supervisorDashboard": {
+    "title": "Guudmarka kormeerka",
+    "subtitle": "Tababarrada aad kormeerto, iyo waxa ku sugaya.",
+    "assignedStudents": "Ardayda lagu xilsaaray",
+    "activePlacements": "Meelaynta firfircoon",
+    "logsAwaitingReview": "Diiwaannada sugaya dib u eegis",
+    "reportsAwaitingReview": "Warbixinnada sugaya dib u eegis",
+    "currentStudents": "Hadda waad kormeerto",
+    "noCurrentStudents": "Ma jiro tababar hadda socda.",
+    "placementOverview": "Meelaynta sida xaaladdoodu tahay",
+    "placementOverviewHint": "Meelaynta lagu xilsaaray, marxaladahooda oo dhan.",
+    "noPlacements": "Weli meelayn lagugu ma xilsaarin."
+  },
+  "supervisedStudents": {
+    "eyebrow": "Kormeerka",
+    "title": "Ardaydayda",
+    "subtitle": "Ardayda ku jira tababarrada lagu xilsaaray.",
+    "student": "Ardayga",
+    "department": "Waaxda",
+    "organization": "Ururka martida loo yahay",
+    "internship": "Tababarka",
+    "status": "Xaaladda",
+    "allStatuses": "Dhammaan xaaladaha",
+    "open": "Fur meelaynta",
+    "searchLabel": "Raadi ardayda",
+    "searchPlaceholder": "Ku raadi magac, email ama waax",
+    "placementCount_one": "Wadar ahaan {{count}} meelayn",
+    "placementCount_other": "Wadar ahaan {{count}} meelayn",
+    "resultCount_one": "{{count}} arday",
+    "resultCount_other": "{{count}} arday",
+    "empty": "Weli arday lagugu ma xilsaarin.",
+    "emptyHint": "Ardaygu halkan wuxuu ka soo muuqdaa marka lagu magacaabo kormeeraha jaamacadda ee meelayntiisa."
+  },
+  "supervision": {
+    "eyebrow": "Kormeerka",
+    "title": "Safka dib u eegista",
+    "subtitle": "Waxa ku sugaya qof tababarrada kuu socda.",
+    "tabsLabel": "Qaybaha dib u eegista",
+    "tabs": {
+      "weekly-logs": "Diiwaannada toddobaadka",
+      "final-report": "Warbixinnada dhammaadka",
+      "attendance": "Xaadirinta"
+    },
+    "scanned_one": "Waa la eegay {{count}} tababar oo socda.",
+    "scanned_other": "Waa la eegay {{count}} tababar oo socda.",
+    "scannedPartial": "Waa la eegay {{scanned}}-kii ugu horreeyay ee {{total}} tababar oo socda. Fur Meelaynta si aad u aragto inta kale.",
+    "partialError": "Qaar ka mid ah tababarrada lama akhriyi karin, halkanna kama muuqdaan.",
+    "noRunningPlacements": "Wax dib u eegis ah hadda ma jiraan",
+    "noRunningPlacementsHint": "Kaliya tababarrada hadda socda ayaa lahaan kara diiwaanno dib loo eego.",
+    "logsPending_one": "{{count}} diiwaan toddobaadle ah oo sugaya dib u eegistaada",
+    "logsPending_other": "{{count}} diiwaan toddobaadle ah oo sugaya dib u eegistaada",
+    "oldestWeek": "Kii ugu horreeyay: toddobaadka {{week}}, la gudbiyay {{date}}",
+    "logsClear": "Ma jiraan diiwaanno toddobaadle ah oo sugaya",
+    "logsClearHint": "Diiwaan kasta oo la gudbiyay ee tababarradaada waa la eegay.",
+    "reportAwaiting": "Warbixinta dhammaadka waxay sugaysaa dib u eegistaada",
+    "reportState": "Warbixinta dhammaadka — {{state}}",
+    "submittedOn": "La gudbiyay {{date}}",
+    "reportsClear": "Warbixin dhammaad ah lama gudbin",
+    "reportsClearHint": "Warbixintu halkan way ka soo muuqataa marka ardaygu gudbiyo.",
+    "attendanceDisputed_one": "{{count}} diiwaan xaadiris ah oo lagu muransan yahay",
+    "attendanceDisputed_other": "{{count}} diiwaan xaadiris ah oo lagu muransan yahay",
+    "oldestDispute": "Kii ugu horreeyay: {{date}}",
+    "attendanceReadOnly": "Xaadiristu waxaa diiwaangeliya oo xalliya kormeeraha ururka martida loo yahay. Kani waa muuqaal akhris oo keliya.",
+    "attendanceClear": "Xaadiris lagu muransan yahay ma jirto",
+    "attendanceClearHint": "Maalmaha lagu muransan yahay halkan way ka muuqan lahaayeen ilaa ururku xalliyo."
   }
 }

@@ -6,10 +6,13 @@
     "departments": "Departments",
     "profile": "University",
     "staff": "Staff",
-    "noMembership": "You don't have an active staff role at a university."
+    "noMembership": "You don't have an active staff role at a university.",
+    "partners": "Partner organizations",
+    "myStudents": "My students",
+    "supervision": "Supervision"
   },
   "dashboard": {
-    "title": "Your dashboard",
+    "title": "University overview",
     "verificationQueue": "Verification queue",
     "opportunityRequests": "Opportunity requests",
     "nominations": "Nominations",
@@ -17,7 +20,23 @@
     "active": "Active",
     "awaitingStudent": "Awaiting student response",
     "needsAction": "Needs review",
-    "clear": "Nothing outstanding"
+    "clear": "Nothing outstanding",
+    "subtitle": "Here's your internship and placement overview.",
+    "totalStudents": "Total students",
+    "activePlacements": "Active placements",
+    "placedStudents": "Placed students",
+    "partnerOrganizations": "Partner organizations",
+    "placementOverview": "Placements by status",
+    "placementOverviewHint": "Every placement your university has, across its lifecycle.",
+    "noPlacements": "No placements yet.",
+    "verificationProgress": "Enrollment verification",
+    "verificationProgressHint": "How much of your cohort has a verified enrollment.",
+    "verifiedOf": "{{verified}} of {{total}} verified",
+    "verified": "Verified",
+    "departments": "Departments",
+    "recentNominations": "Recent nominations",
+    "byDepartment": "Students by department",
+    "viewAll": "View all"
   },
   "setup": {
     "title": "Register your university",
@@ -88,7 +107,12 @@
       "ACCESS_DENIED": "You do not have access to manage this department.",
       "VALIDATION_FAILED": "Please check the form and try again.",
       "generic": "Something went wrong. Please try again."
-    }
+    },
+    "subtitle": "The departments internships and staff scope are organized around.",
+    "emptyHint": "Add your first department to start assigning coordinators and students.",
+    "addTitle": "Add a department",
+    "students": "Students",
+    "viewStudents": "View students"
   },
   "students": {
     "title": "Students",
@@ -106,7 +130,15 @@
       "VERIFIED": "Verified",
       "REJECTED": "Rejected",
       "REVOKED": "Revoked"
-    }
+    },
+    "subtitle": "Enrolled students and the state of their enrollment verification.",
+    "searchLabel": "Search students",
+    "searchPlaceholder": "Search by email, student number or program",
+    "departmentLabel": "Department",
+    "department": "Department",
+    "allStatuses": "All statuses",
+    "resultCount_one": "{{count}} student",
+    "resultCount_other": "{{count}} students"
   },
   "verificationQueue": {
     "title": "Verification queue",
@@ -131,8 +163,30 @@
       "VERIFICATION_CASE_ALREADY_RESOLVED": "This case has already been resolved.",
       "VERIFICATION_CASE_INVALID_TRANSITION": "This action isn't available for the case's current state.",
       "ACCESS_DENIED": "You do not have access to this case.",
-      "generic": "Something went wrong. Please try again."
-    }
+      "generic": "Something went wrong. Please try again.",
+      "VERIFICATION_CASE_ALREADY_ESCALATED": "This case has already been escalated.",
+      "VERIFICATION_EVIDENCE_MISSING": "No evidence document is on file for this case."
+    },
+    "case": "Verification case",
+    "eyebrow": "Student verification",
+    "notFound": "This verification case could not be found.",
+    "claimTitle": "What the student claims",
+    "submittedAt": "Submitted",
+    "notesHint": "The student is shown this, so say what they need to do.",
+    "decisionTitle": "Your decision",
+    "evidenceTitle": "Evidence",
+    "evidenceBody": "The document the student uploaded to support this claim.",
+    "openEvidence": "Open evidence",
+    "noEvidence": "The student attached no document to this case.",
+    "escalateTitle": "Hand this case to FursadHub",
+    "escalateBody": "For a case your university cannot settle itself — a disputed identity, or a record you cannot confirm. Your own access does not change, and the case keeps its current status.",
+    "escalate": "Escalate to FursadHub",
+    "alreadyEscalated": "Already escalated",
+    "escalateConfirm": "A FursadHub verification officer will be able to review and resolve this case. You keep your own access to it.",
+    "escalationReasonLabel": "Why can this case not be settled here?",
+    "escalationReasonHint": "The platform reviewer reads this, so give them what they need to pick it up.",
+    "escalatedTitle": "Escalated to FursadHub",
+    "escalatedOn": "Handed to the platform on {{date}}."
   },
   "staff": {
     "title": "Staff",
@@ -174,6 +228,93 @@
       "DEPARTMENT_NOT_IN_UNIVERSITY": "One or more departments do not belong to this university.",
       "VALIDATION_FAILED": "Please check the form and try again.",
       "generic": "Something went wrong. Please try again."
-    }
+    },
+    "subtitle": "Create and manage internal university staff accounts.",
+    "createTitle": "Create a staff account",
+    "createHint": "The account is created active and signs in through the normal FursadHub login. Staff never register themselves.",
+    "departmentsHint": "At least one department is required. This is the scope the backend enforces for this account.",
+    "scopeSummary": "Scope: {{departments}}",
+    "emptyHint": "No staff accounts yet. Create one to delegate coordination or supervision.",
+    "noDepartmentsTitle": "Add a department first",
+    "noDepartmentsBody": "Every staff role must be scoped to at least one department, so create a department before adding staff.",
+    "addStaff": "Add staff account"
+  },
+  "partners": {
+    "title": "Partner organizations",
+    "subtitle": "Organizations currently hosting or previously hosting your students.",
+    "empty": "No partner organizations yet.",
+    "emptyHint": "An organization appears here once one of your students is placed with it.",
+    "unnamed": "Unnamed organization",
+    "placementCount_one": "{{count}} placement",
+    "placementCount_other": "{{count}} placements",
+    "liveCount_one": "{{count}} active",
+    "liveCount_other": "{{count}} active",
+    "noLive": "No active placements"
+  },
+  "supervisorDashboard": {
+    "title": "Supervision overview",
+    "subtitle": "The internships you supervise, and what is waiting on you.",
+    "assignedStudents": "Assigned students",
+    "activePlacements": "Active placements",
+    "logsAwaitingReview": "Logs awaiting review",
+    "reportsAwaitingReview": "Reports awaiting review",
+    "currentStudents": "Currently supervising",
+    "noCurrentStudents": "No internship is running right now.",
+    "placementOverview": "Placements by status",
+    "placementOverviewHint": "The placements assigned to you, across their lifecycle.",
+    "noPlacements": "You have no assigned placements yet."
+  },
+  "supervisedStudents": {
+    "eyebrow": "Supervision",
+    "title": "My students",
+    "subtitle": "The students on the internships assigned to you.",
+    "student": "Student",
+    "department": "Department",
+    "organization": "Host organization",
+    "internship": "Internship",
+    "status": "Status",
+    "allStatuses": "All statuses",
+    "open": "Open placement",
+    "searchLabel": "Search students",
+    "searchPlaceholder": "Search by name, email or department",
+    "placementCount_one": "{{count}} placement in total",
+    "placementCount_other": "{{count}} placements in total",
+    "resultCount_one": "{{count}} student",
+    "resultCount_other": "{{count}} students",
+    "empty": "No students assigned to you yet.",
+    "emptyHint": "A student appears here once you are assigned as their university supervisor on a placement."
+  },
+  "supervision": {
+    "eyebrow": "Supervision",
+    "title": "Review queue",
+    "subtitle": "Everything on your running internships that is waiting on someone.",
+    "tabsLabel": "Review sections",
+    "tabs": {
+      "weekly-logs": "Weekly logs",
+      "final-report": "Final reports",
+      "attendance": "Attendance"
+    },
+    "scanned_one": "Checked {{count}} running internship.",
+    "scanned_other": "Checked {{count}} running internships.",
+    "scannedPartial": "Checked the first {{scanned}} of {{total}} running internships. Open Placements to see the rest.",
+    "partialError": "Some internships could not be read and are not shown here.",
+    "noRunningPlacements": "Nothing to review right now",
+    "noRunningPlacementsHint": "Only internships that are currently running can have records to review.",
+    "logsPending_one": "{{count}} weekly log awaiting your review",
+    "logsPending_other": "{{count}} weekly logs awaiting your review",
+    "oldestWeek": "Oldest: week {{week}}, submitted {{date}}",
+    "logsClear": "No weekly logs are waiting",
+    "logsClearHint": "Every submitted log on your internships has been reviewed.",
+    "reportAwaiting": "Final report awaiting your review",
+    "reportState": "Final report — {{state}}",
+    "submittedOn": "Submitted {{date}}",
+    "reportsClear": "No final reports have been submitted",
+    "reportsClearHint": "A report appears here once the student submits it.",
+    "attendanceDisputed_one": "{{count}} disputed attendance record",
+    "attendanceDisputed_other": "{{count}} disputed attendance records",
+    "oldestDispute": "Oldest: {{date}}",
+    "attendanceReadOnly": "Attendance is recorded and settled by the host organization supervisor. This is a read-only view.",
+    "attendanceClear": "No attendance is disputed",
+    "attendanceClearHint": "Disputed days would appear here until the host organization settles them."
   }
 }

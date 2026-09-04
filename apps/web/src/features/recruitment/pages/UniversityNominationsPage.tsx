@@ -5,6 +5,7 @@ import { useUniversityMembership } from '../../university/components/UniversityM
 import { NOMINATION_STATUS_TONE } from '../components/statusTone'
 import { apiErrorMessage } from '../../../lib/api/errorMessage'
 import { Button, LoadingSpinner, PageHeader, StatusBadge } from '../../../components/ui'
+import { PageContainer } from '../../../app/layouts/PageContainer'
 
 /**
  * Nomination list and withdrawal for university staff (CLAUDE.md Phase 4 section 26).
@@ -42,7 +43,7 @@ export function UniversityNominationsPage() {
   const nominations = nominationsQuery.data ?? []
 
   return (
-    <div className="mx-auto max-w-3xl px-4 py-8 sm:px-6">
+    <PageContainer className="flex flex-col gap-6">
       <PageHeader title={t('recruitment:universityNominations.title')} />
 
       {nominations.length === 0 ? (
@@ -90,6 +91,6 @@ export function UniversityNominationsPage() {
           {apiErrorMessage(t, 'recruitment', 'universityNominations', withdrawMutation.error)}
         </p>
       )}
-    </div>
+    </PageContainer>
   )
 }

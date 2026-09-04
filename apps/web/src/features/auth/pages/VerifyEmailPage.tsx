@@ -122,7 +122,7 @@ export function VerifyEmailPage() {
         <p className="mt-4 text-center text-sm text-foreground-secondary">{t('auth:verifyEmail.successBody')}</p>
         <Link
           to={role ? `/login?role=${role}` : '/login'}
-          className="mt-6 block text-center text-sm font-medium text-brand-primary hover:underline"
+          className="mt-6 block text-center text-sm font-medium text-link hover:underline"
         >
           {t('auth:verifyEmail.continue')}
         </Link>
@@ -166,7 +166,7 @@ export function VerifyEmailPage() {
         ) : (
           <button
             type="button"
-            className="font-medium text-brand-primary hover:underline disabled:opacity-60"
+            className="font-medium text-link hover:underline disabled:opacity-60"
             onClick={handleResend}
             disabled={resendMutation.isPending}
           >

@@ -2,7 +2,7 @@ import { useRef, useState } from 'react'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { useTranslation } from 'react-i18next'
 import { useParams } from 'react-router-dom'
-import { AnimatedCheck, Button, LoadingSpinner, StatusBadge, Textarea } from '../../../components/ui'
+import { AnimatedCheck, Button, ErrorState, LoadingState, StatusBadge, Textarea } from '../../../components/ui'
 import type { StatusTone } from '../../../components/ui'
 import { apiErrorMessage } from '../../../lib/api/errorMessage'
 import * as finalReportsApi from '../api/finalReportsApi'
@@ -96,10 +96,16 @@ export function FinalReportPage({ audience }: FinalReportPageProps) {
   })
 
   if (reportQuery.isLoading) {
+    return <LoadingState label={t('common:status.loading')} />
+  }
+
+  if (reportQuery.isError) {
     return (
-      <div className="flex justify-center py-16">
-        <LoadingSpinner size="lg" />
-      </div>
+      <ErrorState
+        title={t('common:status.error')}
+        onRetry={() => void reportQuery.refetch()}
+        retryLabel={t('common:actions.retry')}
+      />
     )
   }
 

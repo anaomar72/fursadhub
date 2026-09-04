@@ -1,13 +1,7 @@
 import { createBrowserRouter, Navigate } from 'react-router-dom'
-import {
-  PublicLayout,
-  StudentLayout,
-  UniversityLayout,
-  OrganizationLayout,
-  AdminLayout,
-  AccountLayout,
-} from '../layouts'
+import { PublicLayout, AuthLayout, AccountLayout } from '../layouts'
 import { HomePage } from '../pages/HomePage'
+import { AboutPage } from '../pages/AboutPage'
 import { NotFoundPage } from '../pages/NotFoundPage'
 import { RequireAuth } from '../../lib/auth/RequireAuth'
 import { RegisterPage } from '../../features/auth/pages/RegisterPage'
@@ -27,6 +21,12 @@ import { StudentsPage } from '../../features/university/pages/StudentsPage'
 import { VerificationQueuePage } from '../../features/university/pages/VerificationQueuePage'
 import { VerificationCaseDetailPage } from '../../features/university/pages/VerificationCaseDetailPage'
 import { StaffPage } from '../../features/university/pages/StaffPage'
+// Phase 9: partner organizations, derived from the university's own placement list.
+import { PartnerOrganizationsPage } from '../../features/university/pages/PartnerOrganizationsPage'
+// Phase 10: the university staff/supervisor portal. Both routes read the SAME scoped placement
+// list the API already narrowed to the caller's role, so neither widens anyone's reach.
+import { SupervisedStudentsPage } from '../../features/university/pages/SupervisedStudentsPage'
+import { SupervisionQueuePage } from '../../features/university/pages/SupervisionQueuePage'
 import { OrganizationAreaLayout } from '../../features/organization/components/OrganizationAreaLayout'
 import { DashboardPage as OrganizationDashboardPage } from '../../features/organization/pages/DashboardPage'
 import { ProfilePage as OrganizationProfilePage } from '../../features/organization/pages/ProfilePage'
@@ -36,8 +36,13 @@ import { CreateOpportunityPage } from '../../features/opportunities/pages/Create
 import { OpportunityDetailPage } from '../../features/opportunities/pages/OpportunityDetailPage'
 import { PublicOpportunityListPage } from '../../features/opportunities/pages/PublicOpportunityListPage'
 import { PublicOpportunityDetailPage } from '../../features/opportunities/pages/PublicOpportunityDetailPage'
+// Phase 8 student portal: internship discovery inside the authenticated shell.
+import { BrowseOpportunitiesPage } from '../../features/opportunities/pages/BrowseOpportunitiesPage'
+import { StudentOpportunityDetailPage } from '../../features/opportunities/pages/StudentOpportunityDetailPage'
 import { PublicOrganizationProfilePage } from '../../features/organization/pages/PublicOrganizationProfilePage'
+import { PublicOrganizationListPage } from '../../features/organization/pages/PublicOrganizationListPage'
 import { PublicUniversityProfilePage } from '../../features/university/pages/PublicUniversityProfilePage'
+import { PublicUniversitiesPage } from '../../features/university/pages/PublicUniversitiesPage'
 import { ApplyPage } from '../../features/recruitment/pages/ApplyPage'
 import { MyApplicationsPage } from '../../features/recruitment/pages/MyApplicationsPage'
 import { CandidacyDetailPage } from '../../features/recruitment/pages/CandidacyDetailPage'
@@ -46,6 +51,13 @@ import { OpportunityRequestsPage } from '../../features/recruitment/pages/Opport
 import { NominateStudentsPage } from '../../features/recruitment/pages/NominateStudentsPage'
 import { UniversityNominationsPage } from '../../features/recruitment/pages/UniversityNominationsPage'
 import { CandidatePoolPage } from '../../features/recruitment/pages/CandidatePoolPage'
+// Phase 11: the organization-wide candidate pipeline, read one pool per recruiting internship
+// because the API addresses candidacies per opportunity.
+import { OrganizationCandidatesPage } from '../../features/recruitment/pages/OrganizationCandidatesPage'
+import { UniversityPartnersPage } from '../../features/organization/pages/UniversityPartnersPage'
+// Phase 13: the organization supervisor's cross-placement queue, over the two internship records
+// the role may act on. It reads only the placement list the API already scoped to their assignments.
+import { SupervisionQueuePage as OrganizationSupervisionQueuePage } from '../../features/organization/pages/SupervisionQueuePage'
 import { CandidateDetailPage } from '../../features/recruitment/pages/CandidateDetailPage'
 import { MyPlacementsPage } from '../../features/placements/pages/MyPlacementsPage'
 import { StudentPlacementDetailPage } from '../../features/placements/pages/StudentPlacementDetailPage'
@@ -73,6 +85,10 @@ import { AdminPrivacyRequestsPage } from '../../features/admin/pages/AdminPrivac
 import { AdminLegalDocumentsPage } from '../../features/admin/pages/AdminLegalDocumentsPage'
 import { AdminAuditPage } from '../../features/admin/pages/AdminAuditPage'
 import { AdminPlatformRolesPage } from '../../features/admin/pages/AdminPlatformRolesPage'
+// Phase 14: the Super Admin console's record pages, over admin endpoints that already existed.
+import { AdminUserDetailPage } from '../../features/admin/pages/AdminUserDetailPage'
+import { AdminOrganizationDetailPage } from '../../features/admin/pages/AdminOrganizationDetailPage'
+import { AdminUniversityDetailPage } from '../../features/admin/pages/AdminUniversityDetailPage'
 // Phase 7 account area and public legal documents.
 import { AccountProfilePage } from '../../features/account/pages/AccountProfilePage'
 import { NotificationsPage } from '../../features/notifications/pages/NotificationsPage'
@@ -91,15 +107,13 @@ export const router = createBrowserRouter([
     element: <PublicLayout />,
     children: [
       { index: true, element: <HomePage /> },
+      { path: 'about', element: <AboutPage /> },
       { path: 'opportunities', element: <PublicOpportunityListPage /> },
       { path: 'opportunities/:opportunityId', element: <PublicOpportunityDetailPage /> },
+      { path: 'organizations', element: <PublicOrganizationListPage /> },
       { path: 'organizations/:organizationId', element: <PublicOrganizationProfilePage /> },
+      { path: 'universities', element: <PublicUniversitiesPage /> },
       { path: 'universities/:universityId', element: <PublicUniversityProfilePage /> },
-      { path: 'register', element: <RegisterPage /> },
-      { path: 'login', element: <LoginPage /> },
-      { path: 'verify-email', element: <VerifyEmailPage /> },
-      { path: 'forgot-password', element: <ForgotPasswordPage /> },
-      { path: 'reset-password', element: <ResetPasswordPage /> },
       // Phase 7 legal documents. Public and unauthenticated on purpose: someone deciding whether to
       // register must be able to read the terms first (CLAUDE.md section 49).
       { path: 'legal/terms', element: <LegalDocumentPage documentType="TERMS" /> },
@@ -108,15 +122,25 @@ export const router = createBrowserRouter([
     ],
   },
   {
+    // Chrome-free auth shell (design references 06-09) — no public header/footer, see AuthLayout.
+    element: <AuthLayout />,
+    children: [
+      { path: 'register', element: <RegisterPage /> },
+      { path: 'login', element: <LoginPage /> },
+      { path: 'verify-email', element: <VerifyEmailPage /> },
+      { path: 'forgot-password', element: <ForgotPasswordPage /> },
+      { path: 'reset-password', element: <ResetPasswordPage /> },
+    ],
+  },
+  {
     path: '/student',
     element: (
       <RequireAuth>
-        <StudentLayout />
+        <StudentAreaLayout />
       </RequireAuth>
     ),
     children: [
       {
-        element: <StudentAreaLayout />,
         children: [
           { index: true, element: <Navigate to="dashboard" replace /> },
           { path: 'dashboard', element: <StudentDashboardPage /> },
@@ -124,6 +148,10 @@ export const router = createBrowserRouter([
           { path: 'profile', element: <StudentProfilePage /> },
           // Phase 4 recruitment. The apply route lives under /student because it requires an
           // authenticated student; the opportunity itself stays publicly browsable at /opportunities.
+          // Discovery inside the student shell. The public catalogue at /opportunities stays as the
+          // signed-out entry point; both read the same public endpoint.
+          { path: 'opportunities', element: <BrowseOpportunitiesPage /> },
+          { path: 'opportunities/:opportunityId', element: <StudentOpportunityDetailPage /> },
           { path: 'opportunities/:opportunityId/apply', element: <ApplyPage /> },
           { path: 'applications', element: <MyApplicationsPage /> },
           { path: 'applications/:candidacyId', element: <CandidacyDetailPage /> },
@@ -151,12 +179,11 @@ export const router = createBrowserRouter([
     path: '/university',
     element: (
       <RequireAuth>
-        <UniversityLayout />
+        <UniversityAreaLayout />
       </RequireAuth>
     ),
     children: [
       {
-        element: <UniversityAreaLayout />,
         children: [
           { index: true, element: <Navigate to="dashboard" replace /> },
           { path: 'dashboard', element: <UniversityDashboardPage /> },
@@ -166,6 +193,13 @@ export const router = createBrowserRouter([
           { path: 'verification-cases', element: <VerificationQueuePage /> },
           { path: 'verification-cases/:caseId', element: <VerificationCaseDetailPage /> },
           { path: 'staff', element: <StaffPage /> },
+          { path: 'partners', element: <PartnerOrganizationsPage /> },
+          // Phase 10. `my-students` is the supervisor's roster, collapsed from their assigned
+          // placements because GET /universities/{id}/students admits only admins and coordinators;
+          // `supervision` is the cross-placement review queue, open to all three roles in their own
+          // scope. Both are re-authorized per request by the API regardless of who reaches the URL.
+          { path: 'my-students', element: <SupervisedStudentsPage /> },
+          { path: 'supervision', element: <SupervisionQueuePage /> },
           // Phase 4 nomination workflow.
           { path: 'opportunity-requests', element: <OpportunityRequestsPage /> },
           { path: 'opportunity-requests/:targetId', element: <NominateStudentsPage /> },
@@ -182,6 +216,10 @@ export const router = createBrowserRouter([
               { path: 'attendance', element: <AttendancePage audience="observer" /> },
               { path: 'final-report', element: <FinalReportPage audience="reviewer" /> },
               { path: 'defense', element: <DefensePage audience="university" /> },
+              // Phase 10. Read-only: PlacementEvaluationService.get admits university staff in
+              // scope through requireWorkplaceReadAccess, but every write requires the ASSIGNED
+              // ORGANIZATION supervisor, so the university gets `reader` and no authoring controls.
+              { path: 'evaluation', element: <EvaluationPage audience="reader" /> },
             ],
           },
           // Phase 6 internship policy — the five completion requirements, per university/department.
@@ -194,12 +232,11 @@ export const router = createBrowserRouter([
     path: '/organization',
     element: (
       <RequireAuth>
-        <OrganizationLayout />
+        <OrganizationAreaLayout />
       </RequireAuth>
     ),
     children: [
       {
-        element: <OrganizationAreaLayout />,
         children: [
           { index: true, element: <Navigate to="dashboard" replace /> },
           { path: 'dashboard', element: <OrganizationDashboardPage /> },
@@ -209,6 +246,12 @@ export const router = createBrowserRouter([
           // Phase 4 candidate management — ONE unified pool per opportunity.
           { path: 'opportunities/:opportunityId/candidates', element: <CandidatePoolPage /> },
           { path: 'candidacies/:candidacyId', element: <CandidateDetailPage /> },
+          // Phase 11. Every candidate across the internships this organization is recruiting for.
+          { path: 'candidates', element: <OrganizationCandidatesPage /> },
+          // Phase 11. Partner universities, derived from the organization's own placement list.
+          { path: 'partners', element: <UniversityPartnersPage /> },
+          // Phase 13. Attendance and evaluations across this supervisor's assigned interns.
+          { path: 'supervision', element: <OrganizationSupervisionQueuePage /> },
           // Phase 5 placements. The hosting organization drives the lifecycle.
           { path: 'placements', element: <OrganizationPlacementsPage /> },
           {
@@ -232,12 +275,11 @@ export const router = createBrowserRouter([
     path: '/admin',
     element: (
       <RequireAuth>
-        <AdminLayout />
+        <AdminAreaLayout />
       </RequireAuth>
     ),
     children: [
       {
-        element: <AdminAreaLayout />,
         children: [
           // Dashboard is SUPER_ADMIN-only; a verification officer landing here sees the API's 403
           // rather than a fabricated client-side decision, so the redirect is to organizations —
@@ -245,9 +287,15 @@ export const router = createBrowserRouter([
           { index: true, element: <Navigate to="organizations" replace /> },
           { path: 'dashboard', element: <AdminDashboardPage /> },
           { path: 'organizations', element: <AdminOrganizationsPage /> },
+          // Phase 14. Institution review happens on the record, not in a list row — GET
+          // /admin/{organizations,universities}/{id} already existed and was never called.
+          { path: 'organizations/:organizationId', element: <AdminOrganizationDetailPage /> },
           { path: 'universities', element: <AdminUniversitiesPage /> },
+          { path: 'universities/:universityId', element: <AdminUniversityDetailPage /> },
           { path: 'verification-escalations', element: <AdminEscalationsPage /> },
           { path: 'users', element: <AdminUsersPage /> },
+          // Phase 14. GET /admin/users/{id}, likewise already on AdminController.
+          { path: 'users/:userId', element: <AdminUserDetailPage /> },
           { path: 'privacy-requests', element: <AdminPrivacyRequestsPage /> },
           { path: 'legal-documents', element: <AdminLegalDocumentsPage /> },
           { path: 'audit', element: <AdminAuditPage /> },

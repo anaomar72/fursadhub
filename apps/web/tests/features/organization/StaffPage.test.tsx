@@ -27,6 +27,11 @@ function stubFetch(members: OrganizationMemberResponse[] = [member()], onCommand
     if (url.includes('/members')) {
       return jsonResponse(members)
     }
+    // Supervisor rows report how many placements they currently hold, read from the same list the
+    // admin already sees. It is a list endpoint, so it must answer with an array.
+    if (url.includes('/placements')) {
+      return jsonResponse([])
+    }
     return jsonResponse({})
   })
   vi.stubGlobal('fetch', fetchMock)
@@ -51,11 +56,20 @@ describe('StaffPage (organization)', () => {
     await i18n.changeLanguage('en')
   })
 
+  /** The create form is collapsed by default; opening it is how an admin starts provisioning. */
+  async function openCreateForm() {
+    await userEvent.click(await screen.findByRole('button', { name: 'Add staff account' }))
+  }
+
   it('offers only the assignable roles, never Organization Admin', async () => {
     stubFetch()
     renderPage()
 
-    const select = (await screen.findByLabelText('Role')) as HTMLSelectElement
+    await openCreateForm()
+
+    // OrganizationMembershipService.ASSIGNABLE_ROLES refuses ORGANIZATION_ADMIN, closing the path
+    // an admin could otherwise use to mint another admin (CLAUDE.md section 23).
+    const select = document.getElementById('org-staff-role') as HTMLSelectElement
     const optionValues = Array.from(select.options).map((option) => option.value)
     expect(optionValues).toEqual(['RECRUITER', 'ORGANIZATION_SUPERVISOR'])
   })
@@ -64,7 +78,8 @@ describe('StaffPage (organization)', () => {
     stubFetch()
     renderPage()
 
-    await userEvent.type(await screen.findByLabelText('Email address'), 'new-recruiter@example.test')
+    await openCreateForm()
+    await userEvent.type(screen.getByLabelText('Email address'), 'new-recruiter@example.test')
     await userEvent.type(screen.getByLabelText('Temporary password'), 'Password123')
     await userEvent.type(screen.getByLabelText('Confirm password'), 'Password124')
     await userEvent.click(screen.getByRole('button', { name: 'Create staff account' }))
@@ -76,7 +91,8 @@ describe('StaffPage (organization)', () => {
     const fetchMock = stubFetch()
     renderPage()
 
-    await userEvent.type(await screen.findByLabelText('Email address'), 'new-recruiter@example.test')
+    await openCreateForm()
+    await userEvent.type(screen.getByLabelText('Email address'), 'new-recruiter@example.test')
     await userEvent.type(screen.getByLabelText('Temporary password'), 'Password123')
     await userEvent.type(screen.getByLabelText('Confirm password'), 'Password123')
     await userEvent.click(screen.getByRole('button', { name: 'Create staff account' }))
@@ -93,6 +109,13 @@ describe('StaffPage (organization)', () => {
         role: 'RECRUITER',
       })
     })
+    // On success the form is reset AND collapsed, so the typed password is gone from browser form
+    // state entirely — nothing is echoed back, because the admin already knows what they typed
+    // (CLAUDE.md section 26A).
+    await waitFor(() => {
+      expect(screen.queryByLabelText('Temporary password')).not.toBeInTheDocument()
+    })
+    await userEvent.click(screen.getByRole('button', { name: 'Add staff account' }))
     expect((screen.getByLabelText('Temporary password') as HTMLInputElement).value).toBe('')
   })
 
@@ -107,7 +130,8 @@ describe('StaffPage (organization)', () => {
     )
     renderPage()
 
-    await userEvent.type(await screen.findByLabelText('Email address'), 'dup@example.test')
+    await openCreateForm()
+    await userEvent.type(screen.getByLabelText('Email address'), 'dup@example.test')
     await userEvent.type(screen.getByLabelText('Temporary password'), 'Password123')
     await userEvent.type(screen.getByLabelText('Confirm password'), 'Password123')
     await userEvent.click(screen.getByRole('button', { name: 'Create staff account' }))

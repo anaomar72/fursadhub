@@ -28,7 +28,7 @@ export function PublicOpportunityDetailPage() {
     return (
       <div className="mx-auto max-w-2xl px-4 py-16 text-center sm:px-6">
         <p className="text-sm text-foreground-secondary">{t('opportunities:public.notFound')}</p>
-        <Link to="/opportunities" className="mt-4 inline-block text-sm font-medium text-brand-primary hover:underline">
+        <Link to="/opportunities" className="mt-4 inline-block text-sm font-medium text-link hover:underline">
           {t('opportunities:public.backToList')}
         </Link>
       </div>
@@ -93,7 +93,7 @@ function ApplyCallToAction({ opportunityId }: { opportunityId: string }) {
         </Link>
       ) : (
         <p className="text-sm text-foreground-secondary">
-          <Link to="/login" className="font-medium text-brand-primary hover:underline">
+          <Link to="/login" className="font-medium text-link hover:underline">
             {t('opportunities:public.signInToApply')}
           </Link>
         </p>

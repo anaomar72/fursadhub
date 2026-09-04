@@ -11,8 +11,8 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(({ className, inva
       ref={ref}
       className={cn(
         'h-10 w-full rounded-md border bg-surface px-3 text-sm text-foreground placeholder:text-muted',
-        'transition-colors duration-150 ease-in-out',
-        'focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-primary',
+        'transition-[border-color,box-shadow] duration-150 ease-in-out disabled:cursor-not-allowed disabled:bg-control-disabled disabled:opacity-70 motion-reduce:transition-none',
+        'focus:outline-none focus-visible:ring-2 focus-visible:ring-focus-ring focus-visible:ring-offset-1',
         invalid ? 'border-danger' : 'border-border',
         className,
       )}

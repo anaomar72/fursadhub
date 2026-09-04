@@ -3,32 +3,53 @@ import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { useTranslation } from 'react-i18next'
-import { Link, useParams } from 'react-router-dom'
+import { useParams } from 'react-router-dom'
 import * as opportunityApi from '../api/opportunityApi'
 import { ScreeningQuestionEditor } from '../../recruitment/components/ScreeningQuestionEditor'
+import { OpportunityFormFields } from '../components/OpportunityFormFields'
 import * as universityApi from '../../university/api/universityApi'
 import { opportunityFormSchema, type OpportunityFormValues } from '../schemas/opportunityFormSchema'
 import { targetFormSchema, type TargetFormValues } from '../schemas/targetFormSchema'
 import { useOrganizationMembership } from '../../organization/components/OrganizationMembershipContext'
+import { organizationCapabilities } from '../../organization/organizationCapabilities'
+import { OPPORTUNITY_STATUS_TONE, OPPORTUNITY_TARGET_STATUS_TONE } from '../components/statusTone'
 import { apiErrorMessage } from '../../../lib/api/errorMessage'
-import { Button, FormField, Input, LoadingSpinner, PageHeader, Select, StatusBadge } from '../../../components/ui'
-import type { StatusTone } from '../../../components/ui'
-import { OpportunityFormFields } from '../components/OpportunityFormFields'
-import type { OpportunityStatus } from '../types'
+import {
+  Alert,
+  Badge,
+  Breadcrumbs,
+  Button,
+  ButtonLink,
+  Card,
+  Checkbox,
+  EmptyState,
+  FormField,
+  Input,
+  LoadingState,
+  PageHeader,
+  Select,
+  StatusBadge,
+} from '../../../components/ui'
+import { PageContainer } from '../../../app/layouts/PageContainer'
+import { formatDate } from '../../../lib/utils/formatDate'
+import type { OpportunityResponse } from '../types'
 
-const STATUS_TONE: Record<OpportunityStatus, StatusTone> = {
-  DRAFT: 'neutral',
-  PUBLISHED: 'success',
-  PAUSED: 'warning',
-  CLOSED: 'neutral',
-  CANCELLED: 'danger',
-}
-
+/**
+ * One internship: its record, its lifecycle commands, and — while it is still a draft — its
+ * editable form, screening questions and university targets.
+ *
+ * <p>The draft/live split is the backend's, not a design choice: {@code UpdateOpportunityService}
+ * and {@code OpportunityTargetService} only accept changes while the opportunity is DRAFT, so once
+ * it is published this page shows the record rather than an edit form that would be refused.
+ *
+ * <p>Every lifecycle change is its own named command — publish, pause, resume, close, cancel — with
+ * no status dropdown anywhere, mirroring the API exactly (CLAUDE.md sections 10/33).
+ */
 export function OpportunityDetailPage() {
   const { t } = useTranslation()
   const { opportunityId } = useParams<{ opportunityId: string }>()
-  const { role } = useOrganizationMembership()
-  const canManage = role === 'ORGANIZATION_ADMIN' || role === 'RECRUITER'
+  const membership = useOrganizationMembership()
+  const can = organizationCapabilities(membership)
   const queryClient = useQueryClient()
 
   const opportunityQuery = useQuery({
@@ -37,7 +58,10 @@ export function OpportunityDetailPage() {
     enabled: !!opportunityId,
   })
 
-  const invalidate = () => queryClient.invalidateQueries({ queryKey: ['opportunities', 'detail', opportunityId] })
+  const invalidate = () => {
+    void queryClient.invalidateQueries({ queryKey: ['opportunities', 'detail', opportunityId] })
+    void queryClient.invalidateQueries({ queryKey: ['opportunities', 'organization'] })
+  }
 
   const form = useForm<OpportunityFormValues>({ resolver: zodResolver(opportunityFormSchema) })
 
@@ -76,78 +100,65 @@ export function OpportunityDetailPage() {
 
   if (opportunityQuery.isLoading) {
     return (
-      <div className="flex justify-center py-16">
-        <LoadingSpinner size="lg" />
-      </div>
+      <PageContainer>
+        <LoadingState label={t('common:status.loading')} />
+      </PageContainer>
     )
   }
 
   const opportunity = opportunityQuery.data
   if (!opportunity) {
-    return null
+    return (
+      <PageContainer>
+        <EmptyState title={t('opportunities:detail.notFound')} />
+      </PageContainer>
+    )
   }
 
   const isDraft = opportunity.status === 'DRAFT'
   const supportsTargeting = opportunity.mode === 'UNIVERSITY_TARGETED' || opportunity.mode === 'HYBRID'
+  const isLive = opportunity.status === 'PUBLISHED' || opportunity.status === 'PAUSED'
 
   return (
-    <div className="mx-auto max-w-2xl px-4 py-8 sm:px-6">
-      <div className="flex flex-wrap items-center justify-between gap-3">
-        <PageHeader title={opportunity.title} />
-        <StatusBadge tone={STATUS_TONE[opportunity.status]}>{t(`opportunities:statusValues.${opportunity.status}`)}</StatusBadge>
-      </div>
+    <PageContainer className="flex flex-col gap-6">
+      <Breadcrumbs
+        items={[
+          { label: t('opportunities:list.title'), to: '/organization/opportunities' },
+          { label: opportunity.title },
+        ]}
+      />
 
-      {canManage && isDraft && (
-        <form
-          className="mt-6 flex flex-col gap-4 rounded-lg border border-border bg-surface p-4"
-          noValidate
-          onSubmit={form.handleSubmit((values) => updateMutation.mutate(values))}
-        >
-          <OpportunityFormFields form={form} />
+      <PageHeader
+        eyebrow={t(`opportunities:modeValues.${opportunity.mode}`)}
+        title={opportunity.title}
+        description={t('placements:detail.dateRange', {
+          start: formatDate(opportunity.startDate),
+          end: formatDate(opportunity.endDate),
+        })}
+        actions={
+          <div className="flex items-center gap-2">
+            <StatusBadge tone={OPPORTUNITY_STATUS_TONE[opportunity.status]}>
+              {t(`opportunities:statusValues.${opportunity.status}`)}
+            </StatusBadge>
+            {can.canManageCandidates && isLive && (
+              <ButtonLink variant="outline" size="sm" to={`/organization/opportunities/${opportunity.id}/candidates`}>
+                {t('recruitment:nav.candidates')}
+              </ButtonLink>
+            )}
+          </div>
+        }
+      />
 
-          {updateMutation.isError && (
-            <p className="text-sm text-danger" role="alert">
-              {apiErrorMessage(t, 'opportunities', 'form', updateMutation.error)}
-            </p>
-          )}
+      <OpportunityFacts opportunity={opportunity} />
 
-          <Button type="submit" loading={updateMutation.isPending} className="w-full sm:w-auto">
-            {t('opportunities:form.saveChanges')}
-          </Button>
-        </form>
-      )}
+      {can.canManageOpportunities && (
+        <Card padding="lg">
+          <h2 className="font-display text-base font-bold text-brand-navy dark:text-foreground">
+            {t('opportunities:detail.lifecycleTitle')}
+          </h2>
+          <p className="mt-1 text-sm text-foreground-secondary">{t('opportunities:detail.lifecycleHint')}</p>
 
-      {!isDraft && (
-        <dl className="mt-6 grid grid-cols-1 gap-2 rounded-lg border border-border bg-surface p-4 text-sm">
-          <Row label={t('opportunities:form.modeLabel')} value={t(`opportunities:modeValues.${opportunity.mode}`)} />
-          <Row label={t('opportunities:form.openingsLabel')} value={String(opportunity.numberOfOpenings)} />
-          <Row label={t('opportunities:form.workModeLabel')} value={t(`opportunities:workModeValues.${opportunity.workMode}`)} />
-          <Row label={t('opportunities:form.startDateLabel')} value={opportunity.startDate} />
-          <Row label={t('opportunities:form.endDateLabel')} value={opportunity.endDate} />
-        </dl>
-      )}
-
-      {/* Screening questions are authored while the opportunity is still a draft, mirroring how
-          Phase 3 restricts editing the opportunity itself (CLAUDE.md Phase 4 section 9). */}
-      {canManage && isDraft && <ScreeningQuestionEditor opportunityId={opportunity.id} />}
-
-      {canManage && isDraft && supportsTargeting && <TargetingSection opportunityId={opportunity.id} startDate={opportunity.startDate} />}
-
-      {/* The candidate pool only exists once the opportunity is live and can receive candidates. */}
-      {canManage && !isDraft && (
-        <div className="mt-6">
-          <Link
-            to={`/organization/opportunities/${opportunity.id}/candidates`}
-            className="text-sm font-medium text-brand-primary hover:underline"
-          >
-            {t('recruitment:nav.candidates')}
-          </Link>
-        </div>
-      )}
-
-      {canManage && (
-        <div className="mt-6 flex flex-col gap-2">
-          <div className="flex flex-wrap gap-2">
+          <div className="mt-4 flex flex-wrap gap-2">
             {isDraft && (
               <Button loading={publishMutation.isPending} disabled={anyTransitionPending} onClick={() => publishMutation.mutate()}>
                 {t('opportunities:actions.publish')}
@@ -155,20 +166,10 @@ export function OpportunityDetailPage() {
             )}
             {opportunity.status === 'PUBLISHED' && (
               <>
-                <Button
-                  variant="outline"
-                  loading={pauseMutation.isPending}
-                  disabled={anyTransitionPending}
-                  onClick={() => pauseMutation.mutate()}
-                >
+                <Button variant="outline" loading={pauseMutation.isPending} disabled={anyTransitionPending} onClick={() => pauseMutation.mutate()}>
                   {t('opportunities:actions.pause')}
                 </Button>
-                <Button
-                  variant="outline"
-                  loading={closeMutation.isPending}
-                  disabled={anyTransitionPending}
-                  onClick={() => closeMutation.mutate()}
-                >
+                <Button variant="outline" loading={closeMutation.isPending} disabled={anyTransitionPending} onClick={() => closeMutation.mutate()}>
                   {t('opportunities:actions.close')}
                 </Button>
               </>
@@ -178,19 +179,15 @@ export function OpportunityDetailPage() {
                 <Button loading={resumeMutation.isPending} disabled={anyTransitionPending} onClick={() => resumeMutation.mutate()}>
                   {t('opportunities:actions.resume')}
                 </Button>
-                <Button
-                  variant="outline"
-                  loading={closeMutation.isPending}
-                  disabled={anyTransitionPending}
-                  onClick={() => closeMutation.mutate()}
-                >
+                <Button variant="outline" loading={closeMutation.isPending} disabled={anyTransitionPending} onClick={() => closeMutation.mutate()}>
                   {t('opportunities:actions.close')}
                 </Button>
               </>
             )}
-            {(opportunity.status === 'DRAFT' || opportunity.status === 'PUBLISHED' || opportunity.status === 'PAUSED') && (
+            {(isDraft || opportunity.status === 'PUBLISHED' || opportunity.status === 'PAUSED') && (
               <Button
                 variant="danger"
+                className="sm:ml-auto"
                 loading={cancelMutation.isPending}
                 disabled={anyTransitionPending}
                 onClick={() => cancelMutation.mutate()}
@@ -199,34 +196,140 @@ export function OpportunityDetailPage() {
               </Button>
             )}
           </div>
+
           {transitionError && (
-            <p className="text-sm text-danger" role="alert">
+            <Alert tone="danger" className="mt-4">
               {apiErrorMessage(t, 'opportunities', 'actions', transitionError)}
-            </p>
+            </Alert>
           )}
-        </div>
+        </Card>
       )}
-    </div>
+
+      {can.canManageOpportunities && isDraft && (
+        <form noValidate onSubmit={form.handleSubmit((values) => updateMutation.mutate(values))}>
+          <Card padding="lg" className="flex flex-col gap-4">
+            <div>
+              <h2 className="font-display text-base font-bold text-brand-navy dark:text-foreground">
+                {t('opportunities:detail.editTitle')}
+              </h2>
+              <p className="mt-1 text-sm text-foreground-secondary">{t('opportunities:detail.editHint')}</p>
+            </div>
+
+            <OpportunityFormFields form={form} />
+
+            {updateMutation.isError && (
+              <Alert tone="danger">{apiErrorMessage(t, 'opportunities', 'form', updateMutation.error)}</Alert>
+            )}
+
+            <div className="border-t border-border pt-4">
+              <Button type="submit" loading={updateMutation.isPending}>
+                {t('opportunities:form.saveChanges')}
+              </Button>
+            </div>
+          </Card>
+        </form>
+      )}
+
+      {/* Screening questions are authored while the opportunity is still a draft, mirroring how the
+          backend restricts editing the opportunity itself (CLAUDE.md Phase 4 section 9). */}
+      {can.canManageOpportunities && isDraft && (
+        <Card padding="lg">
+          <ScreeningQuestionEditor opportunityId={opportunity.id} />
+        </Card>
+      )}
+
+      {/* Targets exist only for the two modes that actually source nominees (CLAUDE.md section 34). */}
+      {supportsTargeting && (
+        <TargetingSection
+          opportunityId={opportunity.id}
+          startDate={opportunity.startDate}
+          editable={can.canManageOpportunities && isDraft}
+        />
+      )}
+    </PageContainer>
   )
 }
 
-function Row({ label, value }: { label: string; value: string }) {
+function OpportunityFacts({ opportunity }: { opportunity: OpportunityResponse }) {
+  const { t } = useTranslation()
+
   return (
-    <div className="flex justify-between gap-4">
-      <dt className="text-foreground-secondary">{label}</dt>
-      <dd className="font-medium text-foreground">{value}</dd>
+    <Card padding="lg">
+      <dl className="grid gap-x-6 gap-y-4 sm:grid-cols-2 lg:grid-cols-4">
+        <Fact label={t('opportunities:form.modeLabel')}>
+          <Badge>{t(`opportunities:modeValues.${opportunity.mode}`)}</Badge>
+        </Fact>
+        <Fact label={t('opportunities:form.workModeLabel')}>
+          {t(`opportunities:workModeValues.${opportunity.workMode}`)}
+        </Fact>
+        <Fact label={t('opportunities:form.openingsLabel')}>{opportunity.numberOfOpenings}</Fact>
+        <Fact label={t('opportunities:form.applicationDeadlineLabel')}>
+          {opportunity.applicationDeadline ? formatDate(opportunity.applicationDeadline) : '—'}
+        </Fact>
+        {opportunity.location && (
+          <Fact label={t('opportunities:form.locationLabel')}>{opportunity.location}</Fact>
+        )}
+        {opportunity.publishedAt && (
+          <Fact label={t('opportunities:detail.publishedAt')}>{formatDate(opportunity.publishedAt)}</Fact>
+        )}
+      </dl>
+
+      <div className="mt-6 flex flex-col gap-5 border-t border-border pt-5">
+        <Section title={t('opportunities:form.descriptionLabel')} body={opportunity.description} />
+        {opportunity.responsibilities && (
+          <Section title={t('opportunities:form.responsibilitiesLabel')} body={opportunity.responsibilities} />
+        )}
+        {opportunity.requirements && (
+          <Section title={t('opportunities:form.requirementsLabel')} body={opportunity.requirements} />
+        )}
+      </div>
+    </Card>
+  )
+}
+
+function Fact({ label, children }: { label: string; children: React.ReactNode }) {
+  return (
+    <div className="min-w-0">
+      <dt className="text-xs font-medium uppercase tracking-wide text-muted">{label}</dt>
+      <dd className="mt-1 text-sm font-semibold text-foreground">{children}</dd>
     </div>
   )
 }
 
-/** Only rendered while the opportunity is DRAFT and its mode supports targeting (CLAUDE.md section 9/10). */
-function TargetingSection({ opportunityId, startDate }: { opportunityId: string; startDate: string }) {
+function Section({ title, body }: { title: string; body: string }) {
+  return (
+    <div>
+      <h3 className="text-sm font-semibold text-foreground">{title}</h3>
+      {/* Author-entered text: newlines are meaningful, but it is never rendered as markup. */}
+      <p className="mt-1 whitespace-pre-line text-sm text-foreground-secondary">{body}</p>
+    </div>
+  )
+}
+
+/**
+ * University targets. Visible for targeted/hybrid internships at any status so the organization can
+ * see who was asked; the add/remove form appears only while the opportunity is still editable.
+ */
+function TargetingSection({
+  opportunityId,
+  startDate,
+  editable,
+}: {
+  opportunityId: string
+  startDate: string
+  editable: boolean
+}) {
   const { t } = useTranslation()
   const queryClient = useQueryClient()
 
-  const targetsQuery = useQuery({ queryKey: ['opportunities', 'targets', opportunityId], queryFn: () => opportunityApi.listTargets(opportunityId) })
+  const targetsQuery = useQuery({
+    queryKey: ['opportunities', 'targets', opportunityId],
+    queryFn: () => opportunityApi.listTargets(opportunityId),
+  })
   const universitiesQuery = useQuery({ queryKey: ['universities'], queryFn: universityApi.listUniversities })
-  const verifiedUniversities = universitiesQuery.data?.filter((u) => u.status === 'VERIFIED') ?? []
+  // listUniversities already returns VERIFIED institutions only; an unverified university cannot
+  // legitimately receive a nomination request and the backend would refuse the target anyway.
+  const universities = universitiesQuery.data ?? []
 
   const form = useForm<TargetFormValues>({
     resolver: zodResolver(targetFormSchema),
@@ -245,7 +348,7 @@ function TargetingSection({ opportunityId, startDate }: { opportunityId: string;
     mutationFn: (values: TargetFormValues) => opportunityApi.addTarget(opportunityId, values),
     onSuccess: () => {
       form.reset({ universityId: '', departmentIds: [], requestedNominees: 1, nominationDeadline: '' })
-      invalidateTargets()
+      void invalidateTargets()
     },
   })
 
@@ -254,87 +357,136 @@ function TargetingSection({ opportunityId, startDate }: { opportunityId: string;
     onSuccess: invalidateTargets,
   })
 
+  const universityName = (id: string) => universities.find((university) => university.id === id)?.name ?? id
+  const targets = targetsQuery.data ?? []
+
   return (
-    <div className="mt-6 rounded-lg border border-border bg-surface p-4">
-      <h2 className="text-sm font-semibold text-foreground">{t('opportunities:targets.title')}</h2>
+    <Card padding="lg">
+      <h2 className="font-display text-base font-bold text-brand-navy dark:text-foreground">
+        {t('opportunities:targets.title')}
+      </h2>
+      <p className="mt-1 text-sm text-foreground-secondary">{t('opportunities:targets.hint')}</p>
 
-      <ul className="mt-3 divide-y divide-border">
-        {targetsQuery.data?.map((target) => (
-          <li key={target.id} className="flex items-center justify-between gap-3 py-2">
-            <div className="text-sm">
-              <p className="font-medium text-foreground">
-                {universitiesQuery.data?.find((u) => u.id === target.universityId)?.name ?? target.universityId}
-              </p>
-              <p className="text-xs text-foreground-secondary">
-                {t('opportunities:targets.summary', { count: target.requestedNominees, deadline: target.nominationDeadline })}
-              </p>
-            </div>
-            <button
-              type="button"
-              className="text-sm font-medium text-danger hover:underline"
-              onClick={() => removeMutation.mutate(target.id)}
+      {targets.length === 0 ? (
+        <p className="mt-4 rounded-md border border-dashed border-border px-4 py-6 text-center text-sm text-foreground-secondary">
+          {t('opportunities:targets.empty')}
+        </p>
+      ) : (
+        <ul className="mt-4 flex flex-col gap-3">
+          {targets.map((target) => (
+            <li
+              key={target.id}
+              className="flex flex-wrap items-start justify-between gap-3 rounded-md border border-border bg-surface-muted p-4"
             >
-              {t('opportunities:targets.remove')}
-            </button>
-          </li>
-        ))}
-        {targetsQuery.data?.length === 0 && (
-          <li className="py-3 text-center text-sm text-foreground-secondary">{t('opportunities:targets.empty')}</li>
-        )}
-      </ul>
+              <div className="min-w-0">
+                <p className="truncate font-semibold text-foreground">{universityName(target.universityId)}</p>
+                <p className="mt-1 text-sm text-foreground-secondary">
+                  {t('opportunities:targets.summary', {
+                    count: target.requestedNominees,
+                    deadline: formatDate(target.nominationDeadline),
+                  })}
+                </p>
+                {target.departmentIds.length > 0 && (
+                  <p className="mt-1 text-xs text-muted">
+                    {t('opportunities:targets.departmentCount', { count: target.departmentIds.length })}
+                  </p>
+                )}
+              </div>
+              <div className="flex shrink-0 items-center gap-2">
+                <StatusBadge tone={OPPORTUNITY_TARGET_STATUS_TONE[target.status]}>
+                  {t(`recruitment:targetStatusValues.${target.status}`)}
+                </StatusBadge>
+                {editable && (
+                  <Button
+                    type="button"
+                    size="sm"
+                    variant="ghost"
+                    className="text-danger"
+                    loading={removeMutation.isPending && removeMutation.variables === target.id}
+                    onClick={() => removeMutation.mutate(target.id)}
+                  >
+                    {t('opportunities:targets.remove')}
+                  </Button>
+                )}
+              </div>
+            </li>
+          ))}
+        </ul>
+      )}
 
-      <form
-        className="mt-4 flex flex-col gap-3 border-t border-border pt-4"
-        noValidate
-        onSubmit={form.handleSubmit((values) => addMutation.mutate(values))}
-      >
-        <FormField label={t('opportunities:targets.universityLabel')} htmlFor="target-university">
-          <Select id="target-university" {...form.register('universityId')}>
-            <option value="">{t('opportunities:targets.selectUniversity')}</option>
-            {verifiedUniversities.map((u) => (
-              <option key={u.id} value={u.id}>
-                {u.name}
-              </option>
-            ))}
-          </Select>
-        </FormField>
-
-        {selectedUniversityId && (
-          <FormField label={t('opportunities:targets.departmentsLabel')} htmlFor="target-departments">
-            <select
-              id="target-departments"
-              multiple
-              className="min-h-24 w-full rounded-md border border-border bg-surface px-3 py-2 text-sm"
-              {...form.register('departmentIds')}
+      {editable && (
+        <form
+          className="mt-5 flex flex-col gap-4 border-t border-border pt-5"
+          noValidate
+          onSubmit={form.handleSubmit((values) => addMutation.mutate(values))}
+        >
+          <div className="grid gap-4 sm:grid-cols-2">
+            <FormField
+              label={t('opportunities:targets.universityLabel')}
+              htmlFor="target-university"
+              error={form.formState.errors.universityId && t(form.formState.errors.universityId.message ?? '')}
             >
-              {departmentsQuery.data?.map((d) => (
-                <option key={d.id} value={d.id}>
-                  {d.name}
-                </option>
-              ))}
-            </select>
-          </FormField>
-        )}
+              <Select id="target-university" {...form.register('universityId')}>
+                <option value="">{t('opportunities:targets.selectUniversity')}</option>
+                {universities.map((university) => (
+                  <option key={university.id} value={university.id}>
+                    {university.name}
+                  </option>
+                ))}
+              </Select>
+            </FormField>
 
-        <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
-          <FormField label={t('opportunities:targets.nomineesLabel')} htmlFor="target-nominees">
-            <Input id="target-nominees" type="number" min={1} {...form.register('requestedNominees', { valueAsNumber: true })} />
-          </FormField>
-          <FormField label={t('opportunities:targets.deadlineLabel')} htmlFor="target-deadline">
-            <Input id="target-deadline" type="date" max={startDate} {...form.register('nominationDeadline')} />
-          </FormField>
-        </div>
+            <FormField
+              label={t('opportunities:targets.nomineesLabel')}
+              htmlFor="target-nominees"
+              error={form.formState.errors.requestedNominees && t(form.formState.errors.requestedNominees.message ?? '')}
+            >
+              <Input id="target-nominees" type="number" min={1} {...form.register('requestedNominees', { valueAsNumber: true })} />
+            </FormField>
 
-        {addMutation.isError && (
-          <p className="text-sm text-danger" role="alert">
-            {apiErrorMessage(t, 'opportunities', 'targets', addMutation.error)}
-          </p>
-        )}
+            <FormField
+              label={t('opportunities:targets.deadlineLabel')}
+              htmlFor="target-deadline"
+              error={form.formState.errors.nominationDeadline && t(form.formState.errors.nominationDeadline.message ?? '')}
+            >
+              <Input id="target-deadline" type="date" max={startDate} {...form.register('nominationDeadline')} />
+            </FormField>
+          </div>
 
-        <Button type="submit" variant="outline" loading={addMutation.isPending} className="w-full sm:w-auto">
-          {t('opportunities:targets.addSubmit')}
-        </Button>
-      </form>
-    </div>
+          {selectedUniversityId && (
+            <fieldset>
+              <legend className="text-sm font-medium text-foreground">{t('opportunities:targets.departmentsLabel')}</legend>
+              <p className="mt-0.5 text-xs text-foreground-secondary">{t('opportunities:targets.departmentsHint')}</p>
+              {/* Checkboxes rather than a native multi-select: `<select multiple>` hides how many
+                  are chosen and is close to unusable on a phone, and RHF collects the same value. */}
+              <div className="mt-2 grid gap-2 rounded-md border border-border bg-surface-muted p-3 sm:grid-cols-2">
+                {(departmentsQuery.data ?? []).map((department) => (
+                  <Checkbox
+                    key={department.id}
+                    id={`target-dept-${department.id}`}
+                    value={department.id}
+                    label={department.name}
+                    {...form.register('departmentIds')}
+                  />
+                ))}
+                {departmentsQuery.data?.length === 0 && (
+                  <p className="text-sm text-foreground-secondary">{t('opportunities:targets.noDepartments')}</p>
+                )}
+              </div>
+            </fieldset>
+          )}
+
+          {addMutation.isError && (
+            <Alert tone="danger">{apiErrorMessage(t, 'opportunities', 'targets', addMutation.error)}</Alert>
+          )}
+
+          <div>
+            <Button type="submit" variant="outline" loading={addMutation.isPending}>
+              {t('opportunities:targets.addSubmit')}
+            </Button>
+          </div>
+        </form>
+      )}
+    </Card>
   )
 }

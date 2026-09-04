@@ -2,6 +2,7 @@ import { useQuery } from '@tanstack/react-query'
 import { useTranslation } from 'react-i18next'
 import { LoadingSpinner } from '../../../components/ui'
 import { ApiError } from '../../../lib/api/client'
+import { formatDate } from '../../../lib/utils/formatDate'
 import * as legalApi from '../api/legalApi'
 import type { LegalDocumentType } from '../types'
 
@@ -59,7 +60,7 @@ export function LegalDocumentPage({ documentType }: LegalDocumentPageProps) {
         <p className="text-sm text-foreground-secondary">
           {t('legal:versionEffective', {
             version: document.version,
-            date: new Date(document.effectiveFrom).toLocaleDateString(),
+            date: formatDate(document.effectiveFrom),
           })}
         </p>
       </header>

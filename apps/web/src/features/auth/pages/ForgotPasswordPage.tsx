@@ -17,9 +17,7 @@ export function ForgotPasswordPage() {
     return (
       <AuthCard title={t('auth:forgotPassword.successTitle')}>
         <p className="text-center text-sm text-foreground-secondary">{t('auth:forgotPassword.successBody')}</p>
-        <Link to="/login" className="mt-6 block text-center text-sm font-medium text-brand-primary hover:underline">
-          {t('auth:forgotPassword.backToLogin')}
-        </Link>
+        <BackToLogin />
       </AuthCard>
     )
   }
@@ -36,6 +34,7 @@ export function ForgotPasswordPage() {
             id="email"
             type="email"
             autoComplete="email"
+            placeholder={t('auth:forgotPassword.emailPlaceholder')}
             invalid={!!form.formState.errors.email}
             {...form.register('email')}
           />
@@ -44,6 +43,19 @@ export function ForgotPasswordPage() {
           {t('auth:forgotPassword.submit')}
         </Button>
       </form>
+      <BackToLogin />
     </AuthCard>
+  )
+}
+
+export function BackToLogin() {
+  const { t } = useTranslation()
+  return (
+    <p className="mt-6 text-center text-sm text-foreground-secondary">
+      {t('auth:forgotPassword.backToLoginPrefix')}{' '}
+      <Link to="/login" className="font-medium text-link hover:underline">
+        {t('auth:forgotPassword.backToLoginLink')}
+      </Link>
+    </p>
   )
 }

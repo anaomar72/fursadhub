@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { useForm } from 'react-hook-form'
+import { useForm, type UseFormRegisterReturn } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { useTranslation } from 'react-i18next'
@@ -8,10 +8,26 @@ import { useUniversityMembership } from '../components/UniversityMembershipConte
 import { createStaffSchema, type CreateStaffFormValues } from '../schemas/createStaffSchema'
 import { changeStaffRoleSchema, type ChangeStaffRoleFormValues } from '../schemas/changeStaffRoleSchema'
 import { apiErrorMessage } from '../../../lib/api/errorMessage'
-import { Button, EmptyState, FormField, Input, LoadingSpinner, PageHeader, Select, StatusBadge } from '../../../components/ui'
+import {
+  Alert,
+  Button,
+  Card,
+  Checkbox,
+  EmptyState,
+  FormField,
+  Icon,
+  Input,
+  LoadingState,
+  PageHeader,
+  PasswordInput,
+  Select,
+  StatusBadge,
+} from '../../../components/ui'
+import { PageContainer } from '../../../app/layouts/PageContainer'
 import type { StatusTone } from '../../../components/ui'
-import type { StaffMemberResponse, TemporaryCredentialResponse, UserAccountStatus } from '../types'
+import type { DepartmentResponse, StaffMemberResponse, TemporaryCredentialResponse, UserAccountStatus } from '../types'
 
+/** Exactly the two roles a University Admin may assign (CLAUDE.md section 26A; UniversityStaffService). */
 const ROLES: CreateStaffFormValues['role'][] = ['DEPARTMENT_COORDINATOR', 'UNIVERSITY_SUPERVISOR']
 
 const STATUS_TONE: Record<UserAccountStatus, StatusTone> = {
@@ -21,12 +37,25 @@ const STATUS_TONE: Record<UserAccountStatus, StatusTone> = {
   CLOSED: 'neutral',
 }
 
+/**
+ * Managed staff provisioning for a university (CLAUDE.md section 26A).
+ *
+ * <p>This drives the real production endpoints — no seed data, no local-only accounts: the admin
+ * types the initial password and its confirmation, the server enforces the password policy and
+ * creates the User + membership + department scope atomically, and the new staff member then signs
+ * in through the ordinary login page.
+ *
+ * <p>The scope model is exactly one thing — a set of this university's departments — because that
+ * is the only scope the backend stores. Both assignable roles require at least one
+ * ({@code STAFF_SCOPE_REQUIRED}), which is why the department picker is never optional here.
+ */
 export function StaffPage() {
   const { t } = useTranslation()
   const { universityId } = useUniversityMembership()
   const queryClient = useQueryClient()
   const [editingMembershipId, setEditingMembershipId] = useState<string | null>(null)
   const [credential, setCredential] = useState<TemporaryCredentialResponse | null>(null)
+  const [createOpen, setCreateOpen] = useState(false)
 
   const staffQuery = useQuery({ queryKey: ['university', 'staff', universityId], queryFn: () => universityApi.listStaff(universityId) })
   const departmentsQuery = useQuery({ queryKey: ['departments', universityId], queryFn: () => universityApi.listDepartments(universityId) })
@@ -41,7 +70,10 @@ export function StaffPage() {
   const createMutation = useMutation({
     mutationFn: (values: CreateStaffFormValues) => universityApi.createStaff(universityId, values),
     onSuccess: () => {
+      // The admin already knows the password they typed, so nothing is echoed back — the form is
+      // simply cleared, which also drops it from browser form state (CLAUDE.md section 26A).
       form.reset({ email: '', password: '', confirmPassword: '', role: 'DEPARTMENT_COORDINATOR', departmentIds: [] })
+      setCreateOpen(false)
       invalidateStaff()
     },
   })
@@ -50,152 +82,230 @@ export function StaffPage() {
     mutationFn: (membershipId: string) => universityApi.revokeStaff(universityId, membershipId),
     onSuccess: invalidateStaff,
   })
-
   const suspendMutation = useMutation({
     mutationFn: (membershipId: string) => universityApi.suspendStaff(universityId, membershipId),
     onSuccess: invalidateStaff,
   })
-
   const reactivateMutation = useMutation({
     mutationFn: (membershipId: string) => universityApi.reactivateStaff(universityId, membershipId),
     onSuccess: invalidateStaff,
   })
-
   const resetPasswordMutation = useMutation({
     mutationFn: (membershipId: string) => universityApi.resetStaffPassword(universityId, membershipId),
     onSuccess: (result) => setCredential(result),
   })
 
+  const departments = departmentsQuery.data ?? []
+  const staff = staffQuery.data ?? []
+
   return (
-    <div className="mx-auto max-w-3xl px-4 py-8 sm:px-6">
-      <PageHeader title={t('university:staff.title')} />
+    <PageContainer className="flex flex-col gap-6">
+      <PageHeader
+        title={t('university:staff.title')}
+        description={t('university:staff.subtitle')}
+        actions={
+          <Button type="button" onClick={() => setCreateOpen((open) => !open)}>
+            <Icon name={createOpen ? 'close' : 'users'} className="size-4" />
+            {createOpen ? t('university:departments.cancel') : t('university:staff.addStaff')}
+          </Button>
+        }
+      />
 
-      <form
-        className="mt-6 flex flex-col gap-4 rounded-lg border border-border bg-surface p-4"
-        noValidate
-        onSubmit={form.handleSubmit((values) => createMutation.mutate(values))}
-      >
-        <FormField
-          label={t('university:staff.emailLabel')}
-          htmlFor="staff-email"
-          error={form.formState.errors.email && t(form.formState.errors.email.message ?? '')}
-        >
-          <Input id="staff-email" type="email" {...form.register('email')} />
-        </FormField>
+      {departments.length === 0 && !departmentsQuery.isLoading && (
+        <Alert tone="warning" title={t('university:staff.noDepartmentsTitle')}>
+          {t('university:staff.noDepartmentsBody')}
+        </Alert>
+      )}
 
-        <FormField
-          label={t('university:staff.passwordLabel')}
-          htmlFor="staff-password"
-          error={form.formState.errors.password && t(form.formState.errors.password.message ?? '')}
-        >
-          <Input id="staff-password" type="password" autoComplete="new-password" {...form.register('password')} />
-        </FormField>
+      {createOpen && (
+        <Card padding="lg">
+          <h2 className="font-display text-base font-bold text-brand-navy dark:text-foreground">
+            {t('university:staff.createTitle')}
+          </h2>
+          <p className="mt-1 text-sm text-foreground-secondary">{t('university:staff.createHint')}</p>
 
-        <FormField
-          label={t('university:staff.confirmPasswordLabel')}
-          htmlFor="staff-confirm-password"
-          error={form.formState.errors.confirmPassword && t(form.formState.errors.confirmPassword.message ?? '')}
-        >
-          <Input id="staff-confirm-password" type="password" autoComplete="new-password" {...form.register('confirmPassword')} />
-        </FormField>
-
-        <FormField label={t('university:staff.roleLabel')} htmlFor="staff-role">
-          <Select id="staff-role" {...form.register('role')}>
-            {ROLES.map((role) => (
-              <option key={role} value={role}>
-                {t(`university:staff.roles.${role}`)}
-              </option>
-            ))}
-          </Select>
-        </FormField>
-
-        <FormField
-          label={t('university:staff.departmentsLabel')}
-          htmlFor="staff-departments"
-          error={form.formState.errors.departmentIds && t(form.formState.errors.departmentIds.message ?? '')}
-        >
-          <select
-            id="staff-departments"
-            multiple
-            className="min-h-24 w-full rounded-md border border-border bg-surface px-3 py-2 text-sm"
-            {...form.register('departmentIds')}
+          <form
+            className="mt-5 flex flex-col gap-4"
+            noValidate
+            onSubmit={form.handleSubmit((values) => createMutation.mutate(values))}
           >
-            {departmentsQuery.data?.map((d) => (
-              <option key={d.id} value={d.id}>
-                {d.name}
-              </option>
-            ))}
-          </select>
-        </FormField>
+            <div className="grid gap-4 sm:grid-cols-2">
+              <FormField
+                label={t('university:staff.emailLabel')}
+                htmlFor="staff-email"
+                className="sm:col-span-2"
+                error={form.formState.errors.email && t(form.formState.errors.email.message ?? '')}
+              >
+                <Input id="staff-email" type="email" autoComplete="off" {...form.register('email')} />
+              </FormField>
 
-        {createMutation.isError && (
-          <p className="text-sm text-danger" role="alert">
-            {apiErrorMessage(t, 'university', 'staff', createMutation.error)}
-          </p>
-        )}
+              <FormField
+                label={t('university:staff.passwordLabel')}
+                htmlFor="staff-password"
+                error={form.formState.errors.password && t(form.formState.errors.password.message ?? '')}
+              >
+                <PasswordInput
+                  id="staff-password"
+                  autoComplete="new-password"
+                  showLabel={t('common:password.show')}
+                  hideLabel={t('common:password.hide')}
+                  {...form.register('password')}
+                />
+              </FormField>
 
-        <Button type="submit" loading={createMutation.isPending} className="w-full sm:w-auto">
-          {t('university:staff.createSubmit')}
-        </Button>
-      </form>
+              <FormField
+                label={t('university:staff.confirmPasswordLabel')}
+                htmlFor="staff-confirm-password"
+                error={form.formState.errors.confirmPassword && t(form.formState.errors.confirmPassword.message ?? '')}
+              >
+                <PasswordInput
+                  id="staff-confirm-password"
+                  autoComplete="new-password"
+                  showLabel={t('common:password.show')}
+                  hideLabel={t('common:password.hide')}
+                  {...form.register('confirmPassword')}
+                />
+              </FormField>
 
+              <FormField label={t('university:staff.roleLabel')} htmlFor="staff-role">
+                <Select id="staff-role" {...form.register('role')}>
+                  {ROLES.map((role) => (
+                    <option key={role} value={role}>
+                      {t(`university:staff.roles.${role}`)}
+                    </option>
+                  ))}
+                </Select>
+              </FormField>
+            </div>
+
+            <DepartmentScopeField
+              idPrefix="create"
+              departments={departments}
+              register={form.register('departmentIds')}
+              error={form.formState.errors.departmentIds && t(form.formState.errors.departmentIds.message ?? '')}
+            />
+
+            {createMutation.isError && (
+              <p className="text-sm text-danger" role="alert">
+                {apiErrorMessage(t, 'university', 'staff', createMutation.error)}
+              </p>
+            )}
+
+            <div className="flex flex-wrap gap-2">
+              <Button type="submit" loading={createMutation.isPending} disabled={departments.length === 0}>
+                {t('university:staff.createSubmit')}
+              </Button>
+              <Button type="button" variant="ghost" onClick={() => setCreateOpen(false)}>
+                {t('university:departments.cancel')}
+              </Button>
+            </div>
+          </form>
+        </Card>
+      )}
+
+      {/* Shown exactly once, then discarded — the API never returns it again. */}
       {credential && (
-        <div role="status" className="mt-6 flex flex-col gap-2 rounded-lg border border-warning bg-warning-muted p-4">
-          <p className="text-sm font-medium text-foreground">{t('university:staff.resetPasswordOnceWarning')}</p>
-          <p className="text-sm text-foreground">
-            {credential.email}: <span className="font-mono">{credential.temporaryPassword}</span>
-          </p>
-          <div className="flex gap-2">
-            <Button
-              type="button"
-              size="sm"
-              variant="outline"
-              onClick={() => void navigator.clipboard.writeText(credential.temporaryPassword)}
-            >
-              {t('university:staff.copyCredentials')}
-            </Button>
-            <Button type="button" size="sm" variant="ghost" onClick={() => setCredential(null)}>
-              {t('university:staff.dismiss')}
-            </Button>
+        <Alert tone="warning" title={t('university:staff.resetPasswordOnceWarning')}>
+          <div className="mt-2 flex flex-col gap-3">
+            <p className="text-foreground">
+              {credential.email}
+              {': '}
+              <span className="font-mono font-semibold">{credential.temporaryPassword}</span>
+            </p>
+            <div className="flex flex-wrap gap-2">
+              <Button
+                type="button"
+                size="sm"
+                variant="outline"
+                onClick={() => void navigator.clipboard.writeText(credential.temporaryPassword)}
+              >
+                {t('university:staff.copyCredentials')}
+              </Button>
+              <Button type="button" size="sm" variant="ghost" onClick={() => setCredential(null)}>
+                {t('university:staff.dismiss')}
+              </Button>
+            </div>
           </div>
-        </div>
+        </Alert>
       )}
 
       {staffQuery.isLoading ? (
-        <div className="flex justify-center py-10">
-          <LoadingSpinner size="lg" />
-        </div>
-      ) : staffQuery.data?.length === 0 ? (
-        <EmptyState className="mt-6" title={t('university:staff.empty')} />
+        <LoadingState label={t('common:status.loading')} />
+      ) : staff.length === 0 ? (
+        <EmptyState title={t('university:staff.empty')} description={t('university:staff.emptyHint')} />
       ) : (
-        <ul className="mt-6 divide-y divide-border rounded-lg border border-border bg-surface">
-          {staffQuery.data?.map((member) => (
-            <StaffRow
-              key={member.membershipId}
-              member={member}
-              departments={departmentsQuery.data ?? []}
-              isEditing={editingMembershipId === member.membershipId}
-              onToggleEdit={() => setEditingMembershipId((current) => (current === member.membershipId ? null : member.membershipId))}
-              onEditSaved={() => {
-                setEditingMembershipId(null)
-                invalidateStaff()
-              }}
-              onRevoke={() => revokeMutation.mutate(member.membershipId)}
-              onSuspend={() => suspendMutation.mutate(member.membershipId)}
-              onReactivate={() => reactivateMutation.mutate(member.membershipId)}
-              onResetPassword={() => resetPasswordMutation.mutate(member.membershipId)}
-              resetPasswordPending={resetPasswordMutation.isPending}
-            />
+        <ul className="flex flex-col gap-3">
+          {staff.map((member) => (
+            <li key={member.membershipId}>
+              <StaffRow
+                member={member}
+                departments={departments}
+                isEditing={editingMembershipId === member.membershipId}
+                onToggleEdit={() =>
+                  setEditingMembershipId((current) => (current === member.membershipId ? null : member.membershipId))
+                }
+                onEditSaved={() => {
+                  setEditingMembershipId(null)
+                  invalidateStaff()
+                }}
+                onRevoke={() => revokeMutation.mutate(member.membershipId)}
+                onSuspend={() => suspendMutation.mutate(member.membershipId)}
+                onReactivate={() => reactivateMutation.mutate(member.membershipId)}
+                onResetPassword={() => resetPasswordMutation.mutate(member.membershipId)}
+                resetPasswordPending={resetPasswordMutation.isPending}
+              />
+            </li>
           ))}
         </ul>
       )}
-    </div>
+    </PageContainer>
+  )
+}
+
+/**
+ * The one scope control in the university area. Checkboxes rather than a native multi-select: a
+ * `<select multiple>` hides how many are chosen and is close to unusable on a phone, and the value
+ * shape RHF collects is identical.
+ */
+function DepartmentScopeField({
+  idPrefix,
+  departments,
+  register,
+  error,
+}: {
+  idPrefix: string
+  departments: DepartmentResponse[]
+  register: UseFormRegisterReturn
+  error?: string
+}) {
+  const { t } = useTranslation()
+  return (
+    <fieldset>
+      <legend className="text-sm font-medium text-foreground">{t('university:staff.departmentsLabel')}</legend>
+      <p className="mt-0.5 text-xs text-foreground-secondary">{t('university:staff.departmentsHint')}</p>
+      <div className="mt-2 grid gap-2 rounded-md border border-border bg-surface-muted p-3 sm:grid-cols-2">
+        {departments.map((department) => (
+          <Checkbox
+            key={department.id}
+            id={`${idPrefix}-dept-${department.id}`}
+            value={department.id}
+            label={department.name}
+            {...register}
+          />
+        ))}
+      </div>
+      {error && (
+        <p className="mt-1.5 text-sm text-danger" role="alert">
+          {error}
+        </p>
+      )}
+    </fieldset>
   )
 }
 
 interface StaffRowProps {
   member: StaffMemberResponse
-  departments: { id: string; name: string }[]
+  departments: DepartmentResponse[]
   isEditing: boolean
   onToggleEdit: () => void
   onEditSaved: () => void
@@ -223,7 +333,10 @@ function StaffRow({
 
   const editForm = useForm<ChangeStaffRoleFormValues>({
     resolver: zodResolver(changeStaffRoleSchema),
-    defaultValues: { role: member.role === 'UNIVERSITY_ADMIN' ? 'DEPARTMENT_COORDINATOR' : member.role, departmentIds: member.departmentIds },
+    defaultValues: {
+      role: member.role === 'UNIVERSITY_ADMIN' ? 'DEPARTMENT_COORDINATOR' : member.role,
+      departmentIds: member.departmentIds,
+    },
   })
 
   const changeRoleMutation = useMutation({
@@ -231,43 +344,64 @@ function StaffRow({
     onSuccess: onEditSaved,
   })
 
+  const scopeNames = member.departmentIds
+    .map((id) => departments.find((department) => department.id === id)?.name ?? id)
+    .join(', ')
+
   return (
-    <li className="flex flex-col gap-3 px-4 py-3">
-      <div className="flex items-center justify-between gap-3">
-        <div>
-          <p className="text-sm font-medium text-foreground">{member.email}</p>
-          <p className="text-xs text-foreground-secondary">{t(`university:staff.roles.${member.role}`)}</p>
+    <Card padding="lg">
+      <div className="flex flex-wrap items-start justify-between gap-3">
+        <div className="flex min-w-0 items-start gap-3">
+          <span className="flex size-10 shrink-0 items-center justify-center rounded-full bg-brand-blue-soft text-brand-primary dark:bg-info-bg dark:text-info">
+            <Icon name="user" className="size-5" />
+          </span>
+          <div className="min-w-0">
+            <p className="truncate font-semibold text-foreground">{member.email}</p>
+            <p className="mt-0.5 text-sm text-foreground-secondary">{t(`university:staff.roles.${member.role}`)}</p>
+            {scopeNames && (
+              <p className="mt-1 text-xs text-muted">{t('university:staff.scopeSummary', { departments: scopeNames })}</p>
+            )}
+          </div>
         </div>
-        <div className="flex flex-wrap items-center gap-2">
-          {member.status && <StatusBadge tone={STATUS_TONE[member.status]}>{t(`university:staff.statusValues.${member.status}`)}</StatusBadge>}
-          <Button type="button" size="sm" variant="outline" onClick={onToggleEdit}>
-            {t('university:staff.changeRole')}
+        {member.status && (
+          <StatusBadge tone={STATUS_TONE[member.status]}>
+            {t(`university:staff.statusValues.${member.status}`)}
+          </StatusBadge>
+        )}
+      </div>
+
+      <div className="mt-4 flex flex-wrap items-center gap-2 border-t border-border pt-4">
+        <Button type="button" size="sm" variant="outline" onClick={onToggleEdit}>
+          {t('university:staff.changeRole')}
+        </Button>
+        {member.status === 'SUSPENDED' ? (
+          <Button type="button" size="sm" variant="outline" onClick={onReactivate}>
+            {t('university:staff.reactivate')}
           </Button>
-          {member.status === 'SUSPENDED' ? (
-            <Button type="button" size="sm" variant="outline" onClick={onReactivate}>
-              {t('university:staff.reactivate')}
-            </Button>
-          ) : (
-            <Button type="button" size="sm" variant="outline" onClick={onSuspend}>
-              {t('university:staff.suspend')}
-            </Button>
-          )}
-          <Button type="button" size="sm" variant="outline" onClick={onResetPassword} loading={resetPasswordPending}>
-            {t('university:staff.resetPassword')}
+        ) : (
+          <Button type="button" size="sm" variant="outline" onClick={onSuspend}>
+            {t('university:staff.suspend')}
           </Button>
-          <button type="button" onClick={onRevoke} className="text-sm font-medium text-danger hover:underline">
-            {t('university:staff.revoke')}
-          </button>
-        </div>
+        )}
+        <Button type="button" size="sm" variant="outline" onClick={onResetPassword} loading={resetPasswordPending}>
+          {t('university:staff.resetPassword')}
+        </Button>
+        <button
+          type="button"
+          onClick={onRevoke}
+          className="ml-auto rounded-md px-2 py-1 text-sm font-semibold text-danger transition-colors hover:bg-danger-bg focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus-ring motion-reduce:transition-none"
+        >
+          {t('university:staff.revoke')}
+        </button>
       </div>
 
       {isEditing && (
         <form
-          className="flex flex-wrap items-end gap-3 rounded-md border border-border bg-surface-muted p-3"
+          className="mt-4 flex flex-col gap-4 rounded-md border border-border bg-surface-muted p-4"
           noValidate
           onSubmit={editForm.handleSubmit((values) => changeRoleMutation.mutate(values))}
         >
-          <FormField label={t('university:staff.roleLabel')} htmlFor={`role-${member.membershipId}`}>
+          <FormField label={t('university:staff.roleLabel')} htmlFor={`role-${member.membershipId}`} className="sm:max-w-xs">
             <Select id={`role-${member.membershipId}`} {...editForm.register('role')}>
               {ROLES.map((role) => (
                 <option key={role} value={role}>
@@ -276,34 +410,27 @@ function StaffRow({
               ))}
             </Select>
           </FormField>
-          <FormField
-            label={t('university:staff.departmentsLabel')}
-            htmlFor={`departments-${member.membershipId}`}
+
+          <DepartmentScopeField
+            idPrefix={member.membershipId}
+            departments={departments}
+            register={editForm.register('departmentIds')}
             error={editForm.formState.errors.departmentIds && t(editForm.formState.errors.departmentIds.message ?? '')}
-          >
-            <select
-              id={`departments-${member.membershipId}`}
-              multiple
-              className="min-h-20 w-48 rounded-md border border-border bg-surface px-3 py-2 text-sm"
-              {...editForm.register('departmentIds')}
-            >
-              {departments.map((d) => (
-                <option key={d.id} value={d.id}>
-                  {d.name}
-                </option>
-              ))}
-            </select>
-          </FormField>
+          />
+
           {changeRoleMutation.isError && (
-            <p className="w-full text-sm text-danger" role="alert">
+            <p className="text-sm text-danger" role="alert">
               {apiErrorMessage(t, 'university', 'staff', changeRoleMutation.error)}
             </p>
           )}
-          <Button type="submit" size="sm" loading={changeRoleMutation.isPending}>
-            {t('university:staff.saveRole')}
-          </Button>
+
+          <div>
+            <Button type="submit" size="sm" loading={changeRoleMutation.isPending}>
+              {t('university:staff.saveRole')}
+            </Button>
+          </div>
         </form>
       )}
-    </li>
+    </Card>
   )
 }

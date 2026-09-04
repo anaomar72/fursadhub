@@ -1,27 +1,54 @@
 import { useState } from 'react'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { useTranslation } from 'react-i18next'
-import { Button, EmptyState, FormField, Input, LoadingSpinner, PageHeader, StatusBadge } from '../../../components/ui'
+import {
+  Alert,
+  Button,
+  Card,
+  DataTable,
+  Drawer,
+  EmptyState,
+  ErrorState,
+  FormField,
+  LoadingState,
+  PageHeader,
+  StatusBadge,
+  Textarea,
+  type DataTableColumn,
+} from '../../../components/ui'
 import { apiErrorMessage } from '../../../lib/api/errorMessage'
 import * as adminApi from '../api/adminApi'
+import { DetailField } from '../components/DetailField'
+import { useEvidenceDownload } from '../hooks/useEvidenceDownload'
+import { caseStatusTone } from '../statusTone'
+import { formatDateTime } from '../../../lib/utils/formatDate'
+import type { EscalatedCase } from '../types'
 
 type EscalationAction = 'verify' | 'reject' | 'request-more-evidence'
 
 /** Commands that must carry a reason the student will be shown. */
-const NEEDS_NOTE: EscalationAction[] = ['reject', 'request-more-evidence']
+const NEEDS_NOTE = new Set<EscalationAction>(['reject', 'request-more-evidence'])
 
 /**
  * Escalated student verification cases (Phase 7 "Admin: verification escalation").
  *
+ * <p>The queue is a table; the review happens in a drawer beside it, because deciding a case means
+ * reading the claimed enrollment and the escalation reason together and then usually returning to
+ * the next case. A separate route per case would make working a queue of ten a queue of twenty
+ * navigations.
+ *
  * <p>Resolutions use the same frozen transitions a university uses — there is no platform-only
- * state. The student's evidence is fetched as a blob through the authorized, audited endpoint, never
- * linked to object storage (CLAUDE.md sections 31, 47).
+ * state and none is invented here (CLAUDE.md section 30). Evidence is fetched as a blob through the
+ * authorized, audited endpoint, never linked to object storage (sections 47, 51).
+ *
+ * <p>Open to {@code VERIFICATION_OFFICER} as well as {@code SUPER_ADMIN} — {@code requireReviewer}.
  */
 export function AdminEscalationsPage() {
   const { t } = useTranslation()
   const queryClient = useQueryClient()
   const [error, setError] = useState<string | null>(null)
-  const [noteFor, setNoteFor] = useState<{ caseId: string; action: EscalationAction } | null>(null)
+  const [openCaseId, setOpenCaseId] = useState<string | null>(null)
+  const [prompting, setPrompting] = useState<EscalationAction | null>(null)
   const [note, setNote] = useState('')
 
   const escalationsQuery = useQuery({
@@ -29,171 +56,300 @@ export function AdminEscalationsPage() {
     queryFn: adminApi.listEscalations,
   })
 
+  const cases = escalationsQuery.data ?? []
+  const openCase = cases.find((item) => item.caseId === openCaseId) ?? null
+
   const resolveMutation = useMutation({
-    mutationFn: ({ caseId, action, reviewNote }: { caseId: string; action: EscalationAction; reviewNote?: string }) => {
+    mutationFn: ({
+      caseId,
+      action,
+      reviewNote,
+    }: {
+      caseId: string
+      action: EscalationAction
+      reviewNote?: string
+    }) => {
       setError(null)
       return adminApi.resolveEscalation(caseId, action, reviewNote).catch((cause) => {
         setError(apiErrorMessage(t, 'admin', 'escalations', cause))
         throw cause
       })
     },
+    // The row leaves the queue only once the API says the case is resolved.
     onSuccess: () => {
-      setNoteFor(null)
+      setPrompting(null)
       setNote('')
+      setOpenCaseId(null)
       void queryClient.invalidateQueries({ queryKey: ['admin', 'escalations'] })
       void queryClient.invalidateQueries({ queryKey: ['admin', 'statistics'] })
     },
   })
 
-  const downloadMutation = useMutation({
-    mutationFn: async (caseId: string) => {
-      setError(null)
-      const blob = await adminApi.downloadEscalationEvidence(caseId).catch((cause) => {
-        setError(apiErrorMessage(t, 'admin', 'escalations', cause))
-        throw cause
-      })
-      const objectUrl = URL.createObjectURL(blob)
-      const anchor = document.createElement('a')
-      anchor.href = objectUrl
-      anchor.download = 'verification-evidence'
-      anchor.click()
-      // Released immediately so the blob does not outlive the click that needed it.
-      URL.revokeObjectURL(objectUrl)
+  const columns: DataTableColumn<EscalatedCase>[] = [
+    {
+      key: 'student',
+      header: t('admin:escalations.student'),
+      render: (item) => (
+        <span className="font-medium text-foreground">
+          {item.studentEmail ?? t('admin:escalations.unknownStudent')}
+        </span>
+      ),
     },
-  })
+    {
+      key: 'enrollment',
+      header: t('admin:escalations.enrollment'),
+      render: (item) => (
+        <span className="text-foreground-secondary">
+          {item.studentNumber} · {item.program}
+        </span>
+      ),
+    },
+    {
+      key: 'status',
+      header: t('admin:escalations.status'),
+      render: (item) => (
+        <StatusBadge tone={caseStatusTone(item.status)}>
+          {t(`admin:statusLabels.${item.status}`, item.status)}
+        </StatusBadge>
+      ),
+    },
+    {
+      key: 'escalatedAt',
+      header: t('admin:escalations.escalatedAt'),
+      render: (item) => (
+        <span className="text-foreground-secondary">{formatDateTime(item.escalatedAt)}</span>
+      ),
+    },
+    {
+      key: 'evidence',
+      header: t('admin:escalations.evidence'),
+      render: (item) =>
+        item.hasEvidence ? (
+          <span className="text-foreground-secondary">{t('admin:escalations.hasEvidence')}</span>
+        ) : (
+          <span className="text-muted">{t('admin:escalations.noEvidence')}</span>
+        ),
+    },
+    {
+      key: 'open',
+      header: <span className="sr-only">{t('admin:escalations.review')}</span>,
+      render: (item) => (
+        <Button size="sm" variant="outline" onClick={() => setOpenCaseId(item.caseId)}>
+          {t('admin:escalations.review')}
+        </Button>
+      ),
+    },
+  ]
 
-  if (escalationsQuery.isLoading) {
-    return (
-      <div className="flex justify-center py-16">
-        <LoadingSpinner size="lg" />
-      </div>
-    )
-  }
+  return (
+    <div className="flex flex-col gap-6">
+      <PageHeader
+        eyebrow={t('admin:verification.eyebrow')}
+        title={t('admin:escalations.title')}
+        description={t('admin:escalations.description')}
+      />
 
-  const cases = escalationsQuery.data ?? []
+      {error && !openCase && <Alert tone="danger">{error}</Alert>}
+
+      {escalationsQuery.isLoading ? (
+        <LoadingState label={t('common:status.loading')} />
+      ) : escalationsQuery.isError ? (
+        <ErrorState
+          title={t('common:status.error')}
+          onRetry={() => void escalationsQuery.refetch()}
+          retryLabel={t('common:actions.retry')}
+        />
+      ) : (
+        <>
+          <p className="text-sm text-foreground-secondary" aria-live="polite">
+            {t('admin:escalations.resultCount', { count: cases.length })}
+          </p>
+          <DataTable
+            caption={t('admin:escalations.title')}
+            columns={columns}
+            rows={cases}
+            rowKey={(item) => item.caseId}
+            empty={
+              <EmptyState
+                title={t('admin:escalations.empty')}
+                description={t('admin:escalations.emptyHint')}
+              />
+            }
+          />
+        </>
+      )}
+
+      <Drawer
+        open={openCase !== null}
+        onClose={() => {
+          setOpenCaseId(null)
+          setPrompting(null)
+        }}
+        closeLabel={t('common:actions.close')}
+        title={t('admin:escalations.review')}
+      >
+        {openCase && (
+          <CaseReview
+            item={openCase}
+            error={error}
+            onError={setError}
+            pending={resolveMutation.isPending}
+            prompting={prompting}
+            note={note}
+            onNote={setNote}
+            onStart={(action) => {
+              if (NEEDS_NOTE.has(action)) {
+                setNote('')
+                setPrompting(action)
+                return
+              }
+              resolveMutation.mutate({ caseId: openCase.caseId, action })
+            }}
+            onCancel={() => setPrompting(null)}
+            onSubmitNote={() => {
+              if (!prompting) return
+              resolveMutation.mutate({ caseId: openCase.caseId, action: prompting, reviewNote: note })
+            }}
+          />
+        )}
+      </Drawer>
+    </div>
+  )
+}
+
+/** The case as the reviewer reads it, plus the three resolutions the backend accepts. */
+function CaseReview({
+  item,
+  error,
+  onError,
+  pending,
+  prompting,
+  note,
+  onNote,
+  onStart,
+  onCancel,
+  onSubmitNote,
+}: {
+  item: EscalatedCase
+  error: string | null
+  onError: (message: string) => void
+  pending: boolean
+  prompting: EscalationAction | null
+  note: string
+  onNote: (value: string) => void
+  onStart: (action: EscalationAction) => void
+  onCancel: () => void
+  onSubmitNote: () => void
+}) {
+  const { t } = useTranslation()
+  const download = useEvidenceDownload(
+    () => adminApi.downloadEscalationEvidence(item.caseId),
+    'verification-evidence',
+    'escalations',
+    onError,
+  )
 
   return (
     <div className="flex flex-col gap-4">
-      <div>
-        <PageHeader title={t('admin:escalations.title')} />
-        <p className="mt-1 text-sm text-foreground-secondary">{t('admin:escalations.description')}</p>
-      </div>
+      {error && <Alert tone="danger">{error}</Alert>}
 
-      {error && (
-        <p role="alert" className="text-sm text-danger">
-          {error}
-        </p>
+      <Card padding="md">
+        <dl className="grid gap-3 sm:grid-cols-2">
+          <DetailField label={t('admin:escalations.student')}>
+            {item.studentEmail ?? t('admin:escalations.unknownStudent')}
+          </DetailField>
+          <DetailField label={t('admin:escalations.status')}>
+            <StatusBadge tone={caseStatusTone(item.status)}>
+              {t(`admin:statusLabels.${item.status}`, item.status)}
+            </StatusBadge>
+          </DetailField>
+          <DetailField label={t('admin:escalations.studentNumber')}>{item.studentNumber}</DetailField>
+          <DetailField label={t('admin:escalations.program')}>{item.program}</DetailField>
+          <DetailField label={t('admin:escalations.academicYear')}>{item.academicYear}</DetailField>
+          <DetailField label={t('admin:escalations.submittedAt')}>
+            {formatDateTime(item.submittedAt)}
+          </DetailField>
+        </dl>
+      </Card>
+
+      {item.escalationReason && (
+        <Card padding="md">
+          <h3 className="text-sm font-semibold text-foreground">
+            {t('admin:escalations.escalationReason')}
+          </h3>
+          <p className="mt-1 text-sm text-foreground-secondary">{item.escalationReason}</p>
+        </Card>
       )}
 
-      {cases.length === 0 ? (
-        <EmptyState title={t('admin:escalations.empty')} />
+      {item.reviewNotes && (
+        <Card padding="md">
+          <h3 className="text-sm font-semibold text-foreground">{t('admin:escalations.reviewNotes')}</h3>
+          <p className="mt-1 text-sm text-foreground-secondary">{item.reviewNotes}</p>
+        </Card>
+      )}
+
+      {item.hasEvidence ? (
+        <Button
+          variant="outline"
+          size="sm"
+          className="self-start"
+          loading={download.isPending}
+          onClick={() => download.mutate()}
+        >
+          {t('admin:escalations.viewEvidence')}
+        </Button>
       ) : (
-        <ul className="flex flex-col gap-3">
-          {cases.map((escalated) => (
-            <li key={escalated.caseId} className="flex flex-col gap-3 rounded-lg border border-border bg-surface p-4">
-              <div className="flex flex-wrap items-start justify-between gap-2">
-                <div className="min-w-0">
-                  <h2 className="text-sm font-medium text-foreground">
-                    {escalated.studentEmail ?? t('admin:escalations.unknownStudent')}
-                  </h2>
-                  <p className="text-xs text-foreground-secondary">
-                    {t('admin:escalations.enrollment', {
-                      studentNumber: escalated.studentNumber,
-                      program: escalated.program,
-                      year: escalated.academicYear,
-                    })}
-                  </p>
-                </div>
-                <StatusBadge tone="warning">
-                  {t(`admin:verificationStatuses.${escalated.status}`, escalated.status)}
-                </StatusBadge>
-              </div>
+        <p className="text-sm text-muted">{t('admin:escalations.noEvidenceHint')}</p>
+      )}
 
-              {escalated.escalationReason && (
-                <p className="rounded-md bg-surface-muted px-3 py-2 text-sm text-foreground">
-                  <span className="font-medium">{t('admin:escalations.reason')}: </span>
-                  {escalated.escalationReason}
-                </p>
-              )}
-
-              {noteFor?.caseId === escalated.caseId ? (
-                <form
-                  className="flex flex-col gap-2"
-                  onSubmit={(event) => {
-                    event.preventDefault()
-                    resolveMutation.mutate({
-                      caseId: escalated.caseId,
-                      action: noteFor.action,
-                      reviewNote: note,
-                    })
-                  }}
-                >
-                  <FormField
-                    label={t(`admin:escalations.actions.${noteFor.action}`)}
-                    htmlFor={`escalation-note-${escalated.caseId}`}
-                  >
-                    <Input
-                      id={`escalation-note-${escalated.caseId}`}
-                      value={note}
-                      onChange={(event) => setNote(event.target.value)}
-                      placeholder={t('admin:escalations.notePlaceholder')}
-                      maxLength={2000}
-                    />
-                  </FormField>
-                  <div className="flex gap-2">
-                    <Button type="submit" size="sm" loading={resolveMutation.isPending}>
-                      {t('admin:escalations.confirm')}
-                    </Button>
-                    <Button type="button" size="sm" variant="ghost" onClick={() => setNoteFor(null)}>
-                      {t('admin:escalations.cancel')}
-                    </Button>
-                  </div>
-                </form>
-              ) : (
-                <div className="flex flex-wrap gap-2">
-                  <Button
-                    type="button"
-                    size="sm"
-                    onClick={() => resolveMutation.mutate({ caseId: escalated.caseId, action: 'verify' })}
-                    disabled={resolveMutation.isPending}
-                  >
-                    {t('admin:escalations.actions.verify')}
-                  </Button>
-                  {NEEDS_NOTE.map((action) => (
-                    <Button
-                      key={action}
-                      type="button"
-                      size="sm"
-                      variant="outline"
-                      onClick={() => {
-                        setNoteFor({ caseId: escalated.caseId, action })
-                        setNote('')
-                      }}
-                      disabled={resolveMutation.isPending}
-                    >
-                      {t(`admin:escalations.actions.${action}`)}
-                    </Button>
-                  ))}
-                  {escalated.hasEvidence ? (
-                    <Button
-                      type="button"
-                      size="sm"
-                      variant="ghost"
-                      onClick={() => downloadMutation.mutate(escalated.caseId)}
-                      disabled={downloadMutation.isPending}
-                    >
-                      {t('admin:escalations.downloadEvidence')}
-                    </Button>
-                  ) : (
-                    <span className="self-center text-xs text-foreground-secondary">
-                      {t('admin:escalations.noEvidence')}
-                    </span>
-                  )}
-                </div>
-              )}
-            </li>
-          ))}
-        </ul>
+      {prompting ? (
+        <form
+          className="flex flex-col gap-3"
+          onSubmit={(event) => {
+            event.preventDefault()
+            onSubmitNote()
+          }}
+        >
+          <FormField
+            label={t(`admin:escalations.actions.${prompting}`)}
+            htmlFor="escalation-note"
+            hint={t('admin:escalations.noteHint')}
+          >
+            <Textarea
+              id="escalation-note"
+              rows={3}
+              maxLength={2000}
+              value={note}
+              onChange={(event) => onNote(event.target.value)}
+              placeholder={t('admin:escalations.notePlaceholder')}
+            />
+          </FormField>
+          <div className="flex gap-2">
+            <Button
+              type="submit"
+              size="sm"
+              variant={prompting === 'reject' ? 'danger' : 'primary'}
+              loading={pending}
+            >
+              {t('common:actions.confirm')}
+            </Button>
+            <Button type="button" size="sm" variant="ghost" onClick={onCancel}>
+              {t('common:actions.cancel')}
+            </Button>
+          </div>
+        </form>
+      ) : (
+        <div className="flex flex-wrap gap-2">
+          <Button size="sm" disabled={pending} onClick={() => onStart('verify')}>
+            {t('admin:escalations.actions.verify')}
+          </Button>
+          <Button size="sm" variant="outline" disabled={pending} onClick={() => onStart('request-more-evidence')}>
+            {t('admin:escalations.actions.request-more-evidence')}
+          </Button>
+          <Button size="sm" variant="danger" disabled={pending} onClick={() => onStart('reject')}>
+            {t('admin:escalations.actions.reject')}
+          </Button>
+        </div>
       )}
     </div>
   )

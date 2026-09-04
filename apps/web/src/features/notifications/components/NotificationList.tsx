@@ -1,6 +1,7 @@
 import { useTranslation } from 'react-i18next'
 import { Link } from 'react-router-dom'
 import { cn } from '../../../lib/utils/cn'
+import { formatDateTime } from '../../../lib/utils/formatDate'
 import type { NotificationItem } from '../types'
 
 interface NotificationListProps {
@@ -54,9 +55,9 @@ export function NotificationList({ notifications, onMarkRead, onNavigate, emptyL
               <p className="text-sm text-foreground">{text}</p>
               <div className="flex flex-wrap items-center gap-x-3 gap-y-1 text-xs text-foreground-secondary">
                 <time dateTime={notification.createdAt}>
-                  {new Date(notification.createdAt).toLocaleString()}
+                  {formatDateTime(notification.createdAt)}
                 </time>
-                {unread && <span className="font-medium text-brand-primary">{t('notifications:unread')}</span>}
+                {unread && <span className="font-medium text-brand-primary dark:text-info">{t('notifications:unread')}</span>}
                 {notification.linkPath && (
                   <Link
                     to={notification.linkPath}
@@ -64,7 +65,7 @@ export function NotificationList({ notifications, onMarkRead, onNavigate, emptyL
                       if (unread) onMarkRead(notification.id)
                       onNavigate?.()
                     }}
-                    className="font-medium text-brand-primary underline-offset-2 hover:underline"
+                    className="font-medium text-link underline-offset-2 hover:underline"
                   >
                     {t('notifications:open')}
                   </Link>

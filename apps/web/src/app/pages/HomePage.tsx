@@ -1,194 +1,48 @@
-import { useEffect } from 'react'
-import { Link, useLocation } from 'react-router-dom'
+import { Link } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
-import { cn } from '../../lib/utils/cn'
+import { Card, Icon } from '../../components/ui'
+import { HomeHeroIllustration } from './HomeHeroIllustration'
 
-interface DoorCard {
-  role: 'student' | 'organization' | 'university'
-  href: string
-}
-
-const DOORS: DoorCard[] = [
-  { role: 'student', href: '/register?role=student' },
-  { role: 'organization', href: '/register?role=organization' },
-  { role: 'university', href: '/register?role=university' },
-]
-
-/**
- * The landing page (replacing the Phase 0 placeholder). Its one job: get a student, an
- * organization, or a university to self-identify and start the right registration path.
- *
- * <p>The three "doors" are the hero's signature element, not decoration next to a generic
- * "Sign up" button — they literally extend the brand's own doorway concept ("Opening doors to
- * your future"), and each one *is* the entry point into its role's registration flow
- * (docs/product/BRAND_AND_UI_GUIDELINES.md section 1-2).
- */
-const LIFECYCLE_ITEMS = ['logs', 'attendance', 'supervision', 'evaluation', 'defense'] as const
+const audiences = ['student', 'organization', 'university'] as const
+const capabilities = ['internships', 'entities', 'pipeline'] as const
 
 export function HomePage() {
   const { t } = useTranslation()
-  const location = useLocation()
-
-  // Arriving from another page via a "#how-it-works" link (e.g. the footer or navbar on
-  // /opportunities) needs a manual scroll — React Router doesn't scroll to a hash on navigation
-  // the way a full page load would. Same-page anchor clicks are handled by the browser natively
-  // (index.css sets scroll-behavior: smooth, off under prefers-reduced-motion).
-  useEffect(() => {
-    if (location.hash !== '#how-it-works') return
-    document.getElementById('how-it-works')?.scrollIntoView({ block: 'start' })
-  }, [location.hash])
-
-  return (
-    <div className="flex flex-col">
-      <section className="mx-auto w-full max-w-6xl px-4 py-16 sm:px-6 sm:py-24">
-        <div className="animate-hero-fade motion-reduce:animate-none mx-auto max-w-2xl text-center">
-          <p className="text-sm font-semibold uppercase tracking-wide text-brand-primary">
-            {t('common:landing.eyebrow')}
-          </p>
-          <h1 className="mt-3 font-[family-name:var(--font-display)] text-4xl font-bold tracking-tight text-foreground sm:text-5xl">
-            {t('app.tagline')}
-          </h1>
-          <p className="mt-4 text-lg text-foreground-secondary">{t('common:landing.subhead')}</p>
-          <a
-            href="#how-it-works"
-            className="mt-4 inline-flex items-center gap-1 text-sm font-medium text-foreground-secondary underline-offset-4 hover:text-foreground hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-primary"
-          >
-            {t('common:landing.secondaryCta')}
-            <span aria-hidden="true">↓</span>
-          </a>
+  return <div className="overflow-x-clip bg-background">
+    <section className="mx-auto grid w-full max-w-7xl gap-10 px-4 pb-12 pt-14 sm:px-6 sm:pt-20 lg:grid-cols-[0.9fr_1.1fr] lg:items-center lg:px-8 lg:pb-16 lg:pt-14">
+      <div className="animate-hero-fade motion-reduce:animate-none">
+        <h1 aria-label={`${t('common:landing.hero.connect')} ${t('common:landing.hero.learn')} ${t('common:landing.hero.grow')}`} className="font-display text-5xl font-extrabold leading-[1.05] tracking-[-0.045em] text-brand-navy dark:text-foreground sm:text-6xl lg:text-7xl">
+          <span className="block">{t('common:landing.hero.connect')}</span>
+          <span className="mt-2 block"><span className="text-brand-primary">{t('common:landing.hero.learn')}</span> {t('common:landing.hero.grow')}</span>
+        </h1>
+        <p className="mt-8 max-w-xl text-base leading-8 text-foreground-secondary sm:text-lg">{t('common:landing.hero.description')}</p>
+        <div className="mt-8 flex flex-col gap-3 sm:flex-row">
+          <Link to="/opportunities" className="inline-flex h-12 items-center justify-center rounded-md bg-brand-primary px-6 text-sm font-semibold text-on-brand shadow-sm transition-[background-color,transform,box-shadow] hover:-translate-y-0.5 hover:bg-brand-blue-strong hover:shadow-md focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus-ring motion-reduce:transform-none motion-reduce:transition-none">{t('common:landing.hero.browse')}</Link>
+          <Link to="/register" className="inline-flex h-12 items-center justify-center rounded-md border border-brand-primary bg-surface px-6 text-sm font-semibold text-brand-primary transition-[background-color,transform] hover:-translate-y-0.5 hover:bg-brand-blue-soft focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus-ring motion-reduce:transform-none motion-reduce:transition-none dark:border-info dark:text-info dark:hover:bg-info-bg">{t('common:landing.hero.getStarted')}</Link>
         </div>
+      </div>
+      <div className="animate-hero-fade motion-reduce:animate-none"><HomeHeroIllustration /></div>
+    </section>
 
-        <div className="animate-hero-fade motion-reduce:animate-none mt-12 grid grid-cols-1 gap-5 sm:grid-cols-3">
-          {DOORS.map((door) => (
-            <DoorCardLink key={door.role} door={door} />
-          ))}
+    <section aria-label={t('common:landing.capabilities.label')} className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+      <div className="grid overflow-hidden rounded-xl border border-border bg-surface shadow-xs sm:grid-cols-3">
+        {capabilities.map((item, index) => <div key={item} className="flex items-center gap-4 border-b border-border px-6 py-5 last:border-b-0 sm:border-b-0 sm:border-r sm:last:border-r-0"><CapabilityIcon index={index}/><div><p className="font-bold text-brand-navy dark:text-foreground">{t(`common:landing.capabilities.${item}.title`)}</p><p className="mt-0.5 text-sm text-foreground-secondary">{t(`common:landing.capabilities.${item}.body`)}</p></div></div>)}
+      </div>
+    </section>
+
+    <section id="how-it-works" className="scroll-mt-24 px-4 py-16 sm:px-6 sm:py-20 lg:px-8">
+      <div className="mx-auto max-w-7xl">
+        <div className="text-center"><h2 className="font-display text-3xl font-bold tracking-tight text-brand-navy dark:text-foreground sm:text-4xl">{t('common:landing.ecosystem.title')}</h2><p className="mt-3 text-foreground-secondary">{t('common:landing.ecosystem.subtitle')}</p></div>
+        <div className="mt-10 grid gap-5 md:grid-cols-3">
+          {audiences.map((audience, index) => <Card key={audience} padding="lg" className="group min-h-52 transition-[border-color,box-shadow,transform] hover:-translate-y-1 hover:border-brand-primary hover:shadow-md motion-reduce:transform-none motion-reduce:transition-none"><div className="flex items-start gap-4"><StakeholderIcon index={index}/><div><h3 className="text-lg font-bold text-brand-navy dark:text-foreground">{t(`common:landing.ecosystem.${audience}.title`)}</h3><p className="mt-3 leading-7 text-foreground-secondary">{t(`common:landing.ecosystem.${audience}.body`)}</p></div></div></Card>)}
         </div>
-      </section>
-
-      <section id="how-it-works" className="scroll-mt-16 border-t border-border bg-surface-muted">
-        <div className="mx-auto max-w-6xl px-4 py-14 sm:px-6">
-          <h2 className="font-[family-name:var(--font-display)] text-center text-2xl font-semibold text-foreground">
-            {t('common:landing.howItWorks.title')}
-          </h2>
-          <ol className="mx-auto mt-8 grid max-w-4xl grid-cols-1 gap-8 sm:grid-cols-3">
-            {(['sourcing', 'recruitment', 'placement'] as const).map((step, index) => (
-              <li key={step} className="text-center">
-                <div className="mx-auto flex h-9 w-9 items-center justify-center rounded-full bg-brand-primary text-sm font-semibold text-on-brand">
-                  {index + 1}
-                </div>
-                <h3 className="mt-3 text-sm font-semibold text-foreground">
-                  {t(`common:landing.howItWorks.steps.${step}.title`)}
-                </h3>
-                <p className="mt-1 text-sm text-foreground-secondary">
-                  {t(`common:landing.howItWorks.steps.${step}.body`)}
-                </p>
-              </li>
-            ))}
-          </ol>
-        </div>
-      </section>
-
-      <section className="border-t border-border">
-        <div className="mx-auto grid max-w-6xl grid-cols-1 gap-10 px-4 py-16 sm:px-6 md:grid-cols-2 md:items-center md:gap-16">
-          <div>
-            <h2 className="font-[family-name:var(--font-display)] text-2xl font-semibold text-foreground">
-              {t('common:landing.lifecycle.title')}
-            </h2>
-            <p className="mt-3 text-foreground-secondary">{t('common:landing.lifecycle.body')}</p>
-          </div>
-          <ul className="grid grid-cols-1 gap-3 sm:grid-cols-2">
-            {LIFECYCLE_ITEMS.map((item) => (
-              <li
-                key={item}
-                className="flex items-center gap-3 rounded-md border border-border bg-surface px-4 py-3 text-sm font-medium text-foreground"
-              >
-                <CheckDotIcon />
-                {t(`common:landing.lifecycle.items.${item}`)}
-              </li>
-            ))}
-          </ul>
-        </div>
-      </section>
-
-      <section className="border-t border-border bg-surface-muted">
-        <div className="mx-auto flex max-w-3xl flex-col items-center px-4 py-16 text-center sm:px-6">
-          <h2 className="font-[family-name:var(--font-display)] text-2xl font-semibold text-foreground sm:text-3xl">
-            {t('common:landing.cta.title')}
-          </h2>
-          <p className="mt-3 text-foreground-secondary">{t('common:landing.cta.body')}</p>
-          <div className="mt-6 flex flex-col gap-3 sm:flex-row">
-            <Link
-              to="/register"
-              className="inline-flex h-11 items-center justify-center rounded-md bg-brand-primary px-6 text-sm font-medium text-on-brand transition-colors duration-150 ease-in-out hover:bg-brand-accent focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-primary"
-            >
-              {t('common:landing.cta.primary')}
-            </Link>
-            <Link
-              to="/login"
-              className="inline-flex h-11 items-center justify-center rounded-md border border-border bg-transparent px-6 text-sm font-medium text-foreground transition-colors duration-150 ease-in-out hover:bg-surface focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-primary"
-            >
-              {t('common:landing.cta.secondary')}
-            </Link>
-          </div>
-        </div>
-      </section>
-
-      <section className="mx-auto w-full max-w-6xl px-4 py-10 text-center sm:px-6">
-        <p className="text-sm text-foreground-secondary">{t('common:landing.trustLine')}</p>
-      </section>
-    </div>
-  )
+      </div>
+    </section>
+  </div>
 }
 
-function DoorCardLink({ door }: { door: DoorCard }) {
-  const { t } = useTranslation()
+function CapabilityIcon({ index }: { index: number }) { const names = ['search', 'globe', 'check'] as const; return <span className="flex size-11 shrink-0 items-center justify-center rounded-full bg-brand-blue-soft text-brand-primary"><Icon name={names[index]} className="size-5" /></span> }
 
-  return (
-    <Link
-      to={door.href}
-      className={cn(
-        'group flex flex-col gap-3 rounded-lg border border-border bg-surface p-6',
-        'transition-all duration-150 ease-in-out',
-        'hover:-translate-y-0.5 hover:border-brand-primary hover:shadow-md',
-        'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-primary',
-      )}
-    >
-      <DoorIcon />
-      <h2 className="font-[family-name:var(--font-display)] text-lg font-semibold text-foreground">
-        {t(`common:landing.doors.${door.role}.title`)}
-      </h2>
-      <p className="text-sm text-foreground-secondary">{t(`common:landing.doors.${door.role}.body`)}</p>
-      <span className="mt-auto flex items-center gap-1 text-sm font-medium text-brand-primary">
-        {t(`common:landing.doors.${door.role}.cta`)}
-        <span aria-hidden="true" className="transition-transform duration-150 ease-in-out group-hover:translate-x-0.5">
-          →
-        </span>
-      </span>
-    </Link>
-  )
-}
-
-function CheckDotIcon() {
-  return (
-    <svg width="20" height="20" viewBox="0 0 20 20" fill="none" aria-hidden="true" className="shrink-0 text-brand-primary">
-      <circle cx="10" cy="10" r="9" stroke="currentColor" strokeWidth="1.5" opacity="0.35" />
-      <path d="M6.5 10.5l2.25 2.25L14 8" stroke="currentColor" strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round" />
-    </svg>
-  )
-}
-
-/** A small arched-doorway mark, echoing the brand's own logo concept (an open door, a path forward). */
-function DoorIcon() {
-  return (
-    <svg width="40" height="40" viewBox="0 0 40 40" fill="none" role="img" aria-hidden="true" className="text-brand-primary">
-      <path
-        d="M10 34V16C10 10.4772 14.4772 6 20 6C25.5228 6 30 10.4772 30 16V34"
-        stroke="currentColor"
-        strokeWidth="2.25"
-        strokeLinecap="round"
-      />
-      <path d="M15 34V17" stroke="currentColor" strokeWidth="2.25" strokeLinecap="round" opacity="0.5" />
-      <path d="M25 34L32 30" stroke="currentColor" strokeWidth="2.25" strokeLinecap="round" />
-    </svg>
-  )
+function StakeholderIcon({ index }: { index: number }) {
+  return <span className="flex size-14 shrink-0 items-center justify-center rounded-full bg-brand-primary text-on-brand shadow-sm"><svg viewBox="0 0 24 24" className="size-7" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">{index===0?<><circle cx="12" cy="8" r="4"/><path d="M5 21a7 7 0 0 1 14 0"/></>:index===1?<><path d="M4 21V9l8-5 8 5v12M8 21v-6h8v6M8 11h.01M12 11h.01M16 11h.01"/></>:<><path d="m3 10 9-6 9 6M5 10v8M9 10v8M15 10v8M19 10v8M3 21h18"/></>}</svg></span>
 }

@@ -75,7 +75,8 @@ describe('StaffPage (university)', () => {
     stubFetch()
     renderPage()
 
-    const select = (await screen.findByLabelText('Role')) as HTMLSelectElement
+    await userEvent.click(await screen.findByRole('button', { name: 'Add staff account' }))
+    const select = screen.getByLabelText('Role') as HTMLSelectElement
     const optionValues = Array.from(select.options).map((option) => option.value)
     expect(optionValues).toEqual(['DEPARTMENT_COORDINATOR', 'UNIVERSITY_SUPERVISOR'])
   })
@@ -84,7 +85,8 @@ describe('StaffPage (university)', () => {
     const fetchMock = stubFetch()
     renderPage()
 
-    await userEvent.type(await screen.findByLabelText('Email address'), 'new-coordinator@example.test')
+    await userEvent.click(await screen.findByRole('button', { name: 'Add staff account' }))
+    await userEvent.type(screen.getByLabelText('Email address'), 'new-coordinator@example.test')
     await userEvent.type(screen.getByLabelText('Temporary password'), 'Password123')
     await userEvent.type(screen.getByLabelText('Confirm password'), 'Password123')
     await userEvent.click(screen.getByRole('button', { name: 'Create staff account' }))
@@ -97,10 +99,11 @@ describe('StaffPage (university)', () => {
     stubFetch()
     renderPage()
 
-    await userEvent.type(await screen.findByLabelText('Email address'), 'new-coordinator@example.test')
+    await userEvent.click(await screen.findByRole('button', { name: 'Add staff account' }))
+    await userEvent.type(screen.getByLabelText('Email address'), 'new-coordinator@example.test')
     await userEvent.type(screen.getByLabelText('Temporary password'), 'Password123')
     await userEvent.type(screen.getByLabelText('Confirm password'), 'Password124')
-    await userEvent.selectOptions(screen.getByLabelText('Departments'), ['dept-1'])
+    await userEvent.click(screen.getByLabelText('Computer Science'))
     await userEvent.click(screen.getByRole('button', { name: 'Create staff account' }))
 
     expect(await screen.findByText('Passwords do not match.')).toBeInTheDocument()
@@ -110,10 +113,11 @@ describe('StaffPage (university)', () => {
     const fetchMock = stubFetch()
     renderPage()
 
-    await userEvent.type(await screen.findByLabelText('Email address'), 'new-coordinator@example.test')
+    await userEvent.click(await screen.findByRole('button', { name: 'Add staff account' }))
+    await userEvent.type(screen.getByLabelText('Email address'), 'new-coordinator@example.test')
     await userEvent.type(screen.getByLabelText('Temporary password'), 'Password123')
     await userEvent.type(screen.getByLabelText('Confirm password'), 'Password123')
-    await userEvent.selectOptions(screen.getByLabelText('Departments'), ['dept-1'])
+    await userEvent.click(screen.getByLabelText('Computer Science'))
     await userEvent.click(screen.getByRole('button', { name: 'Create staff account' }))
 
     await waitFor(() => {
@@ -129,7 +133,9 @@ describe('StaffPage (university)', () => {
         departmentIds: ['dept-1'],
       })
     })
-    expect((screen.getByLabelText('Temporary password') as HTMLInputElement).value).toBe('')
+    // The form closes on success, so the typed password leaves browser form state entirely —
+    // and the response never echoes it back (CLAUDE.md section 26A).
+    await waitFor(() => expect(screen.queryByLabelText('Temporary password')).not.toBeInTheDocument())
     expect(screen.queryByText('shown only once', { exact: false })).not.toBeInTheDocument()
   })
 
@@ -144,10 +150,11 @@ describe('StaffPage (university)', () => {
     )
     renderPage()
 
-    await userEvent.type(await screen.findByLabelText('Email address'), 'dup@example.test')
+    await userEvent.click(await screen.findByRole('button', { name: 'Add staff account' }))
+    await userEvent.type(screen.getByLabelText('Email address'), 'dup@example.test')
     await userEvent.type(screen.getByLabelText('Temporary password'), 'Password123')
     await userEvent.type(screen.getByLabelText('Confirm password'), 'Password123')
-    await userEvent.selectOptions(screen.getByLabelText('Departments'), ['dept-1'])
+    await userEvent.click(screen.getByLabelText('Computer Science'))
     await userEvent.click(screen.getByRole('button', { name: 'Create staff account' }))
 
     expect(await screen.findByRole('alert')).toHaveTextContent('An account with this email already exists.')
@@ -210,9 +217,9 @@ describe('StaffPage (university)', () => {
     await userEvent.click(await screen.findByRole('button', { name: 'Change role' }))
     const roleSelect = screen.getByLabelText('Role', { selector: '#role-member-1' })
     await userEvent.selectOptions(roleSelect, 'UNIVERSITY_SUPERVISOR')
-    const departmentsSelect = screen.getByLabelText('Departments', { selector: '#departments-member-1' })
-    await userEvent.deselectOptions(departmentsSelect, ['dept-1'])
-    await userEvent.selectOptions(departmentsSelect, ['dept-2'])
+    // Scope is a checkbox set now: uncheck the old department, check the new one.
+    await userEvent.click(screen.getByLabelText('Computer Science'))
+    await userEvent.click(screen.getByLabelText('Business'))
     await userEvent.click(screen.getByRole('button', { name: 'Save' }))
 
     await waitFor(() => {

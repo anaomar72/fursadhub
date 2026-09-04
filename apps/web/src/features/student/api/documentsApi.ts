@@ -1,5 +1,6 @@
 import { env } from '../../../app/config/env'
 import { ApiError, apiFetch } from '../../../lib/api/client'
+import { downloadPrivateDocument } from '../../../lib/api/privateDocument'
 import { getAccessToken } from '../../../lib/auth/tokenStore'
 
 /**
@@ -34,7 +35,7 @@ export function removeMyCv() {
 }
 
 export function downloadMyCv() {
-  return downloadDocument('/students/me/cv/document')
+  return downloadPrivateDocument('/students/me/cv/document')
 }
 
 // ---------------------------------------------------------------- verification evidence
@@ -44,7 +45,7 @@ export function uploadMyEvidence(file: File) {
 }
 
 export function downloadMyEvidence() {
-  return downloadDocument('/students/me/verification/evidence/document')
+  return downloadPrivateDocument('/students/me/verification/evidence/document')
 }
 
 // ---------------------------------------------------------------- transport
@@ -79,20 +80,3 @@ async function uploadDocument(path: string, file: File): Promise<DocumentPresenc
   return (await response.json()) as DocumentPresence
 }
 
-async function downloadDocument(path: string): Promise<Blob> {
-  const accessToken = getAccessToken()
-  const response = await fetch(`${env.apiBaseUrl}${path}`, {
-    method: 'GET',
-    credentials: 'include',
-    headers: accessToken ? { Authorization: `Bearer ${accessToken}` } : {},
-  })
-
-  if (!response.ok) {
-    const errorBody = await response.json().catch(() => null)
-    if (errorBody) {
-      throw new ApiError(errorBody)
-    }
-    throw new Error(`Download failed with status ${response.status}`)
-  }
-  return response.blob()
-}

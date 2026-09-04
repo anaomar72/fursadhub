@@ -21,14 +21,19 @@ export interface PageHeaderProps {
 export function PageHeader({ eyebrow, title, description, actions, className }: PageHeaderProps) {
   return (
     <div className={cn('flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between', className)}>
-      <div>
+      {/* `min-w-0` + `break-words`: titles are often an email address or an institution name, which
+          have no break opportunity and would otherwise push the whole page sideways on a phone
+          rather than wrapping (BRAND_AND_UI_GUIDELINES.md section 8 — never page-level overflow). */}
+      <div className="min-w-0">
         {eyebrow && (
-          <p className="text-xs font-semibold uppercase tracking-wide text-brand-primary">{eyebrow}</p>
+          <p className="text-xs font-semibold uppercase tracking-wide text-brand-primary dark:text-info">{eyebrow}</p>
         )}
-        <h1 className="mt-1 font-[family-name:var(--font-display)] text-2xl font-bold tracking-tight text-foreground">
+        <h1 className="mt-1 break-words font-[family-name:var(--font-display)] text-2xl font-bold tracking-tight text-foreground">
           {title}
         </h1>
-        {description && <p className="mt-1 text-sm text-foreground-secondary">{description}</p>}
+        {description && (
+          <p className="mt-1 break-words text-sm text-foreground-secondary">{description}</p>
+        )}
       </div>
       {actions && <div className="flex shrink-0 items-center gap-2">{actions}</div>}
     </div>

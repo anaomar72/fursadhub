@@ -7,7 +7,8 @@ import { resetPasswordSchema, type ResetPasswordFormValues } from '../schemas/re
 import * as authApi from '../api/authApi'
 import { authErrorMessage } from '../api/errorMessage'
 import { AuthCard } from '../components/AuthCard'
-import { AnimatedCheck, Button, FormField, Input } from '../../../components/ui'
+import { AnimatedCheck, Button, FormField, PasswordInput } from '../../../components/ui'
+import { BackToLogin } from './ForgotPasswordPage'
 
 export function ResetPasswordPage() {
   const { t } = useTranslation()
@@ -26,7 +27,7 @@ export function ResetPasswordPage() {
   if (!token) {
     return (
       <AuthCard title={t('auth:resetPassword.errors.missingToken')}>
-        <Link to="/forgot-password" className="block text-center text-sm font-medium text-brand-primary hover:underline">
+        <Link to="/forgot-password" className="block text-center text-sm font-medium text-link hover:underline">
           {t('auth:forgotPassword.title')}
         </Link>
       </AuthCard>
@@ -38,7 +39,7 @@ export function ResetPasswordPage() {
       <AuthCard title={t('auth:resetPassword.successTitle')}>
         <AnimatedCheck label={t('auth:resetPassword.successTitle')} />
         <p className="mt-4 text-center text-sm text-foreground-secondary">{t('auth:resetPassword.successBody')}</p>
-        <Link to="/login" className="mt-6 block text-center text-sm font-medium text-brand-primary hover:underline">
+        <Link to="/login" className="mt-6 block text-center text-sm font-medium text-link hover:underline">
           {t('auth:resetPassword.continue')}
         </Link>
       </AuthCard>
@@ -46,18 +47,20 @@ export function ResetPasswordPage() {
   }
 
   return (
-    <AuthCard title={t('auth:resetPassword.title')}>
+    <AuthCard title={t('auth:resetPassword.title')} subtitle={t('auth:resetPassword.subtitle')}>
       <form className="flex flex-col gap-4" noValidate onSubmit={form.handleSubmit((values) => mutation.mutate(values))}>
         <FormField
           label={t('auth:resetPassword.newPasswordLabel')}
           htmlFor="newPassword"
           error={form.formState.errors.newPassword && t(form.formState.errors.newPassword.message ?? '')}
         >
-          <Input
+          <PasswordInput
             id="newPassword"
-            type="password"
             autoComplete="new-password"
+            placeholder={t('auth:resetPassword.newPasswordPlaceholder')}
             invalid={!!form.formState.errors.newPassword}
+            showLabel={t('common:password.show')}
+            hideLabel={t('common:password.hide')}
             {...form.register('newPassword')}
           />
         </FormField>
@@ -67,11 +70,13 @@ export function ResetPasswordPage() {
           htmlFor="confirmPassword"
           error={form.formState.errors.confirmPassword && t(form.formState.errors.confirmPassword.message ?? '')}
         >
-          <Input
+          <PasswordInput
             id="confirmPassword"
-            type="password"
             autoComplete="new-password"
+            placeholder={t('auth:resetPassword.confirmPasswordPlaceholder')}
             invalid={!!form.formState.errors.confirmPassword}
+            showLabel={t('common:password.show')}
+            hideLabel={t('common:password.hide')}
             {...form.register('confirmPassword')}
           />
         </FormField>
@@ -86,6 +91,7 @@ export function ResetPasswordPage() {
           {t('auth:resetPassword.submit')}
         </Button>
       </form>
+      <BackToLogin />
     </AuthCard>
   )
 }

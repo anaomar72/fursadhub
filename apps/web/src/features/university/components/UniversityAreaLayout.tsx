@@ -1,16 +1,17 @@
-import { Outlet } from 'react-router-dom'
 import { useQuery } from '@tanstack/react-query'
 import { useTranslation } from 'react-i18next'
 import * as universityApi from '../api/universityApi'
 import { UniversityMembershipContext } from './UniversityMembershipContext'
 import { UniversitySetupPage } from '../pages/UniversitySetupPage'
+import { buildUniversityNav } from './universityNavigation'
 import { LoadingSpinner } from '../../../components/ui'
-import { AreaTabs } from '../../../app/layouts/AreaTabs'
+import { AppShell } from '../../../app/layouts/AppShell'
 
 /**
- * Resolves the caller's active university staff membership once and shares it with every
- * university sub-page via context — those pages still rely on the backend re-checking
- * authorization on every request (CLAUDE.md section 24); this only drives navigation/UX.
+ * Resolves the caller's active university staff membership once, shares it with every university
+ * sub-page via context, and builds the sidebar from that same membership — those pages still rely
+ * on the backend re-checking authorization on every request (CLAUDE.md section 24); this only
+ * drives navigation/UX.
  */
 export function UniversityAreaLayout() {
   const { t } = useTranslation()
@@ -18,39 +19,33 @@ export function UniversityAreaLayout() {
 
   if (membershipQuery.isLoading) {
     return (
-      <div className="flex justify-center py-16">
+      <div className="flex min-h-svh items-center justify-center">
         <LoadingSpinner size="lg" />
       </div>
     )
   }
 
+  // No membership yet: the setup screen still gets the shell (with only the account destinations),
+  // so a visitor here can always reach notifications, theme, language and sign-out.
   if (!membershipQuery.data) {
-    return <UniversitySetupPage />
+    return (
+      <AppShell
+        areaLabel={t('common:nav.university')}
+        sections={[
+          {
+            label: t('common:shell.sections.account'),
+            items: [{ to: '/account/notifications', label: t('notifications:title'), icon: 'bell' }],
+          },
+        ]}
+      >
+        <UniversitySetupPage />
+      </AppShell>
+    )
   }
-
-  const isAdmin = membershipQuery.data.role === 'UNIVERSITY_ADMIN'
 
   return (
     <UniversityMembershipContext.Provider value={membershipQuery.data}>
-      <AreaTabs
-        items={[
-          { to: '/university/dashboard', label: t('university:nav.dashboard') },
-          { to: '/university/students', label: t('university:nav.students') },
-          { to: '/university/verification-cases', label: t('university:nav.verificationQueue') },
-          { to: '/university/opportunity-requests', label: t('recruitment:nav.opportunityRequests') },
-          { to: '/university/nominations', label: t('recruitment:nav.nominations') },
-          { to: '/university/placements', label: t('placements:nav.placements') },
-          { to: '/university/departments', label: t('university:nav.departments') },
-          { to: '/university/profile', label: t('university:nav.profile') },
-          // Phase 6 internship requirements. Visible to admins and coordinators alike: a coordinator
-          // configures their own departments, and the backend refuses anything wider. A supervisor
-          // has no policy authority at all (InternshipManagementAuthorization.requirePolicyAuthority
-          // only allows UNIVERSITY_ADMIN/DEPARTMENT_COORDINATOR), so the tab must not offer it.
-          { to: '/university/internship-policy', label: t('internship:policy.title'), hidden: membershipQuery.data.role === 'UNIVERSITY_SUPERVISOR' },
-          { to: '/university/staff', label: t('university:nav.staff'), hidden: !isAdmin },
-        ]}
-      />
-      <Outlet />
+      <AppShell areaLabel={t('common:nav.university')} sections={buildUniversityNav(t, membershipQuery.data)} />
     </UniversityMembershipContext.Provider>
   )
 }

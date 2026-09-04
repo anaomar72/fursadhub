@@ -33,7 +33,8 @@
     "applications": "My applications",
     "nominations": "Nominations",
     "candidates": "Candidates",
-    "opportunityRequests": "Nomination requests"
+    "opportunityRequests": "Nomination requests",
+    "shortlist": "Shortlist"
   },
   "apply": {
     "title": "Apply for this internship",
@@ -65,7 +66,19 @@
   "applications": {
     "title": "My applications",
     "empty": "You have not applied to any internships yet.",
-    "offerAwaitingResponse": "You have an offer awaiting your response by {{deadline}}."
+    "offerAwaitingResponse": "You have an offer awaiting your response by {{deadline}}.",
+    "subtitle": "Applications you submitted and nominations you accepted, in one pipeline.",
+    "error": "Your applications could not be loaded.",
+    "emptyHint": "Browse open internships and apply to get started.",
+    "emptyForFilter": "No applications in this group.",
+    "filterLabel": "Filter applications",
+    "appliedOn": "Applied {{date}}",
+    "filters": {
+      "all": "All",
+      "active": "In progress",
+      "offers": "Offers",
+      "closed": "Closed"
+    }
   },
   "detail": {
     "notFound": "This application is no longer available.",
@@ -87,7 +100,9 @@
       "CANDIDACY_HAS_PLACEMENT": "You cannot withdraw after accepting an offer.",
       "CANDIDACY_INVALID_TRANSITION": "This action isn't available for the current stage.",
       "generic": "Something went wrong. Please try again."
-    }
+    },
+    "withdrawTitle": "Withdraw this application",
+    "withdrawHint": "You can withdraw while the organization is still reviewing. This cannot be undone."
   },
   "nominations": {
     "title": "Nominations",
@@ -106,14 +121,41 @@
       "CANDIDACY_ALREADY_CLOSED": "This application has already been closed.",
       "OPPORTUNITY_NOT_PUBLISHED": "This opportunity is no longer accepting candidates.",
       "generic": "Something went wrong. Please try again."
-    }
+    },
+    "emptyUniversity": "No nominations yet."
   },
   "pool": {
     "title": "Candidates",
     "backToOpportunity": "Back to opportunity",
     "filterLabel": "Filter candidates by source",
     "allSources": "All candidates",
-    "empty": "No candidates yet."
+    "empty": "No candidates yet.",
+    "subtitle": "Applicants and nominees are one pool — the source is a filter over it, not a separate pipeline.",
+    "viewLabel": "Pool views",
+    "views": {
+      "board": "Pipeline",
+      "list": "List"
+    },
+    "boardLabel": "Candidate pipeline by stage",
+    "stageEmpty": "Nobody at this stage",
+    "closedCount_one": "{{count}} candidate has left the pipeline and is not shown on the board.",
+    "closedCount_other": "{{count}} candidates have left the pipeline and are not shown on the board.",
+    "candidate": "Candidate",
+    "internship": "Internship",
+    "source": "Source",
+    "submitted": "Applied",
+    "liveOffer": "Live offer",
+    "offerRespondBy": "Reply by {{date}}",
+    "status": "Status",
+    "closed": "Closed",
+    "statusLabel": "Stage",
+    "sourceLabel": "Source",
+    "allStatuses": "All stages",
+    "searchLabel": "Search candidates",
+    "searchPlaceholder": "Search by name or email",
+    "resultCount_one": "{{count}} candidate",
+    "resultCount_other": "{{count}} candidates",
+    "emptyHint": "Candidates appear here as students apply or universities nominate them."
   },
   "candidate": {
     "notFound": "This candidate is no longer available.",
@@ -145,8 +187,24 @@
       "STUDENT_NOT_AVAILABLE": "This student already has an active internship placement.",
       "ACCESS_DENIED": "You do not have access to this candidate.",
       "VALIDATION_FAILED": "Please check the form and try again.",
-      "generic": "Something went wrong. Please try again."
-    }
+      "generic": "Something went wrong. Please try again.",
+      "CV_NOT_FOUND": "This candidate has not uploaded a CV.",
+      "STUDENT_PROFILE_NOT_FOUND": "This candidate has no student profile."
+    },
+    "actionsTitle": "Recruitment",
+    "actionsHint": "Each step is its own action, matching what the workflow allows from here.",
+    "noAnswers": "This internship had no screening questions.",
+    "noOffers": "No offer has been sent yet.",
+    "sendOfferHint": "The student accepts or declines; accepting creates the placement.",
+    "withdrawOffer": "Withdraw offer",
+    "respondBy": "Reply by {{date}}",
+    "historyTitle": "History",
+    "historyHint": "Every recorded change on this candidacy, newest first.",
+    "noHistory": "No history recorded yet.",
+    "transition": "from {{from}}",
+    "cvTitle": "CV",
+    "cvHint": "Opens the CV this candidate uploaded, if they have one on file.",
+    "openCv": "Open CV"
   },
   "screening": {
     "title": "Screening questions",
@@ -177,7 +235,9 @@
     "empty": "No organizations have requested nominations yet.",
     "notFound": "This request is no longer available.",
     "progress": "{{current}} of {{requested}} nominated",
-    "deadline": "Nominate by {{deadline}}"
+    "deadline": "Nominate by {{deadline}}",
+    "subtitle": "Organizations asking your university to nominate students.",
+    "emptyHint": "When an organization targets your university, its request appears here."
   },
   "nominate": {
     "eligibleTitle": "Eligible students",
@@ -207,5 +267,26 @@
       "ACCESS_DENIED": "You do not have access to this nomination.",
       "generic": "Something went wrong. Please try again."
     }
+  },
+  "targetStatusValues": {
+    "REQUESTED": "Requested",
+    "ACKNOWLEDGED": "Acknowledged",
+    "NOMINATING": "Nominating",
+    "COMPLETED": "Completed",
+    "DECLINED": "Declined",
+    "EXPIRED": "Expired"
+  },
+  "organizationPool": {
+    "title": "All candidates",
+    "subtitle": "Everyone in the pipeline across the internships you are recruiting for.",
+    "allInternships": "All internships",
+    "noRecruiting": "No internships are recruiting",
+    "noRecruitingHint": "Publish an internship to start receiving candidates.",
+    "scanned_one": "Checked {{count}} internship.",
+    "scanned_other": "Checked {{count}} internships.",
+    "scannedPartial": "Checked the first {{scanned}} of {{total}} internships.",
+    "partialError": "Some candidate lists could not be read and are not shown here.",
+    "stageTitle": "{{stage}} candidates",
+    "stageSubtitle": "One stage of the same pool. Clear the stage filter to see everyone."
   }
 }
