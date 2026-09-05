@@ -3,12 +3,9 @@ package com.fursadhub.opportunity.infrastructure.persistence;
 import com.fursadhub.opportunity.domain.InternshipOpportunity;
 import com.fursadhub.opportunity.domain.PublicOpportunityFilter;
 import com.fursadhub.opportunity.domain.PublicOpportunityVisibility;
-import com.fursadhub.organization.domain.Organization;
-import jakarta.persistence.criteria.CriteriaBuilder;
-import jakarta.persistence.criteria.CriteriaQuery;
+
 import jakarta.persistence.criteria.Predicate;
-import jakarta.persistence.criteria.Root;
-import jakarta.persistence.criteria.Subquery;
+
 import org.springframework.data.jpa.domain.Specification;
 
 import java.util.ArrayList;
@@ -37,31 +34,7 @@ final class InternshipOpportunitySpecifications {
      * {@code PublicOpportunityController} is unaffected.
      */
     static Specification<InternshipOpportunity> publiclyVisible() {
-        return (root, query, cb) -> cb.and(
-                cb.equal(root.get("status"), PublicOpportunityVisibility.STATUS),
-                root.get("mode").in(PublicOpportunityVisibility.MODES),
-                owningOrganizationIsVerified(root, query, cb));
-    }
-
-    /**
-     * {@code EXISTS (SELECT 1 FROM Organization o WHERE o.id = opportunity.organizationId AND
-     * o.verificationStatus = VERIFIED)}.
-     *
-     * <p>Evaluated live on every read, which is the whole point: an organization suspended after
-     * publishing loses discoverability immediately, and one restored to {@code VERIFIED} regains it
-     * immediately — in both cases without touching a single opportunity row.
-     */
-    private static Predicate owningOrganizationIsVerified(
-            Root<InternshipOpportunity> root, CriteriaQuery<?> query, CriteriaBuilder cb) {
-        Subquery<UUID> verifiedOwner = query.subquery(UUID.class);
-        Root<Organization> organization = verifiedOwner.from(Organization.class);
-        verifiedOwner.select(organization.get("id"))
-                .where(cb.and(
-                        cb.equal(organization.get("id"), root.get("organizationId")),
-                        cb.equal(
-                                organization.get("verificationStatus"),
-                                PublicOpportunityVisibility.REQUIRED_ORGANIZATION_STATUS)));
-        return cb.exists(verifiedOwner);
+        return PublicOpportunityPredicates::publiclyVisible;
     }
 
     static Specification<InternshipOpportunity> matching(PublicOpportunityFilter filter) {
