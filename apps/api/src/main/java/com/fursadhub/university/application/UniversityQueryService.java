@@ -2,6 +2,7 @@ package com.fursadhub.university.application;
 
 import com.fursadhub.common.api.ApiException;
 import com.fursadhub.university.domain.Department;
+import com.fursadhub.university.domain.PublicUniversityFilter;
 import com.fursadhub.university.domain.DepartmentRepository;
 import com.fursadhub.university.domain.University;
 import com.fursadhub.university.domain.UniversityRepository;
@@ -66,8 +67,8 @@ public class UniversityQueryService {
      * rule lives in the repository query, so unlike {@link #listUniversities} above this never loads
      * a wider set and narrows it in memory.
      */
-    public Page<University> searchPublicDirectory(String nameFragment, Pageable pageable) {
-        return universities.searchPublicDirectory(nameFragment, pageable);
+    public Page<University> searchPublicDirectory(PublicUniversityFilter filter, Pageable pageable) {
+        return universities.searchPublicDirectory(filter, pageable);
     }
 
     public University getUniversity(UUID universityId) {

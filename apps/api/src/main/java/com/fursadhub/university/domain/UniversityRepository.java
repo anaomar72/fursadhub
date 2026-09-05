@@ -31,7 +31,7 @@ public interface UniversityRepository {
      * rather than by filtering a broader result. Unlike organizations there is no second admission
      * rule: an unverified university must never appear in a public directory of institutions.
      */
-    Page<University> searchPublicDirectory(String nameFragment, Pageable pageable);
+    Page<University> searchPublicDirectory(PublicUniversityFilter filter, Pageable pageable);
 
     long countByStatus(InstitutionVerificationStatus status);
 }

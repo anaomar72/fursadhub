@@ -189,7 +189,8 @@ class PublicUniversityDirectoryIT extends AbstractPhase3IT {
                 UPDATE universities
                    SET registration_number = 'SECRET-UNI-9876',
                        description = 'A public description.',
-                       website = 'https://example.test'
+                       website = 'https://example.test',
+                       country_code = 'SO'
                  WHERE id = ?
                 """, universityId);
 
@@ -197,11 +198,15 @@ class PublicUniversityDirectoryIT extends AbstractPhase3IT {
         assertThat(matches).hasSize(1);
         Map<String, Object> row = matches.get(0);
 
+        // countryCode and hasCover are Backend Phase B2 additions — real institution-managed profile
+        // data, deliberately public. publicContactEmail is deliberately NOT on a directory row.
         assertThat(row.keySet()).containsExactlyInAnyOrder(
-                "id", "name", "slug", "city", "description", "website", "verified", "hasLogo");
+                "id", "name", "slug", "city", "countryCode", "description", "website",
+                "verified", "hasLogo", "hasCover");
         assertThat(row).doesNotContainKeys(
                 "registrationNumber", "status", "verifiedAt", "evidenceStoredFileId", "evidenceUploadedAt",
-                "logoStoredFileId", "logoUploadedAt", "createdAt", "updatedAt", "departments", "staff",
+                "logoStoredFileId", "logoUploadedAt", "coverStoredFileId", "coverUploadedAt",
+                "publicContactEmail", "createdAt", "updatedAt", "departments", "staff",
                 "students", "placements");
         assertThat(row.toString()).doesNotContain("SECRET-UNI-9876");
     }

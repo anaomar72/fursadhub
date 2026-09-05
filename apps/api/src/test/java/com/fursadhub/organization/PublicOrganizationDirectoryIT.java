@@ -334,12 +334,16 @@ class PublicOrganizationDirectoryIT extends AbstractPhase3IT {
 
         Map<String, Object> row = singleRowMatching(name);
 
+        // industry/city/countryCode/shortDescription/hasCover are Backend Phase B2 additions — real
+        // institution-managed profile data, deliberately public. Everything on the exclusion list
+        // below stays private.
         assertThat(row.keySet()).containsExactlyInAnyOrder(
-                "id", "name", "slug", "type", "description", "website", "verified", "hasLogo", "openOpportunityCount");
+                "id", "name", "slug", "type", "description", "website", "verified", "hasLogo",
+                "hasCover", "openOpportunityCount");
         assertThat(row).doesNotContainKeys(
                 "registrationNumber", "verificationStatus", "verifiedAt", "evidenceStoredFileId",
-                "evidenceUploadedAt", "logoStoredFileId", "logoUploadedAt", "createdAt", "updatedAt",
-                "members", "memberships", "staff");
+                "evidenceUploadedAt", "logoStoredFileId", "logoUploadedAt", "coverStoredFileId",
+                "coverUploadedAt", "createdAt", "updatedAt", "members", "memberships", "staff");
         assertThat(row.toString()).doesNotContain("SECRET-REG-1234");
     }
 

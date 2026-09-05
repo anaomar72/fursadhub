@@ -15,18 +15,21 @@ import com.fursadhub.university.domain.University;
  * and a university's relationship to them runs through placements and nominations, which are
  * private. Publishing a count derived from those would leak the shape of student placement data.
  *
- * <p>Location is limited to the existing {@code city} column. A structured country field arrives in
- * Backend Phase B2; inventing one here would mean a filter with nothing behind it.
+ * <p>Backend Phase B2 added {@code countryCode} and {@code hasCover}. {@code publicContactEmail} is
+ * deliberately NOT carried here — a contact address belongs on the profile page someone chose to
+ * open, not in a directory grid that is trivially scrapable.
  */
 public record PublicUniversitySummaryResponse(
         String id,
         String name,
         String slug,
         String city,
+        String countryCode,
         String description,
         String website,
         boolean verified,
-        boolean hasLogo) {
+        boolean hasLogo,
+        boolean hasCover) {
 
     public static PublicUniversitySummaryResponse from(University university) {
         return new PublicUniversitySummaryResponse(
@@ -34,10 +37,12 @@ public record PublicUniversitySummaryResponse(
                 university.getName(),
                 university.getSlug(),
                 university.getCity(),
+                university.getCountryCode(),
                 university.getDescription(),
                 university.getWebsite(),
                 university.isVerified(),
-                // A column on the aggregate already in memory — never a second query per row.
-                university.getLogoStoredFileId() != null);
+                // Columns on the aggregate already in memory — never a second query per row.
+                university.getLogoStoredFileId() != null,
+                university.getCoverStoredFileId() != null);
     }
 }

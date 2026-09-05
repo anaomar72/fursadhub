@@ -19,6 +19,13 @@ public record UniversityDetailResponse(
         String name,
         String slug,
         String city,
+        // Backend Phase B2. Readable here as well as publicly because the management form must be
+        // able to display what it edits. Omitting one on save no longer clears it — see
+        // UpdateUniversityRequest.
+        String countryCode,
+        String publicContactEmail,
+        boolean hasCover,
+        Instant coverUploadedAt,
         String registrationNumber,
         String website,
         String description,
@@ -37,6 +44,10 @@ public record UniversityDetailResponse(
                 university.getName(),
                 university.getSlug(),
                 university.getCity(),
+                university.getCountryCode(),
+                university.getPublicContactEmail(),
+                university.getCoverStoredFileId() != null,
+                university.getCoverUploadedAt(),
                 university.getRegistrationNumber(),
                 university.getWebsite(),
                 university.getDescription(),

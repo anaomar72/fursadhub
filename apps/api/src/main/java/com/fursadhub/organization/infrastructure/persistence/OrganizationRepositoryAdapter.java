@@ -10,6 +10,7 @@ import org.springframework.stereotype.Repository;
 
 import java.util.Collection;
 import java.util.List;
+import java.util.Locale;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -41,9 +42,29 @@ class OrganizationRepositoryAdapter implements OrganizationRepository {
 
     @Override
     public Page<Organization> searchPublicDirectory(PublicOrganizationFilter filter, Pageable pageable) {
-        // Empty string, never null — see the Javadoc on the query.
-        String fragment = (filter.query() == null || filter.query().isBlank()) ? "" : filter.query().trim();
-        return jpaRepository.searchPublicDirectory(filter.type(), fragment, pageable);
+        // Empty string, never null — see the Javadoc on the query. An absent filter must not reach
+        // PostgreSQL as an untyped null, and must short-circuit its own clause.
+        return jpaRepository.searchPublicDirectory(
+                filter.type(),
+                lowerOrEmpty(filter.industry()),
+                lowerOrEmpty(filter.city()),
+                upperOrEmpty(filter.country()),
+                blankToEmpty(filter.query()),
+                pageable);
+    }
+
+    private String blankToEmpty(String value) {
+        return (value == null || value.isBlank()) ? "" : value.trim();
+    }
+
+    /** Lower-cased so the exact match is case-insensitive whichever case the caller sent. */
+    private String lowerOrEmpty(String value) {
+        return blankToEmpty(value).toLowerCase(Locale.ROOT);
+    }
+
+    /** Country codes are stored upper-cased, so the filter is upper-cased to match. */
+    private String upperOrEmpty(String value) {
+        return blankToEmpty(value).toUpperCase(Locale.ROOT);
     }
 
     @Override

@@ -58,6 +58,21 @@ public abstract class AbstractPhase3IT extends AbstractIdentityIT {
         return authorizedExchange(path, HttpMethod.PATCH, accessToken, body);
     }
 
+    /**
+     * PATCH with a hand-written JSON body, for tests that need an EXPLICIT JSON null.
+     *
+     * <p>A {@code Map} carrying a null value will not do: the application's
+     * {@code default-property-inclusion: non_null} applies to the ObjectMapper this test client
+     * shares, so the key would be dropped on the way out — turning "clear this field" into "omit
+     * this field", which is precisely the distinction under test since Backend Phase B2.
+     */
+    protected ResponseEntity<Map> authorizedPatchJson(String path, String accessToken, String json) {
+        HttpHeaders headers = new HttpHeaders();
+        headers.setBearerAuth(accessToken);
+        headers.setContentType(MediaType.APPLICATION_JSON);
+        return restTemplate.exchange(url(path), HttpMethod.PATCH, new HttpEntity<>(json, headers), Map.class);
+    }
+
     protected ResponseEntity<Map> authorizedDelete(String path, String accessToken) {
         return authorizedExchange(path, HttpMethod.DELETE, accessToken, null);
     }
@@ -170,6 +185,19 @@ public abstract class AbstractPhase3IT extends AbstractIdentityIT {
                 "INSERT INTO universities (id, name, slug, city, status, created_at, updated_at) VALUES (?, ?, ?, ?, 'VERIFIED', now(), now())",
                 universityId, name, "univ-" + universityId, "Testville");
         return universityId;
+    }
+
+    /**
+     * Whole-university membership (no department scope), for tests that need a university staff role
+     * without going through staff provisioning. Added in Backend Phase B2 for the university profile
+     * tests; {@code AbstractPhase4IT} has its own department-scoped variant.
+     */
+    protected UUID insertUniversityMembership(UUID universityId, UUID userId, String role) {
+        UUID membershipId = UUID.randomUUID();
+        jdbcTemplate.update(
+                "INSERT INTO university_memberships (id, university_id, user_id, role, assigned_at) VALUES (?, ?, ?, ?, now())",
+                membershipId, universityId, userId, role);
+        return membershipId;
     }
 
     protected UUID insertDepartment(UUID universityId, String name, String code) {
