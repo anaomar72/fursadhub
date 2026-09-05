@@ -3,6 +3,7 @@ import {
   attentionItems,
   headlineCounts,
   pendingInstitutionReviews,
+  publiclyDiscoverable,
   total,
 } from '../../../src/features/admin/platformMetrics'
 import type { PlatformStatistics } from '../../../src/features/admin/types'
@@ -10,9 +11,13 @@ import type { PlatformStatistics } from '../../../src/features/admin/types'
 function statistics(overrides: Partial<PlatformStatistics> = {}): PlatformStatistics {
   return {
     usersByStatus: { ACTIVE: 40, SUSPENDED: 2, PENDING_CONTACT_VERIFICATION: 8 },
+    studentProfiles: 24,
+    studentEnrollmentsByVerificationStatus: { VERIFIED: 18, SUBMITTED: 4, DRAFT: 2 },
     universities: 3,
+    universitiesByVerificationStatus: { VERIFIED: 2, SUBMITTED: 1 },
     organizationsByVerificationStatus: { VERIFIED: 5, SUBMITTED: 2, UNDER_REVIEW: 1 },
     opportunitiesByStatus: { PUBLISHED: 12, DRAFT: 4, CLOSED: 2 },
+    publiclyDiscoverableOpportunities: 9,
     candidacies: 130,
     placementsByStatus: { ACTIVE: 9, COMPLETED: 20 },
     openPrivacyRequests: 0,
@@ -50,39 +55,81 @@ describe('headlineCounts', () => {
     const counts = headlineCounts(statistics())
     const linked = counts.filter((count) => count.to !== null).map((count) => count.id)
 
-    // Accounts, universities and organizations have real platform-wide list endpoints.
-    expect(linked).toEqual(['users', 'universities', 'organizations'])
+    // Backend Phase B6 added the internships screen, so that card's link now goes somewhere. The
+    // three that remain unlinked have no platform-wide list endpoint, and B6 did not add one.
+    expect(linked).toEqual(['users', 'universities', 'organizations', 'opportunities'])
   })
 
   it('gives the unlinkable counts a real breakdown instead of a dead link', () => {
     const counts = headlineCounts(statistics())
 
-    // Internships and placements cannot be listed platform-wide — platform-admin authorization
-    // exists only in the administration, compliance and verification-evidence services — so they
-    // carry their status split rather than a "View all" that would 403.
-    const opportunities = counts.find((count) => count.id === 'opportunities')!
-    expect(opportunities.to).toBeNull()
-    expect(opportunities.breakdown).toEqual({ PUBLISHED: 12, DRAFT: 4, CLOSED: 2 })
+    // Applications and placements still cannot be listed platform-wide, so they carry their real
+    // figures rather than a "View all" that would 404.
+    const placements = counts.find((count) => count.id === 'placements')!
+    expect(placements.to).toBeNull()
+    expect(placements.breakdown).toEqual({ ACTIVE: 9, COMPLETED: 20 })
+
+    const candidacies = counts.find((count) => count.id === 'candidacies')!
+    expect(candidacies.to).toBeNull()
+    expect(candidacies.value).toBe(130)
   })
 
-  it('holds no metric the statistics endpoint cannot produce', () => {
-    // The prototype's "Students" card has no backend source: statistics counts ACCOUNTS by status,
-    // and there is no platform-wide student endpoint anywhere in the API.
-    expect(headlineCounts(statistics()).map((count) => count.id)).not.toContain('students')
+  it('sources the students card from student profiles, not the account count', () => {
+    // Backend Phase B6 added studentProfiles. The card must read THAT, never the users table —
+    // a recruiter has an account and is not a student.
+    const counts = headlineCounts(statistics())
+    const students = counts.find((count) => count.id === 'students')!
+
+    expect(students.value).toBe(24)
+    expect(students.value).not.toBe(total(statistics().usersByStatus))
+    // No list screen exists for students, so the card must not pretend one does.
+    expect(students.to).toBeNull()
   })
 
   it('survives an empty platform without inventing numbers', () => {
     const counts = headlineCounts(
       statistics({
         usersByStatus: {},
+        studentProfiles: 0,
+        studentEnrollmentsByVerificationStatus: {},
         universities: 0,
+        universitiesByVerificationStatus: {},
         organizationsByVerificationStatus: {},
         opportunitiesByStatus: {},
+        publiclyDiscoverableOpportunities: 0,
         candidacies: 0,
         placementsByStatus: {},
       }),
     )
     expect(counts.every((count) => count.value === 0)).toBe(true)
+  })
+
+  describe('publiclyDiscoverable', () => {
+    it('reports the gap between what is published and what the public can see', () => {
+      // 12 PUBLISHED, 9 actually discoverable — the 3 are targeted-only listings or ones whose
+      // organization has since been suspended (Backend Phase B1.5).
+      expect(publiclyDiscoverable(statistics())).toEqual({
+        discoverable: 9,
+        published: 12,
+        hidden: 3,
+      })
+    })
+
+    it('never reports a negative hidden count', () => {
+      // Defensive: the two figures are counted by separate queries, so a race between them must
+      // read as "nothing hidden" rather than as a negative number on the dashboard.
+      expect(
+        publiclyDiscoverable(statistics({ publiclyDiscoverableOpportunities: 20 })).hidden,
+      ).toBe(0)
+    })
+
+    it('treats an absent PUBLISHED key as zero', () => {
+      expect(publiclyDiscoverable(statistics({ opportunitiesByStatus: { DRAFT: 4 } }))).toEqual({
+        discoverable: 9,
+        published: 0,
+        hidden: 0,
+      })
+    })
   })
 })
 

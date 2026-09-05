@@ -1,5 +1,6 @@
 package com.fursadhub.opportunity.infrastructure.persistence;
 
+import com.fursadhub.opportunity.domain.AdminOpportunityFilter;
 import com.fursadhub.opportunity.domain.InternshipOpportunity;
 import com.fursadhub.opportunity.domain.InternshipOpportunityRepository;
 import com.fursadhub.opportunity.domain.PublicOpportunityFilter;
@@ -47,6 +48,19 @@ class InternshipOpportunityRepositoryAdapter implements InternshipOpportunityRep
     @Override
     public Optional<InternshipOpportunity> findPublicById(UUID id) {
         return jpaRepository.findOne(InternshipOpportunitySpecifications.publicById(id));
+    }
+
+    @Override
+    public Page<InternshipOpportunity> searchForAdmin(AdminOpportunityFilter filter, Pageable pageable) {
+        return jpaRepository.findAll(InternshipOpportunitySpecifications.matchingForAdmin(filter), pageable);
+    }
+
+    @Override
+    public long countPubliclyDiscoverable() {
+        return jpaRepository.countPubliclyDiscoverable(
+                PublicOpportunityVisibility.STATUS,
+                PublicOpportunityVisibility.MODES,
+                PublicOpportunityVisibility.REQUIRED_ORGANIZATION_STATUS);
     }
 
     @Override

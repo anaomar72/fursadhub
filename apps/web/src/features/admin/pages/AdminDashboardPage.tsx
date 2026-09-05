@@ -15,7 +15,12 @@ import {
   type IconName,
 } from '../../../components/ui'
 import * as adminApi from '../api/adminApi'
-import { attentionItems, headlineCounts, type HeadlineCount } from '../platformMetrics'
+import {
+  attentionItems,
+  headlineCounts,
+  publiclyDiscoverable,
+  type HeadlineCount,
+} from '../platformMetrics'
 import { usePlatformActivity, ACTIVITY_MONTHS } from '../hooks/usePlatformActivity'
 import { formatDate, formatMonth } from '../../../lib/utils/formatDate'
 import { formatNumber } from '../../../lib/utils/formatNumber'
@@ -24,6 +29,7 @@ import type { PlatformStatistics } from '../types'
 
 const HEADLINE_ICONS: Record<string, IconName> = {
   users: 'users',
+  students: 'user',
   universities: 'bank',
   organizations: 'building',
   opportunities: 'briefcase',
@@ -94,11 +100,12 @@ export function AdminDashboardPage() {
                 <HeadlineCard key={count.id} count={count} />
               ))}
             </div>
-            <div className="grid gap-4 sm:grid-cols-2">
+            <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
               {headlineCounts(statisticsQuery.data).slice(4).map((count) => (
                 <HeadlineCard key={count.id} count={count} wide />
               ))}
             </div>
+            <PublicVisibilityNote statistics={statisticsQuery.data} />
           </section>
 
           <AttentionStrip statistics={statisticsQuery.data} />
@@ -165,6 +172,37 @@ function HeadlineCard({ count, wide }: { count: HeadlineCount; wide?: boolean })
         </p>
       ) : null}
     </Card>
+  )
+}
+
+/**
+ * How many published internships the public can actually see (Backend Phase B6).
+ *
+ * <p>A sentence rather than a card, because it is a qualifier on the internships figure above and not
+ * a separate population. It says the true thing plainly: PUBLISHED is a stored state, and Backend
+ * Phase B1.5 hides some published listings — university-targeted ones by design, and any whose
+ * organization has since been suspended. Without this, an administrator comparing the dashboard to
+ * the public site would reasonably conclude one of them was broken.
+ *
+ * <p>The "hidden" figure is a subtraction of two real counts, not an estimate, and it renders only
+ * when there is genuinely something published to describe.
+ */
+function PublicVisibilityNote({ statistics }: { statistics: PlatformStatistics }) {
+  const { t } = useTranslation()
+  const { discoverable, published, hidden } = publiclyDiscoverable(statistics)
+
+  if (published === 0) {
+    return null
+  }
+
+  return (
+    <p className="text-sm text-foreground-secondary">
+      {t('admin:dashboard.publicVisibility', {
+        discoverable: formatNumber(discoverable),
+        published: formatNumber(published),
+      })}
+      {hidden > 0 ? ` ${t('admin:dashboard.publicVisibilityHidden', { count: hidden })}` : ''}
+    </p>
   )
 }
 

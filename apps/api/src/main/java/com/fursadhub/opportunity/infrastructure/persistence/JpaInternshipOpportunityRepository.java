@@ -79,4 +79,27 @@ interface JpaInternshipOpportunityRepository
             @Param("status") OpportunityStatus status,
             @Param("modes") Collection<OpportunityMode> modes,
             @Param("requiredOrganizationStatus") InstitutionVerificationStatus requiredOrganizationStatus);
+
+    /**
+     * Platform-wide count of PUBLICLY DISCOVERABLE opportunities (Backend Phase B6).
+     *
+     * <p>Same three terms as {@link #countPublicByOrganizationIds}, without the organization filter,
+     * and bound from {@link com.fursadhub.opportunity.domain.PublicOpportunityVisibility} for the
+     * same reason: a dashboard figure that could disagree with the list it describes is worse than
+     * no figure at all.
+     */
+    @Query("""
+            SELECT COUNT(o)
+            FROM InternshipOpportunity o
+            WHERE o.status = :status
+              AND o.mode IN :modes
+              AND EXISTS (
+                SELECT 1 FROM Organization org
+                WHERE org.id = o.organizationId AND org.verificationStatus = :requiredOrganizationStatus
+              )
+            """)
+    long countPubliclyDiscoverable(
+            @Param("status") OpportunityStatus status,
+            @Param("modes") Collection<OpportunityMode> modes,
+            @Param("requiredOrganizationStatus") InstitutionVerificationStatus requiredOrganizationStatus);
 }

@@ -29,6 +29,11 @@ export function buildAdminNav(t: TFunction, session: AdminSession): NavSection[]
   if (can.canAdministerAccounts) {
     primary.push({ to: '/admin/users', label: t('admin:nav.users'), icon: 'users' })
   }
+  // Backend Phase B6. Sits with the platform-wide reads rather than in the verification group: it is
+  // oversight of what organizations have posted, not a review queue anyone works through.
+  if (can.canOverseeOpportunities) {
+    primary.push({ to: '/admin/opportunities', label: t('admin:nav.opportunities'), icon: 'briefcase' })
+  }
 
   const sections: NavSection[] = [{ items: primary }]
 

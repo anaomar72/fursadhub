@@ -3,6 +3,8 @@ import { downloadPrivateDocument } from '../../../lib/api/privateDocument'
 import type { LegalDocument, LegalDocumentType } from '../../legal/types'
 import type { PrivacyRequest, PrivacyRequestState } from '../../privacy/types'
 import type {
+  AdminOpportunity,
+  AdminOpportunityDetail,
   AdminOrganization,
   AdminSession,
   AdminUniversity,
@@ -10,6 +12,8 @@ import type {
   AuditEvent,
   EscalatedCase,
   InstitutionVerificationStatus,
+  OpportunityMode,
+  OpportunityStatus,
   Page,
   PlatformAdminGrant,
   PlatformRole,
@@ -77,6 +81,36 @@ export function grantPlatformRole(userId: string, role: PlatformRole) {
 
 export function revokePlatformRole(grantId: string) {
   return apiFetch<{ message: string }>(`/admin/platform-roles/${grantId}/revoke`, { method: 'POST' })
+}
+
+// ---------------------------------------------------------------- opportunity oversight
+
+/**
+ * Platform-wide opportunity oversight (Backend Phase B6). Super Admin only, and READ ONLY — there is
+ * deliberately no create, update, publish, pause or delete counterpart anywhere in this file.
+ * Organizations own their opportunities; the platform observes them.
+ */
+export function listAdminOpportunities(
+  options: {
+    query?: string
+    status?: OpportunityStatus
+    mode?: OpportunityMode
+    organizationId?: string
+    page?: number
+  } = {},
+) {
+  const params = new URLSearchParams()
+  if (options.query) params.set('query', options.query)
+  if (options.status) params.set('status', options.status)
+  if (options.mode) params.set('mode', options.mode)
+  if (options.organizationId) params.set('organizationId', options.organizationId)
+  if (options.page !== undefined) params.set('page', String(options.page))
+  const query = params.toString()
+  return apiFetch<Page<AdminOpportunity>>(`/admin/opportunities${query ? `?${query}` : ''}`)
+}
+
+export function getAdminOpportunity(opportunityId: string) {
+  return apiFetch<AdminOpportunityDetail>(`/admin/opportunities/${opportunityId}`)
 }
 
 // ---------------------------------------------------------------- verification officers

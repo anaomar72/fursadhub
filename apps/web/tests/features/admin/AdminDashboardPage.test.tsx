@@ -14,9 +14,13 @@ function jsonResponse(body: unknown, status = 200) {
 
 const STATISTICS: PlatformStatistics = {
   usersByStatus: { ACTIVE: 40, SUSPENDED: 2 },
+  studentProfiles: 24,
+  studentEnrollmentsByVerificationStatus: { VERIFIED: 18, SUBMITTED: 4 },
   universities: 3,
+  universitiesByVerificationStatus: { VERIFIED: 2, SUBMITTED: 1 },
   organizationsByVerificationStatus: { VERIFIED: 5, SUBMITTED: 2 },
   opportunitiesByStatus: { PUBLISHED: 12, DRAFT: 4 },
+  publiclyDiscoverableOpportunities: 9,
   candidacies: 130,
   placementsByStatus: { ACTIVE: 9 },
   openPrivacyRequests: 1,
@@ -107,7 +111,39 @@ describe('AdminDashboardPage', () => {
     for (const invented of ['12,450', '8,500', '1,250', '18,450', '2,800']) {
       expect(screen.queryByText(invented)).not.toBeInTheDocument()
     }
-    expect(screen.queryByText(/^Students$/)).not.toBeInTheDocument()
+    // No GROWTH annotation: FursadHub stores no historical series to compute one from, so any
+    // "+12% this month" would be invented. The percentages that DO appear are StatusDistribution
+    // shares of a real GROUP BY — a proportion of data the page already has, not a trend.
+    for (const trend of [/[+−-]\s*\d+%/, /this month/i, /vs\.? last/i, /↑|↓/]) {
+      expect(screen.queryByText(trend)).not.toBeInTheDocument()
+    }
+  })
+
+  /**
+   * Backend Phase B6 gave the Students card a real source. It must read studentProfiles (24), never
+   * the account total (42) — the distinction is the whole reason the metric was added.
+   */
+  it('shows students from the student-profile count, not the account count', async () => {
+    stubFetch()
+    renderPage()
+
+    expect(await screen.findByText('Students')).toBeInTheDocument()
+    expect(screen.getByText('24')).toBeInTheDocument()
+  })
+
+  /**
+   * The dashboard must say plainly that PUBLISHED is not the same as publicly visible, because
+   * Backend Phase B1.5 hides some published listings and an administrator comparing this page to
+   * the public site would otherwise conclude one of them was broken.
+   */
+  it('states how many published internships the public can actually see', async () => {
+    stubFetch()
+    renderPage()
+
+    expect(
+      await screen.findByText(/9 of 12 published internships are visible on the public site/i),
+    ).toBeInTheDocument()
+    expect(screen.getByText(/3 are hidden/i)).toBeInTheDocument()
   })
 
   it('surfaces the operational counts that mean somebody has work to do', async () => {

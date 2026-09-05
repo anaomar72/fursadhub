@@ -25,15 +25,15 @@ export interface HeadlineCount {
 }
 
 /**
- * The six headline cards, in the approved layout's order.
+ * The headline cards, in the approved layout's order.
  *
- * <p>Two of the prototype's cards are deliberately not here. **Students** has no backend source:
- * {@link PlatformStatistics} counts accounts by status, not student profiles, and there is no
- * platform-wide student endpoint anywhere in the API. **Internships** and **Applications** DO have
- * real counts, but no list screen can exist behind them — platform-admin authorization appears only
- * in the administration, compliance and verification-evidence services, so Super Admin has no
- * platform-wide opportunity, candidacy or placement query to page through. Those cards therefore
- * carry a real total and a real status breakdown instead of a "View all" that would 403.
+ * <p>Backend Phase B6 closed both gaps this function used to document. **Students** now has a real
+ * source — {@code studentProfiles} counts student profiles rather than accounts, which is why the
+ * card beside it is labelled "Total accounts" and not "users". **Internships** now has a list screen
+ * behind it, so its "View all" goes somewhere instead of being omitted to avoid a 403.
+ *
+ * <p>Applications and placements still have no platform-wide list endpoint, so they carry a real
+ * total and a real status breakdown rather than a link that would 404.
  */
 export function headlineCounts(statistics: PlatformStatistics): HeadlineCount[] {
   return [
@@ -44,10 +44,19 @@ export function headlineCounts(statistics: PlatformStatistics): HeadlineCount[] 
       breakdown: statistics.usersByStatus,
     },
     {
+      // Backend Phase B6. Student PROFILES, not accounts — a recruiter has an account and is not a
+      // student. No list screen: there is no platform-wide student endpoint, and B6 did not add one.
+      id: 'students',
+      to: null,
+      value: statistics.studentProfiles,
+      breakdown: null,
+    },
+    {
       id: 'universities',
       to: '/admin/universities',
       value: statistics.universities,
-      breakdown: null,
+      // Backend Phase B6 gave universities the breakdown organizations always had.
+      breakdown: statistics.universitiesByVerificationStatus,
     },
     {
       id: 'organizations',
@@ -56,17 +65,18 @@ export function headlineCounts(statistics: PlatformStatistics): HeadlineCount[] 
       breakdown: statistics.organizationsByVerificationStatus,
     },
     {
-      // Applications is a plain scalar — {@code candidacies} has no GROUP BY behind it — so it sits
-      // in the compact row. The two cards that DO carry a breakdown get the wide row, where there
-      // is room to show it.
+      // Applications is a plain scalar — {@code candidacies} has no GROUP BY behind it.
       id: 'candidacies',
       to: null,
       value: statistics.candidacies,
       breakdown: null,
     },
     {
+      // Backend Phase B6: the total is every opportunity in any state, and the screen behind the
+      // link shows them the same way. The subset the public can actually see is a different figure
+      // — see publiclyDiscoverableOpportunities, reported separately rather than blended in here.
       id: 'opportunities',
-      to: null,
+      to: '/admin/opportunities',
       value: total(statistics.opportunitiesByStatus),
       breakdown: statistics.opportunitiesByStatus,
     },
@@ -77,6 +87,25 @@ export function headlineCounts(statistics: PlatformStatistics): HeadlineCount[] 
       breakdown: statistics.placementsByStatus,
     },
   ]
+}
+
+/**
+ * How many opportunities the public can actually find right now (Backend Phase B6).
+ *
+ * <p>Kept OUT of {@link headlineCounts} on purpose. It is not a seventh population to count — it is a
+ * qualifier on the opportunities card, and showing it as a peer would invite reading the two totals
+ * as separate things that add up. The gap between this and the PUBLISHED key of
+ * {@code opportunitiesByStatus} is the number of listings Backend Phase B1.5 hides: targeted-only
+ * ones, and ones whose organization has since been suspended.
+ */
+export function publiclyDiscoverable(statistics: PlatformStatistics): {
+  discoverable: number
+  published: number
+  hidden: number
+} {
+  const published = statistics.opportunitiesByStatus.PUBLISHED ?? 0
+  const discoverable = statistics.publiclyDiscoverableOpportunities
+  return { discoverable, published, hidden: Math.max(published - discoverable, 0) }
 }
 
 export interface AttentionItem {

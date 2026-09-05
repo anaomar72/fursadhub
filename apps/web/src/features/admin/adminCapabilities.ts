@@ -52,6 +52,14 @@ export interface AdminCapabilities {
 
   /** The audit trail. {@code AdminAuditQueryService} is {@code SUPER_ADMIN}, and read-only. */
   canReadAuditTrail: boolean
+
+  /**
+   * Platform-wide opportunity oversight (Backend Phase B6). {@code AdminOpportunityQueryService} is
+   * {@code SUPER_ADMIN}, deliberately NOT {@code requireReviewer}: reviewing an institution does not
+   * require reading every draft internship on the platform, and a new endpoint is not a reason to
+   * widen a split that exists on purpose. Read-only — there is no oversight write capability to flag.
+   */
+  canOverseeOpportunities: boolean
 }
 
 export function adminCapabilities(session: AdminSession): AdminCapabilities {
@@ -66,5 +74,6 @@ export function adminCapabilities(session: AdminSession): AdminCapabilities {
     canManagePlatformRoles: isSuperAdmin,
     canAdministerCompliance: isSuperAdmin,
     canReadAuditTrail: isSuperAdmin,
+    canOverseeOpportunities: isSuperAdmin,
   }
 }

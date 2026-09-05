@@ -136,16 +136,77 @@ export interface AuditEvent {
 
 /** Counts only — nothing here identifies a person or exposes a single record. */
 export interface PlatformStatistics {
+  /** EVERY account by status — students, tenant staff and platform staff alike. Not "students". */
   usersByStatus: Record<string, number>
+  /** Backend Phase B6. Rows in `student_profiles` — the real student population. */
+  studentProfiles: number
+  /** Backend Phase B6. Enrolments by verification status; one enrolment per student. */
+  studentEnrollmentsByVerificationStatus: Record<string, number>
+  /** Every university row, in any verification state. */
   universities: number
+  /** Backend Phase B6. The same universities, split by verification status. */
+  universitiesByVerificationStatus: Record<string, number>
   organizationsByVerificationStatus: Record<string, number>
+  /** Opportunities by their STORED state. `PUBLISHED` here does not mean anyone can see it. */
   opportunitiesByStatus: Record<string, number>
+  /**
+   * Backend Phase B6. Opportunities a visitor can actually find right now: PUBLISHED, PUBLIC/HYBRID,
+   * and owned by a currently VERIFIED organization. Usually SMALLER than
+   * `opportunitiesByStatus.PUBLISHED`, and the gap is the listings B1.5 hides.
+   */
+  publiclyDiscoverableOpportunities: number
   candidacies: number
   placementsByStatus: Record<string, number>
   openPrivacyRequests: number
   escalatedVerificationCases: number
   failedEmailDeliveries: number
   recentLoginFailures: number
+}
+
+export type OpportunityStatus = 'DRAFT' | 'PUBLISHED' | 'PAUSED' | 'CLOSED' | 'CANCELLED'
+export type OpportunityMode = 'PUBLIC' | 'UNIVERSITY_TARGETED' | 'HYBRID'
+
+/**
+ * One opportunity in the Super Admin oversight table (Backend Phase B6).
+ *
+ * Read-only. There is no mutation endpoint behind any of these fields, and nothing here describes a
+ * person — no applicants, no candidacy counts, no student data, no file identifiers.
+ */
+export interface AdminOpportunity {
+  id: string
+  organizationId: string
+  organizationName: string
+  organizationVerificationStatus: string
+  title: string
+  status: OpportunityStatus
+  mode: OpportunityMode
+  workMode: string
+  location: string | null
+  numberOfOpenings: number
+  startDate: string | null
+  endDate: string | null
+  applicationDeadline: string | null
+  createdAt: string
+  publishedAt: string | null
+  /** Whether the public site shows this right now — not the same as `status === 'PUBLISHED'`. */
+  publiclyDiscoverable: boolean
+}
+
+export interface AdminOpportunityDetail {
+  summary: AdminOpportunity
+  description: string | null
+  responsibilities: string | null
+  requirements: string | null
+  compensation: {
+    type: string
+    currencyCode: string | null
+    minimumAmount: number | null
+    maximumAmount: number | null
+    period: string | null
+  } | null
+  skills: string[]
+  perks: string[]
+  hoursPerWeek: number | null
 }
 
 export interface Page<T> {

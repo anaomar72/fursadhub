@@ -5,6 +5,7 @@
     "universities": "Universities",
     "escalations": "Escalations",
     "users": "Accounts",
+    "opportunities": "Internships",
     "privacyRequests": "Privacy requests",
     "legalDocuments": "Legal documents",
     "audit": "Audit",
@@ -39,6 +40,7 @@
     "statesCount_other": "Across {{count}} states",
     "counts": {
       "users": "Total accounts",
+      "students": "Students",
       "universities": "Universities",
       "organizations": "Organizations",
       "opportunities": "Internships",
@@ -62,7 +64,10 @@
       "empty": "No accounts have been created yet.",
       "unavailable": "Recent registrations could not be read."
     },
-    "monitoring": "Monitoring"
+    "monitoring": "Monitoring",
+    "publicVisibility": "{{discoverable}} of {{published}} published internships are visible on the public site right now.",
+    "publicVisibilityHidden_one": "{{count}} is hidden because it is university-targeted or its organization is not currently verified.",
+    "publicVisibilityHidden_other": "{{count}} are hidden because they are university-targeted or their organization is not currently verified."
   },
   "organizations": {
     "title": "Organization verification",
@@ -226,6 +231,48 @@
     "VERIFIED": "Verified",
     "REJECTED": "Rejected",
     "REVOKED": "Revoked"
+  },
+  "opportunities": {
+    "title": "Internships",
+    "description": "Every internship on the platform, in any state. This screen is read-only — organizations manage their own listings.",
+    "opportunity": "Internship",
+    "organization": "Organization",
+    "organizationStatus": "Organization verification",
+    "status": "State",
+    "mode": "Sourcing",
+    "workMode": "Work mode",
+    "location": "Location",
+    "openings": "Openings",
+    "dates": "Dates",
+    "deadline": "Application deadline",
+    "publishedAt": "Published",
+    "created": "Created",
+    "hoursPerWeek": "Hours per week",
+    "skills": "Skills",
+    "perks": "Perks",
+    "descriptionLabel": "Description",
+    "responsibilities": "Responsibilities",
+    "requirements": "Requirements",
+    "publicColumn": "Public",
+    "publiclyVisible": "Visible",
+    "notPubliclyVisible": "Hidden",
+    "view": "View",
+    "searchLabel": "Internship or organization",
+    "searchPlaceholder": "Search by title or organization name",
+    "statusFilter": "State",
+    "allStatuses": "All states",
+    "modeFilter": "Sourcing",
+    "allModes": "All sourcing modes",
+    "empty": "No internships match these filters.",
+    "emptyHint": "Try a different state, or clear the search.",
+    "pageEmpty": "This page is empty. Go back a page.",
+    "resultCount_one": "{{count}} internship",
+    "resultCount_other": "{{count}} internships",
+    "modes": {
+      "PUBLIC": "Public",
+      "UNIVERSITY_TARGETED": "University-targeted",
+      "HYBRID": "Hybrid"
+    }
   },
   "users": {
     "title": "Accounts",

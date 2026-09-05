@@ -1,10 +1,14 @@
 package com.fursadhub.opportunity.infrastructure.persistence;
 
+import com.fursadhub.opportunity.domain.AdminOpportunityFilter;
 import com.fursadhub.opportunity.domain.InternshipOpportunity;
 import com.fursadhub.opportunity.domain.PublicOpportunityFilter;
 import com.fursadhub.opportunity.domain.PublicOpportunityVisibility;
+import com.fursadhub.organization.domain.Organization;
 
 import jakarta.persistence.criteria.Predicate;
+import jakarta.persistence.criteria.Root;
+import jakarta.persistence.criteria.Subquery;
 
 import org.springframework.data.jpa.domain.Specification;
 
@@ -57,6 +61,58 @@ final class InternshipOpportunitySpecifications {
             if (filter.organizationId() != null) {
                 predicates.add(cb.equal(root.get("organizationId"), filter.organizationId()));
             }
+            return cb.and(predicates.toArray(new Predicate[0]));
+        };
+    }
+
+    /**
+     * The platform-administration query (Backend Phase B6).
+     *
+     * <p><strong>{@link #publiclyVisible()} is deliberately NOT applied.</strong> That is the whole
+     * point of this specification existing separately: an administrator overseeing the platform must
+     * see a DRAFT, a CANCELLED opportunity, and a PUBLISHED one whose organization has since been
+     * suspended — the last of which is invisible publicly and is exactly the case someone would open
+     * a console to investigate. Public discoverability and administrative visibility are different
+     * questions, so they are different queries.
+     *
+     * <p>This is read-only and narrows nothing by default: with an empty filter it matches every
+     * opportunity, paged by the caller.
+     */
+    static Specification<InternshipOpportunity> matchingForAdmin(AdminOpportunityFilter filter) {
+        return (root, query, cb) -> {
+            List<Predicate> predicates = new ArrayList<>();
+
+            if (filter.query() != null && !filter.query().isBlank()) {
+                String like = "%" + filter.query().toLowerCase().trim() + "%";
+                // Organization name is reached by a CORRELATED SUBQUERY, the same technique
+                // publiclyVisible() uses: InternshipOpportunity holds organizationId as a plain UUID
+                // rather than a mapped association, and the modules are deliberately not joined
+                // through JPA. This keeps the search inside ONE statement — no join to maintain, and
+                // emphatically no loading organizations into memory to filter them in Java.
+                Subquery<UUID> organizationsNamed = query.subquery(UUID.class);
+                Root<Organization> organization = organizationsNamed.from(Organization.class);
+                organizationsNamed.select(organization.get("id"))
+                        .where(cb.like(cb.lower(organization.get("name")), like));
+
+                // Title and organization name only. Description is a 4000-character column with no
+                // index that could serve a leading wildcard, so including it would turn every admin
+                // search into a full scan of the widest column on the table for little operational
+                // gain — an operator looks for a company or a job title, not a phrase in the body.
+                predicates.add(cb.or(
+                        cb.like(cb.lower(root.get("title")), like),
+                        root.get("organizationId").in(organizationsNamed)));
+            }
+            if (filter.status() != null) {
+                predicates.add(cb.equal(root.get("status"), filter.status()));
+            }
+            if (filter.mode() != null) {
+                predicates.add(cb.equal(root.get("mode"), filter.mode()));
+            }
+            if (filter.organizationId() != null) {
+                predicates.add(cb.equal(root.get("organizationId"), filter.organizationId()));
+            }
+            // No predicates means no restriction — cb.and() of nothing is TRUE, which is the correct
+            // reading of "the administrator asked for everything".
             return cb.and(predicates.toArray(new Predicate[0]));
         };
     }

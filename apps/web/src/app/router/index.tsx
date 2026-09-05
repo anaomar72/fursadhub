@@ -81,6 +81,7 @@ import { AdminOrganizationsPage } from '../../features/admin/pages/AdminOrganiza
 import { AdminUniversitiesPage } from '../../features/admin/pages/AdminUniversitiesPage'
 import { AdminEscalationsPage } from '../../features/admin/pages/AdminEscalationsPage'
 import { AdminUsersPage } from '../../features/admin/pages/AdminUsersPage'
+import { AdminOpportunitiesPage } from '../../features/admin/pages/AdminOpportunitiesPage'
 import { AdminPrivacyRequestsPage } from '../../features/admin/pages/AdminPrivacyRequestsPage'
 import { AdminLegalDocumentsPage } from '../../features/admin/pages/AdminLegalDocumentsPage'
 import { AdminAuditPage } from '../../features/admin/pages/AdminAuditPage'
@@ -294,6 +295,9 @@ export const router = createBrowserRouter([
           { path: 'universities/:universityId', element: <AdminUniversityDetailPage /> },
           { path: 'verification-escalations', element: <AdminEscalationsPage /> },
           { path: 'users', element: <AdminUsersPage /> },
+          // Backend Phase B6: platform-wide opportunity oversight. Read-only — no detail route,
+          // because the record opens in a drawer over the filtered table.
+          { path: 'opportunities', element: <AdminOpportunitiesPage /> },
           // Phase 14. GET /admin/users/{id}, likewise already on AdminController.
           { path: 'users/:userId', element: <AdminUserDetailPage /> },
           { path: 'privacy-requests', element: <AdminPrivacyRequestsPage /> },

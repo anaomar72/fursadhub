@@ -5,6 +5,7 @@
     "universities": "Jaamacadaha",
     "escalations": "Kor-u-qaadista",
     "users": "Akoonnada",
+    "opportunities": "Shaqo-tababarro",
     "privacyRequests": "Codsiyada asturnaanta",
     "legalDocuments": "Dukumentiyada sharciga",
     "audit": "Hanti-dhawrka",
@@ -39,6 +40,7 @@
     "statesCount_other": "Waxay ku baahsan yihiin {{count}} xaaladood",
     "counts": {
       "users": "Wadarta xisaabaadka",
+      "students": "Ardayda",
       "universities": "Jaamacadaha",
       "organizations": "Hay’adaha",
       "opportunities": "Tababarrada",
@@ -62,7 +64,10 @@
       "empty": "Weli xisaab lama abuurin.",
       "unavailable": "Isdiiwaangelinta ugu dambeysay lama akhriyi karin."
     },
-    "monitoring": "La eegayo"
+    "monitoring": "La eegayo",
+    "publicVisibility": "{{discoverable}} ka mid ah {{published}} tababbar oo la daabacay ayaa hadda ka muuqda bogga dadweynaha.",
+    "publicVisibilityHidden_one": "{{count}} baa qarsoon sababtoo ah waxaa loo qoondeeyay jaamacad ama hay’adiisa hadda lama xaqiijin.",
+    "publicVisibilityHidden_other": "{{count}} baa qarsoon sababtoo ah waxaa loo qoondeeyay jaamacado ama hay’adahooda hadda lama xaqiijin."
   },
   "organizations": {
     "title": "Xaqiijinta hay'adaha",
@@ -226,6 +231,48 @@
     "VERIFIED": "La xaqiijiyay",
     "REJECTED": "La diiday",
     "REVOKED": "La burburiyay"
+  },
+  "opportunities": {
+    "title": "Shaqo-tababarrada",
+    "description": "Tababar kasta oo madasha ku jira, xaalad kastoo uu ku jiro. Boggan waa akhris kaliya — hay'aduhu iyagaa maamula liistooyinkooda.",
+    "opportunity": "Tababarka",
+    "organization": "Hay'adda",
+    "organizationStatus": "Xaqiijinta hay'adda",
+    "status": "Xaaladda",
+    "mode": "Habka raadinta",
+    "workMode": "Habka shaqada",
+    "location": "Goobta",
+    "openings": "Booska banaan",
+    "dates": "Taariikhaha",
+    "deadline": "Muddada codsiga",
+    "publishedAt": "La daabacay",
+    "created": "La abuuray",
+    "hoursPerWeek": "Saacadaha usbuucii",
+    "skills": "Xirfadaha",
+    "perks": "Faa'iidooyinka",
+    "descriptionLabel": "Sharaxaad",
+    "responsibilities": "Waajibaadka",
+    "requirements": "Shuruudaha",
+    "publicColumn": "Dadweynaha",
+    "publiclyVisible": "Muuqda",
+    "notPubliclyVisible": "Qarsoon",
+    "view": "Eeg",
+    "searchLabel": "Tababar ama hay'ad",
+    "searchPlaceholder": "Ku raadi cinwaanka ama magaca hay'adda",
+    "statusFilter": "Xaaladda",
+    "allStatuses": "Dhammaan xaaladaha",
+    "modeFilter": "Habka raadinta",
+    "allModes": "Dhammaan habab raadin",
+    "empty": "Ma jiro tababar ku habboon shaandhadan.",
+    "emptyHint": "Isku day xaalad kale, ama nadiifi raadinta.",
+    "pageEmpty": "Boggani waa madhan yahay. Bog dib u noqo.",
+    "resultCount_one": "{{count}} tababar",
+    "resultCount_other": "{{count}} tababar",
+    "modes": {
+      "PUBLIC": "Dadweyne",
+      "UNIVERSITY_TARGETED": "Jaamacad loo qoondeeyay",
+      "HYBRID": "Isku dhafan"
+    }
   },
   "users": {
     "title": "Akoonnada",
