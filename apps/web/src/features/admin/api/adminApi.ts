@@ -14,7 +14,9 @@ import type {
   PlatformAdminGrant,
   PlatformRole,
   PlatformStatistics,
+  PlatformTemporaryCredential,
   UserStatus,
+  VerificationOfficer,
 } from '../types'
 
 // ---------------------------------------------------------------- session
@@ -75,6 +77,64 @@ export function grantPlatformRole(userId: string, role: PlatformRole) {
 
 export function revokePlatformRole(grantId: string) {
   return apiFetch<{ message: string }>(`/admin/platform-roles/${grantId}/revoke`, { method: 'POST' })
+}
+
+// ---------------------------------------------------------------- verification officers
+
+/**
+ * Managed verification officers (Backend Phase B5.6).
+ *
+ * A different resource from platform roles above, and deliberately so: those endpoints GRANT a role
+ * to an account that already exists, these CREATE the account. Both are needed and neither can do
+ * the other's job.
+ *
+ * There is no `createSuperAdmin` counterpart anywhere in this file. Super admin is not
+ * managed-provisionable — the API has no endpoint for it, and the request below has no role field
+ * through which one could be asked for.
+ */
+export function listVerificationOfficers() {
+  return apiFetch<VerificationOfficer[]>('/admin/verification-officers')
+}
+
+export function createVerificationOfficer(values: {
+  displayName: string
+  username: string
+  email: string
+  password: string
+  confirmPassword: string
+}) {
+  return apiFetch<VerificationOfficer>('/admin/verification-officers', {
+    method: 'POST',
+    body: values,
+  })
+}
+
+/**
+ * Sets or replaces the officer's display name (Backend Phase B5.6).
+ *
+ * Replacement only — there is no clear operation, so this always sends a real name. A legacy officer
+ * with `displayName: null` is set for the first time through the same call.
+ */
+export function changeVerificationOfficerDisplayName(userId: string, displayName: string) {
+  return apiFetch<VerificationOfficer>(`/admin/verification-officers/${userId}/display-name`, {
+    method: 'POST',
+    body: { displayName },
+  })
+}
+
+/** One-time and irreversible: after this the officer's email stops authenticating them. */
+export function assignVerificationOfficerUsername(userId: string, username: string) {
+  return apiFetch<VerificationOfficer>(`/admin/verification-officers/${userId}/username`, {
+    method: 'POST',
+    body: { username },
+  })
+}
+
+export function resetVerificationOfficerPassword(userId: string) {
+  return apiFetch<PlatformTemporaryCredential>(
+    `/admin/verification-officers/${userId}/reset-password`,
+    { method: 'POST' },
+  )
 }
 
 // ---------------------------------------------------------------- organizations

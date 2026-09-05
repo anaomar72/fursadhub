@@ -23,6 +23,40 @@ export interface PlatformAdminGrant {
   active: boolean
 }
 
+/**
+ * A managed platform verification officer (Backend Phase B5.6).
+ *
+ * `username` is null for an officer granted the role before B5.6, who still signs in with their
+ * email — that null is what the console keys the "assign username" action on, so it is meaningful
+ * rather than missing.
+ *
+ * There is deliberately no password field of any kind. The server never returns one here.
+ */
+export interface VerificationOfficer {
+  userId: string
+  displayName: string | null
+  username: string | null
+  email: string
+  role: PlatformRole
+  status: UserStatus
+}
+
+/**
+ * A one-time temporary password for a platform officer (Backend Phase B5.6).
+ *
+ * Distinct from the organization/university `TemporaryCredentialResponse`, which carries a
+ * `membershipId` — a platform officer has no tenant and therefore no membership.
+ *
+ * `temporaryPassword` is shown once and then discarded. It must never be written to localStorage,
+ * sessionStorage, a URL, or a long-lived query cache (CLAUDE.md section 26A).
+ */
+export interface PlatformTemporaryCredential {
+  userId: string
+  username: string
+  email: string
+  temporaryPassword: string
+}
+
 export type UserStatus = 'PENDING_CONTACT_VERIFICATION' | 'ACTIVE' | 'SUSPENDED' | 'CLOSED'
 
 export interface AdminUser {

@@ -18,6 +18,7 @@ import {
   type DataTableColumn,
 } from '../../../components/ui'
 import { apiErrorMessage } from '../../../lib/api/errorMessage'
+import { VerificationOfficersPanel } from '../components/VerificationOfficersPanel'
 import * as adminApi from '../api/adminApi'
 import { formatDateTime } from '../../../lib/utils/formatDate'
 import type { PlatformAdminGrant, PlatformRole } from '../types'
@@ -162,6 +163,13 @@ export function AdminPlatformRolesPage() {
       />
 
       {error && <Alert tone="danger">{error}</Alert>}
+
+      {/*
+        Backend Phase B5.6. Creating an officer account and granting a role to an existing account
+        are different operations, so they are different panels: the grant form below still cannot
+        create anyone, and this one cannot grant SUPER_ADMIN.
+      */}
+      <VerificationOfficersPanel />
 
       <Card padding="lg" className="flex flex-col gap-4">
         <div>
