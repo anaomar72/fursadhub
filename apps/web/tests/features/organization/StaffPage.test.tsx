@@ -80,6 +80,7 @@ describe('StaffPage (organization)', () => {
 
     await openCreateForm()
     await userEvent.type(screen.getByLabelText('Email address'), 'new-recruiter@example.test')
+    await userEvent.type(screen.getByLabelText('Username'), 'new.staff')
     await userEvent.type(screen.getByLabelText('Temporary password'), 'Password123')
     await userEvent.type(screen.getByLabelText('Confirm password'), 'Password124')
     await userEvent.click(screen.getByRole('button', { name: 'Create staff account' }))
@@ -93,6 +94,7 @@ describe('StaffPage (organization)', () => {
 
     await openCreateForm()
     await userEvent.type(screen.getByLabelText('Email address'), 'new-recruiter@example.test')
+    await userEvent.type(screen.getByLabelText('Username'), 'new.staff')
     await userEvent.type(screen.getByLabelText('Temporary password'), 'Password123')
     await userEvent.type(screen.getByLabelText('Confirm password'), 'Password123')
     await userEvent.click(screen.getByRole('button', { name: 'Create staff account' }))
@@ -104,6 +106,7 @@ describe('StaffPage (organization)', () => {
       expect(call).toBeDefined()
       expect(JSON.parse((call![1] as RequestInit).body as string)).toEqual({
         email: 'new-recruiter@example.test',
+        username: 'new.staff',
         password: 'Password123',
         confirmPassword: 'Password123',
         role: 'RECRUITER',
@@ -132,6 +135,7 @@ describe('StaffPage (organization)', () => {
 
     await openCreateForm()
     await userEvent.type(screen.getByLabelText('Email address'), 'dup@example.test')
+    await userEvent.type(screen.getByLabelText('Username'), 'new.staff')
     await userEvent.type(screen.getByLabelText('Temporary password'), 'Password123')
     await userEvent.type(screen.getByLabelText('Confirm password'), 'Password123')
     await userEvent.click(screen.getByRole('button', { name: 'Create staff account' }))

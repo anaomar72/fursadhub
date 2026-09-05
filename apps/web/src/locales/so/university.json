@@ -237,7 +237,9 @@
     "emptyHint": "Weli ma jiraan akoonno shaqaale. Samee mid si aad u wareejiso isku-duwidda ama kormeerka.",
     "noDepartmentsTitle": "Marka hore ku dar waax",
     "noDepartmentsBody": "Dooraska shaqaale kastaa waa inuu ku xidhan yahay ugu yaraan hal waax, sidaa darteed marka hore samee waax.",
-    "addStaff": "Ku dar akoon shaqaale"
+    "addStaff": "Ku dar akoon shaqaale",
+    "usernameLabel": "Magaca isticmaalaha",
+    "usernameHint": "Shaqaaluhu tan ayuu ku soo gelayaa. Xarfo yaryar, tirooyin, dhibco, xariiqyo hoose ama jajab."
   },
   "partners": {
     "title": "Ururrada iskaashiga",

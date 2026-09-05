@@ -100,7 +100,7 @@ export function StaffPage() {
 
   const form = useForm<CreateMemberFormValues>({
     resolver: zodResolver(createMemberSchema),
-    defaultValues: { email: '', password: '', confirmPassword: '', role: 'RECRUITER' },
+    defaultValues: { email: '', username: '', password: '', confirmPassword: '', role: 'RECRUITER' },
   })
 
   const invalidateMembers = () => queryClient.invalidateQueries({ queryKey: ['organization', 'members', organizationId] })
@@ -170,6 +170,17 @@ export function StaffPage() {
                 error={form.formState.errors.email && t(form.formState.errors.email.message ?? '')}
               >
                 <Input id="org-staff-email" type="email" autoComplete="off" {...form.register('email')} />
+              </FormField>
+
+              {/* Backend Phase B5.5: the login identifier for this managed account. */}
+              <FormField
+                label={t('organization:staff.usernameLabel')}
+                htmlFor="org-staff-username"
+                className="sm:col-span-2"
+                hint={t('organization:staff.usernameHint')}
+                error={form.formState.errors.username && t(form.formState.errors.username.message ?? '')}
+              >
+                <Input id="org-staff-username" type="text" autoComplete="off" {...form.register('username')} />
               </FormField>
 
               <FormField

@@ -62,7 +62,7 @@ export function StaffPage() {
 
   const form = useForm<CreateStaffFormValues>({
     resolver: zodResolver(createStaffSchema),
-    defaultValues: { email: '', password: '', confirmPassword: '', role: 'DEPARTMENT_COORDINATOR', departmentIds: [] },
+    defaultValues: { email: '', username: '', password: '', confirmPassword: '', role: 'DEPARTMENT_COORDINATOR', departmentIds: [] },
   })
 
   const invalidateStaff = () => queryClient.invalidateQueries({ queryKey: ['university', 'staff', universityId] })
@@ -137,6 +137,17 @@ export function StaffPage() {
                 error={form.formState.errors.email && t(form.formState.errors.email.message ?? '')}
               >
                 <Input id="staff-email" type="email" autoComplete="off" {...form.register('email')} />
+              </FormField>
+
+              {/* Backend Phase B5.5: the login identifier for this managed account. */}
+              <FormField
+                label={t('university:staff.usernameLabel')}
+                htmlFor="staff-username"
+                className="sm:col-span-2"
+                hint={t('university:staff.usernameHint')}
+                error={form.formState.errors.username && t(form.formState.errors.username.message ?? '')}
+              >
+                <Input id="staff-username" type="text" autoComplete="off" {...form.register('username')} />
               </FormField>
 
               <FormField

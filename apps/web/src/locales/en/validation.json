@@ -13,5 +13,9 @@
   },
   "token": {
     "required": "This link is missing its token."
+  },
+  "username": {
+    "length": "Username must be 3-64 characters.",
+    "format": "Use lowercase letters, digits, dots, underscores or hyphens; start and end with a letter or digit."
   }
 }

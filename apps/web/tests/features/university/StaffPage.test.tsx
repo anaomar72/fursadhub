@@ -87,6 +87,7 @@ describe('StaffPage (university)', () => {
 
     await userEvent.click(await screen.findByRole('button', { name: 'Add staff account' }))
     await userEvent.type(screen.getByLabelText('Email address'), 'new-coordinator@example.test')
+    await userEvent.type(screen.getByLabelText('Username'), 'new.staff')
     await userEvent.type(screen.getByLabelText('Temporary password'), 'Password123')
     await userEvent.type(screen.getByLabelText('Confirm password'), 'Password123')
     await userEvent.click(screen.getByRole('button', { name: 'Create staff account' }))
@@ -101,6 +102,7 @@ describe('StaffPage (university)', () => {
 
     await userEvent.click(await screen.findByRole('button', { name: 'Add staff account' }))
     await userEvent.type(screen.getByLabelText('Email address'), 'new-coordinator@example.test')
+    await userEvent.type(screen.getByLabelText('Username'), 'new.staff')
     await userEvent.type(screen.getByLabelText('Temporary password'), 'Password123')
     await userEvent.type(screen.getByLabelText('Confirm password'), 'Password124')
     await userEvent.click(screen.getByLabelText('Computer Science'))
@@ -115,6 +117,7 @@ describe('StaffPage (university)', () => {
 
     await userEvent.click(await screen.findByRole('button', { name: 'Add staff account' }))
     await userEvent.type(screen.getByLabelText('Email address'), 'new-coordinator@example.test')
+    await userEvent.type(screen.getByLabelText('Username'), 'new.staff')
     await userEvent.type(screen.getByLabelText('Temporary password'), 'Password123')
     await userEvent.type(screen.getByLabelText('Confirm password'), 'Password123')
     await userEvent.click(screen.getByLabelText('Computer Science'))
@@ -127,6 +130,7 @@ describe('StaffPage (university)', () => {
       expect(call).toBeDefined()
       expect(JSON.parse((call![1] as RequestInit).body as string)).toEqual({
         email: 'new-coordinator@example.test',
+        username: 'new.staff',
         password: 'Password123',
         confirmPassword: 'Password123',
         role: 'DEPARTMENT_COORDINATOR',
@@ -152,6 +156,7 @@ describe('StaffPage (university)', () => {
 
     await userEvent.click(await screen.findByRole('button', { name: 'Add staff account' }))
     await userEvent.type(screen.getByLabelText('Email address'), 'dup@example.test')
+    await userEvent.type(screen.getByLabelText('Username'), 'new.staff')
     await userEvent.type(screen.getByLabelText('Temporary password'), 'Password123')
     await userEvent.type(screen.getByLabelText('Confirm password'), 'Password123')
     await userEvent.click(screen.getByLabelText('Computer Science'))

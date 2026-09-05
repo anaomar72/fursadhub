@@ -1,4 +1,4 @@
-import { render, screen } from '@testing-library/react'
+import { render, screen, waitFor } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 import { MemoryRouter, Route, Routes } from 'react-router-dom'
@@ -53,7 +53,7 @@ describe('LoginPage', () => {
     const user = userEvent.setup()
     renderLoginPage()
 
-    await user.type(screen.getByLabelText(/email address/i), 'student@example.com')
+    await user.type(screen.getByLabelText(/email or username/i), 'student@example.com')
     await user.type(screen.getByLabelText(/^password$/i), 'Password123')
     await user.click(screen.getByRole('button', { name: /^login$/i }))
 
@@ -84,7 +84,7 @@ describe('LoginPage', () => {
     const user = userEvent.setup()
     renderLoginPage()
 
-    await user.type(screen.getByLabelText(/email address/i), 'student@example.com')
+    await user.type(screen.getByLabelText(/email or username/i), 'student@example.com')
     await user.type(screen.getByLabelText(/^password$/i), 'wrong-password')
     await user.click(screen.getByRole('button', { name: /^login$/i }))
 
@@ -113,7 +113,7 @@ describe('LoginPage', () => {
     const user = userEvent.setup()
     renderLoginPage()
 
-    await user.type(screen.getByLabelText(/email address/i), 'remembered@example.com')
+    await user.type(screen.getByLabelText(/email or username/i), 'remembered@example.com')
     await user.type(screen.getByLabelText(/^password$/i), 'Password123')
     await user.click(screen.getByLabelText(/remember me/i))
     await user.click(screen.getByRole('button', { name: /^login$/i }))
@@ -145,5 +145,37 @@ describe('LoginPage', () => {
 
     await user.click(screen.getByRole('button', { name: /show password/i }))
     expect(passwordField).toHaveAttribute('type', 'text')
+  })
+  /**
+   * Backend Phase B5.5: one field serves both account types, and the client decides which API
+   * identifier to send. '@' is impossible in a username, so the split is deterministic.
+   */
+  it('sends a username identifier as username and an email identifier as email', async () => {
+    const bodies: string[] = []
+    vi.stubGlobal(
+      'fetch',
+      vi.fn((input: RequestInfo | URL, init?: RequestInit) => {
+        const url = String(input)
+        if (url.includes('/auth/login')) {
+          bodies.push(String(init?.body ?? ''))
+          return jsonResponse({ accessToken: 'test-token', tokenType: 'Bearer', expiresIn: 600 }, 200)
+        }
+        if (url.includes('/admin/me')) return jsonResponse({ platformAdmin: false, roles: [] }, 200)
+        if (url.includes('/organization-memberships/me')) return jsonResponse([], 200)
+        if (url.includes('/university-memberships/me')) return jsonResponse(null, 200)
+        return jsonResponse({}, 200)
+      }),
+    )
+
+    const user = userEvent.setup()
+    renderLoginPage()
+    await user.type(screen.getByLabelText(/email or username/i), 'ahmed.hassan')
+    await user.type(screen.getByLabelText(/^password$/i), 'Password123')
+    await user.click(screen.getByRole('button', { name: /^login$/i }))
+
+    await waitFor(() => expect(bodies.length).toBeGreaterThan(0))
+    const payload = JSON.parse(bodies[0] ?? '{}')
+    expect(payload.username).toBe('ahmed.hassan')
+    expect(payload.email).toBeUndefined()
   })
 })

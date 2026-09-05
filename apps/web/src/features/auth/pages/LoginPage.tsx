@@ -4,7 +4,7 @@ import { zodResolver } from '@hookform/resolvers/zod'
 import { useMutation } from '@tanstack/react-query'
 import { useTranslation } from 'react-i18next'
 import { Link, useLocation, useNavigate, useSearchParams } from 'react-router-dom'
-import { loginSchema, type LoginFormValues } from '../schemas/loginSchema'
+import { loginSchema, toLoginPayload, type LoginFormValues } from '../schemas/loginSchema'
 import * as authApi from '../api/authApi'
 import { authErrorMessage } from '../api/errorMessage'
 import { AuthCard } from '../components/AuthCard'
@@ -38,14 +38,14 @@ export function LoginPage() {
 
   const form = useForm<LoginFormValues>({
     resolver: zodResolver(loginSchema),
-    defaultValues: { email: rememberedEmail ?? '', password: '' },
+    defaultValues: { identifier: rememberedEmail ?? '', password: '' },
   })
 
   const loginMutation = useMutation({
     mutationFn: authApi.login,
     onSuccess: async (data, variables) => {
       if (rememberMe) {
-        window.localStorage.setItem(REMEMBERED_EMAIL_KEY, variables.email)
+        window.localStorage.setItem(REMEMBERED_EMAIL_KEY, variables.email ?? variables.username ?? '')
       } else {
         window.localStorage.removeItem(REMEMBERED_EMAIL_KEY)
       }
@@ -61,19 +61,20 @@ export function LoginPage() {
 
   return (
     <AuthCard title={t('auth:login.title')} subtitle={t('auth:login.subtitle')}>
-      <form className="flex flex-col gap-4" noValidate onSubmit={form.handleSubmit((values) => loginMutation.mutate(values))}>
+      <form className="flex flex-col gap-4" noValidate onSubmit={form.handleSubmit((values) => loginMutation.mutate(toLoginPayload(values)))}>
         <FormField
-          label={t('auth:login.emailLabel')}
-          htmlFor="email"
-          error={form.formState.errors.email && t(form.formState.errors.email.message ?? '')}
+          label={t('auth:login.identifierLabel')}
+          htmlFor="identifier"
+          error={form.formState.errors.identifier && t(form.formState.errors.identifier.message ?? '')}
         >
+          {/* Backend Phase B5.5: managed staff sign in with a username, so this cannot be type="email". */}
           <Input
-            id="email"
-            type="email"
-            autoComplete="email"
-            placeholder={t('auth:login.emailPlaceholder')}
-            invalid={!!form.formState.errors.email}
-            {...form.register('email')}
+            id="identifier"
+            type="text"
+            autoComplete="username"
+            placeholder={t('auth:login.identifierPlaceholder')}
+            invalid={!!form.formState.errors.identifier}
+            {...form.register('identifier')}
           />
         </FormField>
 

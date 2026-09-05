@@ -237,7 +237,9 @@
     "emptyHint": "No staff accounts yet. Create one to delegate coordination or supervision.",
     "noDepartmentsTitle": "Add a department first",
     "noDepartmentsBody": "Every staff role must be scoped to at least one department, so create a department before adding staff.",
-    "addStaff": "Add staff account"
+    "addStaff": "Add staff account",
+    "usernameLabel": "Username",
+    "usernameHint": "The staff member signs in with this. Lowercase letters, digits, dots, underscores or hyphens."
   },
   "partners": {
     "title": "Partner organizations",

@@ -51,6 +51,8 @@ export function createMember(
   organizationId: string,
   input: {
     email: string
+    /** Backend Phase B5.5. REQUIRED: the login identifier for this managed account. */
+    username: string
     password: string
     confirmPassword: string
     /** Backend Phase B5. Optional — omit it and the staff member simply has no display name. */
@@ -157,5 +159,16 @@ export function changeMemberDisplayName(organizationId: string, membershipId: st
   return apiFetch<OrganizationMemberResponse>(
     `/organizations/${organizationId}/members/${membershipId}/display-name`,
     { method: 'POST', body: { displayName } },
+  )
+}
+
+/**
+ * Assigns the one-time login username to a legacy managed staff account (Backend Phase B5.5).
+ * Permanent: the account then signs in by username and its email stops working as a credential.
+ */
+export function assignMemberUsername(organizationId: string, membershipId: string, username: string) {
+  return apiFetch<OrganizationMemberResponse>(
+    `/organizations/${organizationId}/members/${membershipId}/username`,
+    { method: 'POST', body: { username } },
   )
 }

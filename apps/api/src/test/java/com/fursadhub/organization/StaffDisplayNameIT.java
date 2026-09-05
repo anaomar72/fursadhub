@@ -37,7 +37,7 @@ class StaffDisplayNameIT extends AbstractPhase7IT {
         // Exactly the pre-B5 body: no displayName.
         ResponseEntity<Map> response = authorizedPost(
                 "/api/v1/organizations/" + organization.id() + "/members", organization.adminToken(),
-                Map.of("email", email, "password", "Password123", "confirmPassword", "Password123",
+                Map.of("email", email, "password", "Password123", "confirmPassword", "Password123", "username", uniqueUsername(),
                         "role", "RECRUITER"));
 
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.CREATED);
@@ -218,8 +218,10 @@ class StaffDisplayNameIT extends AbstractPhase7IT {
     void managedStaffGainNoRenameAuthority() {
         Organization organization = newOrganization("b5-staff-authority");
         String email = uniqueEmail(emailPrefix("b5-self"));
-        String membershipId = createMemberWithEmail(organization, email, "RECRUITER", "Ahmed Hassan");
-        String staffToken = loginAndExtractAccessToken(email, "Password123");
+        String username = uniqueUsername();
+        String membershipId = createMemberWithEmail(organization, email, "RECRUITER", "Ahmed Hassan", username);
+        // Backend Phase B5.5: managed staff authenticate by username.
+        String staffToken = loginByUsernameAndExtractAccessToken(username, "Password123");
 
         ResponseEntity<Map> response = authorizedPost(
                 "/api/v1/organizations/" + organization.id() + "/members/" + membershipId + "/display-name",
@@ -240,10 +242,11 @@ class StaffDisplayNameIT extends AbstractPhase7IT {
     void displayNameIsNotAnAuthenticationIdentifier() {
         Organization organization = newOrganization("b5-auth");
         String email = uniqueEmail(emailPrefix("b5-auth-staff"));
-        String membershipId = createMemberWithEmail(organization, email, "RECRUITER", "Ahmed Hassan");
+        String username = uniqueUsername();
+        String membershipId = createMemberWithEmail(organization, email, "RECRUITER", "Ahmed Hassan", username);
 
-        // Login by email still works, unchanged, after being named.
-        assertThat(loginAndExtractAccessToken(email, "Password123")).isNotBlank();
+        // Login still works, unchanged, after being named — by username, since Backend Phase B5.5.
+        assertThat(loginByUsernameAndExtractAccessToken(username, "Password123")).isNotBlank();
 
         // Two staff members may share the same display name — it carries no uniqueness.
         String secondEmail = uniqueEmail(emailPrefix("b5-auth-twin"));
@@ -281,6 +284,7 @@ class StaffDisplayNameIT extends AbstractPhase7IT {
         body.put("email", email);
         body.put("password", "Password123");
         body.put("confirmPassword", "Password123");
+        body.put("username", uniqueUsername());
         body.put("role", role);
         if (displayName != null) {
             body.put("displayName", displayName);
@@ -293,9 +297,15 @@ class StaffDisplayNameIT extends AbstractPhase7IT {
     }
 
     private String createMemberWithEmail(Organization organization, String email, String role, String displayName) {
+        return createMemberWithEmail(organization, email, role, displayName, uniqueUsername());
+    }
+
+    private String createMemberWithEmail(
+            Organization organization, String email, String role, String displayName, String username) {
+        Map<String, Object> body = createBody(email, role, displayName);
+        body.put("username", username);
         ResponseEntity<Map> response = authorizedPost(
-                "/api/v1/organizations/" + organization.id() + "/members", organization.adminToken(),
-                createBody(email, role, displayName));
+                "/api/v1/organizations/" + organization.id() + "/members", organization.adminToken(), body);
         requireOk(response, "Create member");
         return (String) response.getBody().get("membershipId");
     }
@@ -350,5 +360,9 @@ class StaffDisplayNameIT extends AbstractPhase7IT {
         headers.setContentType(org.springframework.http.MediaType.APPLICATION_JSON);
         return restTemplate.exchange(url(path), org.springframework.http.HttpMethod.POST,
                 new org.springframework.http.HttpEntity<>(json, headers), Map.class);
+    }
+
+    private String uniqueUsername() {
+        return "u" + UUID.randomUUID().toString().replace("-", "").substring(0, 16);
     }
 }

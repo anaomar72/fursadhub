@@ -25,6 +25,11 @@ class UserRepositoryAdapter implements UserRepository {
     }
 
     @Override
+    public User saveAndFlush(User user) {
+        return jpaRepository.saveAndFlush(user);
+    }
+
+    @Override
     public Optional<User> findById(UUID id) {
         return jpaRepository.findById(id);
     }
@@ -35,8 +40,18 @@ class UserRepositoryAdapter implements UserRepository {
     }
 
     @Override
+    public Optional<User> findByUsername(String canonicalUsername) {
+        return jpaRepository.findByUsername(canonicalUsername);
+    }
+
+    @Override
     public boolean existsByEmail(String normalizedEmail) {
         return jpaRepository.existsByEmail(normalizedEmail);
+    }
+
+    @Override
+    public boolean existsByUsername(String canonicalUsername) {
+        return jpaRepository.existsByUsername(canonicalUsername);
     }
 
     @Override

@@ -142,6 +142,8 @@ export interface OrganizationMemberResponse {
   membershipId: string
   /** Backend Phase B5. Null for staff created before B5; the UI falls back to email. */
   displayName: string | null
+  /** Backend Phase B5.5. The login identifier; null for a legacy account still signing in by email. */
+  username: string | null
   email: string | null
   role: OrganizationRole
   status: UserAccountStatus | null
@@ -150,6 +152,8 @@ export interface OrganizationMemberResponse {
 /** A server-generated temporary credential, returned exactly once after a staff password reset. */
 export interface TemporaryCredentialResponse {
   membershipId: string
+  /** Backend Phase B5.5. The identifier to log in with; null for a legacy email-login account. */
+  username: string | null
   email: string
   temporaryPassword: string
 }

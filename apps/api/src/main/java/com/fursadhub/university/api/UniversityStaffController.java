@@ -4,6 +4,7 @@ import com.fursadhub.common.api.MessageResponse;
 import com.fursadhub.common.api.TemporaryCredentialResponse;
 import com.fursadhub.common.web.RequestMetadata;
 import com.fursadhub.identity.domain.DisplayNamePolicy;
+import com.fursadhub.identity.domain.ManagedUsernameAssignment;
 import com.fursadhub.university.application.UniversityStaffService;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
@@ -46,7 +47,7 @@ public class UniversityStaffController {
             HttpServletRequest httpRequest) {
         UniversityStaffService.StaffMember staffMember = staffService.create(
                 currentUserId(jwt), universityId, request.email(), request.password(), request.confirmPassword(),
-                request.displayName(), request.role(), request.departmentIds(),
+                request.displayName(), request.username(), request.role(), request.departmentIds(),
                 RequestMetadata.clientIp(httpRequest), RequestMetadata.userAgent(httpRequest));
         return ResponseEntity.status(HttpStatus.CREATED).body(StaffMemberResponse.from(staffMember));
     }
@@ -65,6 +66,30 @@ public class UniversityStaffController {
     }
 
     /** Sets or clears a managed staff member's display name (Backend Phase B5). */
+    /**
+     * Assigns the one-time login username to a managed staff account (Backend Phase B5.5).
+     *
+     * <p>A duplicate that slips past the service's existence check — two admins submitting the same
+     * username at the same instant — surfaces from the transaction boundary as an integrity
+     * violation, and is translated here into a stable {@code USERNAME_ALREADY_EXISTS}. Only that one
+     * constraint is translated; anything else propagates unchanged.
+     */
+    @PostMapping("/{membershipId}/username")
+    public StaffMemberResponse assignUsername(
+            @AuthenticationPrincipal Jwt jwt,
+            @PathVariable UUID universityId,
+            @PathVariable UUID membershipId,
+            @Valid @RequestBody AssignStaffUsernameRequest request,
+            HttpServletRequest httpRequest) {
+        try {
+            return StaffMemberResponse.from(staffService.assignUsername(
+                    currentUserId(jwt), universityId, membershipId, request.username(),
+                    RequestMetadata.clientIp(httpRequest), RequestMetadata.userAgent(httpRequest)));
+        } catch (org.springframework.dao.DataIntegrityViolationException race) {
+            throw ManagedUsernameAssignment.translate(race);
+        }
+    }
+
     @PostMapping("/{membershipId}/display-name")
     public StaffMemberResponse changeDisplayName(
             @AuthenticationPrincipal Jwt jwt,
@@ -110,7 +135,8 @@ public class UniversityStaffController {
         UniversityStaffService.StaffCredential credential = staffService.resetPassword(
                 currentUserId(jwt), universityId, membershipId,
                 RequestMetadata.clientIp(httpRequest), RequestMetadata.userAgent(httpRequest));
-        return new TemporaryCredentialResponse(membershipId.toString(), credential.email(), credential.temporaryPassword());
+        return new TemporaryCredentialResponse(
+                membershipId.toString(), credential.username(), credential.email(), credential.temporaryPassword());
     }
 
     @PostMapping("/{membershipId}/revoke")

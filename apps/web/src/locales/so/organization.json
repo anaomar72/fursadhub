@@ -166,7 +166,9 @@
     "allRoles": "Dhammaan doorarka",
     "assignedPlacements_one": "Wuxuu kormeeraa {{count}} tababare",
     "assignedPlacements_other": "Wuxuu kormeeraa {{count}} tababare",
-    "emptyHint": "Weli akoon shaqaale ma jiro. Mid abuur si aad u wareejiso qorista ama kormeerka."
+    "emptyHint": "Weli akoon shaqaale ma jiro. Mid abuur si aad u wareejiso qorista ama kormeerka.",
+    "usernameLabel": "Magaca isticmaalaha",
+    "usernameHint": "Shaqaaluhu tan ayuu ku soo gelayaa. Xarfo yaryar, tirooyin, dhibco, xariiqyo hoose ama jajab."
   },
   "partners": {
     "title": "Jaamacadaha iskaashiga",

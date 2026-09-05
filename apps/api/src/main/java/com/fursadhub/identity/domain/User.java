@@ -6,6 +6,8 @@ import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
+import com.fursadhub.common.api.ApiException;
+import org.springframework.http.HttpStatus;
 
 import java.time.Instant;
 import java.util.UUID;
@@ -48,6 +50,25 @@ public class User {
      */
     @Column(name = "display_name", length = 255)
     private String displayName;
+
+    /**
+     * The login identifier for a manually provisioned institution-managed staff account
+     * (Backend Phase B5.5) — canonical lowercase, globally unique, ASSIGN-ONCE.
+     *
+     * <p>Null for every other account, permanently and by design: students and self-registered
+     * founders authenticate by email and always will. Null also for managed staff provisioned before
+     * B5.5, who keep email login until their tenant admin assigns one.
+     *
+     * <p><strong>Once set, this account authenticates by username only.</strong>
+     * {@code LoginService} stops accepting the email as a credential for it — one account, one
+     * credential path, so an attacker cannot alternate identifiers to double the password-attempt
+     * budget.
+     *
+     * <p>Not an authorization input and not a JWT claim: the token subject remains the immutable
+     * user id, and roles come from memberships as before.
+     */
+    @Column(length = 64)
+    private String username;
 
     @Column(name = "preferred_locale", nullable = false, length = 5)
     private String preferredLocale;
@@ -94,6 +115,37 @@ public class User {
     public void changeDisplayName(String normalizedDisplayName) {
         this.displayName = normalizedDisplayName;
         this.updatedAt = Instant.now();
+    }
+
+    /**
+     * Assigns the login username, once (Backend Phase B5.5).
+     *
+     * <p>Idempotent for the SAME canonical username — re-sending the value an account already has is
+     * a no-op, so a retried request or a double-clicked button is harmless. A DIFFERENT username is
+     * refused: B5.5 deliberately does not support rename, because changing a credential mid-life
+     * raises account-recovery, audit-trail and support-identification questions that no product need
+     * currently justifies. There is no operation that clears it back to null.
+     *
+     * @param canonicalUsername already validated and lower-cased by {@link UsernamePolicy}
+     * @return true when this call actually assigned it, false when it was already set to this value
+     * @throws ApiException {@code USERNAME_IMMUTABLE} when a different username is already assigned
+     */
+    public boolean assignUsername(String canonicalUsername) {
+        if (this.username != null) {
+            if (this.username.equals(canonicalUsername)) {
+                return false;
+            }
+            throw new ApiException("USERNAME_IMMUTABLE", HttpStatus.CONFLICT,
+                    "This account already has a username, and a username cannot be changed.");
+        }
+        this.username = canonicalUsername;
+        this.updatedAt = Instant.now();
+        return true;
+    }
+
+    /** True once this account has transitioned to username authentication (Backend Phase B5.5). */
+    public boolean hasUsername() {
+        return username != null;
     }
 
     public void markEmailVerified() {
@@ -165,6 +217,11 @@ public class User {
 
     public String getEmail() {
         return email;
+    }
+
+    /** The canonical login username, or null for an account that authenticates by email. */
+    public String getUsername() {
+        return username;
     }
 
     /** Null when this account has never been given a display name (Backend Phase B5). */

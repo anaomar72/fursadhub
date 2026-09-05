@@ -13,5 +13,9 @@
   },
   "token": {
     "required": "Linkigan ma laha token."
+  },
+  "username": {
+    "length": "Magaca isticmaaluhu waa inuu noqdaa 3-64 xaraf.",
+    "format": "Isticmaal xarfo yaryar, tirooyin, dhibco, xariiqyo hoose ama jajab; ku bilow oo ku dhammee xaraf ama tiro."
   }
 }

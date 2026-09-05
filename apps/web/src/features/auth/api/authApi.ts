@@ -19,7 +19,11 @@ export function resendVerification(email: string) {
   return apiFetch<MessageResponse>('/auth/email/resend', { method: 'POST', body: { email } })
 }
 
-export function login(input: { email: string; password: string }) {
+/**
+ * Signs in with EITHER email or username, never both (Backend Phase B5.5). Build the payload with
+ * `toLoginPayload` so exactly one identifier is sent — the API rejects both together.
+ */
+export function login(input: { email?: string; username?: string; password: string }) {
   return apiFetch<LoginResponse>('/auth/login', { method: 'POST', body: input })
 }
 

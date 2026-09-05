@@ -33,7 +33,7 @@ class UniversityStaffDisplayNameIT extends AbstractPhase3IT {
         String email = uniqueEmail("b5u-legacy-coord");
 
         ResponseEntity<Map> response = authorizedPost(staffPath(fixture), fixture.adminToken(),
-                Map.of("email", email, "password", "Password123", "confirmPassword", "Password123",
+                Map.of("email", email, "password", "Password123", "confirmPassword", "Password123", "username", uniqueUsername(),
                         "role", "DEPARTMENT_COORDINATOR", "departmentIds", List.of(fixture.departmentId().toString())));
 
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.CREATED);
@@ -209,6 +209,7 @@ class UniversityStaffDisplayNameIT extends AbstractPhase3IT {
         body.put("email", email);
         body.put("password", "Password123");
         body.put("confirmPassword", "Password123");
+        body.put("username", uniqueUsername());
         body.put("role", role);
         body.put("departmentIds", List.of(fixture.departmentId().toString()));
         if (displayName != null) {
@@ -261,5 +262,9 @@ class UniversityStaffDisplayNameIT extends AbstractPhase3IT {
         org.springframework.http.HttpHeaders headers = new org.springframework.http.HttpHeaders();
         headers.setContentType(org.springframework.http.MediaType.APPLICATION_JSON);
         return headers;
+    }
+
+    private String uniqueUsername() {
+        return "u" + UUID.randomUUID().toString().replace("-", "").substring(0, 16);
     }
 }

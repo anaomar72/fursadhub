@@ -108,6 +108,8 @@ export interface StaffMemberResponse {
   membershipId: string
   /** Backend Phase B5. Null for staff created before B5; the UI falls back to email. */
   displayName: string | null
+  /** Backend Phase B5.5. The login identifier; null for a legacy account still signing in by email. */
+  username: string | null
   userId: string
   email: string | null
   role: UniversityRole

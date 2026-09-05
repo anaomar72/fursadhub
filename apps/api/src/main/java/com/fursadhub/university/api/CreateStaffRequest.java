@@ -2,6 +2,7 @@ package com.fursadhub.university.api;
 
 import com.fursadhub.identity.domain.DisplayNamePolicy;
 import com.fursadhub.identity.domain.PasswordPolicy;
+import com.fursadhub.identity.domain.UsernamePolicy;
 import com.fursadhub.university.domain.UniversityRole;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
@@ -29,6 +30,13 @@ public record CreateStaffRequest(
 
         /** Backend Phase B5. Optional; normalised by {@link DisplayNamePolicy}. Presentation only. */
         @Size(max = DisplayNamePolicy.MAX_LENGTH) String displayName,
+
+        /**
+         * Backend Phase B5.5. REQUIRED for new managed staff: this is the identifier they will log
+         * in with, and the admin chooses it — nothing is generated or derived from the email.
+         * Syntax is enforced by {@link UsernamePolicy}, which also lower-cases it.
+         */
+        @NotBlank String username,
 
         @NotNull UniversityRole role,
         List<UUID> departmentIds) {

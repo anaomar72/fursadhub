@@ -14,7 +14,7 @@ import java.util.UUID;
  * it does today.
  */
 public record StaffMemberResponse(
-        String membershipId, String userId, String displayName, String email, String role, String status,
+        String membershipId, String userId, String displayName, String username, String email, String role, String status,
         List<UUID> departmentIds, String assignedAt) {
 
     public static StaffMemberResponse from(UniversityStaffService.StaffMember staffMember) {
@@ -22,6 +22,7 @@ public record StaffMemberResponse(
                 staffMember.membership().getId().toString(),
                 staffMember.membership().getUserId().toString(),
                 staffMember.displayName(),
+                staffMember.username(),
                 staffMember.email(),
                 staffMember.membership().getRole().name(),
                 staffMember.status() == null ? null : staffMember.status().name(),

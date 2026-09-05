@@ -5,6 +5,7 @@ import com.fursadhub.common.audit.AuditService;
 import com.fursadhub.identity.application.LogoutService;
 import com.fursadhub.identity.domain.EmailNormalizer;
 import com.fursadhub.identity.domain.DisplayNamePolicy;
+import com.fursadhub.identity.domain.UsernamePolicy;
 import com.fursadhub.identity.domain.User;
 import com.fursadhub.identity.domain.UserRepository;
 import com.fursadhub.identity.domain.UserStatus;
@@ -63,10 +64,11 @@ public class OrganizationMembershipService {
         this.audit = audit;
     }
 
-    public record Member(OrganizationMembership membership, String displayName, String email, UserStatus status) {
+    public record Member(
+            OrganizationMembership membership, String displayName, String username, String email, UserStatus status) {
     }
 
-    public record MemberCredential(String email, String temporaryPassword) {
+    public record MemberCredential(String username, String email, String temporaryPassword) {
     }
 
     /**
@@ -77,7 +79,7 @@ public class OrganizationMembershipService {
     @Transactional
     public Member create(
             UUID actingUserId, UUID organizationId, String rawEmail, String password, String confirmPassword,
-            String rawDisplayName, OrganizationRole role, String ipAddress, String userAgent) {
+            String rawDisplayName, String rawUsername, OrganizationRole role, String ipAddress, String userAgent) {
         authorization.requireMembership(actingUserId, organizationId, OrganizationRole.ORGANIZATION_ADMIN);
         requireAssignableRole(role);
         if (!password.equals(confirmPassword)) {
@@ -97,7 +99,16 @@ public class OrganizationMembershipService {
         // 26A "Contact Verification").
         staffUser.markEmailVerified();
         staffUser.changeDisplayName(DisplayNamePolicy.normalize(rawDisplayName));
-        users.save(staffUser);
+        // Backend Phase B5.5: this is the identifier the staff member will log in with. Validated
+        // and lower-cased here; the UNIQUE constraint decides a concurrent collision.
+        String canonicalUsername = UsernamePolicy.canonicalize(rawUsername);
+        if (users.existsByUsername(canonicalUsername)) {
+            throw new ApiException("USERNAME_ALREADY_EXISTS", HttpStatus.CONFLICT, "That username is already taken.");
+        }
+        staffUser.assignUsername(canonicalUsername);
+        // Flushed for the same reason as the assignment path: the username UNIQUE constraint must
+        // fail at a known statement so the loser of a race becomes USERNAME_ALREADY_EXISTS.
+        users.saveAndFlush(staffUser);
 
         OrganizationMembership membership = OrganizationMembership.assign(organizationId, staffUser.getId(), role);
         memberships.save(membership);
@@ -105,7 +116,7 @@ public class OrganizationMembershipService {
         audit.record("ORGANIZATION_STAFF_CREATED", actingUserId, ipAddress, userAgent,
                 "organizationId=" + organizationId + ";targetUserId=" + staffUser.getId() + ";role=" + role);
 
-        return new Member(membership, staffUser.getDisplayName(), staffUser.getEmail(), staffUser.getStatus());
+        return new Member(membership, staffUser.getDisplayName(), staffUser.getUsername(), staffUser.getEmail(), staffUser.getStatus());
     }
 
     @Transactional
@@ -123,7 +134,7 @@ public class OrganizationMembershipService {
                 "organizationId=" + organizationId + ";membershipId=" + membershipId + ";role=" + newRole);
 
         User staffUser = requireUser(membership.getUserId());
-        return new Member(membership, staffUser.getDisplayName(), staffUser.getEmail(), staffUser.getStatus());
+        return new Member(membership, staffUser.getDisplayName(), staffUser.getUsername(), staffUser.getEmail(), staffUser.getStatus());
     }
 
     /** Blocks the staff member's authentication without ending their staff relationship. Idempotent. */
@@ -187,7 +198,7 @@ public class OrganizationMembershipService {
         audit.record("ORGANIZATION_STAFF_PASSWORD_RESET", actingUserId, ipAddress, userAgent,
                 "organizationId=" + organizationId + ";membershipId=" + membershipId + ";targetUserId=" + staffUser.getId());
 
-        return new MemberCredential(staffUser.getEmail(), newPassword);
+        return new MemberCredential(staffUser.getUsername(), staffUser.getEmail(), newPassword);
     }
 
     @Transactional
@@ -213,6 +224,7 @@ public class OrganizationMembershipService {
                     return new Member(
                             membership,
                             staffUser == null ? null : staffUser.getDisplayName(),
+                            staffUser == null ? null : staffUser.getUsername(),
                             staffUser == null ? null : staffUser.getEmail(),
                             staffUser == null ? null : staffUser.getStatus());
                 })
@@ -251,7 +263,46 @@ public class OrganizationMembershipService {
                 "organizationId=" + organizationId + ";membershipId=" + membershipId
                         + ";targetUserId=" + staffUser.getId());
 
-        return new Member(membership, staffUser.getDisplayName(), staffUser.getEmail(), staffUser.getStatus());
+        return new Member(membership, staffUser.getDisplayName(), staffUser.getUsername(), staffUser.getEmail(), staffUser.getStatus());
+    }
+
+    /**
+     * Assigns the login username to an existing managed staff account, ONCE (Backend Phase B5.5).
+     *
+     * <p>The migration path for staff provisioned before B5.5. Assigning a username moves the account
+     * to username authentication permanently — {@code LoginService} then stops accepting its email as
+     * a credential.
+     *
+     * <p>Same three guards as every other managed-staff command, so an {@code ORGANIZATION_ADMIN}
+     * founder can never be given a username here. Re-sending the same canonical username is a no-op;
+     * a different one is refused as {@code USERNAME_IMMUTABLE}.
+     */
+    @Transactional
+    public Member assignUsername(
+            UUID actingUserId, UUID organizationId, UUID membershipId, String rawUsername,
+            String ipAddress, String userAgent) {
+        authorization.requireMembership(actingUserId, organizationId, OrganizationRole.ORGANIZATION_ADMIN);
+        OrganizationMembership membership = requireOwnedMembership(organizationId, membershipId);
+        requireAssignableRole(membership.getRole());
+
+        String canonicalUsername = UsernamePolicy.canonicalize(rawUsername);
+        User staffUser = requireUser(membership.getUserId());
+        // Taken by a DIFFERENT account; re-sending this account's own username stays idempotent.
+        if (!canonicalUsername.equals(staffUser.getUsername()) && users.existsByUsername(canonicalUsername)) {
+            throw new ApiException("USERNAME_ALREADY_EXISTS", HttpStatus.CONFLICT, "That username is already taken.");
+        }
+
+        if (staffUser.assignUsername(canonicalUsername)) {
+            // Flush here so a lost race fails on THIS statement as a DataIntegrityViolationException,
+            // not later at commit where it could surface as a TransactionSystemException and escape
+            // the constraint translator.
+            users.saveAndFlush(staffUser);
+            audit.record("ORGANIZATION_STAFF_USERNAME_ASSIGNED", actingUserId, ipAddress, userAgent,
+                    "organizationId=" + organizationId + ";membershipId=" + membershipId
+                            + ";targetUserId=" + staffUser.getId());
+        }
+
+        return new Member(membership, staffUser.getDisplayName(), staffUser.getUsername(), staffUser.getEmail(), staffUser.getStatus());
     }
     // ---------------------------------------------------------------- internals
 

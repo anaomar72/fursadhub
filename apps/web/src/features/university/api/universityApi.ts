@@ -141,6 +141,8 @@ export function createStaff(
   universityId: string,
   input: {
     email: string
+    /** Backend Phase B5.5. REQUIRED: the login identifier for this managed account. */
+    username: string
     password: string
     confirmPassword: string
     /** Backend Phase B5. Optional — omit it and the staff member simply has no display name. */
@@ -266,5 +268,19 @@ export function changeStaffDisplayName(universityId: string, membershipId: strin
   return apiFetch<StaffMemberResponse>(`/universities/${universityId}/staff/${membershipId}/display-name`, {
     method: 'POST',
     body: { displayName },
+  })
+}
+
+/**
+ * Assigns the one-time login username to a legacy managed staff account (Backend Phase B5.5).
+ *
+ * Only for staff provisioned before B5.5, who still sign in by email. Assigning is permanent: the
+ * account moves to username authentication and its email stops working as a credential. The server
+ * refuses a rename with USERNAME_IMMUTABLE and a duplicate with USERNAME_ALREADY_EXISTS.
+ */
+export function assignStaffUsername(universityId: string, membershipId: string, username: string) {
+  return apiFetch<StaffMemberResponse>(`/universities/${universityId}/staff/${membershipId}/username`, {
+    method: 'POST',
+    body: { username },
   })
 }

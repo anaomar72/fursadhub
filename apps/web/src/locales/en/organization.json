@@ -166,7 +166,9 @@
     "allRoles": "All roles",
     "assignedPlacements_one": "Supervising {{count}} intern",
     "assignedPlacements_other": "Supervising {{count}} interns",
-    "emptyHint": "No staff accounts yet. Create one to delegate recruiting or supervision."
+    "emptyHint": "No staff accounts yet. Create one to delegate recruiting or supervision.",
+    "usernameLabel": "Username",
+    "usernameHint": "The staff member signs in with this. Lowercase letters, digits, dots, underscores or hyphens."
   },
   "partners": {
     "title": "University partners",
