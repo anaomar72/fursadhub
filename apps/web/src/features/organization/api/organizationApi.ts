@@ -49,7 +49,14 @@ export function listMembers(organizationId: string) {
 /** Creates a brand-new staff account — the email does not need to belong to an existing user. */
 export function createMember(
   organizationId: string,
-  input: { email: string; password: string; confirmPassword: string; role: OrganizationRole },
+  input: {
+    email: string
+    password: string
+    confirmPassword: string
+    /** Backend Phase B5. Optional — omit it and the staff member simply has no display name. */
+    displayName?: string
+    role: OrganizationRole
+  },
 ) {
   return apiFetch<OrganizationMemberResponse>(`/organizations/${organizationId}/members`, { method: 'POST', body: input })
 }
@@ -138,4 +145,17 @@ export function organizationLogoUrl(organizationId: string): string {
 
 export function getPublicOrganization(organizationId: string) {
   return apiFetch<PublicOrganizationResponse>(`/public/organizations/${organizationId}`, { method: 'GET' })
+}
+
+/**
+ * Sets or clears a managed staff member's display name (Backend Phase B5).
+ *
+ * Only RECRUITER and ORGANIZATION_SUPERVISOR memberships may be named — the server refuses an
+ * organization admin's own membership with STAFF_ROLE_NOT_ASSIGNABLE. Pass null to clear.
+ */
+export function changeMemberDisplayName(organizationId: string, membershipId: string, displayName: string | null) {
+  return apiFetch<OrganizationMemberResponse>(
+    `/organizations/${organizationId}/members/${membershipId}/display-name`,
+    { method: 'POST', body: { displayName } },
+  )
 }

@@ -4,6 +4,7 @@ import com.fursadhub.common.api.ApiException;
 import com.fursadhub.common.audit.AuditService;
 import com.fursadhub.identity.application.LogoutService;
 import com.fursadhub.identity.domain.EmailNormalizer;
+import com.fursadhub.identity.domain.DisplayNamePolicy;
 import com.fursadhub.identity.domain.User;
 import com.fursadhub.identity.domain.UserRepository;
 import com.fursadhub.identity.domain.UserStatus;
@@ -73,7 +74,9 @@ public class UniversityStaffService {
         this.audit = audit;
     }
 
-    public record StaffMember(UniversityMembership membership, String email, UserStatus status, List<UUID> departmentIds) {
+    public record StaffMember(
+            UniversityMembership membership, String displayName, String email, UserStatus status,
+            List<UUID> departmentIds) {
     }
 
     public record StaffCredential(String email, String temporaryPassword) {
@@ -88,7 +91,7 @@ public class UniversityStaffService {
     @Transactional
     public StaffMember create(
             UUID actingUserId, UUID universityId, String rawEmail, String password, String confirmPassword,
-            UniversityRole role, List<UUID> departmentIds, String ipAddress, String userAgent) {
+            String rawDisplayName, UniversityRole role, List<UUID> departmentIds, String ipAddress, String userAgent) {
         authorization.requireMembership(actingUserId, universityId, UniversityRole.UNIVERSITY_ADMIN);
         requireAssignableRole(role);
         if (!password.equals(confirmPassword)) {
@@ -107,6 +110,7 @@ public class UniversityStaffService {
         // separate contact-verification step, and no verification email sent (CLAUDE.md section
         // 26A "Contact Verification").
         staffUser.markEmailVerified();
+        staffUser.changeDisplayName(DisplayNamePolicy.normalize(rawDisplayName));
         users.save(staffUser);
 
         UniversityMembership membership = UniversityMembership.assign(universityId, staffUser.getId(), role);
@@ -116,7 +120,7 @@ public class UniversityStaffService {
         audit.record("UNIVERSITY_STAFF_CREATED", actingUserId, ipAddress, userAgent,
                 "universityId=" + universityId + ";targetUserId=" + staffUser.getId() + ";role=" + role);
 
-        return new StaffMember(membership, staffUser.getEmail(), staffUser.getStatus(), scopedDepartmentIds);
+        return new StaffMember(membership, staffUser.getDisplayName(), staffUser.getEmail(), staffUser.getStatus(), scopedDepartmentIds);
     }
 
     /** Changes role and (atomically) department scope, so the two can never briefly disagree. */
@@ -141,7 +145,7 @@ public class UniversityStaffService {
                 "universityId=" + universityId + ";membershipId=" + membershipId + ";role=" + newRole);
 
         User staffUser = requireUser(membership.getUserId());
-        return new StaffMember(membership, staffUser.getEmail(), staffUser.getStatus(), scopedDepartmentIds);
+        return new StaffMember(membership, staffUser.getDisplayName(), staffUser.getEmail(), staffUser.getStatus(), scopedDepartmentIds);
     }
 
     /** Blocks the staff member's authentication without ending their staff relationship. Idempotent. */
@@ -237,6 +241,7 @@ public class UniversityStaffService {
                             .toList();
                     return new StaffMember(
                             membership,
+                            staffUser == null ? null : staffUser.getDisplayName(),
                             staffUser == null ? null : staffUser.getEmail(),
                             staffUser == null ? null : staffUser.getStatus(),
                             departmentIds);
@@ -244,6 +249,49 @@ public class UniversityStaffService {
                 .toList();
     }
 
+
+    /**
+     * Sets or clears a managed staff member's display name (Backend Phase B5).
+     *
+     * <p><strong>The write boundary, in three guards.</strong> {@code requireMembership} proves the
+     * caller is a {@code UNIVERSITY_ADMIN} of THIS university; {@code requireOwnedMembership}
+     * resolves the target through a membership that belongs to it, returning the same not-found
+     * error for another university's membership as for one that does not exist; and
+     * {@code requireAssignableRole} on the membership's CURRENT role restricts the target to the
+     * managed staff roles.
+     *
+     * <p>That third guard is what keeps this from becoming a general user-editing capability. Only
+     * {@code DEPARTMENT_COORDINATOR} and {@code UNIVERSITY_SUPERVISOR} are assignable, so a
+     * {@code UNIVERSITY_ADMIN} — a self-registered founder who may hold memberships in several
+     * tenants and may also be a student — can never have their global display name rewritten
+     * through this route, by their own admin or anyone else's.
+     *
+     * <p>The user id is never accepted from the request. The target is always reached through a
+     * membership the caller demonstrably owns, so there is no raw-user-id bypass.
+     */
+    @Transactional
+    public StaffMember changeDisplayName(
+            UUID actingUserId, UUID universityId, UUID membershipId, String rawDisplayName,
+            String ipAddress, String userAgent) {
+        authorization.requireMembership(actingUserId, universityId, UniversityRole.UNIVERSITY_ADMIN);
+        UniversityMembership membership = requireOwnedMembership(universityId, membershipId);
+        requireAssignableRole(membership.getRole());
+
+        User staffUser = requireUser(membership.getUserId());
+        staffUser.changeDisplayName(DisplayNamePolicy.normalize(rawDisplayName));
+        users.save(staffUser);
+
+        // The name itself is never recorded in audit metadata — identifiers only, as everywhere else
+        // (CLAUDE.md section 68).
+        audit.record("UNIVERSITY_STAFF_DISPLAY_NAME_CHANGED", actingUserId, ipAddress, userAgent,
+                "universityId=" + universityId + ";membershipId=" + membershipId + ";targetUserId=" + staffUser.getId());
+
+        List<UUID> departmentIds = membershipDepartments.findActiveByMembershipId(membership.getId()).stream()
+                .map(UniversityMembershipDepartment::getDepartmentId)
+                .filter(Objects::nonNull)
+                .toList();
+        return new StaffMember(membership, staffUser.getDisplayName(), staffUser.getEmail(), staffUser.getStatus(), departmentIds);
+    }
     // ---------------------------------------------------------------- internals
 
     private void requireAssignableRole(UniversityRole role) {

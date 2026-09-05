@@ -3,6 +3,7 @@ package com.fursadhub.university.api;
 import com.fursadhub.common.api.MessageResponse;
 import com.fursadhub.common.api.TemporaryCredentialResponse;
 import com.fursadhub.common.web.RequestMetadata;
+import com.fursadhub.identity.domain.DisplayNamePolicy;
 import com.fursadhub.university.application.UniversityStaffService;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
@@ -45,7 +46,7 @@ public class UniversityStaffController {
             HttpServletRequest httpRequest) {
         UniversityStaffService.StaffMember staffMember = staffService.create(
                 currentUserId(jwt), universityId, request.email(), request.password(), request.confirmPassword(),
-                request.role(), request.departmentIds(),
+                request.displayName(), request.role(), request.departmentIds(),
                 RequestMetadata.clientIp(httpRequest), RequestMetadata.userAgent(httpRequest));
         return ResponseEntity.status(HttpStatus.CREATED).body(StaffMemberResponse.from(staffMember));
     }
@@ -59,6 +60,20 @@ public class UniversityStaffController {
             HttpServletRequest httpRequest) {
         UniversityStaffService.StaffMember staffMember = staffService.changeRole(
                 currentUserId(jwt), universityId, membershipId, request.role(), request.departmentIds(),
+                RequestMetadata.clientIp(httpRequest), RequestMetadata.userAgent(httpRequest));
+        return StaffMemberResponse.from(staffMember);
+    }
+
+    /** Sets or clears a managed staff member's display name (Backend Phase B5). */
+    @PostMapping("/{membershipId}/display-name")
+    public StaffMemberResponse changeDisplayName(
+            @AuthenticationPrincipal Jwt jwt,
+            @PathVariable UUID universityId,
+            @PathVariable UUID membershipId,
+            @Valid @RequestBody ChangeStaffDisplayNameRequest request,
+            HttpServletRequest httpRequest) {
+        UniversityStaffService.StaffMember staffMember = staffService.changeDisplayName(
+                currentUserId(jwt), universityId, membershipId, DisplayNamePolicy.requireSubmitted(request.displayName()),
                 RequestMetadata.clientIp(httpRequest), RequestMetadata.userAgent(httpRequest));
         return StaffMemberResponse.from(staffMember);
     }

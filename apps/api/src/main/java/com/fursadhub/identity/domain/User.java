@@ -32,6 +32,23 @@ public class User {
     @Column(nullable = false, length = 40)
     private UserStatus status;
 
+    /**
+     * A human-readable name for managed institution staff (Backend Phase B5) — presentation only.
+     *
+     * <p>Never an identifier: not unique, never used to look an account up, and with zero effect on
+     * login, the JWT subject, refresh tokens, the password hash, account status, or membership/role
+     * authorization. {@link #email} remains the account and login field.
+     *
+     * <p>Null for every account that has not been given one, which includes every account created
+     * before B5. Nothing derives it from the email address.
+     *
+     * <p>Deliberately NOT the student name: students keep {@code StudentProfile.full_name}, which
+     * they manage themselves. The two can coexist on a self-registered account that is both, and B5
+     * does not reconcile them.
+     */
+    @Column(name = "display_name", length = 255)
+    private String displayName;
+
     @Column(name = "preferred_locale", nullable = false, length = 5)
     private String preferredLocale;
 
@@ -64,6 +81,19 @@ public class User {
         user.createdAt = now;
         user.updatedAt = now;
         return user;
+    }
+
+    /**
+     * Sets or clears the display name (Backend Phase B5). Null clears it; the caller has already
+     * normalised through {@link DisplayNamePolicy}.
+     *
+     * <p>Authorization for WHO may call this is not a concern of the entity — it lives in the
+     * tenant-scoped staff services, which resolve the target through a membership they own and
+     * refuse any role outside the managed-staff set.
+     */
+    public void changeDisplayName(String normalizedDisplayName) {
+        this.displayName = normalizedDisplayName;
+        this.updatedAt = Instant.now();
     }
 
     public void markEmailVerified() {
@@ -135,6 +165,11 @@ public class User {
 
     public String getEmail() {
         return email;
+    }
+
+    /** Null when this account has never been given a display name (Backend Phase B5). */
+    public String getDisplayName() {
+        return displayName;
     }
 
     public String getPasswordHash() {

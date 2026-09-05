@@ -4,6 +4,7 @@ import com.fursadhub.common.api.ApiException;
 import com.fursadhub.common.audit.AuditService;
 import com.fursadhub.identity.application.LogoutService;
 import com.fursadhub.identity.domain.EmailNormalizer;
+import com.fursadhub.identity.domain.DisplayNamePolicy;
 import com.fursadhub.identity.domain.User;
 import com.fursadhub.identity.domain.UserRepository;
 import com.fursadhub.identity.domain.UserStatus;
@@ -62,7 +63,7 @@ public class OrganizationMembershipService {
         this.audit = audit;
     }
 
-    public record Member(OrganizationMembership membership, String email, UserStatus status) {
+    public record Member(OrganizationMembership membership, String displayName, String email, UserStatus status) {
     }
 
     public record MemberCredential(String email, String temporaryPassword) {
@@ -76,7 +77,7 @@ public class OrganizationMembershipService {
     @Transactional
     public Member create(
             UUID actingUserId, UUID organizationId, String rawEmail, String password, String confirmPassword,
-            OrganizationRole role, String ipAddress, String userAgent) {
+            String rawDisplayName, OrganizationRole role, String ipAddress, String userAgent) {
         authorization.requireMembership(actingUserId, organizationId, OrganizationRole.ORGANIZATION_ADMIN);
         requireAssignableRole(role);
         if (!password.equals(confirmPassword)) {
@@ -95,6 +96,7 @@ public class OrganizationMembershipService {
         // separate contact-verification step, and no verification email sent (CLAUDE.md section
         // 26A "Contact Verification").
         staffUser.markEmailVerified();
+        staffUser.changeDisplayName(DisplayNamePolicy.normalize(rawDisplayName));
         users.save(staffUser);
 
         OrganizationMembership membership = OrganizationMembership.assign(organizationId, staffUser.getId(), role);
@@ -103,7 +105,7 @@ public class OrganizationMembershipService {
         audit.record("ORGANIZATION_STAFF_CREATED", actingUserId, ipAddress, userAgent,
                 "organizationId=" + organizationId + ";targetUserId=" + staffUser.getId() + ";role=" + role);
 
-        return new Member(membership, staffUser.getEmail(), staffUser.getStatus());
+        return new Member(membership, staffUser.getDisplayName(), staffUser.getEmail(), staffUser.getStatus());
     }
 
     @Transactional
@@ -121,7 +123,7 @@ public class OrganizationMembershipService {
                 "organizationId=" + organizationId + ";membershipId=" + membershipId + ";role=" + newRole);
 
         User staffUser = requireUser(membership.getUserId());
-        return new Member(membership, staffUser.getEmail(), staffUser.getStatus());
+        return new Member(membership, staffUser.getDisplayName(), staffUser.getEmail(), staffUser.getStatus());
     }
 
     /** Blocks the staff member's authentication without ending their staff relationship. Idempotent. */
@@ -210,12 +212,47 @@ public class OrganizationMembershipService {
                     User staffUser = users.findById(membership.getUserId()).orElse(null);
                     return new Member(
                             membership,
+                            staffUser == null ? null : staffUser.getDisplayName(),
                             staffUser == null ? null : staffUser.getEmail(),
                             staffUser == null ? null : staffUser.getStatus());
                 })
                 .toList();
     }
 
+
+    /**
+     * Sets or clears a managed staff member's display name (Backend Phase B5).
+     *
+     * <p>Same three guards as the university counterpart: admin of THIS organization, target
+     * resolved through a membership this organization owns (identical not-found for another
+     * tenant's membership), and the membership's CURRENT role restricted to the assignable managed
+     * roles.
+     *
+     * <p>That last guard is what stops this being a general user-editing capability: only
+     * {@code RECRUITER} and {@code ORGANIZATION_SUPERVISOR} are assignable, so an
+     * {@code ORGANIZATION_ADMIN} — a self-registered founder who may belong to several tenants and
+     * may also be a student — can never have their global display name rewritten here. The user id
+     * is never taken from the request.
+     */
+    @Transactional
+    public Member changeDisplayName(
+            UUID actingUserId, UUID organizationId, UUID membershipId, String rawDisplayName,
+            String ipAddress, String userAgent) {
+        authorization.requireMembership(actingUserId, organizationId, OrganizationRole.ORGANIZATION_ADMIN);
+        OrganizationMembership membership = requireOwnedMembership(organizationId, membershipId);
+        requireAssignableRole(membership.getRole());
+
+        User staffUser = requireUser(membership.getUserId());
+        staffUser.changeDisplayName(DisplayNamePolicy.normalize(rawDisplayName));
+        users.save(staffUser);
+
+        // Identifiers only in audit metadata — never the name itself (CLAUDE.md section 68).
+        audit.record("ORGANIZATION_STAFF_DISPLAY_NAME_CHANGED", actingUserId, ipAddress, userAgent,
+                "organizationId=" + organizationId + ";membershipId=" + membershipId
+                        + ";targetUserId=" + staffUser.getId());
+
+        return new Member(membership, staffUser.getDisplayName(), staffUser.getEmail(), staffUser.getStatus());
+    }
     // ---------------------------------------------------------------- internals
 
     private void requireAssignableRole(OrganizationRole role) {

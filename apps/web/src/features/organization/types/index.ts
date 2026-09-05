@@ -140,6 +140,8 @@ export type UserAccountStatus = 'PENDING_CONTACT_VERIFICATION' | 'ACTIVE' | 'SUS
 
 export interface OrganizationMemberResponse {
   membershipId: string
+  /** Backend Phase B5. Null for staff created before B5; the UI falls back to email. */
+  displayName: string | null
   email: string | null
   role: OrganizationRole
   status: UserAccountStatus | null
