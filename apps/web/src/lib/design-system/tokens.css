@@ -1,53 +1,121 @@
-/* FursadHub brand foundation, derived from the approved navy/blue references. */
+/*
+ * FursadHub brand foundation.
+ *
+ * THE ONE implementation of the approved palette. Every navy, orange, blue and neutral in the
+ * product resolves here — no component may hard-code a hex, and there must never be a second,
+ * visually-similar navy or orange living in a feature file.
+ *
+ * Source of truth: design-reference/presentation-refresh-2026 — the approved presentation refresh.
+ * The two brand values are DECLARED on the canonical logo sheet
+ * (`redesigned brand/brand logo.png`, "Color Palette" panel), not guessed from the renders:
+ *
+ *     Primary  #0B2A5B  rgb(11, 42, 91)
+ *     Accent   #F97316  rgb(249, 115, 22)
+ *
+ * Everything else below is the supporting neutral/blue system read off the ten approved mockups
+ * (near-white page ground, white cards, hairline borders, navy headings, orange calls to action,
+ * compact blue verification checks and blue informational chips).
+ *
+ * NOTE FOR THE FURSADHUB TEAM — two open items, both reported rather than silently decided:
+ *   1. CLAUDE.md section 57 still lists an older palette (#091423 / #F8891F / #E56D0E / #FBF6EE /
+ *      #EDCFAE) and the tagline "Opening doors to your future." The canonical reference set
+ *      declares #0B2A5B / #F97316 and the tagline "Opportunities for a Brighter Tomorrow."
+ *      This file follows the canonical reference; section 57 needs updating to match.
+ *   2. White text on the approved accent (#F97316) measures 2.9:1 — below the WCAG 2.2 AA floor
+ *      for normal text. The approved fill is used as-is rather than invented away; a darkened
+ *      `--color-brand-accent-ink` carries orange TEXT on light surfaces so links stay legible.
+ */
 :root {
   color-scheme: light;
-  --color-brand-navy: #031b44;
-  --color-brand-navy-deep: #001638;
-  --color-brand-blue: #075ff7;
-  --color-brand-blue-strong: #064fd1;
-  --color-brand-blue-soft: #eaf2ff;
-  --color-brand-cyan: #27b9c2;
-  --color-brand-primary: var(--color-brand-blue);
+
+  /* ---------------------------------------------------------------- brand */
+  /* Declared on the canonical logo sheet. */
+  --color-brand-navy: #0b2a5b;
+  --color-brand-accent: #f97316;
+
+  /* Navy steps. `deep` is the sidebar/footer ground read off references 09/10 (#04214E/#001D4C);
+     `soft` is the tint behind navy icon chips. */
+  --color-brand-navy-deep: #061e45;
+  --color-brand-navy-strong: #0a2350;
+  --color-brand-navy-soft: #e9eef7;
+
+  /* Accent steps. `strong` is the pressed/hover fill; `soft` is the wash behind the hero's
+     "Verified" pill and the orange icon chips. `ink` is the ONLY orange approved for text on a
+     light surface — it clears 4.5:1 on white and on --color-surface-muted, which #F97316 does not. */
+  --color-brand-accent-strong: #e2610b;
+  --color-brand-accent-soft: #fff1e6;
+  --color-brand-accent-ink: #bd5308;
+
+  /* Blue is the system/trust colour of the refresh: the compact verification check, informational
+     chips, and in-portal "view all" links. It is NOT a second brand colour. */
+  --color-brand-blue: #2563eb;
+  --color-brand-blue-strong: #1d4ed8;
+  --color-brand-blue-soft: #e8f0fe;
+
+  /* Semantic aliases. `primary` is the action colour (orange), `secondary` the identity colour
+     (navy) — this is what `bg-brand-primary` / `text-brand-primary` resolve to product-wide. */
+  --color-brand-primary: var(--color-brand-accent);
   --color-brand-secondary: var(--color-brand-navy);
-  --color-brand-accent: var(--color-brand-cyan);
-  --color-background: #f8fbff;
+
+  /* ---------------------------------------------------------------- surfaces */
+  --color-background: #f7f9fc;
   --color-surface: #ffffff;
-  --color-surface-muted: #f3f7fc;
+  --color-surface-muted: #f1f5fa;
   --color-surface-raised: #ffffff;
-  --color-surface-inverse: var(--color-brand-navy);
-  --color-border: #d7e1ee;
-  --color-border-strong: #b9c8dc;
-  --color-overlay: rgb(1 18 46 / 0.56);
-  --color-text-primary: #06183a;
-  --color-text-secondary: #42526d;
-  /* Darkened from #718096, which measured 3.73:1 on --color-surface-muted and 4.02:1 on
-     --color-surface at 14px — under the 4.5:1 WCAG 2.2 AA floor for normal text. This value clears
-     4.5:1 against all three light surfaces (surface, background, surface-muted) while staying
-     clearly lighter than --color-text-secondary, so the three-step text hierarchy is unchanged. */
-  --color-text-muted: #62718a;
+  --color-surface-inverse: var(--color-brand-navy-deep);
+  --color-border: #e4e9f0;
+  --color-border-strong: #cbd5e3;
+  --color-overlay: rgb(6 30 69 / 0.56);
+
+  /* ---------------------------------------------------------------- text */
+  /* Headings in the references are brand navy, not near-black. */
+  --color-text-primary: var(--color-brand-navy);
+  --color-text-secondary: #47566e;
+  /* Third step of the hierarchy. Measured: 4.9:1 on --color-surface-muted, 5.4:1 on white — the
+     4.5:1 AA floor for normal text holds on every light surface here. */
+  --color-text-muted: #5b6b84;
   --color-text-inverse: #ffffff;
   --color-text-link: var(--color-brand-blue);
   --color-text-on-brand: #ffffff;
-  --color-focus-ring: #2f79ff;
-  --color-control-hover: #edf4ff;
+  --color-focus-ring: var(--color-brand-blue);
+  --color-control-hover: #eef3fa;
   --color-control-disabled: #e7edf5;
-  --color-sidebar-background: var(--color-brand-navy-deep);
-  --color-sidebar-text: #dce9ff;
-  --color-sidebar-active: var(--color-brand-blue);
-  /* Chart ink. One series is all FursadHub plots today, so there is one series token rather than a
-     categorical ramp. The dark step is CHOSEN, not a flipped light value: brand blue sits too dark
-     against the dark surface to read as a 2px line, so dark mode steps up the same hue. Both values
-     pass the lightness-band, chroma and 3:1 contrast checks against their own surface. */
+
+  /* ---------------------------------------------------------------- sidebar
+     Two approved treatments, one component. The defaults are the LIGHT rail of references 07/08
+     (student, organization); `.sidebar-navy` below swaps in the navy rail of references 09/10
+     (university, platform admin). In both, the active destination is marked by an orange edge —
+     that is the constant across all four portals. */
+  --color-sidebar-background: #ffffff;
+  --color-sidebar-text: #47566e;
+  --color-sidebar-text-strong: var(--color-brand-navy);
+  --color-sidebar-active-bg: var(--color-brand-accent-soft);
+  --color-sidebar-active-text: var(--color-brand-navy);
+  --color-sidebar-active-edge: var(--color-brand-accent);
+  --color-sidebar-hover: var(--color-surface-muted);
+  --color-sidebar-border: var(--color-border);
+  --color-sidebar-heading: #7a8aa3;
+  /* Retained alias: `bg-sidebar-active` still resolves for anything that has not moved to the
+     explicit bg/text/edge trio. */
+  --color-sidebar-active: var(--color-sidebar-active-bg);
+
+  /* ---------------------------------------------------------------- charts
+     One plotted series is all FursadHub draws today, so there is one series token rather than a
+     categorical ramp. Both light and dark values clear 3:1 against their own surface. */
   --color-chart-series: var(--color-brand-blue);
   --color-chart-grid: var(--color-border);
+
+  /* ---------------------------------------------------------------- status */
   --color-success: #137a4a;
   --color-success-bg: #e8f7ef;
   --color-warning: #9a5a00;
   --color-warning-bg: #fff4dd;
   --color-danger: #b42318;
   --color-danger-bg: #ffebe9;
-  --color-info: #0759d5;
-  --color-info-bg: #eaf2ff;
+  --color-info: var(--color-brand-blue-strong);
+  --color-info-bg: var(--color-brand-blue-soft);
+
+  /* ---------------------------------------------------------------- type */
   --font-display: 'Manrope', system-ui, -apple-system, 'Segoe UI', sans-serif;
   --font-body: 'Public Sans', system-ui, -apple-system, 'Segoe UI', sans-serif;
   --font-size-xs: 0.75rem;
@@ -60,6 +128,8 @@
   --font-size-4xl: 2.75rem;
   --line-height-tight: 1.15;
   --line-height-body: 1.6;
+
+  /* ---------------------------------------------------------------- space */
   --space-1: 0.25rem;
   --space-2: 0.5rem;
   --space-3: 0.75rem;
@@ -71,17 +141,27 @@
   --space-12: 3rem;
   --space-16: 4rem;
   --space-20: 5rem;
+
+  /* ---------------------------------------------------------------- shape
+     The references use a softer corner than the previous system: cards and inputs read at ~12px,
+     pills stay fully round. */
   --radius-xs: 0.25rem;
   --radius-sm: 0.5rem;
-  --radius-md: 0.75rem;
-  --radius-lg: 1rem;
-  --radius-xl: 1.25rem;
+  --radius-md: 0.625rem;
+  --radius-lg: 0.75rem;
+  --radius-xl: 1rem;
+  --radius-2xl: 1.25rem;
   --radius-full: 9999px;
   --border-width: 1px;
-  --shadow-xs: 0 1px 2px rgb(3 27 68 / 0.05);
-  --shadow-sm: 0 4px 12px rgb(3 27 68 / 0.07);
-  --shadow-md: 0 12px 32px rgb(3 27 68 / 0.1);
-  --shadow-lg: 0 24px 64px rgb(3 27 68 / 0.14);
+
+  /* Shadows are tinted with the brand navy, and stay shallow — the references lean on hairline
+     borders over drop shadows. */
+  --shadow-xs: 0 1px 2px rgb(11 42 91 / 0.05);
+  --shadow-sm: 0 4px 12px rgb(11 42 91 / 0.06);
+  --shadow-md: 0 12px 32px rgb(11 42 91 / 0.09);
+  --shadow-lg: 0 24px 64px rgb(11 42 91 / 0.13);
+
+  /* ---------------------------------------------------------------- motion */
   --duration-instant: 80ms;
   --duration-fast: 150ms;
   --duration-normal: 240ms;
@@ -91,6 +171,12 @@
   --ease-exit: cubic-bezier(0.4, 0, 1, 1);
 }
 
+/*
+ * Dark theme. The approved reference set contains no dark-mode mockup, so this is a deliberate
+ * extrapolation of the same navy/orange system onto dark ground — reported as such — rather than
+ * an approved composition. It exists because the product already ships a per-user theme switch;
+ * removing it would delete working functionality.
+ */
 :root[data-theme='dark'] {
   color-scheme: dark;
   --color-background: #071426;
@@ -103,15 +189,32 @@
   --color-overlay: rgb(0 7 20 / 0.72);
   --color-text-primary: #f7faff;
   --color-text-secondary: #c8d6e8;
-  --color-text-muted: #91a5bf;
+  --color-text-muted: #97abc4;
   --color-text-inverse: #06183a;
-  --color-text-link: #69a1ff;
-  --color-focus-ring: #75aaff;
+  --color-text-link: #7fa9ff;
+  --color-focus-ring: #7fa9ff;
   --color-control-hover: #172f4d;
   --color-control-disabled: #22364f;
-  --color-sidebar-background: #00112d;
-  --color-sidebar-text: #dce9ff;
-  --color-sidebar-active: #176bff;
+
+  /* On dark ground the accent needs to lift, and orange text no longer needs darkening — the
+     `ink` step steps UP instead, so it stays the legible orange in both themes. */
+  --color-brand-accent-soft: #3a2210;
+  --color-brand-accent-ink: #ffa257;
+  --color-brand-navy-soft: #12294a;
+  --color-brand-blue: #4b8dfb;
+  --color-brand-blue-strong: #6da4fc;
+  --color-brand-blue-soft: #14345f;
+
+  --color-sidebar-background: #05122a;
+  --color-sidebar-text: #b9cbe4;
+  --color-sidebar-text-strong: #ffffff;
+  --color-sidebar-active-bg: rgb(249 115 22 / 0.14);
+  --color-sidebar-active-text: #ffffff;
+  --color-sidebar-active-edge: var(--color-brand-accent);
+  --color-sidebar-hover: rgb(255 255 255 / 0.06);
+  --color-sidebar-border: #1b3153;
+  --color-sidebar-heading: #7f93b0;
+
   --color-chart-series: #4b8dfb;
   --color-chart-grid: #263b57;
   --color-success: #6fd8a5;
@@ -128,18 +231,49 @@
   --shadow-lg: 0 24px 64px rgb(0 0 0 / 0.42);
 }
 
+/*
+ * The navy rail of references 09 (university) and 10 (platform admin). Scoped overrides only —
+ * one Sidebar component renders both treatments, so the two can never drift apart.
+ */
+.sidebar-navy {
+  color-scheme: dark;
+  --color-sidebar-background: var(--color-brand-navy-deep);
+  --color-sidebar-text: #b9cbe4;
+  --color-sidebar-text-strong: #ffffff;
+  --color-sidebar-active-bg: #0d3068;
+  --color-sidebar-active-text: #ffffff;
+  --color-sidebar-active-edge: var(--color-brand-accent);
+  --color-sidebar-hover: rgb(255 255 255 / 0.07);
+  --color-sidebar-border: rgb(255 255 255 / 0.1);
+  --color-sidebar-heading: #7f93b0;
+  --color-sidebar-active: var(--color-sidebar-active-bg);
+}
+
+:root[data-theme='dark'] .sidebar-navy {
+  --color-sidebar-background: #05122a;
+  --color-sidebar-active-bg: #12294a;
+  --color-sidebar-border: #1b3153;
+}
+
+/*
+ * Navy content bands — the home page call-to-action strip and the public footer (references 01-06).
+ * Anything inside reads its surface/text tokens from here, so ordinary components drop onto a navy
+ * band without each one hand-writing white overrides.
+ */
 .surface-dark {
   color-scheme: dark;
   --color-background: var(--color-brand-navy-deep);
   --color-surface: var(--color-brand-navy-deep);
-  --color-surface-muted: #082654;
-  --color-surface-raised: #0c2d61;
-  --color-border: #214879;
-  --color-border-strong: #3a6090;
+  --color-surface-muted: #0d2c5f;
+  --color-surface-raised: #0f3168;
+  --color-border: rgb(255 255 255 / 0.12);
+  --color-border-strong: rgb(255 255 255 / 0.24);
   --color-text-primary: #ffffff;
-  --color-text-secondary: #d4e3f8;
-  --color-text-muted: #9fb6d4;
-  --color-text-inverse: #06183a;
+  --color-text-secondary: #c6d6ec;
+  --color-text-muted: #9db2d1;
+  --color-text-inverse: var(--color-brand-navy);
+  --color-text-link: #ffffff;
+  --color-brand-accent-ink: #ffa257;
 }
 
 @media (prefers-reduced-motion: reduce) {

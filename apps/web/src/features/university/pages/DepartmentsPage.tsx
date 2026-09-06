@@ -121,7 +121,7 @@ export function DepartmentsPage() {
                   ) : (
                     <>
                       <div className="flex items-start gap-3">
-                        <span className="flex size-10 shrink-0 items-center justify-center rounded-lg bg-brand-blue-soft text-brand-primary dark:bg-info-bg dark:text-info">
+                        <span className="flex size-10 shrink-0 items-center justify-center rounded-lg bg-brand-blue-soft text-brand-blue dark:bg-info-bg dark:text-info">
                           <Icon name="layers" className="size-5" />
                         </span>
                         <div className="min-w-0 flex-1">

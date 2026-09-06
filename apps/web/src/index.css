@@ -24,11 +24,16 @@
   --color-brand-primary: var(--color-brand-primary);
   --color-brand-secondary: var(--color-brand-secondary);
   --color-brand-accent: var(--color-brand-accent);
+  --color-brand-accent-strong: var(--color-brand-accent-strong);
+  --color-brand-accent-soft: var(--color-brand-accent-soft);
+  --color-brand-accent-ink: var(--color-brand-accent-ink);
   --color-brand-navy: var(--color-brand-navy);
+  --color-brand-navy-deep: var(--color-brand-navy-deep);
+  --color-brand-navy-strong: var(--color-brand-navy-strong);
+  --color-brand-navy-soft: var(--color-brand-navy-soft);
   --color-brand-blue: var(--color-brand-blue);
   --color-brand-blue-strong: var(--color-brand-blue-strong);
   --color-brand-blue-soft: var(--color-brand-blue-soft);
-  --color-brand-cyan: var(--color-brand-cyan);
 
   --color-background: var(--color-background);
   --color-surface: var(--color-surface);
@@ -50,7 +55,13 @@
   --color-control-disabled: var(--color-control-disabled);
   --color-sidebar: var(--color-sidebar-background);
   --color-sidebar-foreground: var(--color-sidebar-text);
-  --color-sidebar-active: var(--color-sidebar-active);
+  --color-sidebar-strong: var(--color-sidebar-text-strong);
+  --color-sidebar-active: var(--color-sidebar-active-bg);
+  --color-sidebar-active-text: var(--color-sidebar-active-text);
+  --color-sidebar-active-edge: var(--color-sidebar-active-edge);
+  --color-sidebar-hover: var(--color-sidebar-hover);
+  --color-sidebar-border: var(--color-sidebar-border);
+  --color-sidebar-heading: var(--color-sidebar-heading);
   --color-chart-series: var(--color-chart-series);
   --color-chart-grid: var(--color-chart-grid);
 
@@ -68,6 +79,7 @@
   --radius-md: var(--radius-md);
   --radius-lg: var(--radius-lg);
   --radius-xl: var(--radius-xl);
+  --radius-2xl: var(--radius-2xl);
 
   --shadow-xs: var(--shadow-xs);
   --shadow-sm: var(--shadow-sm);

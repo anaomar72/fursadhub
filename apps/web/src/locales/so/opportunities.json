@@ -130,7 +130,32 @@
     "apply": "Hadda codso",
     "signInToApply": "Gal si aad u codsato tababarkan",
     "notFound": "Fursaddan hadda lama heli karo.",
-    "backToList": "Ku noqo dhammaan fursadaha"
+    "backToList": "Ku noqo dhammaan fursadaha",
+    "heroLead": "Hel Tababaro La Xaqiijiyay.",
+    "heroBuild": "Dhis",
+    "heroAccent": "Mustaqbal Dhab ah.",
+    "heroDescription": "Sahamin fursado ka yimid hay'ado la xaqiijiyay, hel khibrad dhab ah, oo qaad tallaabada xigta ee xirfaddaada.",
+    "allInternships": "Dhammaan tababarada",
+    "showing": "Waxaa la tusayaa {{from}}–{{to}} oo ka mid ah {{total}} fursadood",
+    "applyPanelTitle": "Codso tababarkan",
+    "saveForLater": "U kaydi mar dambe",
+    "aboutOrganization": "Ku saabsan hay'adda",
+    "viewOrganizationProfile": "Eeg astaanta hay'adda",
+    "aboutInternship": "Ku saabsan tababarka",
+    "facts": {
+      "workMode": "Habka shaqada",
+      "location": "Goobta",
+      "openings": "Booska furan",
+      "start": "Bilaabmaya",
+      "end": "Dhammaanaya",
+      "deadline": "Xilliga ugu dambeeya ee codsiga"
+    },
+    "closesIn_one": "Codsiyadu waxay xidhmayaan {{count}} maalmood gudahood",
+    "closesIn_other": "Codsiyadu waxay xidhmayaan {{count}} maalmood gudahood",
+    "closesToday": "Codsiyadu maanta ayay xidhmayaan",
+    "closed": "Codsiyadii waa xidhmeen",
+    "verifiedOpportunity": "Fursad la xaqiijiyay",
+    "verifiedOpportunityBody": "Fursaddan waxaa daabacay hay'ad ay FursadHub xaqiijisay."
   },
   "browse": {
     "title": "Raadi tababarro",

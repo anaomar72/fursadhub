@@ -141,7 +141,7 @@ function SupervisorRow({ label, email }: { label: string; email: string | null }
       <span
         className={
           email
-            ? 'flex size-9 shrink-0 items-center justify-center rounded-full bg-brand-blue-soft text-brand-primary dark:bg-info-bg dark:text-info'
+            ? 'flex size-9 shrink-0 items-center justify-center rounded-full bg-brand-blue-soft text-brand-blue dark:bg-info-bg dark:text-info'
             : 'flex size-9 shrink-0 items-center justify-center rounded-full bg-surface-muted text-muted'
         }
       >

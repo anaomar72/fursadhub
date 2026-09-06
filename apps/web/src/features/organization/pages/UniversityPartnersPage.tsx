@@ -61,7 +61,7 @@ export function UniversityPartnersPage() {
               <li key={partner.id}>
                 <Card padding="lg" className="h-full">
                   <div className="flex items-start gap-3">
-                    <span className="flex size-11 shrink-0 items-center justify-center rounded-xl bg-brand-blue-soft text-brand-primary dark:bg-info-bg dark:text-info">
+                    <span className="flex size-11 shrink-0 items-center justify-center rounded-xl bg-brand-blue-soft text-brand-blue dark:bg-info-bg dark:text-info">
                       <Icon name="bank" className="size-5" />
                     </span>
                     <div className="min-w-0">

@@ -69,7 +69,19 @@
   },
   "publicProfile": {
     "notFound": "This organization could not be found.",
-    "viewOpportunities": "View opportunities"
+    "viewOpportunities": "View opportunities",
+    "back": "Back to organizations",
+    "about": "About {{name}}",
+    "visitWebsite": "Visit website",
+    "quickFacts": "Quick facts",
+    "headquarters": "Headquarters",
+    "website": "Website",
+    "openOpportunities": "Open opportunities",
+    "verifiedTitle": "Verified organization",
+    "verifiedBody": "This organization has been verified by FursadHub.",
+    "latestOpportunities": "Latest opportunities",
+    "viewAllOpportunities": "View all opportunities",
+    "noOpportunities": "This organization has no published internships right now."
   },
   "profile": {
     "title": "Organization profile",

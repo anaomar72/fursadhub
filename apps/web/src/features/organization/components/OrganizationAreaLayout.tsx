@@ -13,6 +13,10 @@ import { AppShell } from '../../../app/layouts/AppShell'
  * one organization; this still uses the first one (no organization switcher yet — see the Phase 3
  * report's known limitations). Sub-pages rely on the backend re-checking authorization on every
  * request (CLAUDE.md section 24) — this only drives navigation/UX.
+ *
+ * <p>Presentation refresh: this area uses the approved LIGHT rail (reference 08), branded with the
+ * organization's own logo and name. That identity is read from the organization's public profile
+ * for the tenant the caller is actually a member of — never from anything the browser supplies.
  */
 export function OrganizationAreaLayout() {
   const { t } = useTranslation()
@@ -20,6 +24,17 @@ export function OrganizationAreaLayout() {
     queryKey: ['organization', 'my-memberships'],
     queryFn: organizationApi.getMyMemberships,
     retry: false,
+  })
+
+  const membership = membershipsQuery.data?.[0]
+  const organizationId = membership?.organizationId
+
+  const organizationQuery = useQuery({
+    queryKey: ['public-organization', organizationId],
+    queryFn: () => organizationApi.getPublicOrganization(organizationId!),
+    enabled: !!organizationId,
+    retry: false,
+    staleTime: 5 * 60_000,
   })
 
   if (membershipsQuery.isLoading) {
@@ -30,7 +45,6 @@ export function OrganizationAreaLayout() {
     )
   }
 
-  const membership = membershipsQuery.data?.[0]
   if (!membership) {
     return (
       <AppShell
@@ -47,9 +61,21 @@ export function OrganizationAreaLayout() {
     )
   }
 
+  const organization = organizationQuery.data
+
   return (
     <OrganizationMembershipContext.Provider value={membership}>
-      <AppShell areaLabel={t('common:nav.organization')} sections={buildOrganizationNav(t, membership)} />
+      <AppShell
+        areaLabel={t('common:nav.organization')}
+        sections={buildOrganizationNav(t, membership)}
+        brand={{
+          name: organization?.name,
+          // Only when the backend says a logo exists — an unconditional URL would render a broken
+          // image for every organization that has not uploaded one.
+          logoUrl: organization?.hasLogo ? organizationApi.organizationLogoUrl(organization.id) : undefined,
+          portalLabel: t('common:shell.portals.organization'),
+        }}
+      />
     </OrganizationMembershipContext.Provider>
   )
 }

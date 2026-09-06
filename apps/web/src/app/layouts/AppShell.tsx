@@ -5,6 +5,7 @@ import { useAuth } from '../../lib/auth/AuthContext'
 import { Sidebar } from './Sidebar'
 import { Topbar } from './Topbar'
 import type { NavSection } from './navigation'
+import type { SidebarBrand } from './Sidebar'
 
 const COLLAPSED_STORAGE_KEY = 'fursadhub-sidebar-collapsed'
 
@@ -13,6 +14,13 @@ export interface AppShellProps {
   areaLabel: string
   /** Built by each area from its own resolved membership/role — see the area's navigation module. */
   sections: NavSection[]
+  /**
+   * Which approved rail treatment this area uses: the light rail of references 07/08
+   * (student, organization) or the navy rail of references 09/10 (university, platform admin).
+   */
+  tone?: 'light' | 'navy'
+  /** Tenant identity for the rail. Always resolved from the caller's own membership — never hard-coded. */
+  brand?: SidebarBrand
   /** Defaults to the route `<Outlet />`; areas pass children for a pre-membership setup screen. */
   children?: ReactNode
 }
@@ -34,7 +42,7 @@ function readCollapsed(): boolean {
  * university admin is the `sections` their own area computed from real membership data, not a
  * second copy of this file (CLAUDE.md section 9 — one React application with layouts per area).
  */
-export function AppShell({ areaLabel, sections, children }: AppShellProps) {
+export function AppShell({ areaLabel, sections, tone = 'light', brand, children }: AppShellProps) {
   const { t } = useTranslation()
   const { signOut } = useAuth()
   const navigate = useNavigate()
@@ -101,6 +109,8 @@ export function AppShell({ areaLabel, sections, children }: AppShellProps) {
         <Sidebar
           sections={sections}
           homePath={homePath}
+          tone={tone}
+          brand={brand}
           collapsed={collapsed}
           onToggleCollapse={toggleCollapsed}
           onSignOut={handleSignOut}
@@ -125,6 +135,8 @@ export function AppShell({ areaLabel, sections, children }: AppShellProps) {
               variant="drawer"
               sections={sections}
               homePath={homePath}
+              tone={tone}
+              brand={brand}
               onNavigate={() => closeDrawer()}
               onSignOut={handleSignOut}
             />

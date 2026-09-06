@@ -53,7 +53,16 @@
     }
   },
   "publicProfile": {
-    "notFound": "This university could not be found."
+    "notFound": "This university could not be found.",
+    "back": "Back to universities",
+    "about": "About {{name}}",
+    "visitWebsite": "Visit website",
+    "quickFacts": "Quick facts",
+    "location": "Location",
+    "website": "Website",
+    "contact": "Public contact",
+    "verifiedTitle": "Verified university",
+    "verifiedBody": "This university has been verified by FursadHub."
   },
   "profile": {
     "title": "University profile",

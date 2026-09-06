@@ -53,7 +53,16 @@
     }
   },
   "publicProfile": {
-    "notFound": "Jaamacaddan lama helin."
+    "notFound": "Jaamacaddan lama helin.",
+    "back": "Ku noqo jaamacadaha",
+    "about": "Ku saabsan {{name}}",
+    "visitWebsite": "Booqo websaydka",
+    "quickFacts": "Xaqiiqooyin degdeg ah",
+    "location": "Goobta",
+    "website": "Websaydka",
+    "contact": "Xidhiidhka guud",
+    "verifiedTitle": "Jaamacad la xaqiijiyay",
+    "verifiedBody": "Jaamacaddan waxaa xaqiijiyay FursadHub."
   },
   "profile": {
     "title": "Astaanta jaamacadda",

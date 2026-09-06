@@ -14,8 +14,10 @@ import type {
   UniversityResponse,
   VerificationCaseResponse,
   UniversityRole,
+  PublicUniversitySummaryResponse,
 } from '../types'
 import type { MessageResponse } from '../../auth/types'
+import type { PageResponse } from '../../opportunities/types'
 
 export function listUniversities() {
   return apiFetch<UniversityResponse[]>('/universities', { method: 'GET' })
@@ -283,4 +285,42 @@ export function assignStaffUsername(universityId: string, membershipId: string, 
     method: 'POST',
     body: { username },
   })
+}
+
+// ---------------------------------------------------------------- public directory
+
+/**
+ * The public university directory (`GET /api/v1/public/universities`, Backend Phase B1).
+ *
+ * <p>Unauthenticated and paged. `listUniversities()` above is the AUTHENTICATED registry used by
+ * staff screens; this is the visitor-facing directory the approved universities page renders, and
+ * it is the only one a signed-out browser may call.
+ */
+export function listPublicUniversities(filters: {
+  query?: string
+  city?: string
+  country?: string
+  sort?: string
+  page?: number
+  size?: number
+} = {}) {
+  const params = new URLSearchParams()
+  if (filters.query) params.set('query', filters.query)
+  if (filters.city) params.set('city', filters.city)
+  if (filters.country) params.set('country', filters.country)
+  if (filters.sort) params.set('sort', filters.sort)
+  params.set('page', String(filters.page ?? 0))
+  params.set('size', String(filters.size ?? 12))
+  return apiFetch<PageResponse<PublicUniversitySummaryResponse>>(
+    `/public/universities?${params.toString()}`,
+    { method: 'GET' },
+  )
+}
+
+/**
+ * The entity's public profile banner. Same contract as the logo route: unauthenticated, and
+ * only meaningful when the response says `hasCover` — otherwise it 404s.
+ */
+export function universityCoverUrl(id: string): string {
+  return `${env.apiBaseUrl}/public/universities/${id}/cover/document`
 }

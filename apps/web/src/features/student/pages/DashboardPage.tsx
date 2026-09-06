@@ -16,6 +16,7 @@ import {
   StatusBadge,
   type IconName,
 } from '../../../components/ui'
+import { METRIC_TONES } from '../../../components/ui/metricTones'
 import { PageContainer } from '../../../app/layouts/PageContainer'
 import { formatDate } from '../../../lib/utils/formatDate'
 
@@ -140,7 +141,7 @@ export function DashboardPage() {
                     to={`/student/opportunities/${opportunity.id}`}
                     className="flex items-start gap-3 px-5 py-4 transition-colors hover:bg-surface-muted focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-focus-ring motion-reduce:transition-none"
                   >
-                    <span className="flex size-10 shrink-0 items-center justify-center rounded-lg bg-brand-blue-soft text-brand-primary dark:bg-info-bg dark:text-info">
+                    <span className="flex size-10 shrink-0 items-center justify-center rounded-lg bg-brand-blue-soft text-brand-blue dark:bg-info-bg dark:text-info">
                       <Icon name="briefcase" className="size-5" />
                     </span>
                     <span className="min-w-0 flex-1">
@@ -267,13 +268,6 @@ function SectionHeading({ title, action }: { title: string; action?: React.React
     </div>
   )
 }
-
-const METRIC_TONES = {
-  brand: 'bg-brand-blue-soft text-brand-primary dark:bg-info-bg dark:text-info',
-  violet: 'bg-info-bg text-info',
-  teal: 'bg-success-bg text-success',
-  amber: 'bg-warning-bg text-warning',
-} as const
 
 function MetricCard({
   icon,

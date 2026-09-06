@@ -16,15 +16,22 @@ export interface TopbarProps {
 }
 
 /**
- * The authenticated topbar: page context on the left, then the controls every signed-in person
- * needs wherever they are — language, theme, notifications and their own account menu.
+ * The approved authenticated topbar (design-reference/presentation-refresh-2026, references
+ * 07-10): page context on the left, then the controls every signed-in person needs wherever they
+ * are — language, theme, notifications and their own account block.
  *
  * <p>The page title is derived from the sidebar item matching the current route rather than passed
  * down by each page, so it can never disagree with the highlighted destination.
  *
- * <p>The approved reference also shows a global search field. There is no search endpoint behind it
- * in the current API for any authenticated area, so it is deliberately omitted rather than mocked
- * up as a control that does nothing (CLAUDE.md section 75: do not invent functionality).
+ * <p>Two elements the references show are deliberately NOT built:
+ * <ul>
+ *   <li>the global search field — there is no search endpoint behind it in the current API for any
+ *       authenticated area, so it is omitted rather than mocked up as a control that does nothing;</li>
+ *   <li>a person's display name beside the avatar — `/me` returns an email and status, not a name,
+ *       so the identity block shows the real email rather than inventing one.</li>
+ * </ul>
+ * Both follow the reference README: never fabricate data, and never change the backend just to
+ * match a mockup (CLAUDE.md section 75).
  */
 export function Topbar({ areaLabel, sections, onOpenNavigation, onSignOut }: TopbarProps) {
   const { t } = useTranslation()
@@ -36,17 +43,13 @@ export function Topbar({ areaLabel, sections, onOpenNavigation, onSignOut }: Top
   const activeItem = findActiveNavItem(sections, location)
 
   return (
-    <header className="sticky top-0 z-30 flex h-[68px] shrink-0 items-center gap-3 border-b border-border bg-surface px-4 sm:px-6">
-      <IconButton
-        label={t('common:shell.openNavigation')}
-        onClick={onOpenNavigation}
-        className="lg:hidden"
-      >
+    <header className="sticky top-0 z-30 flex h-[72px] shrink-0 items-center gap-3 border-b border-border bg-surface px-4 sm:px-6">
+      <IconButton label={t('common:shell.openNavigation')} onClick={onOpenNavigation} className="lg:hidden">
         <Icon name="menu" className="size-5" />
       </IconButton>
 
       <div className="min-w-0">
-        <p className="truncate font-display text-base font-bold text-foreground sm:text-lg">
+        <p className="truncate font-display text-lg font-extrabold tracking-tight text-brand-navy dark:text-foreground sm:text-xl">
           {activeItem?.label ?? areaLabel}
         </p>
         <p className="truncate text-xs text-foreground-secondary">{areaLabel}</p>
@@ -60,7 +63,20 @@ export function Topbar({ areaLabel, sections, onOpenNavigation, onSignOut }: Top
         <NotificationBell />
         <Menu
           triggerLabel={t('common:nav.account')}
-          trigger={<Avatar name={meQuery.data?.email ?? '?'} src={avatarSrc} size="sm" />}
+          trigger={
+            // The reference pairs the avatar with an identity block. On narrow viewports only the
+            // avatar survives, so the control never crowds out the page title.
+            <span className="flex items-center gap-2.5 rounded-full border border-border py-1 pe-2 ps-1 sm:pe-3">
+              <Avatar name={meQuery.data?.email ?? '?'} src={avatarSrc} size="sm" />
+              <span className="hidden min-w-0 text-start sm:block">
+                <span className="block max-w-[10rem] truncate text-xs font-semibold text-foreground">
+                  {meQuery.data?.email ?? '—'}
+                </span>
+                <span className="block truncate text-[11px] text-foreground-secondary">{areaLabel}</span>
+              </span>
+              <Icon name="chevronDown" className="hidden size-4 shrink-0 text-foreground-secondary sm:block" />
+            </span>
+          }
           items={[
             { label: t('account:nav.profile'), onSelect: () => navigate('/account/profile') },
             { label: t('privacy:nav.privacy'), onSelect: () => navigate('/account/privacy') },

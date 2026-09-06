@@ -25,7 +25,7 @@ export function DashboardActionCard({ label, value, to, statusLabel, tone }: Das
       className={cn(
         'flex flex-col gap-2 rounded-lg border border-border bg-surface p-4',
         'transition-all duration-150 ease-in-out',
-        'hover:-translate-y-0.5 hover:border-brand-primary hover:shadow-md',
+        'hover:-translate-y-0.5 hover:border-brand-accent hover:shadow-md',
         'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus-ring',
       )}
     >

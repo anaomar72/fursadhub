@@ -1,28 +1,73 @@
-import brandIcon from '../../assets/brand/Fursad Hub app icon.png'
+import { useTranslation } from 'react-i18next'
+import { BrandLogo, Icon, type IconName } from '../../components/ui'
 
-/** Decorative vector scene based on the approved landing-page composition. */
+const PILLS = [
+  { key: 'verified', icon: 'badgeCheck', tone: 'text-brand-blue', position: 'start-1 top-4 sm:-start-5' },
+  { key: 'learn', icon: 'graduationCap', tone: 'text-brand-navy dark:text-foreground', position: 'bottom-8 start-2 sm:-start-6' },
+  { key: 'grow', icon: 'chart', tone: 'text-success', position: 'bottom-4 end-1 sm:-end-5' },
+] as const
+
+/**
+ * The hero visual from the approved landing page (reference 01): a tall rounded panel with three
+ * floating cards overlapping its edges.
+ *
+ * <p>The reference fills the panel with a commissioned photograph. There is no such asset in the
+ * repository and one must not be invented, so the panel is the canonical brand mark over the
+ * navy skyline motif that already runs through the approved footer and call-to-action band. The
+ * three floating cards, their icons and their copy follow the reference exactly.
+ */
 export function HomeHeroIllustration() {
-  return <div className="relative mx-auto aspect-[1.08/1] w-full max-w-[560px] overflow-hidden" aria-hidden="true">
-    <div className="absolute inset-x-[8%] top-[4%] aspect-square rounded-full bg-brand-blue-soft opacity-80 dark:bg-info-bg" />
-    <div className="absolute left-1/2 top-[17%] w-[38%] -translate-x-1/2 rounded-[28%] bg-brand-navy p-2 shadow-lg"><img src={brandIcon} alt="" className="aspect-square w-full rounded-[22%] object-cover" /></div>
-    <svg viewBox="0 0 560 500" className="absolute inset-0 h-full w-full" fill="none">
-      <path d="M56 437h448" stroke="currentColor" className="text-brand-primary" strokeWidth="2"/>
-      <path d="M112 306v-60h26v60M145 306v-92h31v92M184 306v-46h22v46M355 313v-72h30v72M392 313v-105h34v105M433 313v-54h25v54" className="fill-brand-blue-soft dark:fill-info-bg"/>
-      <circle cx="151" cy="337" r="35" className="fill-brand-navy"/>
-      <path d="M126 364c-31 10-46 35-52 73h160c-5-38-24-63-57-73" className="fill-brand-primary"/>
-      <path d="M132 326c8-19 36-20 47 0v27c-11 19-37 18-47 0Z" fill="#f6a878"/>
-      <path d="M105 433h108l-16-52h-75Z" className="fill-brand-blue-strong"/>
-      <path d="M174 387h79l17 48h-81Z" className="fill-brand-navy"/>
-      <circle cx="221" cy="411" r="5" className="fill-brand-blue-soft dark:fill-info-bg"/>
-      <circle cx="419" cy="335" r="33" className="fill-brand-navy"/>
-      <path d="M371 437c4-47 17-69 47-78 34 7 55 32 67 78Z" className="fill-brand-secondary"/>
-      <path d="M395 326c9-17 34-18 45 1v26c-11 17-35 16-45-1Z" fill="#f4ad7d"/>
-      <path d="m405 378-52-61 13-10 61 55" className="stroke-brand-secondary" strokeWidth="18" strokeLinecap="round"/>
-      <path d="m360 314-8-28m8 28 22-18" className="stroke-brand-navy" strokeWidth="5" strokeLinecap="round"/>
-      <rect x="38" y="170" width="58" height="58" rx="12" className="fill-surface stroke-brand-primary" strokeWidth="2"/>
-      <circle cx="67" cy="195" r="13" className="stroke-brand-primary" strokeWidth="3"/><path d="m77 205 10 10" className="stroke-brand-primary" strokeWidth="3"/>
-      <rect x="456" y="175" width="66" height="58" rx="12" className="fill-surface stroke-border" strokeWidth="2"/>
-      <path d="M472 216v-13h8v13m7 0v-25h8v25m7 0v-35h8v35" className="fill-brand-primary"/>
+  const { t } = useTranslation()
+
+  return (
+    <div className="relative mx-auto w-full max-w-[620px] px-2 sm:px-7">
+      <div className="surface-dark relative flex aspect-[2.07/1] items-center justify-center overflow-hidden rounded-2xl bg-surface">
+        <Skyline />
+        <div className="relative flex flex-col items-center gap-2 px-6 text-center">
+          <BrandLogo surface="dark" markOnly size="lg" className="size-11" />
+          <p className="font-display text-lg font-extrabold tracking-tight text-white">
+            Fursad<span className="text-brand-accent">Hub</span>
+          </p>
+          <p className="max-w-[18rem] text-xs text-white/70">{t('common:app.tagline')}</p>
+        </div>
+      </div>
+
+      {PILLS.map((pill) => (
+        <div
+          key={pill.key}
+          className={`absolute ${pill.position} flex max-w-[11rem] items-start gap-2 rounded-xl border border-border bg-surface p-2.5 shadow-md`}
+        >
+          <span className={`mt-0.5 shrink-0 ${pill.tone}`}>
+            <Icon name={pill.icon as IconName} className="size-4" />
+          </span>
+          <span className="min-w-0">
+            <span className="block text-xs font-bold text-brand-navy dark:text-foreground">
+              {t(`common:landing.pills.${pill.key}.title`)}
+            </span>
+            <span className="mt-0.5 block text-[11px] leading-4 text-foreground-secondary">
+              {t(`common:landing.pills.${pill.key}.body`)}
+            </span>
+          </span>
+        </div>
+      ))}
+    </div>
+  )
+}
+
+/** Decorative only — the same skyline line-work the approved footer and CTA band use. */
+function Skyline() {
+  return (
+    <svg
+      aria-hidden="true"
+      viewBox="0 0 400 140"
+      preserveAspectRatio="xMidYMax slice"
+      className="pointer-events-none absolute inset-x-0 bottom-0 h-2/5 w-full text-white/10"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="2"
+    >
+      <path d="M6 140V88h28v52M34 100h24v40M58 70h20v70M78 108h22v32M100 50h32v90M132 86h26v54M158 64h22v76M180 98h28v42M208 40h30v100M238 78h24v62M262 58h28v82M290 94h22v46M312 46h32v94M344 82h26v58M370 100h28v40" />
+      <path d="M116 50V34M125 34h6M223 40V22M232 22h6M328 46V30M337 30h6" />
     </svg>
-  </div>
+  )
 }

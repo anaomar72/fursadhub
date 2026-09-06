@@ -26,9 +26,9 @@ export function PageHeader({ eyebrow, title, description, actions, className }: 
           rather than wrapping (BRAND_AND_UI_GUIDELINES.md section 8 — never page-level overflow). */}
       <div className="min-w-0">
         {eyebrow && (
-          <p className="text-xs font-semibold uppercase tracking-wide text-brand-primary dark:text-info">{eyebrow}</p>
+          <p className="text-xs font-semibold uppercase tracking-wide text-brand-accent-ink dark:text-info">{eyebrow}</p>
         )}
-        <h1 className="mt-1 break-words font-[family-name:var(--font-display)] text-2xl font-bold tracking-tight text-foreground">
+        <h1 className="mt-1 break-words font-display text-2xl font-extrabold tracking-[-0.02em] text-brand-navy dark:text-foreground sm:text-[28px]">
           {title}
         </h1>
         {description && (

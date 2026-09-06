@@ -57,7 +57,7 @@ export function NotificationList({ notifications, onMarkRead, onNavigate, emptyL
                 <time dateTime={notification.createdAt}>
                   {formatDateTime(notification.createdAt)}
                 </time>
-                {unread && <span className="font-medium text-brand-primary dark:text-info">{t('notifications:unread')}</span>}
+                {unread && <span className="font-medium text-brand-accent-ink dark:text-info">{t('notifications:unread')}</span>}
                 {notification.linkPath && (
                   <Link
                     to={notification.linkPath}

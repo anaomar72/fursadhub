@@ -39,6 +39,7 @@ export function AdminAreaLayout() {
     return (
       <AppShell
         areaLabel={t('common:nav.admin')}
+        tone="navy"
         sections={[
           {
             label: t('common:shell.sections.account'),
@@ -53,7 +54,12 @@ export function AdminAreaLayout() {
 
   return (
     <AdminSessionContext.Provider value={session}>
-      <AppShell areaLabel={t('common:nav.admin')} sections={buildAdminNav(t, session)}>
+      <AppShell
+        areaLabel={t('common:nav.admin')}
+        tone="navy"
+        brand={{ portalLabel: t('common:shell.portals.admin') }}
+        sections={buildAdminNav(t, session)}
+      >
         <PageContainer>
           <Outlet />
         </PageContainer>

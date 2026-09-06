@@ -1,7 +1,7 @@
 {
   "app": {
     "name": "FursadHub",
-    "tagline": "Furaya albaabbada mustaqbalkaaga."
+    "tagline": "Fursado Berri Ka Iftiin Badan"
   },
   "password": {
     "show": "Muuji furaha sirta ah",
@@ -15,6 +15,12 @@
     "sections": {
       "manage": "Maamul",
       "account": "Akoon"
+    },
+    "poweredBy": "Waxaa ku shaqeeya",
+    "portals": {
+      "university": "Bogga Jaamacadda",
+      "organization": "Bogga Qorista Shaqaalaha",
+      "admin": "Konsool-ka Maamulaha Sare"
     }
   },
   "publicPages": {
@@ -51,7 +57,20 @@
       "error": "Ururrada lama soo rari karin.",
       "empty": "Ma jiraan ururro la mid ah raadintaada.",
       "view": "Bogga eeg",
-      "scopeNote": "Tusaha waxa ku jira ururrada ka muuqda tababarrada guud ee hadda la daabacay."
+      "scopeNote": "Buug-gacmeedkani wuxuu liistaa hay'adaha lagu daabacay tusmada guud ee FursadHub.",
+      "heroLead": "La iskaashi ujeeddo.",
+      "heroBuild": "Dhis",
+      "heroAccent": "saameyn dhab ah.",
+      "heroDescription": "Hel hay'ado la xaqiijiyay oo abuuraya fursado, wadaagaya aqoon, kuna dhisaya mustaqbalka ardayda iyo jaamacadaha.",
+      "showing": "Waxaa la tusayaa {{from}}–{{to}} oo ka mid ah {{total}} hay'adood",
+      "openOpportunities_one": "{{count}} fursad furan",
+      "openOpportunities_other": "{{count}} fursadood oo furan",
+      "locationLabel": "Ku kala saar goobta",
+      "locationPlaceholder": "Goobta",
+      "sortLabel": "U kala hormari",
+      "sortName": "Magaca (A-Z)",
+      "sortNameDesc": "Magaca (Z-A)",
+      "sortRecentlyVerified": "Dhawaan la xaqiijiyay"
     },
     "universities": {
       "title": "Horumari Maamulka Tababarka",
@@ -85,7 +104,25 @@
           "title": "Hay'ad La Xaqiijiyay",
           "body": "Ku dhis kalsooni habka xaqiijinta madasha."
         }
-      }
+      },
+      "heroLead": "Jaamacadaha Iskaashiga.",
+      "heroBuild": "Fursado",
+      "heroAccent": "Ka Xoog Badan.",
+      "heroDescription": "Hel jaamacadaha la iskaashada FursadHub si ardayda loogu xidho fursado dhab ah, xidhiidh warshadeed, iyo guul xirfadeed.",
+      "directoryTitle": "Dhammaan jaamacadaha",
+      "showing": "Waxaa la tusayaa {{from}}–{{to}} oo ka mid ah {{total}} jaamacadood",
+      "searchLabel": "Raadi jaamacado",
+      "search": "Ku raadi jaamacadaha magaca",
+      "loading": "Waa la soo rarayaa jaamacadaha…",
+      "error": "Jaamacadaha lama soo rari karin.",
+      "empty": "Ma jiraan jaamacado ku habboon raadintaada.",
+      "view": "Eeg astaanta",
+      "locationLabel": "Ku kala saar goobta",
+      "locationPlaceholder": "Goobta",
+      "sortLabel": "U kala hormari",
+      "sortName": "Magaca (A-Z)",
+      "sortNameDesc": "Magaca (Z-A)",
+      "sortRecentlyVerified": "Dhawaan la xaqiijiyay"
     }
   },
   "landing": {
@@ -182,6 +219,82 @@
       "body": "Diiwaan-gelintu waa bilaash intii lagu jiro tijaabada — samee akoon adigoo arday, urur, ama jaamacad ah.",
       "primary": "Samee akoon",
       "secondary": "Gal"
+    },
+    "hero2": {
+      "titleLead": "Hel Tababaro.",
+      "titleBuild": "Dhis",
+      "titleAccent": "Mustaqbal Dhab ah.",
+      "description": "Hel fursado la xaqiijiyay, wax ka baro hay'ado dhab ah, oo bilow xirfad saameyn leh.",
+      "searchPlaceholder": "Raadi tababaro, xirfado, ama hay'ado",
+      "searchLabel": "Raadi tababaro",
+      "locationPlaceholder": "Goobta",
+      "locationLabel": "Ku kala saar goobta",
+      "workModeLabel": "Ku kala saar habka shaqada",
+      "allWorkModes": "Hab kasta oo shaqo",
+      "search": "Raadi",
+      "popular": "Caan ah:",
+      "viewAll": "Dhammaan eeg"
+    },
+    "stats": {
+      "label": "FursadHub hal eegis",
+      "internships": "Tababaro firfircoon",
+      "organizations": "Hay'ado iskaashi",
+      "universities": "Jaamacado iskaashi"
+    },
+    "featured": {
+      "title": "Tababaro la soo bandhigay",
+      "viewAll": "Dhammaan tababarada eeg",
+      "empty": "Wali ma jiraan tababaro la daabacay."
+    },
+    "verifiedOrganizations": {
+      "title": "Hay'adaha ugu sarreeya ee la xaqiijiyay",
+      "viewAll": "Dhammaan hay'adaha eeg"
+    },
+    "works": {
+      "student": {
+        "points": [
+          "Raadi oo kala saar tababaro la xaqiijiyay",
+          "Ka raac codsiyadaada hal meel",
+          "Kala soco meelaynta ilaa dhammaystirka"
+        ],
+        "cta": "Bilow arday ahaan"
+      },
+      "organization": {
+        "points": [
+          "Gaar ardayda jaamacadaha la xaqiijiyay",
+          "Hal tuubbo codsiyo iyo magacaabisba",
+          "Maamul meelaynta iyo qiimeynta"
+        ],
+        "cta": "Soo dhig tababar"
+      },
+      "university": {
+        "points": [
+          "Magacaw ardayda fursadaha la beegsaday",
+          "Kormeer meelaynta iyo diiwaanka toddobaadka",
+          "Fuli qiimeynta iyo difaaca ugu dambeeya"
+        ],
+        "cta": "Nala iskaashi"
+      }
+    },
+    "band": {
+      "title": "Ma diyaar u tahay inaad fursado abuurto?",
+      "body": "Soo dhig tababaro ama bilow daqiiqado gudahood.",
+      "primary": "Soo dhig tababar",
+      "secondary": "Hadda bilow"
+    },
+    "pills": {
+      "verified": {
+        "title": "La xaqiijiyay",
+        "body": "Fursado tayo leh oo lagu kalsoonaan karo"
+      },
+      "learn": {
+        "title": "Baro",
+        "body": "Ka hel xirfado khubarada warshadaha"
+      },
+      "grow": {
+        "title": "Kobco",
+        "body": "Dhis khibrad. Qaabee mustaqbalkaaga."
+      }
     }
   },
   "footer": {
@@ -191,7 +304,10 @@
     "home": "Bogga hore",
     "howItWorks": "Sida ay u shaqeyso",
     "opportunities": "Fursadaha",
-    "copyright": "© {{year}} FursadHub. Dhammaan xuquuqda way dhowran tahay."
+    "copyright": "© {{year}} FursadHub. Dhammaan xuquuqda way dhowran tahay.",
+    "platformNav": "Baraha",
+    "accountNav": "Akoonka",
+    "strapline": "Berri ka iftiin badan, wadajir."
   },
   "nav": {
     "home": "Bogga hore",

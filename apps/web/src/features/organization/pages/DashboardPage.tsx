@@ -34,6 +34,7 @@ import {
   StatusDistribution,
   type IconName,
 } from '../../../components/ui'
+import { METRIC_TONES } from '../../../components/ui/metricTones'
 import { PageContainer } from '../../../app/layouts/PageContainer'
 import { formatDate } from '../../../lib/utils/formatDate'
 
@@ -216,7 +217,7 @@ function AdminDashboard() {
               <ul className="divide-y divide-border">
                 {recent.map(({ candidate, opportunity }) => (
                   <li key={candidate.candidacyId} className="flex items-center gap-3 px-5 py-3.5">
-                    <span className="flex size-10 shrink-0 items-center justify-center rounded-full bg-brand-blue-soft text-brand-primary dark:bg-info-bg dark:text-info">
+                    <span className="flex size-10 shrink-0 items-center justify-center rounded-full bg-brand-blue-soft text-brand-blue dark:bg-info-bg dark:text-info">
                       <Icon name="user" className="size-5" />
                     </span>
                     <span className="min-w-0 flex-1">
@@ -257,7 +258,7 @@ function AdminDashboard() {
             <ul className="divide-y divide-border">
               {activePosts.slice(0, RECENT_LIMIT).map((opportunity) => (
                 <li key={opportunity.id} className="flex items-center gap-3 px-5 py-3.5">
-                  <span className="flex size-10 shrink-0 items-center justify-center rounded-lg bg-brand-blue-soft text-brand-primary dark:bg-info-bg dark:text-info">
+                  <span className="flex size-10 shrink-0 items-center justify-center rounded-lg bg-brand-blue-soft text-brand-blue dark:bg-info-bg dark:text-info">
                     <Icon name="briefcase" className="size-5" />
                   </span>
                   <span className="min-w-0 flex-1">
@@ -408,13 +409,6 @@ function SectionHeading({ title, action }: { title: string; action?: React.React
     </div>
   )
 }
-
-const METRIC_TONES = {
-  brand: 'bg-brand-blue-soft text-brand-primary dark:bg-info-bg dark:text-info',
-  violet: 'bg-info-bg text-info',
-  teal: 'bg-success-bg text-success',
-  amber: 'bg-warning-bg text-warning',
-} as const
 
 /** The same tile the university dashboards use — one product, one dashboard language. */
 function MetricCard({

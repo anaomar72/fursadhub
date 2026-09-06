@@ -1,17 +1,25 @@
 import { cn } from '../../lib/utils/cn'
 
+/**
+ * The approved button family (design-reference/presentation-refresh-2026).
+ *
+ * <p>`primary` is the orange call to action — Search, Apply Now, Create Internship, Subscribe.
+ * `secondary` is the navy action that sits beside it — Explore opportunities, Export Report.
+ * `outline` is the white bordered control — Save for later, Get Started Now, View details.
+ */
 export const BUTTON_VARIANT_CLASSES = {
-  primary: 'bg-brand-primary text-on-brand hover:bg-brand-accent',
-  secondary: 'bg-brand-secondary text-on-brand hover:bg-brand-secondary/90',
-  outline: 'border border-border bg-transparent text-foreground hover:bg-surface-muted',
+  primary: 'bg-brand-accent text-white shadow-xs hover:bg-brand-accent-strong',
+  secondary: 'bg-brand-navy text-white shadow-xs hover:bg-brand-navy-strong',
+  outline: 'border border-border-strong bg-surface text-foreground shadow-xs hover:bg-control-hover',
   ghost: 'bg-transparent text-foreground hover:bg-surface-muted',
-  danger: 'bg-danger text-on-brand hover:opacity-90',
+  danger: 'bg-danger text-white hover:opacity-90',
 } as const
 
+/** Control heights are read off the references: 40px standard, 48px for hero and sidebar actions. */
 export const BUTTON_SIZE_CLASSES = {
-  sm: 'h-8 px-3 text-sm',
+  sm: 'h-9 px-3.5 text-sm',
   md: 'h-10 px-4 text-sm',
-  lg: 'h-12 px-6 text-base',
+  lg: 'h-12 px-6 text-[15px]',
 } as const
 
 export type ButtonVariant = keyof typeof BUTTON_VARIANT_CLASSES

@@ -23,14 +23,30 @@ describe('remaining public pages',()=>{
     expect(screen.getByRole('heading',{name:'Benefits for Universities'})).toBeInTheDocument()
     expect(screen.getByRole('link',{name:'Get Started'})).toHaveAttribute('href','/register?role=university')
   },15_000)
-  it('builds organizations only from real public opportunity responses and filters by type',async()=>{
-    vi.stubGlobal('fetch',vi.fn(()=>response({content:[{id:'o1',organization:{id:'org1',name:'Real Company',slug:'real',type:'COMPANY',verified:true},title:'Intern',description:'Role',mode:'PUBLIC',numberOfOpenings:1,workMode:'REMOTE',location:null,startDate:'2027-01-01',endDate:'2027-02-01',applicationDeadline:null,publishedAt:null},{id:'o2',organization:{id:'org2',name:'Real NGO',slug:'ngo',type:'NGO',verified:false},title:'Intern',description:'Role',mode:'PUBLIC',numberOfOpenings:1,workMode:'REMOTE',location:null,startDate:'2027-01-01',endDate:'2027-02-01',applicationDeadline:null,publishedAt:null}],page:0,size:50,totalElements:2,totalPages:1})))
-    const user=userEvent.setup();renderPage(<PublicOrganizationListPage/>)
+  it('renders organizations from the real public organization directory and filters by type', async () => {
+    // The directory endpoint is the source of truth — the page must not re-derive organizations
+    // from the opportunity feed, and must not invent the counts the approved card footer shows.
+    const fetchMock = vi.fn((url: unknown) => {
+      const requested = String(url)
+      const wantsNgo = requested.includes('type=NGO')
+      const rows = wantsNgo ? [{"id":"org2","name":"Real NGO","slug":"real-ngo","type":"NGO","industry":null,"city":"Mogadishu","countryCode":"SO","shortDescription":"Real NGO description","description":null,"website":null,"verified":false,"hasLogo":false,"hasCover":false,"openOpportunityCount":2}] : [{"id":"org1","name":"Real Company","slug":"real-company","type":"COMPANY","industry":null,"city":"Mogadishu","countryCode":"SO","shortDescription":"Real Company description","description":null,"website":null,"verified":true,"hasLogo":false,"hasCover":false,"openOpportunityCount":7}, {"id":"org2","name":"Real NGO","slug":"real-ngo","type":"NGO","industry":null,"city":"Mogadishu","countryCode":"SO","shortDescription":"Real NGO description","description":null,"website":null,"verified":false,"hasLogo":false,"hasCover":false,"openOpportunityCount":2}]
+      return response({ content: rows, page: 0, size: 12, totalElements: rows.length, totalPages: 1 })
+    })
+    vi.stubGlobal('fetch', fetchMock)
+
+    const user = userEvent.setup()
+    renderPage(<PublicOrganizationListPage />)
+
     expect(await screen.findByText('Real Company')).toBeInTheDocument()
     expect(screen.getByText('Real NGO')).toBeInTheDocument()
-    await user.selectOptions(screen.getByLabelText('Organization type'),'NGO')
+    expect(String(fetchMock.mock.calls[0]?.[0])).toContain('/public/organizations')
+    expect(screen.getByText('7 open opportunities')).toBeInTheDocument()
+
+    await user.selectOptions(screen.getByLabelText('Organization type'), 'NGO')
+    await user.click(screen.getByRole('button', { name: 'Search' }))
+
+    expect(await screen.findByText('Real NGO')).toBeInTheDocument()
     expect(screen.queryByText('Real Company')).not.toBeInTheDocument()
-    expect(screen.getByText('Real NGO')).toBeInTheDocument()
   })
   it('shows the organization API error state',async()=>{
     vi.stubGlobal('fetch',vi.fn(()=>response({code:'ERROR',message:'failed'},500)))

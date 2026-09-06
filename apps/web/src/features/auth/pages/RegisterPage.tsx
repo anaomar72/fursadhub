@@ -141,7 +141,7 @@ export function RegisterPage() {
                 className={cn(
                   'flex flex-col items-center gap-2 rounded-md border px-2 py-3 text-xs font-semibold transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus-ring',
                   role === option
-                    ? 'border-brand-primary bg-brand-blue-soft text-brand-primary dark:border-info dark:bg-info-bg dark:text-info'
+                    ? 'border-brand-primary bg-brand-blue-soft text-brand-blue dark:border-info dark:bg-info-bg dark:text-info'
                     : 'border-border text-foreground-secondary hover:bg-control-hover',
                 )}
               >

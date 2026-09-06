@@ -9,9 +9,11 @@ import type {
   OrganizationRole,
   OrganizationType,
   PublicOrganizationResponse,
+  PublicOrganizationSummaryResponse,
   TemporaryCredentialResponse,
 } from '../types'
 import type { MessageResponse } from '../../auth/types'
+import type { PageResponse } from '../../opportunities/types'
 
 export function createOrganization(input: {
   name: string
@@ -171,4 +173,47 @@ export function assignMemberUsername(organizationId: string, membershipId: strin
     `/organizations/${organizationId}/members/${membershipId}/username`,
     { method: 'POST', body: { username } },
   )
+}
+
+// ---------------------------------------------------------------- public directory
+
+/**
+ * The public organization directory (`GET /api/v1/public/organizations`, Backend Phase B1).
+ *
+ * <p>Unauthenticated and paged, and it already carries each organization's verification flag,
+ * logo flag and open-opportunity count — which is what the approved organizations page and the
+ * home page's "Top verified organizations" strip render. Previously the frontend approximated
+ * this directory by collapsing the opportunity feed; this calls the real endpoint.
+ */
+export function listPublicOrganizations(filters: {
+  query?: string
+  type?: OrganizationType
+  industry?: string
+  city?: string
+  country?: string
+  sort?: string
+  page?: number
+  size?: number
+} = {}) {
+  const params = new URLSearchParams()
+  if (filters.query) params.set('query', filters.query)
+  if (filters.type) params.set('type', filters.type)
+  if (filters.industry) params.set('industry', filters.industry)
+  if (filters.city) params.set('city', filters.city)
+  if (filters.country) params.set('country', filters.country)
+  if (filters.sort) params.set('sort', filters.sort)
+  params.set('page', String(filters.page ?? 0))
+  params.set('size', String(filters.size ?? 12))
+  return apiFetch<PageResponse<PublicOrganizationSummaryResponse>>(
+    `/public/organizations?${params.toString()}`,
+    { method: 'GET' },
+  )
+}
+
+/**
+ * The entity's public profile banner. Same contract as the logo route: unauthenticated, and
+ * only meaningful when the response says `hasCover` — otherwise it 404s.
+ */
+export function organizationCoverUrl(id: string): string {
+  return `${env.apiBaseUrl}/public/organizations/${id}/cover/document`
 }

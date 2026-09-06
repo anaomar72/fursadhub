@@ -8,6 +8,7 @@ import { logsAwaitingReview, reportAwaitingReview, supervisedStudents } from '..
 import { PLACEMENT_STATUS_ORDER, countByPlacementStatus, livePlacementCount } from '../universityMetrics'
 import { PLACEMENT_STATUS_TONE } from '../../placements/components/statusTone'
 import { Card, DashboardActionCard, ErrorState, Icon, type IconName, LoadingState, StatusBadge, StatusDistribution } from '../../../components/ui'
+import { METRIC_TONES } from '../../../components/ui/metricTones'
 import { PageContainer } from '../../../app/layouts/PageContainer'
 import { formatDate } from '../../../lib/utils/formatDate'
 
@@ -202,13 +203,6 @@ export function SupervisorDashboardPage() {
     </PageContainer>
   )
 }
-
-const METRIC_TONES = {
-  brand: 'bg-brand-blue-soft text-brand-primary dark:bg-info-bg dark:text-info',
-  violet: 'bg-info-bg text-info',
-  teal: 'bg-success-bg text-success',
-  amber: 'bg-warning-bg text-warning',
-} as const
 
 /** The same tile the admin dashboard uses, so both university dashboards read as one product. */
 function MetricCard({

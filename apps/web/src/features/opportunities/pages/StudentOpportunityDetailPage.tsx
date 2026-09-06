@@ -128,7 +128,7 @@ export function StudentOpportunityDetailPage() {
                 <Alert tone="info">{t('opportunities:browse.blockers.STUDENT_ALREADY_APPLIED')}</Alert>
                 <Link
                   to={`/student/applications/${existingCandidacy.id}`}
-                  className="inline-flex h-11 items-center justify-center rounded-md border border-brand-primary px-5 text-sm font-semibold text-brand-primary transition-colors hover:bg-brand-blue-soft motion-reduce:transition-none dark:border-info dark:text-info dark:hover:bg-info-bg"
+                  className="inline-flex h-11 items-center justify-center rounded-md border border-brand-primary px-5 text-sm font-semibold text-brand-accent-ink transition-colors hover:bg-brand-blue-soft motion-reduce:transition-none dark:border-info dark:text-info dark:hover:bg-info-bg"
                 >
                   {t('opportunities:browse.viewApplication')}
                 </Link>
@@ -141,7 +141,7 @@ export function StudentOpportunityDetailPage() {
                 {blocker === 'STUDENT_NOT_VERIFIED' && (
                   <Link
                     to="/student/enrollment"
-                    className="inline-flex h-11 items-center justify-center rounded-md border border-brand-primary px-5 text-sm font-semibold text-brand-primary transition-colors hover:bg-brand-blue-soft motion-reduce:transition-none dark:border-info dark:text-info dark:hover:bg-info-bg"
+                    className="inline-flex h-11 items-center justify-center rounded-md border border-brand-primary px-5 text-sm font-semibold text-brand-accent-ink transition-colors hover:bg-brand-blue-soft motion-reduce:transition-none dark:border-info dark:text-info dark:hover:bg-info-bg"
                   >
                     {t('opportunities:browse.goToEnrollment')}
                   </Link>
@@ -149,7 +149,7 @@ export function StudentOpportunityDetailPage() {
                 {blocker === 'STUDENT_NOT_AVAILABLE' && (
                   <Link
                     to="/student/placements"
-                    className="inline-flex h-11 items-center justify-center rounded-md border border-brand-primary px-5 text-sm font-semibold text-brand-primary transition-colors hover:bg-brand-blue-soft motion-reduce:transition-none dark:border-info dark:text-info dark:hover:bg-info-bg"
+                    className="inline-flex h-11 items-center justify-center rounded-md border border-brand-primary px-5 text-sm font-semibold text-brand-accent-ink transition-colors hover:bg-brand-blue-soft motion-reduce:transition-none dark:border-info dark:text-info dark:hover:bg-info-bg"
                   >
                     {t('opportunities:browse.goToPlacement')}
                   </Link>

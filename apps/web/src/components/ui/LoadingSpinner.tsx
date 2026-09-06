@@ -19,7 +19,7 @@ export function LoadingSpinner({ size = 'md', className, label = 'Loading' }: Lo
       role="status"
       aria-label={label}
       className={cn(
-        'inline-block animate-spin rounded-full border-current border-t-transparent text-brand-primary',
+        'inline-block animate-spin rounded-full border-current border-t-transparent text-brand-accent-ink',
         SIZE_CLASSES[size],
         className,
       )}

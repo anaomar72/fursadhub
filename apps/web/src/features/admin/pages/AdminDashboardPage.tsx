@@ -141,7 +141,7 @@ function HeadlineCard({ count, wide }: { count: HeadlineCount; wide?: boolean })
             {formatNumber(count.value)}
           </p>
         </div>
-        <span className="flex size-10 shrink-0 items-center justify-center rounded-xl bg-brand-blue-soft text-brand-primary dark:bg-info-bg dark:text-info">
+        <span className="flex size-10 shrink-0 items-center justify-center rounded-xl bg-brand-blue-soft text-brand-blue dark:bg-info-bg dark:text-info">
           <Icon name={HEADLINE_ICONS[count.id] ?? 'chart'} className="size-5" />
         </span>
       </div>

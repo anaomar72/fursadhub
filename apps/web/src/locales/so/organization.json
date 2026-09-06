@@ -69,7 +69,19 @@
   },
   "publicProfile": {
     "notFound": "Ururkan lama helin.",
-    "viewOpportunities": "Eeg fursadaha"
+    "viewOpportunities": "Eeg fursadaha",
+    "back": "Ku noqo hay'adaha",
+    "about": "Ku saabsan {{name}}",
+    "visitWebsite": "Booqo websaydka",
+    "quickFacts": "Xaqiiqooyin degdeg ah",
+    "headquarters": "Xarunta",
+    "website": "Websaydka",
+    "openOpportunities": "Fursado furan",
+    "verifiedTitle": "Hay'ad la xaqiijiyay",
+    "verifiedBody": "Hay'addan waxaa xaqiijiyay FursadHub.",
+    "latestOpportunities": "Fursadaha ugu dambeeyay",
+    "viewAllOpportunities": "Dhammaan fursadaha eeg",
+    "noOpportunities": "Hay'addani hadda ma leh tababaro la daabacay."
   },
   "profile": {
     "title": "Astaanta ururka",
