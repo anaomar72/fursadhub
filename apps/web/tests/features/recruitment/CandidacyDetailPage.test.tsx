@@ -86,7 +86,8 @@ describe('CandidacyDetailPage', () => {
     renderPage()
 
     expect(await screen.findByText('Backend Intern')).toBeInTheDocument()
-    expect(screen.getByText('2027-02-15')).toBeInTheDocument()
+    // Dates are rendered through the shared locale-aware formatter, not as raw ISO strings.
+    expect(screen.getByText('Feb 15, 2027')).toBeInTheDocument()
     expect(screen.getByRole('button', { name: /accept offer/i })).toBeInTheDocument()
     expect(screen.getByRole('button', { name: /decline offer/i })).toBeInTheDocument()
   })

@@ -99,11 +99,11 @@ public class PlacementQueryService {
      * FursadHub stores no name on {@code User}, and {@code StudentProfile} is student-only, so this
      * matches how Phase 3 renders university and organization staff.
      */
-    public record SupervisorView(PlacementSupervisorAssignment assignment, String email) {
+    public record SupervisorView(PlacementSupervisorAssignment assignment, String displayName, String email) {
     }
 
     /** A staff member who may be picked as a supervisor for a given placement. */
-    public record EligibleSupervisor(UUID userId, String email) {
+    public record EligibleSupervisor(UUID userId, String displayName, String email) {
     }
 
     // ---------------------------------------------------------------- student
@@ -218,9 +218,11 @@ public class PlacementQueryService {
 
     /** Resolves an assignment to a person. Used for both the current holder and history rows. */
     public SupervisorView toSupervisorView(PlacementSupervisorAssignment assignment) {
-        return new SupervisorView(
-                assignment,
-                users.findById(assignment.getSupervisorUserId()).map(User::getEmail).orElse(null));
+        // One lookup for both fields — the display name is read from the User this already loads,
+        // so Backend Phase B5 adds no query here.
+        return users.findById(assignment.getSupervisorUserId())
+                .map(user -> new SupervisorView(assignment, user.getDisplayName(), user.getEmail()))
+                .orElseGet(() -> new SupervisorView(assignment, null, null));
     }
 
     // ---------------------------------------------------------------- eligible supervisors
@@ -257,6 +259,6 @@ public class PlacementQueryService {
     }
 
     private Optional<EligibleSupervisor> toEligible(UUID userId) {
-        return users.findById(userId).map(user -> new EligibleSupervisor(userId, user.getEmail()));
+        return users.findById(userId).map(user -> new EligibleSupervisor(userId, user.getDisplayName(), user.getEmail()));
     }
 }

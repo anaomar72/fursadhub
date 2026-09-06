@@ -13,7 +13,8 @@
   },
   "student": {
     "title": "My internship",
-    "empty": "You do not have an internship placement yet. Once you accept an offer, it will appear here."
+    "empty": "You do not have an internship placement yet. Once you accept an offer, it will appear here.",
+    "subtitle": "Your current and past internship placements."
   },
   "university": {
     "title": "Student placements",
@@ -23,7 +24,24 @@
   "organization": {
     "title": "Placements",
     "description": "Interns your organization is currently hosting.",
-    "empty": "No placements yet. Placements are created when a candidate accepts an offer."
+    "empty": "No placements yet. Placements are created when a candidate accepts an offer.",
+    "intern": "Intern",
+    "university": "University",
+    "dates": "Dates",
+    "supervisor": "Supervisor",
+    "supervisorMissing": "Not assigned",
+    "status": "Status",
+    "allStatuses": "All statuses",
+    "searchLabel": "Search interns",
+    "searchPlaceholder": "Search by name, university or internship",
+    "resultCount_one": "{{count}} intern",
+    "resultCount_other": "{{count}} interns",
+    "supervisorDescription": "The internships you are assigned to supervise.",
+    "attendance": "Attendance",
+    "evaluation": "Evaluation",
+    "attendanceUnsettled_one": "{{count}} to settle",
+    "attendanceUnsettled_other": "{{count}} to settle",
+    "attendanceSettled": "Up to date"
   },
   "list": {
     "supervisorMissing": "A supervisor has not been assigned yet."
@@ -38,7 +56,10 @@
     "university": "University",
     "department": "Department",
     "cancellationReason": "Cancelled: {{reason}}",
-    "terminationReason": "Ended early: {{reason}}"
+    "terminationReason": "Ended early: {{reason}}",
+    "aboutTitle": "Placement details",
+    "evaluationHint": "Your host organization's assessment appears here once it is final.",
+    "evaluationUnavailable": "Your evaluation could not be loaded. This does not mean it is missing."
   },
   "supervisors": {
     "title": "Supervisors",

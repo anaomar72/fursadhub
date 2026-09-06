@@ -8,6 +8,7 @@ import { useUniversityMembership } from '../components/UniversityMembershipConte
 import { updateUniversitySchema, type UpdateUniversityFormValues } from '../schemas/universitySetupSchema'
 import { apiErrorMessage } from '../../../lib/api/errorMessage'
 import { AnimatedCheck, Avatar, Button, FormField, Input, LoadingSpinner, PageHeader, StatusBadge, Textarea } from '../../../components/ui'
+import { PageContainer } from '../../../app/layouts/PageContainer'
 import type { StatusTone } from '../../../components/ui'
 import type { InstitutionVerificationStatus } from '../types'
 
@@ -112,7 +113,7 @@ export function UniversityProfilePage() {
   const canSubmitForVerification = university.status === 'DRAFT' || university.status === 'NEEDS_CHANGES'
 
   return (
-    <div className="mx-auto max-w-xl px-4 py-8 sm:px-6">
+    <PageContainer width="narrow" className="flex flex-col gap-6">
       <div className="flex flex-wrap items-center justify-between gap-3">
         <PageHeader title={t('university:profile.title')} />
         <StatusBadge tone={STATUS_TONE[university.status]}>
@@ -253,7 +254,7 @@ export function UniversityProfilePage() {
           <Row label={t('university:setup.cityLabel')} value={university.city ?? ''} />
         </dl>
       )}
-    </div>
+    </PageContainer>
   )
 }
 

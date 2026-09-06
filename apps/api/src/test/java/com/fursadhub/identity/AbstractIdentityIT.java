@@ -199,6 +199,24 @@ public abstract class AbstractIdentityIT {
     }
 
     /** @return the raw access token from a successful login. */
+    /**
+     * Managed staff authenticate by USERNAME once one is assigned (Backend Phase B5.5); their email
+     * stops being a credential at that point.
+     */
+    protected String loginByUsernameAndExtractAccessToken(String username, String password) {
+        return (String) loginByUsername(username, password).getBody().get("accessToken");
+    }
+
+    protected String loginByUsernameAndExtractRawRefreshToken(String username, String password) {
+        ResponseEntity<Map> response = loginByUsername(username, password);
+        return extractRawRefreshTokenFromSetCookie(response.getHeaders().get(HttpHeaders.SET_COOKIE));
+    }
+
+    protected ResponseEntity<Map> loginByUsername(String username, String password) {
+        return restTemplate.postForEntity(
+                url("/api/v1/auth/login"), Map.of("username", username, "password", password), Map.class);
+    }
+
     protected String loginAndExtractAccessToken(String email, String password) {
         ResponseEntity<Map> response = restTemplate.postForEntity(
                 url("/api/v1/auth/login"), Map.of("email", email, "password", password), Map.class);

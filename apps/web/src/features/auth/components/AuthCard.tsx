@@ -7,17 +7,17 @@ export interface AuthCardProps {
   children: ReactNode
 }
 
-/** Shared centered card shell for register/login/verify/forgot/reset pages. */
+/** Shared centered card shell for register/login/verify/forgot/reset pages (design references 06-09). */
 export function AuthCard({ title, subtitle, children }: AuthCardProps) {
   return (
-    <div className="mx-auto flex min-h-[70svh] max-w-md flex-col justify-center px-4 py-12 sm:px-6">
-      <div className="mb-6 flex justify-center">
-        <BrandLogo surface="light" />
-      </div>
-      <div className="rounded-lg border border-border bg-surface p-6 shadow-sm sm:p-8">
-        <h1 className="text-2xl font-semibold text-foreground">{title}</h1>
-        {subtitle && <p className="mt-1 text-sm text-foreground-secondary">{subtitle}</p>}
-        <div className="mt-6">{children}</div>
+    <div className="w-full max-w-md animate-hero-fade motion-reduce:animate-none">
+      <div className="rounded-2xl border border-border bg-surface p-6 shadow-lg sm:p-10">
+        <div className="mb-6 flex justify-center">
+          <BrandLogo surface="light" />
+        </div>
+        <h1 className="text-center font-display text-2xl font-extrabold text-foreground sm:text-3xl">{title}</h1>
+        {subtitle && <p className="mt-2 text-center text-sm text-foreground-secondary">{subtitle}</p>}
+        <div className="mt-8">{children}</div>
       </div>
     </div>
   )

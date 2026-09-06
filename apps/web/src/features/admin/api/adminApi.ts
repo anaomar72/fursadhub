@@ -1,9 +1,10 @@
-import { env } from '../../../app/config/env'
-import { ApiError, apiFetch } from '../../../lib/api/client'
-import { getAccessToken } from '../../../lib/auth/tokenStore'
+import { apiFetch } from '../../../lib/api/client'
+import { downloadPrivateDocument } from '../../../lib/api/privateDocument'
 import type { LegalDocument, LegalDocumentType } from '../../legal/types'
 import type { PrivacyRequest, PrivacyRequestState } from '../../privacy/types'
 import type {
+  AdminOpportunity,
+  AdminOpportunityDetail,
   AdminOrganization,
   AdminSession,
   AdminUniversity,
@@ -11,11 +12,15 @@ import type {
   AuditEvent,
   EscalatedCase,
   InstitutionVerificationStatus,
+  OpportunityMode,
+  OpportunityStatus,
   Page,
   PlatformAdminGrant,
   PlatformRole,
   PlatformStatistics,
+  PlatformTemporaryCredential,
   UserStatus,
+  VerificationOfficer,
 } from '../types'
 
 // ---------------------------------------------------------------- session
@@ -40,6 +45,14 @@ export function searchUsers(options: { query?: string; status?: UserStatus; page
   if (options.page !== undefined) params.set('page', String(options.page))
   const query = params.toString()
   return apiFetch<Page<AdminUser>>(`/admin/users${query ? `?${query}` : ''}`)
+}
+
+/**
+ * One account. Backed by {@code GET /admin/users/{userId}} — it has always existed on
+ * {@code AdminController}; the web app simply never called it.
+ */
+export function getUser(userId: string) {
+  return apiFetch<AdminUser>(`/admin/users/${userId}`)
 }
 
 export function suspendUser(userId: string, reason: string) {
@@ -70,6 +83,94 @@ export function revokePlatformRole(grantId: string) {
   return apiFetch<{ message: string }>(`/admin/platform-roles/${grantId}/revoke`, { method: 'POST' })
 }
 
+// ---------------------------------------------------------------- opportunity oversight
+
+/**
+ * Platform-wide opportunity oversight (Backend Phase B6). Super Admin only, and READ ONLY — there is
+ * deliberately no create, update, publish, pause or delete counterpart anywhere in this file.
+ * Organizations own their opportunities; the platform observes them.
+ */
+export function listAdminOpportunities(
+  options: {
+    query?: string
+    status?: OpportunityStatus
+    mode?: OpportunityMode
+    organizationId?: string
+    page?: number
+  } = {},
+) {
+  const params = new URLSearchParams()
+  if (options.query) params.set('query', options.query)
+  if (options.status) params.set('status', options.status)
+  if (options.mode) params.set('mode', options.mode)
+  if (options.organizationId) params.set('organizationId', options.organizationId)
+  if (options.page !== undefined) params.set('page', String(options.page))
+  const query = params.toString()
+  return apiFetch<Page<AdminOpportunity>>(`/admin/opportunities${query ? `?${query}` : ''}`)
+}
+
+export function getAdminOpportunity(opportunityId: string) {
+  return apiFetch<AdminOpportunityDetail>(`/admin/opportunities/${opportunityId}`)
+}
+
+// ---------------------------------------------------------------- verification officers
+
+/**
+ * Managed verification officers (Backend Phase B5.6).
+ *
+ * A different resource from platform roles above, and deliberately so: those endpoints GRANT a role
+ * to an account that already exists, these CREATE the account. Both are needed and neither can do
+ * the other's job.
+ *
+ * There is no `createSuperAdmin` counterpart anywhere in this file. Super admin is not
+ * managed-provisionable — the API has no endpoint for it, and the request below has no role field
+ * through which one could be asked for.
+ */
+export function listVerificationOfficers() {
+  return apiFetch<VerificationOfficer[]>('/admin/verification-officers')
+}
+
+export function createVerificationOfficer(values: {
+  displayName: string
+  username: string
+  email: string
+  password: string
+  confirmPassword: string
+}) {
+  return apiFetch<VerificationOfficer>('/admin/verification-officers', {
+    method: 'POST',
+    body: values,
+  })
+}
+
+/**
+ * Sets or replaces the officer's display name (Backend Phase B5.6).
+ *
+ * Replacement only — there is no clear operation, so this always sends a real name. A legacy officer
+ * with `displayName: null` is set for the first time through the same call.
+ */
+export function changeVerificationOfficerDisplayName(userId: string, displayName: string) {
+  return apiFetch<VerificationOfficer>(`/admin/verification-officers/${userId}/display-name`, {
+    method: 'POST',
+    body: { displayName },
+  })
+}
+
+/** One-time and irreversible: after this the officer's email stops authenticating them. */
+export function assignVerificationOfficerUsername(userId: string, username: string) {
+  return apiFetch<VerificationOfficer>(`/admin/verification-officers/${userId}/username`, {
+    method: 'POST',
+    body: { username },
+  })
+}
+
+export function resetVerificationOfficerPassword(userId: string) {
+  return apiFetch<PlatformTemporaryCredential>(
+    `/admin/verification-officers/${userId}/reset-password`,
+    { method: 'POST' },
+  )
+}
+
 // ---------------------------------------------------------------- organizations
 
 export function listOrganizations(
@@ -81,6 +182,11 @@ export function listOrganizations(
   if (options.page !== undefined) params.set('page', String(options.page))
   const query = params.toString()
   return apiFetch<Page<AdminOrganization>>(`/admin/organizations${query ? `?${query}` : ''}`)
+}
+
+/** One organization, with the same verification fields the queue row carries. */
+export function getOrganization(organizationId: string) {
+  return apiFetch<AdminOrganization>(`/admin/organizations/${organizationId}`)
 }
 
 /**
@@ -100,7 +206,7 @@ export function organizationTransition(
 
 /** Fetches the organization's license as a blob through the authorized, audited reviewer route. */
 export function downloadOrganizationEvidence(organizationId: string) {
-  return downloadBlob(`/admin/organizations/${organizationId}/verification/evidence/document`)
+  return downloadPrivateDocument(`/admin/organizations/${organizationId}/verification/evidence/document`)
 }
 
 // ---------------------------------------------------------------- universities
@@ -116,6 +222,11 @@ export function listUniversities(
   return apiFetch<Page<AdminUniversity>>(`/admin/universities${query ? `?${query}` : ''}`)
 }
 
+/** One university, with the same verification fields the queue row carries. */
+export function getUniversity(universityId: string) {
+  return apiFetch<AdminUniversity>(`/admin/universities/${universityId}`)
+}
+
 export function universityTransition(
   universityId: string,
   action: 'begin-review' | 'verify' | 'request-changes' | 'reject' | 'suspend' | 'revoke',
@@ -129,7 +240,7 @@ export function universityTransition(
 
 /** Fetches the university's registration/accreditation document as a blob, same as above. */
 export function downloadUniversityEvidence(universityId: string) {
-  return downloadBlob(`/admin/universities/${universityId}/verification/evidence/document`)
+  return downloadPrivateDocument(`/admin/universities/${universityId}/verification/evidence/document`)
 }
 
 // ---------------------------------------------------------------- verification escalations
@@ -151,31 +262,7 @@ export function resolveEscalation(
 
 /** Fetches the student's private evidence as a blob. */
 export function downloadEscalationEvidence(caseId: string) {
-  return downloadBlob(`/admin/verification-escalations/${caseId}/evidence/document`)
-}
-
-/**
- * Shared transport for every admin evidence download.
- *
- * <p>Deliberately not an anchor pointing at object storage: the bytes stream through the API, which
- * re-authorizes the reviewer and audits the read every time (CLAUDE.md sections 31, 47).
- */
-async function downloadBlob(path: string): Promise<Blob> {
-  const accessToken = getAccessToken()
-  const response = await fetch(`${env.apiBaseUrl}${path}`, {
-    method: 'GET',
-    credentials: 'include',
-    headers: accessToken ? { Authorization: `Bearer ${accessToken}` } : {},
-  })
-
-  if (!response.ok) {
-    const errorBody = await response.json().catch(() => null)
-    if (errorBody) {
-      throw new ApiError(errorBody)
-    }
-    throw new Error(`Download failed with status ${response.status}`)
-  }
-  return response.blob()
+  return downloadPrivateDocument(`/admin/verification-escalations/${caseId}/evidence/document`)
 }
 
 // ---------------------------------------------------------------- privacy requests
@@ -187,6 +274,13 @@ export function listPrivacyRequests(options: { state?: PrivacyRequestState; page
   const query = params.toString()
   return apiFetch<Page<PrivacyRequest>>(`/admin/privacy-requests${query ? `?${query}` : ''}`)
 }
+
+/*
+ * There is deliberately no getPrivacyRequest() here. GET /admin/privacy-requests/{id} exists, but
+ * the list endpoint already returns the complete PrivacyRequestResponse for every row, so the
+ * review drawer reads the row it was opened from. A second fetch of identical data would be a
+ * request for nothing.
+ */
 
 export function resolvePrivacyRequest(
   requestId: string,
@@ -219,13 +313,28 @@ export function publishLegalDocument(input: {
 
 // ---------------------------------------------------------------- audit
 
+/**
+ * The audit trail. `from`/`to` are ISO-8601 instants that {@code AdminComplianceController} has
+ * always accepted; the platform-activity chart counts a month by asking for the smallest possible
+ * page of it and reading `totalElements`, rather than downloading the events themselves.
+ */
 export function listAuditEvents(
-  options: { eventType?: string; userId?: string; page?: number } = {},
+  options: {
+    eventType?: string
+    userId?: string
+    page?: number
+    size?: number
+    from?: string
+    to?: string
+  } = {},
 ) {
   const params = new URLSearchParams()
   if (options.eventType) params.set('eventType', options.eventType)
   if (options.userId) params.set('userId', options.userId)
+  if (options.from) params.set('from', options.from)
+  if (options.to) params.set('to', options.to)
   if (options.page !== undefined) params.set('page', String(options.page))
+  if (options.size !== undefined) params.set('size', String(options.size))
   const query = params.toString()
   return apiFetch<Page<AuditEvent>>(`/admin/audit-events${query ? `?${query}` : ''}`)
 }

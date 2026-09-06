@@ -17,12 +17,27 @@
     "REMOTE": "Remote"
   },
   "list": {
-    "title": "Opportunities",
-    "create": "New opportunity",
-    "empty": "No opportunities yet."
+    "title": "Internships",
+    "create": "New internship",
+    "empty": "No opportunities yet.",
+    "subtitle": "Every internship your organization has posted.",
+    "internship": "Internship",
+    "mode": "Sourcing",
+    "workMode": "Work mode",
+    "openings": "Openings",
+    "dates": "Dates",
+    "deadline": "Apply by {{date}}",
+    "status": "Status",
+    "allStatuses": "All statuses",
+    "allModes": "All sourcing modes",
+    "searchLabel": "Search internships",
+    "searchPlaceholder": "Search by title or location",
+    "resultCount_one": "{{count}} internship",
+    "resultCount_other": "{{count}} internships",
+    "emptyHint": "Post your first internship to start receiving candidates."
   },
   "form": {
-    "createTitle": "New opportunity",
+    "createTitle": "New internship",
     "titleLabel": "Title",
     "descriptionLabel": "Description",
     "responsibilitiesLabel": "Responsibilities",
@@ -50,7 +65,8 @@
       "OPPORTUNITY_NOT_EDITABLE": "Only a draft opportunity can be edited.",
       "ACCESS_DENIED": "You do not have access to this opportunity.",
       "generic": "Something went wrong. Please try again."
-    }
+    },
+    "createHint": "Saved as a draft — you publish it as a separate step once it looks right."
   },
   "actions": {
     "publish": "Publish",
@@ -88,17 +104,88 @@
       "OPPORTUNITY_NOT_EDITABLE": "Targets can only be changed while the opportunity is a draft.",
       "VALIDATION_FAILED": "Please check the form and try again.",
       "generic": "Something went wrong. Please try again."
-    }
+    },
+    "hint": "Universities you have asked for nominees, and how many you asked each for.",
+    "departmentsHint": "Leave all unticked to accept nominees from any department.",
+    "departmentCount_one": "{{count}} department",
+    "departmentCount_other": "{{count}} departments",
+    "noDepartments": "This university has no departments yet."
   },
   "public": {
     "title": "Internship opportunities",
+    "subtitle": "Find the right opportunity for your skills and career goals.",
+    "searchLabel": "Search internships",
     "searchPlaceholder": "Search by title or keyword",
+    "locationLabel": "Filter by location",
     "locationPlaceholder": "Location",
+    "workModeLabel": "Filter by work mode",
     "allWorkModes": "All work modes",
+    "loading": "Loading internship opportunities…",
+    "error": "Internship opportunities could not be loaded.",
+    "viewDetails": "View details",
+    "applyBy": "Apply by {{date}}",
+    "durationMonths_one": "{{count}} month",
+    "durationMonths_other": "{{count}} months",
     "empty": "No opportunities match your search.",
     "apply": "Apply now",
     "signInToApply": "Sign in to apply for this internship",
     "notFound": "This opportunity is no longer available.",
-    "backToList": "Back to all opportunities"
+    "backToList": "Back to all opportunities",
+    "heroLead": "Discover Verified Internships.",
+    "heroBuild": "Build",
+    "heroAccent": "Real Futures.",
+    "heroDescription": "Explore opportunities from verified organizations, gain real experience, and take the next step in your career.",
+    "allInternships": "All internships",
+    "showing": "Showing {{from}}–{{to}} of {{total}} opportunities",
+    "applyPanelTitle": "Apply for this internship",
+    "saveForLater": "Save for later",
+    "aboutOrganization": "About the organization",
+    "viewOrganizationProfile": "View organization profile",
+    "aboutInternship": "About the internship",
+    "facts": {
+      "workMode": "Work mode",
+      "location": "Location",
+      "openings": "Openings",
+      "start": "Starts",
+      "end": "Ends",
+      "deadline": "Application deadline"
+    },
+    "closesIn_one": "Applications close in {{count}} day",
+    "closesIn_other": "Applications close in {{count}} days",
+    "closesToday": "Applications close today",
+    "closed": "Applications have closed",
+    "verifiedOpportunity": "Verified opportunity",
+    "verifiedOpportunityBody": "This opportunity was published by an organization verified by FursadHub."
+  },
+  "browse": {
+    "title": "Explore internships",
+    "subtitle": "Every published internship open to direct applications.",
+    "resultCount_other": "{{count}} internships found",
+    "emptyHint": "Try a different search term, location or work mode.",
+    "deadline": "Apply by {{date}}",
+    "startsOn": "Starts {{date}}",
+    "openings_other": "{{count}} openings",
+    "applied": "Applied",
+    "backToList": "Back to internships",
+    "viewApplication": "View my application",
+    "goToEnrollment": "Go to enrollment",
+    "goToPlacement": "View my internship",
+    "blockers": {
+      "STUDENT_NOT_VERIFIED": "Your university enrollment must be verified before you can apply.",
+      "STUDENT_NOT_AVAILABLE": "You already have an active internship placement, so you cannot apply for another one.",
+      "STUDENT_ALREADY_APPLIED": "You have already applied to this internship.",
+      "OPPORTUNITY_NOT_PUBLIC": "This internship only accepts university nominations.",
+      "OPPORTUNITY_DEADLINE_PASSED": "The application deadline for this internship has passed."
+    },
+    "resultCount_one": "{{count}} internship found",
+    "openings_one": "{{count}} opening"
+  },
+  "detail": {
+    "notFound": "Internship not found.",
+    "lifecycleTitle": "Status",
+    "lifecycleHint": "Each change is its own action, so nothing goes live or closes by accident.",
+    "editTitle": "Edit internship",
+    "editHint": "Details can be changed while the internship is still a draft.",
+    "publishedAt": "Published"
   }
 }

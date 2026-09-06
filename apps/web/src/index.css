@@ -4,29 +4,66 @@
 @import './lib/design-system/tokens.css';
 
 /*
- * Maps the runtime CSS custom properties in tokens.css into Tailwind v4 theme
- * variables, so feature code can use semantic utilities (bg-brand-primary,
- * text-foreground, border-border, ...) instead of arbitrary values.
- * See docs/adr/ADR-007-frontend-design-system.md.
+ * Bind Tailwind's `dark:` variant to FursadHub's OWN theme switch.
+ *
+ * The theme is chosen explicitly and stored per user (ThemeProvider -> `data-theme` on <html>,
+ * mirrored by the pre-hydration script in index.html); `getInitialTheme()` already resolves the OS
+ * preference into that attribute on first load, so `data-theme` is always present and is the single
+ * source of truth. Without this, `dark:` would still be Tailwind's default
+ * `prefers-color-scheme` media query — which the toggle does not change — so every `dark:` utility
+ * would fire on the wrong signal: dark-navy headings staying dark-navy on a dark surface for anyone
+ * toggling dark mode from a light OS, and dark-mode text colours bleeding onto light surfaces for
+ * anyone toggling light mode from a dark OS.
+ */
+@custom-variant dark (&:where([data-theme='dark'], [data-theme='dark'] *));
+
+/*
+ * Maps runtime brand and semantic variables into Tailwind v4 utilities.
  */
 @theme inline {
   --color-brand-primary: var(--color-brand-primary);
   --color-brand-secondary: var(--color-brand-secondary);
   --color-brand-accent: var(--color-brand-accent);
+  --color-brand-accent-strong: var(--color-brand-accent-strong);
+  --color-brand-accent-soft: var(--color-brand-accent-soft);
+  --color-brand-accent-ink: var(--color-brand-accent-ink);
   --color-brand-navy: var(--color-brand-navy);
-  --color-brand-orange: var(--color-brand-orange);
-  --color-brand-cream: var(--color-brand-cream);
-  --color-brand-beige: var(--color-brand-beige);
+  --color-brand-navy-deep: var(--color-brand-navy-deep);
+  --color-brand-navy-strong: var(--color-brand-navy-strong);
+  --color-brand-navy-soft: var(--color-brand-navy-soft);
+  --color-brand-blue: var(--color-brand-blue);
+  --color-brand-blue-strong: var(--color-brand-blue-strong);
+  --color-brand-blue-soft: var(--color-brand-blue-soft);
 
   --color-background: var(--color-background);
   --color-surface: var(--color-surface);
   --color-surface-muted: var(--color-surface-muted);
+  --color-surface-raised: var(--color-surface-raised);
+  --color-surface-inverse: var(--color-surface-inverse);
   --color-border: var(--color-border);
+  --color-border-strong: var(--color-border-strong);
+  --color-overlay: var(--color-overlay);
 
   --color-foreground: var(--color-text-primary);
   --color-foreground-secondary: var(--color-text-secondary);
   --color-muted: var(--color-text-muted);
+  --color-inverse: var(--color-text-inverse);
+  --color-link: var(--color-text-link);
   --color-on-brand: var(--color-text-on-brand);
+  --color-focus-ring: var(--color-focus-ring);
+  --color-control-hover: var(--color-control-hover);
+  --color-control-disabled: var(--color-control-disabled);
+  --color-sidebar: var(--color-sidebar-background);
+  --color-sidebar-foreground: var(--color-sidebar-text);
+  --color-sidebar-strong: var(--color-sidebar-text-strong);
+  --color-sidebar-active: var(--color-sidebar-active-bg);
+  --color-sidebar-active-text: var(--color-sidebar-active-text);
+  --color-sidebar-active-edge: var(--color-sidebar-active-edge);
+  --color-sidebar-hover: var(--color-sidebar-hover);
+  --color-sidebar-border: var(--color-sidebar-border);
+  --color-sidebar-heading: var(--color-sidebar-heading);
+  --color-chart-series: var(--color-chart-series);
+  --color-chart-grid: var(--color-chart-grid);
 
   --color-success: var(--color-success);
   --color-success-bg: var(--color-success-bg);
@@ -37,12 +74,17 @@
   --color-info: var(--color-info);
   --color-info-bg: var(--color-info-bg);
 
+  --radius-xs: var(--radius-xs);
   --radius-sm: var(--radius-sm);
   --radius-md: var(--radius-md);
   --radius-lg: var(--radius-lg);
+  --radius-xl: var(--radius-xl);
+  --radius-2xl: var(--radius-2xl);
 
+  --shadow-xs: var(--shadow-xs);
   --shadow-sm: var(--shadow-sm);
   --shadow-md: var(--shadow-md);
+  --shadow-lg: var(--shadow-lg);
 
   --font-display: var(--font-display);
   --font-body: var(--font-body);
@@ -158,10 +200,24 @@
        body/UI default (Public Sans), with the same system-font fallback as
        before if either fails to load. */
     font-family: var(--font-body);
+    line-height: var(--line-height-body);
+    transition:
+      background-color var(--duration-normal) var(--ease-standard),
+      color var(--duration-normal) var(--ease-standard);
+  }
+
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6 {
+    font-family: var(--font-display);
+    line-height: var(--line-height-tight);
   }
 
   :focus-visible {
-    outline: 2px solid var(--color-brand-primary);
+    outline: 2px solid var(--color-focus-ring);
     outline-offset: 2px;
   }
 }

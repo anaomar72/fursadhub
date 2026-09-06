@@ -8,6 +8,7 @@ import com.fursadhub.common.api.ApiException;
 import com.fursadhub.common.audit.AuditService;
 import com.fursadhub.opportunity.application.OpportunityQueryService;
 import com.fursadhub.opportunity.domain.InternshipOpportunity;
+import com.fursadhub.organization.application.OrganizationVerificationGuard;
 import com.fursadhub.student.domain.StudentEnrollment;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
@@ -29,6 +30,7 @@ public class SubmitApplicationService {
 
     private final OpportunityQueryService opportunities;
     private final OpportunityApplicationRules applicationRules;
+    private final OrganizationVerificationGuard verificationGuard;
     private final StudentEligibility studentEligibility;
     private final ScreeningAnswerValidator screeningAnswerValidator;
     private final ScreeningAnswerRepository screeningAnswers;
@@ -37,10 +39,12 @@ public class SubmitApplicationService {
 
     public SubmitApplicationService(
             OpportunityQueryService opportunities, OpportunityApplicationRules applicationRules,
+            OrganizationVerificationGuard verificationGuard,
             StudentEligibility studentEligibility, ScreeningAnswerValidator screeningAnswerValidator,
             ScreeningAnswerRepository screeningAnswers, CandidacyMerger candidacyMerger, AuditService audit) {
         this.opportunities = opportunities;
         this.applicationRules = applicationRules;
+        this.verificationGuard = verificationGuard;
         this.studentEligibility = studentEligibility;
         this.screeningAnswerValidator = screeningAnswerValidator;
         this.screeningAnswers = screeningAnswers;
@@ -58,6 +62,11 @@ public class SubmitApplicationService {
             String ipAddress, String userAgent) {
         InternshipOpportunity opportunity = opportunities.getOrThrow(opportunityId);
         applicationRules.requireOpenForSelfApplication(opportunity);
+        // Backend Phase B1.5. Placed immediately after the opportunity's own rules and before any
+        // student-side check, so an organization that cannot receive candidates is reported as such
+        // without first probing the caller's enrollment. Every existing rule below is unchanged and
+        // in its original order.
+        verificationGuard.requireVerifiedForCandidateIntake(opportunity.getOrganizationId());
 
         StudentEnrollment enrollment = studentEligibility.requireVerifiedEnrollment(studentUserId);
         studentEligibility.requireAvailable(studentUserId);

@@ -2,9 +2,10 @@ import { useState } from 'react'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { useTranslation } from 'react-i18next'
 import { useParams } from 'react-router-dom'
-import { Button, FormField, Input, LoadingSpinner, Select, StatusBadge, Textarea } from '../../../components/ui'
+import { Button, ErrorState, FormField, Input, LoadingState, Select, StatusBadge, Textarea } from '../../../components/ui'
 import type { StatusTone } from '../../../components/ui'
 import { apiErrorMessage } from '../../../lib/api/errorMessage'
+import { formatDateTime } from '../../../lib/utils/formatDate'
 import * as defenseApi from '../api/defenseApi'
 import type { DefenseAttemptResponse, DefenseAttemptState, DefenseResult } from '../types'
 
@@ -84,10 +85,16 @@ export function DefensePage({ audience }: DefensePageProps) {
   })
 
   if (attemptsQuery.isLoading) {
+    return <LoadingState label={t('common:status.loading')} />
+  }
+
+  if (attemptsQuery.isError) {
     return (
-      <div className="flex justify-center py-16">
-        <LoadingSpinner size="lg" />
-      </div>
+      <ErrorState
+        title={t('common:status.error')}
+        onRetry={() => void attemptsQuery.refetch()}
+        retryLabel={t('common:actions.retry')}
+      />
     )
   }
 
@@ -189,7 +196,7 @@ function AttemptCard({
             {t('internship:defense.attemptHeading', { number: attempt.attemptNumber })}
           </h3>
           <p className="mt-0.5 text-xs text-foreground-secondary">
-            {new Date(attempt.scheduledAt).toLocaleString()}
+            {formatDateTime(attempt.scheduledAt)}
             {attempt.locationDetails ? ` · ${attempt.locationDetails}` : ''}
           </p>
         </div>

@@ -33,7 +33,8 @@
     "applications": "Codsiyadayda",
     "nominations": "Magacaabisyada",
     "candidates": "Musharrixiinta",
-    "opportunityRequests": "Codsiyada magacaabista"
+    "opportunityRequests": "Codsiyada magacaabista",
+    "shortlist": "Liiska kooban"
   },
   "apply": {
     "title": "Codso tababarkan",
@@ -56,6 +57,7 @@
       "ACCOUNT_NOT_ACTIVE": "Akoonkaagu waa inuu firfircoonaadaa ka hor inta aadan codsan.",
       "OPPORTUNITY_NOT_PUBLIC": "Fursaddan waxay kaliya aqbashaa magacaabis jaamacadeed.",
       "OPPORTUNITY_NOT_PUBLISHED": "Fursaddan hadda ma aqbalayso codsiyo.",
+      "ORGANIZATION_NOT_VERIFIED": "Ururkani hadda ma aqbalayo musharrixiin cusub.",
       "OPPORTUNITY_DEADLINE_PASSED": "Wakhtigii ugu dambeeyay ee codsiga wuu dhacay.",
       "CANDIDACY_ALREADY_CLOSED": "Codsigan horey ayaa loo xiray.",
       "VALIDATION_FAILED": "Fadlan hubi foomka oo isku day mar kale.",
@@ -65,7 +67,19 @@
   "applications": {
     "title": "Codsiyadayda",
     "empty": "Weli ma aadan codsan wax tababar ah.",
-    "offerAwaitingResponse": "Waxaad haysataa dalab sugaya jawaabtaada ugu dambeyn {{deadline}}."
+    "offerAwaitingResponse": "Waxaad haysataa dalab sugaya jawaabtaada ugu dambeyn {{deadline}}.",
+    "subtitle": "Codsiyada aad gudbisay iyo magacaabisyada aad aqbashay, hal meel.",
+    "error": "Codsiyadaada lama soo bandhigi karin.",
+    "emptyHint": "Fiiri tababarrada furan oo codso si aad u bilowdo.",
+    "emptyForFilter": "Ma jiraan codsiyo kooxdan ku jira.",
+    "filterLabel": "Kala sooc codsiyada",
+    "appliedOn": "Waxaa la codsaday {{date}}",
+    "filters": {
+      "all": "Dhammaan",
+      "active": "Socda",
+      "offers": "Dalabyo",
+      "closed": "La xiray"
+    }
   },
   "detail": {
     "notFound": "Codsigan hadda lama heli karo.",
@@ -87,7 +101,9 @@
       "CANDIDACY_HAS_PLACEMENT": "Ma laaban kartid kadib markaad aqbashay dalabka.",
       "CANDIDACY_INVALID_TRANSITION": "Talaabadan lama heli karo marxaladda hadda.",
       "generic": "Wax baa qaldamay. Fadlan isku day mar kale."
-    }
+    },
+    "withdrawTitle": "Ka noqo codsigan",
+    "withdrawHint": "Waad ka noqon kartaa inta ururku wali dib u eegayo. Tan dib looma celin karo."
   },
   "nominations": {
     "title": "Magacaabisyada",
@@ -106,19 +122,46 @@
       "CANDIDACY_ALREADY_CLOSED": "Codsigan horey ayaa loo xiray.",
       "OPPORTUNITY_NOT_PUBLISHED": "Fursaddan hadda ma aqbalayso musharrixiin.",
       "generic": "Wax baa qaldamay. Fadlan isku day mar kale."
-    }
+    },
+    "emptyUniversity": "Weli ma jiraan magacaabisyo."
   },
   "pool": {
     "title": "Musharrixiinta",
     "backToOpportunity": "Ku noqo fursadda",
     "filterLabel": "Ku kala saar musharrixiinta isha ay ka yimaadeen",
     "allSources": "Dhammaan musharrixiinta",
-    "empty": "Weli ma jiraan musharrixiin."
+    "empty": "Weli ma jiraan musharrixiin.",
+    "subtitle": "Codsadayaasha iyo kuwa la magacaabay waa hal kooxood — isha waa shaandhayn, ma aha marxalad gooni ah.",
+    "viewLabel": "Muuqaallada kooxda",
+    "views": {
+      "board": "Marxaladaha",
+      "list": "Liiska"
+    },
+    "boardLabel": "Musharraxiinta marxalad ahaan",
+    "stageEmpty": "Cidna kuma jirto marxaladdan",
+    "closedCount_one": "{{count}} musharrax ayaa ka baxay marxaladaha, halkanna kama muuqdo.",
+    "closedCount_other": "{{count}} musharrax ayaa ka baxay marxaladaha, halkanna kama muuqdaan.",
+    "candidate": "Musharraxa",
+    "internship": "Tababarka",
+    "source": "Isha",
+    "submitted": "Wuxuu codsaday",
+    "liveOffer": "Fursad furan",
+    "offerRespondBy": "Ka jawaab ka hor {{date}}",
+    "status": "Xaaladda",
+    "closed": "La xidhay",
+    "statusLabel": "Marxaladda",
+    "sourceLabel": "Isha",
+    "allStatuses": "Dhammaan marxaladaha",
+    "searchLabel": "Raadi musharraxiinta",
+    "searchPlaceholder": "Ku raadi magac ama email",
+    "resultCount_one": "{{count}} musharrax",
+    "resultCount_other": "{{count}} musharrax",
+    "emptyHint": "Musharraxiintu halkan way ka soo muuqdaan marka ardaydu codsato ama jaamacaduhu magacaabaan."
   },
   "candidate": {
     "notFound": "Musharraxaan hadda lama heli karo.",
     "answersTitle": "Jawaabaha kala-sooca",
-    "offersTitle": "Dalabyada",
+    "offersTitle": "Fursadaha",
     "sendOfferTitle": "Dir dalab tababar",
     "startDate": "Taariikhda bilowga",
     "endDate": "Taariikhda dhammaadka",
@@ -145,8 +188,24 @@
       "STUDENT_NOT_AVAILABLE": "Ardaygan wuxuu hore u haystay meel-gelin tababar oo firfircoon.",
       "ACCESS_DENIED": "Ma haysatid oggolaansho musharraxan.",
       "VALIDATION_FAILED": "Fadlan hubi foomka oo isku day mar kale.",
-      "generic": "Wax baa qaldamay. Fadlan isku day mar kale."
-    }
+      "generic": "Wax baa qaldamay. Fadlan isku day mar kale.",
+      "CV_NOT_FOUND": "Musharraxani CV ma soo gelin.",
+      "STUDENT_PROFILE_NOT_FOUND": "Musharraxani ma laha astaan arday."
+    },
+    "actionsTitle": "Qorista",
+    "actionsHint": "Tallaabo kastaa waa mid gooni ah, waxayna la mid tahay waxa habku halkan ka ogol yahay.",
+    "noAnswers": "Tababarkani su’aalo shaandhayn ma lahayn.",
+    "noOffers": "Weli fursad lama dirin.",
+    "sendOfferHint": "Ardaygu wuu aqbali karaa ama diidi karaa; aqbalaaddu waxay abuurtaa meelaynta.",
+    "withdrawOffer": "Ka noqo fursadda",
+    "respondBy": "Ka jawaab ka hor {{date}}",
+    "historyTitle": "Taariikhda",
+    "historyHint": "Isbeddel kasta oo la diiwaangeliyay, kii ugu dambeeyay horeba.",
+    "noHistory": "Weli taariikh lama diiwaangelin.",
+    "transition": "laga bilaabay {{from}}",
+    "cvTitle": "CV-ga",
+    "cvHint": "Wuxuu furayaa CV-ga uu musharraxu soo geliyay, haddii uu mid leeyahay.",
+    "openCv": "Fur CV-ga"
   },
   "screening": {
     "title": "Su'aalaha kala-sooca",
@@ -177,7 +236,9 @@
     "empty": "Weli ma jiro urur codsaday magacaabis.",
     "notFound": "Codsigan hadda lama heli karo.",
     "progress": "{{current}} ka mid ah {{requested}} la magacaabay",
-    "deadline": "Magacaw ugu dambeyn {{deadline}}"
+    "deadline": "Magacaw ugu dambeyn {{deadline}}",
+    "subtitle": "Ururrada ka codsanaya jaamacaddaada inay ardayda magacawdo.",
+    "emptyHint": "Marka ururku jaamacaddaada beegsado, codsigiisu halkan ayuu ka muuqan doonaa."
   },
   "nominate": {
     "eligibleTitle": "Ardayda u qalanta",
@@ -191,6 +252,7 @@
       "STUDENT_NOT_AVAILABLE": "Ardaygan wuxuu hore u haystay meel-gelin tababar oo firfircoon.",
       "DEPARTMENT_NOT_ELIGIBLE_FOR_TARGET": "Fursaddani ma aqbasho magacaabis ka timaadda waaxdaas.",
       "OPPORTUNITY_NOT_TARGETED_TO_UNIVERSITY": "Fursaddani laguma bartilmaameedsan jaamacaddaada.",
+      "ORGANIZATION_NOT_VERIFIED": "Ururkani hadda ma aqbalayo musharrixiin cusub.",
       "OPPORTUNITY_DEADLINE_PASSED": "Wakhtigii ugu dambeeyay ee magacaabistu wuu dhacay.",
       "OPPORTUNITY_NOT_PUBLISHED": "Fursaddan mar dambe ma aqbalayso magacaabis.",
       "ACCESS_DENIED": "Ma haysatid oggolaansho aad ku magacawdo ardaygan.",
@@ -207,5 +269,26 @@
       "ACCESS_DENIED": "Ma haysatid oggolaansho magacaabistan.",
       "generic": "Wax baa qaldamay. Fadlan isku day mar kale."
     }
+  },
+  "targetStatusValues": {
+    "REQUESTED": "La codsaday",
+    "ACKNOWLEDGED": "La aqoonsaday",
+    "NOMINATING": "Magacaabis socota",
+    "COMPLETED": "La dhammeeyay",
+    "DECLINED": "La diiday",
+    "EXPIRED": "Wuu dhacay"
+  },
+  "organizationPool": {
+    "title": "Dhammaan musharraxiinta",
+    "subtitle": "Qof kasta oo marxaladaha ku jira ee tababarrada aad qorista ku jirto.",
+    "allInternships": "Dhammaan tababarrada",
+    "noRecruiting": "Ma jiro tababar qorista ku jira",
+    "noRecruitingHint": "Daabac tababar si aad u bilowdo helitaanka musharraxiin.",
+    "scanned_one": "Waa la eegay {{count}} tababar.",
+    "scanned_other": "Waa la eegay {{count}} tababar.",
+    "scannedPartial": "Waa la eegay {{scanned}}-kii ugu horreeyay ee {{total}} tababar.",
+    "partialError": "Qaar ka mid ah liisaska musharraxiinta lama akhriyi karin, halkanna kama muuqdaan.",
+    "stageTitle": "Musharraxiinta {{stage}}",
+    "stageSubtitle": "Hal marxalad oo isla kooxda ah. Nadiifi shaandhada marxaladda si aad qof walba u aragto."
   }
 }

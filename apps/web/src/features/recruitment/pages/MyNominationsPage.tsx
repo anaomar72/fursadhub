@@ -4,7 +4,7 @@ import { useTranslation } from 'react-i18next'
 import * as recruitmentApi from '../api/recruitmentApi'
 import { NOMINATION_STATUS_TONE } from '../components/statusTone'
 import { apiErrorMessage } from '../../../lib/api/errorMessage'
-import { AnimatedCheck, Button, EmptyState, LoadingSpinner, PageHeader, StatusBadge } from '../../../components/ui'
+import { AnimatedCheck, Button, EmptyState, ErrorState, LoadingState, PageHeader, StatusBadge } from '../../../components/ui'
 
 /**
  * The student's nomination inbox and consent decision (CLAUDE.md section 35, Phase 4 section 25).
@@ -41,10 +41,16 @@ export function MyNominationsPage() {
   })
 
   if (nominationsQuery.isLoading) {
+    return <LoadingState label={t('common:status.loading')} />
+  }
+
+  if (nominationsQuery.isError) {
     return (
-      <div className="flex justify-center py-16">
-        <LoadingSpinner size="lg" />
-      </div>
+      <ErrorState
+        title={t('common:status.error')}
+        onRetry={() => void nominationsQuery.refetch()}
+        retryLabel={t('common:actions.retry')}
+      />
     )
   }
 

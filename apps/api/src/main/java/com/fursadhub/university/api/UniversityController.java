@@ -3,7 +3,9 @@ package com.fursadhub.university.api;
 import com.fursadhub.common.web.RequestMetadata;
 import com.fursadhub.university.application.CreateDepartmentService;
 import com.fursadhub.university.application.CreateUniversityService;
+import com.fursadhub.university.application.UniversityCoverService;
 import com.fursadhub.university.application.UniversityLogoService;
+import com.fursadhub.university.application.UniversityProfileUpdate;
 import com.fursadhub.university.application.UniversityQueryService;
 import com.fursadhub.university.application.UniversityVerificationEvidenceService;
 import com.fursadhub.university.application.UpdateDepartmentService;
@@ -55,6 +57,7 @@ public class UniversityController {
     private final CreateDepartmentService createDepartmentService;
     private final UpdateDepartmentService updateDepartmentService;
     private final UniversityLogoService logoService;
+    private final UniversityCoverService coverService;
 
     public UniversityController(
             UniversityQueryService queryService,
@@ -63,7 +66,8 @@ public class UniversityController {
             UniversityVerificationEvidenceService evidenceService,
             CreateDepartmentService createDepartmentService,
             UpdateDepartmentService updateDepartmentService,
-            UniversityLogoService logoService) {
+            UniversityLogoService logoService,
+            UniversityCoverService coverService) {
         this.queryService = queryService;
         this.createService = createService;
         this.updateService = updateService;
@@ -71,6 +75,7 @@ public class UniversityController {
         this.createDepartmentService = createDepartmentService;
         this.updateDepartmentService = updateDepartmentService;
         this.logoService = logoService;
+        this.coverService = coverService;
     }
 
     // ---------------------------------------------------------------- directory
@@ -136,9 +141,12 @@ public class UniversityController {
     public UniversityDetailResponse update(
             @AuthenticationPrincipal Jwt jwt, @PathVariable UUID universityId,
             @Valid @RequestBody UpdateUniversityRequest request, HttpServletRequest httpRequest) {
-        University university = updateService.update(
-                currentUserId(jwt), universityId, request.name(), request.city(), request.registrationNumber(),
+        UniversityProfileUpdate update = new UniversityProfileUpdate(
+                request.name(), request.city(), request.registrationNumber(),
                 request.website(), request.description(),
+                request.countryCode(), request.publicContactEmail());
+        University university = updateService.update(
+                currentUserId(jwt), universityId, update,
                 RequestMetadata.clientIp(httpRequest), RequestMetadata.userAgent(httpRequest));
         return UniversityDetailResponse.from(university);
     }
@@ -184,6 +192,19 @@ public class UniversityController {
     public UniversityLogoResponse uploadLogo(
             @AuthenticationPrincipal Jwt jwt, @PathVariable UUID universityId, @RequestParam("file") MultipartFile file) {
         logoService.upload(currentUserId(jwt), universityId, file);
+        return new UniversityLogoResponse(true);
+    }
+
+    /**
+     * The public profile banner (Backend Phase B2). Same route shape, verb,
+     * {@code UNIVERSITY_ADMIN}-only authorization and managed-file lifecycle as the logo above; the
+     * bytes are read back through the unauthenticated
+     * {@code /api/v1/public/universities/{id}/cover/document} route.
+     */
+    @PostMapping("/{universityId}/cover")
+    public UniversityLogoResponse uploadCover(
+            @AuthenticationPrincipal Jwt jwt, @PathVariable UUID universityId, @RequestParam("file") MultipartFile file) {
+        coverService.upload(currentUserId(jwt), universityId, file);
         return new UniversityLogoResponse(true);
     }
 

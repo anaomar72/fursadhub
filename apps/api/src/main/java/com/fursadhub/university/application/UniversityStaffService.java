@@ -4,6 +4,8 @@ import com.fursadhub.common.api.ApiException;
 import com.fursadhub.common.audit.AuditService;
 import com.fursadhub.identity.application.LogoutService;
 import com.fursadhub.identity.domain.EmailNormalizer;
+import com.fursadhub.identity.domain.DisplayNamePolicy;
+import com.fursadhub.identity.domain.UsernamePolicy;
 import com.fursadhub.identity.domain.User;
 import com.fursadhub.identity.domain.UserRepository;
 import com.fursadhub.identity.domain.UserStatus;
@@ -73,10 +75,12 @@ public class UniversityStaffService {
         this.audit = audit;
     }
 
-    public record StaffMember(UniversityMembership membership, String email, UserStatus status, List<UUID> departmentIds) {
+    public record StaffMember(
+            UniversityMembership membership, String displayName, String username, String email, UserStatus status,
+            List<UUID> departmentIds) {
     }
 
-    public record StaffCredential(String email, String temporaryPassword) {
+    public record StaffCredential(String username, String email, String temporaryPassword) {
     }
 
     /**
@@ -88,7 +92,8 @@ public class UniversityStaffService {
     @Transactional
     public StaffMember create(
             UUID actingUserId, UUID universityId, String rawEmail, String password, String confirmPassword,
-            UniversityRole role, List<UUID> departmentIds, String ipAddress, String userAgent) {
+            String rawDisplayName, String rawUsername, UniversityRole role, List<UUID> departmentIds,
+            String ipAddress, String userAgent) {
         authorization.requireMembership(actingUserId, universityId, UniversityRole.UNIVERSITY_ADMIN);
         requireAssignableRole(role);
         if (!password.equals(confirmPassword)) {
@@ -107,7 +112,17 @@ public class UniversityStaffService {
         // separate contact-verification step, and no verification email sent (CLAUDE.md section
         // 26A "Contact Verification").
         staffUser.markEmailVerified();
-        users.save(staffUser);
+        staffUser.changeDisplayName(DisplayNamePolicy.normalize(rawDisplayName));
+        // Backend Phase B5.5: this is the identifier the staff member will log in with. Validated
+        // and lower-cased here; the UNIQUE constraint decides a concurrent collision.
+        String canonicalUsername = UsernamePolicy.canonicalize(rawUsername);
+        if (users.existsByUsername(canonicalUsername)) {
+            throw new ApiException("USERNAME_ALREADY_EXISTS", HttpStatus.CONFLICT, "That username is already taken.");
+        }
+        staffUser.assignUsername(canonicalUsername);
+        // Flushed for the same reason as the assignment path: the username UNIQUE constraint must
+        // fail at a known statement so the loser of a race becomes USERNAME_ALREADY_EXISTS.
+        users.saveAndFlush(staffUser);
 
         UniversityMembership membership = UniversityMembership.assign(universityId, staffUser.getId(), role);
         memberships.save(membership);
@@ -116,7 +131,7 @@ public class UniversityStaffService {
         audit.record("UNIVERSITY_STAFF_CREATED", actingUserId, ipAddress, userAgent,
                 "universityId=" + universityId + ";targetUserId=" + staffUser.getId() + ";role=" + role);
 
-        return new StaffMember(membership, staffUser.getEmail(), staffUser.getStatus(), scopedDepartmentIds);
+        return new StaffMember(membership, staffUser.getDisplayName(), staffUser.getUsername(), staffUser.getEmail(), staffUser.getStatus(), scopedDepartmentIds);
     }
 
     /** Changes role and (atomically) department scope, so the two can never briefly disagree. */
@@ -141,7 +156,7 @@ public class UniversityStaffService {
                 "universityId=" + universityId + ";membershipId=" + membershipId + ";role=" + newRole);
 
         User staffUser = requireUser(membership.getUserId());
-        return new StaffMember(membership, staffUser.getEmail(), staffUser.getStatus(), scopedDepartmentIds);
+        return new StaffMember(membership, staffUser.getDisplayName(), staffUser.getUsername(), staffUser.getEmail(), staffUser.getStatus(), scopedDepartmentIds);
     }
 
     /** Blocks the staff member's authentication without ending their staff relationship. Idempotent. */
@@ -208,7 +223,7 @@ public class UniversityStaffService {
         audit.record("UNIVERSITY_STAFF_PASSWORD_RESET", actingUserId, ipAddress, userAgent,
                 "universityId=" + universityId + ";membershipId=" + membershipId + ";targetUserId=" + staffUser.getId());
 
-        return new StaffCredential(staffUser.getEmail(), newPassword);
+        return new StaffCredential(staffUser.getUsername(), staffUser.getEmail(), newPassword);
     }
 
     @Transactional
@@ -237,6 +252,8 @@ public class UniversityStaffService {
                             .toList();
                     return new StaffMember(
                             membership,
+                            staffUser == null ? null : staffUser.getDisplayName(),
+                            staffUser == null ? null : staffUser.getUsername(),
                             staffUser == null ? null : staffUser.getEmail(),
                             staffUser == null ? null : staffUser.getStatus(),
                             departmentIds);
@@ -244,6 +261,99 @@ public class UniversityStaffService {
                 .toList();
     }
 
+
+    /**
+     * Sets or clears a managed staff member's display name (Backend Phase B5).
+     *
+     * <p><strong>The write boundary, in three guards.</strong> {@code requireMembership} proves the
+     * caller is a {@code UNIVERSITY_ADMIN} of THIS university; {@code requireOwnedMembership}
+     * resolves the target through a membership that belongs to it, returning the same not-found
+     * error for another university's membership as for one that does not exist; and
+     * {@code requireAssignableRole} on the membership's CURRENT role restricts the target to the
+     * managed staff roles.
+     *
+     * <p>That third guard is what keeps this from becoming a general user-editing capability. Only
+     * {@code DEPARTMENT_COORDINATOR} and {@code UNIVERSITY_SUPERVISOR} are assignable, so a
+     * {@code UNIVERSITY_ADMIN} — a self-registered founder who may hold memberships in several
+     * tenants and may also be a student — can never have their global display name rewritten
+     * through this route, by their own admin or anyone else's.
+     *
+     * <p>The user id is never accepted from the request. The target is always reached through a
+     * membership the caller demonstrably owns, so there is no raw-user-id bypass.
+     */
+    @Transactional
+    public StaffMember changeDisplayName(
+            UUID actingUserId, UUID universityId, UUID membershipId, String rawDisplayName,
+            String ipAddress, String userAgent) {
+        authorization.requireMembership(actingUserId, universityId, UniversityRole.UNIVERSITY_ADMIN);
+        UniversityMembership membership = requireOwnedMembership(universityId, membershipId);
+        requireAssignableRole(membership.getRole());
+
+        User staffUser = requireUser(membership.getUserId());
+        staffUser.changeDisplayName(DisplayNamePolicy.normalize(rawDisplayName));
+        users.save(staffUser);
+
+        // The name itself is never recorded in audit metadata — identifiers only, as everywhere else
+        // (CLAUDE.md section 68).
+        audit.record("UNIVERSITY_STAFF_DISPLAY_NAME_CHANGED", actingUserId, ipAddress, userAgent,
+                "universityId=" + universityId + ";membershipId=" + membershipId + ";targetUserId=" + staffUser.getId());
+
+        List<UUID> departmentIds = membershipDepartments.findActiveByMembershipId(membership.getId()).stream()
+                .map(UniversityMembershipDepartment::getDepartmentId)
+                .filter(Objects::nonNull)
+                .toList();
+        return new StaffMember(membership, staffUser.getDisplayName(), staffUser.getUsername(), staffUser.getEmail(), staffUser.getStatus(), departmentIds);
+    }
+
+    /**
+     * Assigns the login username to an existing managed staff account, ONCE (Backend Phase B5.5).
+     *
+     * <p>This is the migration path for staff provisioned before B5.5, who currently authenticate by
+     * email. Assigning a username moves that account to username authentication permanently: from
+     * that moment {@code LoginService} stops accepting its email as a credential.
+     *
+     * <p>Same three guards as every other managed-staff command: admin of THIS university, target
+     * resolved through a membership this university owns, and the membership's CURRENT role
+     * restricted to the assignable managed roles — so a {@code UNIVERSITY_ADMIN} founder, whose
+     * account is self-service and may span tenants, can never be given a username here.
+     *
+     * <p>Re-sending the same canonical username is a no-op; a different one is refused as
+     * {@code USERNAME_IMMUTABLE} by the entity. B5.5 supports no rename and no clear.
+     */
+    @Transactional
+    public StaffMember assignUsername(
+            UUID actingUserId, UUID universityId, UUID membershipId, String rawUsername,
+            String ipAddress, String userAgent) {
+        authorization.requireMembership(actingUserId, universityId, UniversityRole.UNIVERSITY_ADMIN);
+        UniversityMembership membership = requireOwnedMembership(universityId, membershipId);
+        requireAssignableRole(membership.getRole());
+
+        String canonicalUsername = UsernamePolicy.canonicalize(rawUsername);
+        User staffUser = requireUser(membership.getUserId());
+        // Taken by a DIFFERENT account. Re-sending this account's own username stays idempotent
+        // rather than colliding with itself.
+        if (!canonicalUsername.equals(staffUser.getUsername()) && users.existsByUsername(canonicalUsername)) {
+            throw new ApiException("USERNAME_ALREADY_EXISTS", HttpStatus.CONFLICT, "That username is already taken.");
+        }
+
+        if (staffUser.assignUsername(canonicalUsername)) {
+            // Flush here so a lost race fails on THIS statement as a DataIntegrityViolationException,
+            // not later at commit where it could surface as a TransactionSystemException and escape
+            // the constraint translator.
+            users.saveAndFlush(staffUser);
+            // The username is an identifier, not a secret, but audit metadata stays identifiers-only
+            // exactly as everywhere else (CLAUDE.md section 68).
+            audit.record("UNIVERSITY_STAFF_USERNAME_ASSIGNED", actingUserId, ipAddress, userAgent,
+                    "universityId=" + universityId + ";membershipId=" + membershipId
+                            + ";targetUserId=" + staffUser.getId());
+        }
+
+        List<UUID> departmentIds = membershipDepartments.findActiveByMembershipId(membership.getId()).stream()
+                .map(UniversityMembershipDepartment::getDepartmentId)
+                .filter(Objects::nonNull)
+                .toList();
+        return new StaffMember(membership, staffUser.getDisplayName(), staffUser.getUsername(), staffUser.getEmail(), staffUser.getStatus(), departmentIds);
+    }
     // ---------------------------------------------------------------- internals
 
     private void requireAssignableRole(UniversityRole role) {

@@ -73,7 +73,21 @@ public enum FileClassification {
     ORGANIZATION_LOGO(Set.of("image/jpeg", "image/png"), 3L * 1024 * 1024, RetentionCategory.ACCOUNT_ASSET),
 
     /** A university's own logo. Same policy as {@link #ORGANIZATION_LOGO}. */
-    UNIVERSITY_LOGO(Set.of("image/jpeg", "image/png"), 3L * 1024 * 1024, RetentionCategory.ACCOUNT_ASSET);
+    UNIVERSITY_LOGO(Set.of("image/jpeg", "image/png"), 3L * 1024 * 1024, RetentionCategory.ACCOUNT_ASSET),
+
+    /**
+     * An organization's public profile banner (Backend Phase B2) — the hero image at the top of its
+     * public profile. Same public, unauthenticated read as the logo, and the same image-only
+     * allowlist.
+     *
+     * <p>The cap is 5 MB rather than the logo's 3 MB because a banner is a wide hero image rather
+     * than a small square mark, but it is still bounded: this is a page decoration, not a document
+     * store. Worth revisiting downward once real uploads show what institutions actually send.
+     */
+    ORGANIZATION_COVER(Set.of("image/jpeg", "image/png"), 5L * 1024 * 1024, RetentionCategory.ACCOUNT_ASSET),
+
+    /** A university's public profile banner. Same policy as {@link #ORGANIZATION_COVER}. */
+    UNIVERSITY_COVER(Set.of("image/jpeg", "image/png"), 5L * 1024 * 1024, RetentionCategory.ACCOUNT_ASSET);
 
     private final Set<String> permittedContentTypes;
     private final long maxSizeBytes;
@@ -112,6 +126,8 @@ public enum FileClassification {
             case PROFILE_PICTURE -> "AVATAR_FILE_INVALID";
             case ORGANIZATION_LOGO -> "ORGANIZATION_LOGO_FILE_INVALID";
             case UNIVERSITY_LOGO -> "UNIVERSITY_LOGO_FILE_INVALID";
+            case ORGANIZATION_COVER -> "ORGANIZATION_COVER_FILE_INVALID";
+            case UNIVERSITY_COVER -> "UNIVERSITY_COVER_FILE_INVALID";
         };
     }
 }

@@ -1,10 +1,10 @@
 import { Outlet } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
-import { RoleShell } from './RoleShell'
-import { AreaTabs } from './AreaTabs'
+import { AppShell } from './AppShell'
+import { PageContainer } from './PageContainer'
 
 /**
- * The role-neutral account area: notifications, privacy and consents.
+ * The role-neutral account area: profile, notifications, privacy and consents.
  *
  * <p>Deliberately NOT a sixth role. Every signed-in person has these, whatever they are on
  * FursadHub, and duplicating them into the student, university, organization and admin areas would
@@ -15,17 +15,21 @@ export function AccountLayout() {
   const { t } = useTranslation()
 
   return (
-    <RoleShell areaLabel={t('nav.account')}>
-      <AreaTabs
-        items={[
-          { to: '/account/profile', label: t('account:nav.profile') },
-          { to: '/account/notifications', label: t('notifications:title') },
-          { to: '/account/privacy', label: t('privacy:nav.privacy') },
-        ]}
-      />
-      <div className="mx-auto max-w-3xl px-4 py-6 sm:px-6">
+    <AppShell
+      areaLabel={t('common:nav.account')}
+      sections={[
+        {
+          items: [
+            { to: '/account/profile', label: t('account:nav.profile'), icon: 'user' },
+            { to: '/account/notifications', label: t('notifications:title'), icon: 'bell' },
+            { to: '/account/privacy', label: t('privacy:nav.privacy'), icon: 'lock' },
+          ],
+        },
+      ]}
+    >
+      <PageContainer width="narrow">
         <Outlet />
-      </div>
-    </RoleShell>
+      </PageContainer>
+    </AppShell>
   )
 }

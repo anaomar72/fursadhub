@@ -34,9 +34,32 @@ class JdbcPlatformStatisticsRepository implements PlatformStatisticsRepository {
     public PlatformStatistics collect() {
         return new PlatformStatistics(
                 countGrouped("users", "status"),
+                // Backend Phase B6. student_profiles is one row per student account, so this is the
+                // real student population — the users table has no account type to filter on.
+                count("SELECT count(*) FROM student_profiles"),
+                countGrouped("student_enrollments", "verification_status"),
                 count("SELECT count(*) FROM universities"),
+                // universities.status holds InstitutionVerificationStatus — the column is named
+                // `status` here and `verification_status` on organizations, which is why the two
+                // breakdowns cannot share one call.
+                countGrouped("universities", "status"),
                 countGrouped("organizations", "verification_status"),
                 countGrouped("internship_opportunities", "status"),
+                // Backend Phase B6. NOT the same as opportunitiesByStatus.PUBLISHED: this applies the
+                // full PublicOpportunityVisibility rule, so a published listing whose organization is
+                // suspended is excluded here and included there. The three terms are spelled out
+                // rather than bound as parameters because this is the JDBC read model, not JPA; the
+                // canonical definition is PublicOpportunityVisibility and OpportunityStatisticsIT
+                // pins the two to each other.
+                count("""
+                        SELECT count(*) FROM internship_opportunities o
+                        WHERE o.status = 'PUBLISHED'
+                          AND o.mode IN ('PUBLIC', 'HYBRID')
+                          AND EXISTS (
+                            SELECT 1 FROM organizations org
+                            WHERE org.id = o.organization_id AND org.verification_status = 'VERIFIED'
+                          )
+                        """),
                 count("SELECT count(*) FROM candidacies"),
                 countGrouped("placements", "status"),
                 count("SELECT count(*) FROM privacy_requests WHERE state IN ('SUBMITTED', 'IN_REVIEW')"),

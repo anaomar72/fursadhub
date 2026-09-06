@@ -15,7 +15,11 @@ interface JpaUserRepository extends JpaRepository<User, UUID> {
 
     Optional<User> findByEmail(String email);
 
+    Optional<User> findByUsername(String username);
+
     boolean existsByEmail(String email);
+
+    boolean existsByUsername(String username);
 
     /**
      * Admin-console account search. Written as one query rather than four Spring Data derived

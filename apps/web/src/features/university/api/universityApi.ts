@@ -1,5 +1,6 @@
 import { env } from '../../../app/config/env'
 import { ApiError, apiFetch } from '../../../lib/api/client'
+import { downloadPrivateDocument } from '../../../lib/api/privateDocument'
 import { getAccessToken } from '../../../lib/auth/tokenStore'
 import type {
   DepartmentResponse,
@@ -13,8 +14,10 @@ import type {
   UniversityResponse,
   VerificationCaseResponse,
   UniversityRole,
+  PublicUniversitySummaryResponse,
 } from '../types'
 import type { MessageResponse } from '../../auth/types'
+import type { PageResponse } from '../../opportunities/types'
 
 export function listUniversities() {
   return apiFetch<UniversityResponse[]>('/universities', { method: 'GET' })
@@ -138,7 +141,17 @@ export function listStaff(universityId: string) {
 /** Creates a brand-new staff account — the email does not need to belong to an existing user. */
 export function createStaff(
   universityId: string,
-  input: { email: string; password: string; confirmPassword: string; role: UniversityRole; departmentIds: string[] },
+  input: {
+    email: string
+    /** Backend Phase B5.5. REQUIRED: the login identifier for this managed account. */
+    username: string
+    password: string
+    confirmPassword: string
+    /** Backend Phase B5. Optional — omit it and the staff member simply has no display name. */
+    displayName?: string
+    role: UniversityRole
+    departmentIds: string[]
+  },
 ) {
   return apiFetch<StaffMemberResponse>(`/universities/${universityId}/staff`, { method: 'POST', body: input })
 }
@@ -211,9 +224,103 @@ export function revokeCase(universityId: string, caseId: string, notes: string) 
   })
 }
 
+/**
+ * Hands a case this university cannot resolve to the platform.
+ *
+ * <p>Does NOT change the case's status — the frozen state machine of CLAUDE.md section 30 is
+ * untouched. It changes who may act, so a coordinator facing a disputed identity has somewhere to
+ * send it, and the university keeps its own access throughout. This is what fills the platform's
+ * escalation queue; without it that queue can only ever be empty.
+ */
+export function escalateCase(universityId: string, caseId: string, notes: string) {
+  return apiFetch<MessageResponse>(`/universities/${universityId}/verification-cases/${caseId}/escalate`, {
+    method: 'POST',
+    body: { notes },
+  })
+}
+
+/**
+ * The student's private verification evidence, for a scoped university reviewer.
+ *
+ * <p>Three checks run inside {@code VerificationEvidenceService}: the case belongs to THIS
+ * university, the caller holds a reviewing role here, and a coordinator's assigned departments
+ * include this enrollment. Organization users have no route to this document at all
+ * (CLAUDE.md sections 31, 60).
+ */
+export function downloadCaseEvidence(universityId: string, caseId: string) {
+  return downloadPrivateDocument(
+    `/universities/${universityId}/verification-cases/${caseId}/evidence/document`,
+  )
+}
+
 export function consumeChallenge(universityId: string, caseId: string, code: string) {
   return apiFetch<MessageResponse>(`/universities/${universityId}/verification-cases/${caseId}/consume-challenge`, {
     method: 'POST',
     body: { code },
   })
+}
+
+/**
+ * Sets or clears a managed staff member's display name (Backend Phase B5).
+ *
+ * Only DEPARTMENT_COORDINATOR and UNIVERSITY_SUPERVISOR memberships may be named — the server
+ * refuses a university admin's own membership with STAFF_ROLE_NOT_ASSIGNABLE. Pass null to clear.
+ */
+export function changeStaffDisplayName(universityId: string, membershipId: string, displayName: string | null) {
+  return apiFetch<StaffMemberResponse>(`/universities/${universityId}/staff/${membershipId}/display-name`, {
+    method: 'POST',
+    body: { displayName },
+  })
+}
+
+/**
+ * Assigns the one-time login username to a legacy managed staff account (Backend Phase B5.5).
+ *
+ * Only for staff provisioned before B5.5, who still sign in by email. Assigning is permanent: the
+ * account moves to username authentication and its email stops working as a credential. The server
+ * refuses a rename with USERNAME_IMMUTABLE and a duplicate with USERNAME_ALREADY_EXISTS.
+ */
+export function assignStaffUsername(universityId: string, membershipId: string, username: string) {
+  return apiFetch<StaffMemberResponse>(`/universities/${universityId}/staff/${membershipId}/username`, {
+    method: 'POST',
+    body: { username },
+  })
+}
+
+// ---------------------------------------------------------------- public directory
+
+/**
+ * The public university directory (`GET /api/v1/public/universities`, Backend Phase B1).
+ *
+ * <p>Unauthenticated and paged. `listUniversities()` above is the AUTHENTICATED registry used by
+ * staff screens; this is the visitor-facing directory the approved universities page renders, and
+ * it is the only one a signed-out browser may call.
+ */
+export function listPublicUniversities(filters: {
+  query?: string
+  city?: string
+  country?: string
+  sort?: string
+  page?: number
+  size?: number
+} = {}) {
+  const params = new URLSearchParams()
+  if (filters.query) params.set('query', filters.query)
+  if (filters.city) params.set('city', filters.city)
+  if (filters.country) params.set('country', filters.country)
+  if (filters.sort) params.set('sort', filters.sort)
+  params.set('page', String(filters.page ?? 0))
+  params.set('size', String(filters.size ?? 12))
+  return apiFetch<PageResponse<PublicUniversitySummaryResponse>>(
+    `/public/universities?${params.toString()}`,
+    { method: 'GET' },
+  )
+}
+
+/**
+ * The entity's public profile banner. Same contract as the logo route: unauthenticated, and
+ * only meaningful when the response says `hasCover` — otherwise it 404s.
+ */
+export function universityCoverUrl(id: string): string {
+  return `${env.apiBaseUrl}/public/universities/${id}/cover/document`
 }

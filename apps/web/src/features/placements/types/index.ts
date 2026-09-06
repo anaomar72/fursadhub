@@ -23,6 +23,8 @@ export type SupervisorType = 'UNIVERSITY' | 'ORGANIZATION'
 export interface SupervisorAssignmentResponse {
   id: string
   supervisorUserId: string
+  /** Backend Phase B5. Null for staff never given a name; email remains available. */
+  supervisorDisplayName: string | null
   supervisorEmail: string | null
   type: SupervisorType
   assignedAt: string
@@ -69,6 +71,8 @@ export interface PlacementResponse {
 /** A staff member the picker may offer. The backend re-validates the choice on submit regardless. */
 export interface EligibleSupervisorResponse {
   userId: string
+  /** Backend Phase B5. Null for staff never given a name; email remains available. */
+  displayName: string | null
   email: string | null
 }
 

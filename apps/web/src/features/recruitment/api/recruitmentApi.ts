@@ -1,4 +1,5 @@
 import { apiFetch } from '../../../lib/api/client'
+import { downloadPrivateDocument } from '../../../lib/api/privateDocument'
 import type { MessageResponse } from '../../auth/types'
 import type {
   CandidacyResponse,
@@ -108,6 +109,19 @@ export function listCandidates(opportunityId: string, source?: CandidacySource) 
 
 export function getCandidate(candidacyId: string) {
   return apiFetch<CandidateDetailResponse>(`/candidacies/${candidacyId}`, { method: 'GET' })
+}
+
+/**
+ * The CV of a candidate in the caller's own pipeline.
+ *
+ * <p>Addressed by CANDIDACY, never by student: {@code StudentCvService.openForCandidacy} authorizes
+ * from the relationship — the candidacy must belong to an organization the caller currently
+ * recruits for — so a recruiter at another organization gets the same 403 that already guards the
+ * rest of the candidate's record. There is deliberately no {@code /students/{id}/cv} route to reach
+ * instead, because that shape invites authorizing by role rather than by relationship.
+ */
+export function downloadCandidateCv(candidacyId: string) {
+  return downloadPrivateDocument(`/candidacies/${candidacyId}/cv`)
 }
 
 export function reviewCandidacy(candidacyId: string) {

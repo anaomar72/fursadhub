@@ -6,7 +6,8 @@ describe('App', () => {
   it('renders the FursadHub home page through the full provider/router stack', async () => {
     render(<App />)
 
-    expect(await screen.findByRole('heading', { name: 'Opening doors to your future.' })).toBeInTheDocument()
+    // The approved landing headline (design-reference/presentation-refresh-2026, reference 01).
+    expect(await screen.findByRole('heading', { name: /Find Internships\./ })).toBeInTheDocument()
     expect(screen.getAllByText(/FursadHub/).length).toBeGreaterThan(0)
   })
 })

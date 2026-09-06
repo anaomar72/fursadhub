@@ -10,6 +10,13 @@
       "AVATAR_FILE_INVALID": "Faylkaasi lama aqbalo — soo geli JPEG ama PNG ka yar 3MB.",
       "FILE_TOO_LARGE": "Faylku wuu ka weyn yahay xadka ugu badan ee la ogol yahay.",
       "generic": "Wax baa qaldamay. Fadlan isku day mar kale."
-    }
+    },
+    "subtitle": "Aqoonsigaaga FursadHub, iyo qalabka ku galay.",
+    "changePicture": "Beddel sawirka astaanta",
+    "sessionsTitle": "Qalabka la galay",
+    "sessionsBody": "Haddii aad qalab lumisay, ama aad u malaynayso in qof kale uu og yahay eraygaaga sirta ah, waad joojin kartaa fadhi kasta hal mar. Waxaa lagaa rabi doonaa inaad mar kale gasho.",
+    "signOutEverywhere": "Meel kasta ka bax",
+    "signOutEverywhereTitle": "Ma ka baxaysaa qalab kasta?",
+    "signOutEverywhereDescription": "Browser kasta iyo qalab kasta oo xisaabtan ku jira isla markiiba waa laga saarayaa, kanina waa ku jiraa."
   }
 }

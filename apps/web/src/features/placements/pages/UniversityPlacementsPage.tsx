@@ -3,7 +3,8 @@ import { useTranslation } from 'react-i18next'
 import * as placementsApi from '../api/placementsApi'
 import { PlacementList } from '../components/PlacementList'
 import { useUniversityMembership } from '../../university/components/UniversityMembershipContext'
-import { LoadingSpinner, PageHeader } from '../../../components/ui'
+import { ErrorState, LoadingState, PageHeader } from '../../../components/ui'
+import { PageContainer } from '../../../app/layouts/PageContainer'
 
 /**
  * The university's view of its students' placements (CLAUDE.md section 25).
@@ -23,15 +24,21 @@ export function UniversityPlacementsPage() {
   })
 
   if (placementsQuery.isLoading) {
+    return <LoadingState label={t('common:status.loading')} />
+  }
+
+  if (placementsQuery.isError) {
     return (
-      <div className="flex justify-center py-16">
-        <LoadingSpinner size="lg" />
-      </div>
+      <ErrorState
+        title={t('common:status.error')}
+        onRetry={() => void placementsQuery.refetch()}
+        retryLabel={t('common:actions.retry')}
+      />
     )
   }
 
   return (
-    <div className="mx-auto max-w-4xl px-4 py-8 sm:px-6">
+    <PageContainer className="flex flex-col gap-6">
       <PageHeader title={t('placements:university.title')} description={t('placements:university.description')} />
 
       <PlacementList
@@ -40,6 +47,6 @@ export function UniversityPlacementsPage() {
         detailPath={(placement) => `/university/placements/${placement.id}`}
         emptyMessage={t('placements:university.empty')}
       />
-    </div>
+    </PageContainer>
   )
 }

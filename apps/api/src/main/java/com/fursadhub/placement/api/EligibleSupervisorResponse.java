@@ -9,9 +9,10 @@ import com.fursadhub.placement.application.PlacementQueryService;
  * {@code SupervisorEligibility} re-validates whatever id the browser actually sends on the write
  * path, so a caller who ignores this list gains nothing (CLAUDE.md section 12/24).
  */
-public record EligibleSupervisorResponse(String userId, String email) {
+public record EligibleSupervisorResponse(String userId, String displayName, String email) {
 
     public static EligibleSupervisorResponse from(PlacementQueryService.EligibleSupervisor supervisor) {
-        return new EligibleSupervisorResponse(supervisor.userId().toString(), supervisor.email());
+        return new EligibleSupervisorResponse(
+                supervisor.userId().toString(), supervisor.displayName(), supervisor.email());
     }
 }

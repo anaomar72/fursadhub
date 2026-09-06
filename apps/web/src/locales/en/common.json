@@ -1,9 +1,170 @@
 {
   "app": {
     "name": "FursadHub",
-    "tagline": "Opening doors to your future."
+    "tagline": "Opportunities for a Brighter Tomorrow"
+  },
+  "password": {
+    "show": "Show password",
+    "hide": "Hide password"
+  },
+  "shell": {
+    "primaryNavigation": "Main navigation",
+    "openNavigation": "Open navigation",
+    "collapseSidebar": "Collapse sidebar",
+    "expandSidebar": "Expand sidebar",
+    "sections": {
+      "manage": "Manage",
+      "account": "Account"
+    },
+    "poweredBy": "Powered by",
+    "portals": {
+      "university": "University Portal",
+      "organization": "Recruiter Portal",
+      "admin": "Super Admin Console"
+    }
+  },
+  "publicPages": {
+    "about": {
+      "titleStart": "Building",
+      "titleAccent": "Better Connections",
+      "titleEnd": "Between Education and Opportunity",
+      "intro": "FursadHub bridges students, organizations and universities through real internship workflows that support learning and career development.",
+      "join": "Join FursadHub",
+      "why": "Why FursadHub?",
+      "mission": {
+        "title": "Our Mission",
+        "body": "Connect students with real opportunities, organizations with emerging talent, and universities with clearer internship outcomes."
+      },
+      "vision": {
+        "title": "Our Vision",
+        "body": "A trusted internship ecosystem where education and meaningful workplace experience work together."
+      },
+      "reasons": {
+        "students": "Students need relevant internship opportunities.",
+        "organizations": "Organizations need access to capable emerging talent.",
+        "universities": "Universities need structured internship oversight.",
+        "platform": "FursadHub connects these workflows in one platform."
+      }
+    },
+    "organizations": {
+      "title": "Discover Organizations",
+      "subtitle": "Explore organizations currently offering public internship opportunities.",
+      "searchLabel": "Search organizations",
+      "search": "Search organizations…",
+      "typeLabel": "Organization type",
+      "allTypes": "All organization types",
+      "loading": "Loading organizations…",
+      "error": "Organizations could not be loaded.",
+      "empty": "No organizations match your search.",
+      "view": "View profile",
+      "scopeNote": "This directory lists organizations published in the FursadHub public directory.",
+      "heroLead": "Partner with purpose.",
+      "heroBuild": "Build",
+      "heroAccent": "real impact.",
+      "heroDescription": "Discover verified organizations creating opportunities, sharing knowledge, and building the future with students and universities.",
+      "showing": "Showing {{from}}–{{to}} of {{total}} organizations",
+      "openOpportunities_one": "{{count}} open opportunity",
+      "openOpportunities_other": "{{count}} open opportunities",
+      "locationLabel": "Filter by location",
+      "locationPlaceholder": "Location",
+      "sortLabel": "Sort by",
+      "sortName": "Name (A-Z)",
+      "sortNameDesc": "Name (Z-A)",
+      "sortRecentlyVerified": "Recently verified"
+    },
+    "universities": {
+      "title": "Transform Internship Management",
+      "subtitle": "Give your university a structured way to support students from nomination through internship completion.",
+      "getStarted": "Get Started",
+      "learn": "Learn More",
+      "benefits": "Benefits for Universities",
+      "directoryNote": "A public university directory is not currently exposed by the platform API.",
+      "items": {
+        "students": {
+          "title": "Student Management",
+          "body": "Manage enrolled students and department membership."
+        },
+        "nominations": {
+          "title": "Student Nominations",
+          "body": "Nominate eligible students for university-targeted opportunities."
+        },
+        "placements": {
+          "title": "Placement Tracking",
+          "body": "Follow placements from offer acceptance through completion."
+        },
+        "supervision": {
+          "title": "Academic Supervision",
+          "body": "Assign supervisors and review internship progress."
+        },
+        "policies": {
+          "title": "Internship Policies",
+          "body": "Configure the academic requirements used for completion."
+        },
+        "verification": {
+          "title": "Verified Institution",
+          "body": "Build trust through the platform verification workflow."
+        }
+      },
+      "heroLead": "Partner Universities.",
+      "heroBuild": "Stronger",
+      "heroAccent": "Opportunities.",
+      "heroDescription": "Discover universities partnered with FursadHub to bridge students with real opportunities, industry connections, and career success.",
+      "directoryTitle": "All universities",
+      "showing": "Showing {{from}}–{{to}} of {{total}} universities",
+      "searchLabel": "Search universities",
+      "search": "Search universities by name",
+      "loading": "Loading universities…",
+      "error": "Universities could not be loaded.",
+      "empty": "No universities match your search.",
+      "view": "View profile",
+      "locationLabel": "Filter by location",
+      "locationPlaceholder": "Location",
+      "sortLabel": "Sort by",
+      "sortName": "Name (A-Z)",
+      "sortNameDesc": "Name (Z-A)",
+      "sortRecentlyVerified": "Recently verified"
+    }
   },
   "landing": {
+    "hero": {
+      "connect": "Connect.",
+      "learn": "Learn.",
+      "grow": "Grow.",
+      "description": "FursadHub connects students with internship opportunities, organizations with talented young professionals, and universities with real-world career experiences.",
+      "browse": "Find an Internship",
+      "getStarted": "Get Started"
+    },
+    "capabilities": {
+      "label": "FursadHub capabilities",
+      "internships": {
+        "title": "Public internships",
+        "body": "Search real published opportunities"
+      },
+      "entities": {
+        "title": "Verified ecosystem",
+        "body": "Universities and organizations"
+      },
+      "pipeline": {
+        "title": "End-to-end workflow",
+        "body": "From application to completion"
+      }
+    },
+    "ecosystem": {
+      "title": "How FursadHub Works",
+      "subtitle": "One platform for students, organizations and universities",
+      "student": {
+        "title": "For Students",
+        "body": "Discover published internships, apply through supported pathways and follow your placement through completion."
+      },
+      "organization": {
+        "title": "For Organizations",
+        "body": "Publish opportunities, review candidates and manage workplace placement responsibilities."
+      },
+      "university": {
+        "title": "For Universities",
+        "body": "Support student nominations and oversee academic internship requirements and supervision."
+      }
+    },
     "eyebrow": "FursadHub · Somalia",
     "subhead": "FursadHub connects students, universities and organizations around one internship pipeline — from first application to final defense.",
     "doors": {
@@ -58,6 +219,82 @@
       "body": "Registration is free during the pilot — create an account as a student, organization, or university.",
       "primary": "Create an account",
       "secondary": "Sign in"
+    },
+    "hero2": {
+      "titleLead": "Find Internships.",
+      "titleBuild": "Build",
+      "titleAccent": "Real Futures.",
+      "description": "Discover verified opportunities, learn from real organizations, and launch a career that makes an impact.",
+      "searchPlaceholder": "Search internships, skills, or organizations",
+      "searchLabel": "Search internships",
+      "locationPlaceholder": "Location",
+      "locationLabel": "Filter by location",
+      "workModeLabel": "Filter by work mode",
+      "allWorkModes": "Any work mode",
+      "search": "Search",
+      "popular": "Popular:",
+      "viewAll": "View all"
+    },
+    "stats": {
+      "label": "FursadHub at a glance",
+      "internships": "Active internships",
+      "organizations": "Partner organizations",
+      "universities": "Partner universities"
+    },
+    "featured": {
+      "title": "Featured internships",
+      "viewAll": "View all internships",
+      "empty": "No published internships yet."
+    },
+    "verifiedOrganizations": {
+      "title": "Top verified organizations",
+      "viewAll": "View all organizations"
+    },
+    "works": {
+      "student": {
+        "points": [
+          "Search and filter verified internships",
+          "Track applications in one dashboard",
+          "Follow your placement to completion"
+        ],
+        "cta": "Get started as a student"
+      },
+      "organization": {
+        "points": [
+          "Reach students from verified universities",
+          "One pipeline for applications and nominations",
+          "Manage placements and evaluations"
+        ],
+        "cta": "Post an internship"
+      },
+      "university": {
+        "points": [
+          "Nominate students to targeted opportunities",
+          "Supervise placements and weekly logs",
+          "Run evaluations and final defenses"
+        ],
+        "cta": "Partner with us"
+      }
+    },
+    "band": {
+      "title": "Ready to create opportunities?",
+      "body": "Post internships or get started in just a few minutes.",
+      "primary": "Post an internship",
+      "secondary": "Get started now"
+    },
+    "pills": {
+      "verified": {
+        "title": "Verified",
+        "body": "Quality opportunities you can trust"
+      },
+      "learn": {
+        "title": "Learn",
+        "body": "Gain skills from industry experts"
+      },
+      "grow": {
+        "title": "Grow",
+        "body": "Build experience. Shape your future."
+      }
     }
   },
   "footer": {
@@ -67,7 +304,10 @@
     "home": "Home",
     "howItWorks": "How it works",
     "opportunities": "Opportunities",
-    "copyright": "© {{year}} FursadHub. All rights reserved."
+    "copyright": "© {{year}} FursadHub. All rights reserved.",
+    "platformNav": "Platform",
+    "accountNav": "Account",
+    "strapline": "A brighter tomorrow, together."
   },
   "nav": {
     "home": "Home",
@@ -78,6 +318,13 @@
     "account": "Account",
     "howItWorks": "How it works",
     "register": "Register",
+    "internships": "Internships",
+    "organizations": "Organizations",
+    "universities": "Universities",
+    "about": "About",
+    "login": "Login",
+    "getStarted": "Get Started",
+    "publicNavigation": "Public navigation",
     "openMenu": "Open menu",
     "closeMenu": "Close menu"
   },
@@ -87,7 +334,9 @@
     "pending": "Pending",
     "underReview": "Under review",
     "actionRequired": "Action required",
-    "rejected": "Rejected"
+    "rejected": "Rejected",
+    "notProvided": "Not provided",
+    "error": "Something went wrong"
   },
   "language": {
     "en": "English",
@@ -98,5 +347,27 @@
     "previous": "Previous",
     "next": "Next",
     "pageOf": "Page {{page}} of {{totalPages}}"
+  },
+  "actions": {
+    "retry": "Try again",
+    "cancel": "Cancel",
+    "confirm": "Confirm",
+    "close": "Close",
+    "apply": "Apply",
+    "clear": "Clear"
+  },
+  "a11y": {
+    "notifications": "Notifications",
+    "dismissNotification": "Dismiss notification",
+    "closeDialog": "Close dialog",
+    "closeDrawer": "Close drawer",
+    "search": "Search",
+    "progress": "Progress",
+    "timeline": "Timeline"
+  },
+  "notFound": {
+    "title": "Page not found",
+    "description": "The page you're looking for doesn't exist or may have moved.",
+    "action": "Go to homepage"
   }
 }

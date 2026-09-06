@@ -1,0 +1,5 @@
+import type { ReactNode } from 'react'
+import { cn } from '../../lib/utils/cn'
+export interface TabItem { id:string; label:ReactNode; disabled?:boolean }
+export interface TabsProps { items:TabItem[]; value:string; onValueChange:(id:string)=>void; label:string; className?:string }
+export function Tabs({items,value,onValueChange,label,className}:TabsProps){return <div role="tablist" aria-label={label} className={cn('flex max-w-full gap-1 overflow-x-auto border-b border-border',className)}>{items.map(item=><button key={item.id} type="button" role="tab" aria-selected={value===item.id} tabIndex={value===item.id?0:-1} disabled={item.disabled} onClick={()=>onValueChange(item.id)} className={cn('shrink-0 border-b-2 px-3 py-2 text-sm font-semibold transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus-ring disabled:opacity-50 motion-reduce:transition-none',value===item.id?'border-brand-primary text-brand-accent-ink dark:border-info dark:text-info':'border-transparent text-muted hover:text-foreground')}>{item.label}</button>)}</div>}

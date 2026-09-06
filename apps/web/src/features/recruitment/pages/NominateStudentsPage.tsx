@@ -5,6 +5,7 @@ import * as recruitmentApi from '../api/recruitmentApi'
 import { useUniversityMembership } from '../../university/components/UniversityMembershipContext'
 import { apiErrorMessage } from '../../../lib/api/errorMessage'
 import { Button, EmptyState, LoadingSpinner, PageHeader, StatusBadge } from '../../../components/ui'
+import { PageContainer } from '../../../app/layouts/PageContainer'
 
 /**
  * Nominating eligible students for one targeted opportunity (CLAUDE.md Phase 4 section 26).
@@ -64,7 +65,7 @@ export function NominateStudentsPage() {
   const students = studentsQuery.data ?? []
 
   return (
-    <div className="mx-auto max-w-3xl px-4 py-8 sm:px-6">
+    <PageContainer className="flex flex-col gap-6">
       <PageHeader title={request.opportunityTitle} description={request.organizationName} />
       <p className="mt-3 text-sm text-foreground-secondary">
         {t('recruitment:requests.progress', {
@@ -117,6 +118,6 @@ export function NominateStudentsPage() {
           {apiErrorMessage(t, 'recruitment', 'nominate', nominateMutation.error)}
         </p>
       )}
-    </div>
+    </PageContainer>
   )
 }

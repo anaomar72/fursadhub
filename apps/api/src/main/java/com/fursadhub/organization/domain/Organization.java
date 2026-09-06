@@ -57,6 +57,49 @@ public class Organization {
     @Column(length = 2000)
     private String description;
 
+    // ------------------------------------------------------------ Backend Phase B2 public profile
+    // Every field below is optional and starts null on existing rows.
+
+    /** The organization's sector in its own words. Free text, not {@link OrganizationType}. */
+    @Column(length = 120)
+    private String industry;
+
+    @Column(length = 120)
+    private String city;
+
+    /** ISO-3166-1 alpha-2, uppercase. A code, not a name, so it renders in English and Somali. */
+    @Column(name = "country_code", length = 2)
+    private String countryCode;
+
+    /** One-line summary for directory cards. {@link #description} remains the full profile body. */
+    @Column(name = "short_description", length = 200)
+    private String shortDescription;
+
+    @Enumerated(EnumType.STRING)
+    @Column(name = "company_size_range", length = 20)
+    private CompanySizeRange companySizeRange;
+
+    @Column(name = "founded_year")
+    private Integer foundedYear;
+
+    @Column(name = "linkedin_url", length = 255)
+    private String linkedinUrl;
+
+    @Column(name = "x_url", length = 255)
+    private String xUrl;
+
+    @Column(name = "instagram_url", length = 255)
+    private String instagramUrl;
+
+    @Column(name = "youtube_url", length = 255)
+    private String youtubeUrl;
+
+    @Column(name = "cover_stored_file_id")
+    private UUID coverStoredFileId;
+
+    @Column(name = "cover_uploaded_at")
+    private Instant coverUploadedAt;
+
     @Enumerated(EnumType.STRING)
     @Column(name = "verification_status", nullable = false, length = 40)
     private InstitutionVerificationStatus verificationStatus;
@@ -106,11 +149,30 @@ public class Organization {
         return organization;
     }
 
-    public void updateProfile(String name, String registrationNumber, String website, String description) {
-        this.name = name;
-        this.registrationNumber = registrationNumber;
-        this.website = website;
-        this.description = description;
+    /**
+     * Replaces the whole editable profile (Backend Phase B2 widened this from four fields to
+     * fourteen). Every field is assigned, so a null clears the stored value — this method takes the
+     * profile's RESOLVED end state, not a request.
+     *
+     * <p>Which fields an omitted request field is allowed to clear is decided one layer up, in
+     * {@code UpdateOrganizationService}: pre-B2 fields keep full-replacement semantics, and B2 fields
+     * are resolved against what is stored. See {@link OrganizationProfileFields}.
+     */
+    public void updateProfile(OrganizationProfileFields fields) {
+        this.name = fields.name();
+        this.registrationNumber = fields.registrationNumber();
+        this.website = fields.website();
+        this.description = fields.description();
+        this.industry = fields.industry();
+        this.city = fields.city();
+        this.countryCode = fields.countryCode();
+        this.shortDescription = fields.shortDescription();
+        this.companySizeRange = fields.companySizeRange();
+        this.foundedYear = fields.foundedYear();
+        this.linkedinUrl = fields.linkedinUrl();
+        this.xUrl = fields.xUrl();
+        this.instagramUrl = fields.instagramUrl();
+        this.youtubeUrl = fields.youtubeUrl();
         this.updatedAt = Instant.now();
     }
 
@@ -126,6 +188,16 @@ public class Organization {
         this.logoStoredFileId = storedFileId;
         this.logoUploadedAt = Instant.now();
         this.updatedAt = this.logoUploadedAt;
+    }
+
+    /**
+     * Attaches or replaces the organization's public profile banner (Backend Phase B2). The previous
+     * file is removed by the service, exactly as {@link #attachLogo} does.
+     */
+    public void attachCover(UUID storedFileId) {
+        this.coverStoredFileId = storedFileId;
+        this.coverUploadedAt = Instant.now();
+        this.updatedAt = this.coverUploadedAt;
     }
 
     /**
@@ -251,6 +323,56 @@ public class Organization {
 
     public Instant getEvidenceUploadedAt() {
         return evidenceUploadedAt;
+    }
+
+    // ------------------------------------------------------------ Backend Phase B2 accessors
+
+    public String getIndustry() {
+        return industry;
+    }
+
+    public String getCity() {
+        return city;
+    }
+
+    public String getCountryCode() {
+        return countryCode;
+    }
+
+    public String getShortDescription() {
+        return shortDescription;
+    }
+
+    public CompanySizeRange getCompanySizeRange() {
+        return companySizeRange;
+    }
+
+    public Integer getFoundedYear() {
+        return foundedYear;
+    }
+
+    public String getLinkedinUrl() {
+        return linkedinUrl;
+    }
+
+    public String getXUrl() {
+        return xUrl;
+    }
+
+    public String getInstagramUrl() {
+        return instagramUrl;
+    }
+
+    public String getYoutubeUrl() {
+        return youtubeUrl;
+    }
+
+    public UUID getCoverStoredFileId() {
+        return coverStoredFileId;
+    }
+
+    public Instant getCoverUploadedAt() {
+        return coverUploadedAt;
     }
 
     public UUID getLogoStoredFileId() {

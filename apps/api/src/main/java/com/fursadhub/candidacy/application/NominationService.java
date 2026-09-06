@@ -14,6 +14,7 @@ import com.fursadhub.opportunity.domain.OpportunityTarget;
 import com.fursadhub.opportunity.domain.OpportunityTargetDepartment;
 import com.fursadhub.opportunity.domain.OpportunityTargetDepartmentRepository;
 import com.fursadhub.opportunity.domain.OpportunityTargetRepository;
+import com.fursadhub.organization.application.OrganizationVerificationGuard;
 import com.fursadhub.student.domain.StudentEnrollment;
 import com.fursadhub.university.application.UniversityAuthorization;
 import com.fursadhub.university.domain.University;
@@ -57,6 +58,7 @@ public class NominationService {
     private final OpportunityTargetRepository targets;
     private final OpportunityTargetDepartmentRepository targetDepartments;
     private final OpportunityApplicationRules applicationRules;
+    private final OrganizationVerificationGuard verificationGuard;
     private final StudentEligibility studentEligibility;
     private final UniversityAuthorization universityAuthorization;
     private final UniversityRepository universities;
@@ -68,6 +70,7 @@ public class NominationService {
     public NominationService(
             NominationRepository nominations, OpportunityQueryService opportunities, OpportunityTargetRepository targets,
             OpportunityTargetDepartmentRepository targetDepartments, OpportunityApplicationRules applicationRules,
+            OrganizationVerificationGuard verificationGuard,
             StudentEligibility studentEligibility, UniversityAuthorization universityAuthorization,
             UniversityRepository universities, UserRepository users, EmailOutboxService emailOutbox,
             RecruitmentEmailTemplates emailTemplates, AuditService audit) {
@@ -76,6 +79,7 @@ public class NominationService {
         this.targets = targets;
         this.targetDepartments = targetDepartments;
         this.applicationRules = applicationRules;
+        this.verificationGuard = verificationGuard;
         this.studentEligibility = studentEligibility;
         this.universityAuthorization = universityAuthorization;
         this.universities = universities;
@@ -94,6 +98,13 @@ public class NominationService {
 
         InternshipOpportunity opportunity = opportunities.getOrThrow(opportunityId);
         applicationRules.requireOpenForNomination(opportunity);
+        // Backend Phase B1.5. A nomination is new candidate intake, so it carries the same live
+        // organization-verification prerequisite as a self-application. Checked before any
+        // student-side lookup so nominating into a suspended organization fails on the
+        // organization's state rather than probing the student's enrollment first. Every existing
+        // rule below — enrollment, department scope, targeting, deadline, availability,
+        // duplicate — is unchanged and in its original order.
+        verificationGuard.requireVerifiedForCandidateIntake(opportunity.getOrganizationId());
 
         // The student's own verified enrollment is the source of truth for which university and
         // department they belong to — never a value supplied by the caller.

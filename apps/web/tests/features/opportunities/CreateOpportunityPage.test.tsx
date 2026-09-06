@@ -107,7 +107,7 @@ describe('CreateOpportunityPage', () => {
     await i18n.changeLanguage('so')
     renderPage()
 
-    expect(screen.getByRole('heading', { name: /fursad cusub/i })).toBeInTheDocument()
+    expect(screen.getByRole('heading', { name: /tababar cusub/i })).toBeInTheDocument()
     expect(screen.getByLabelText(/habka raadinta/i)).toBeInTheDocument()
 
     await i18n.changeLanguage('en')

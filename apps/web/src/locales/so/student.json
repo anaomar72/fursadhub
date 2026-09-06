@@ -1,8 +1,9 @@
 {
   "nav": {
-    "dashboard": "Guddoomiye",
+    "dashboard": "Guudmarka",
     "enrollment": "Diiwaangelinta",
-    "profile": "Astaanta shakhsi ahaaneed"
+    "profile": "Astaanta",
+    "exploreInternships": "Raadi tababarro"
   },
   "dashboard": {
     "title": "Guddoomahaaga",
@@ -11,12 +12,28 @@
     "notVerified": "Weli lama xaqiijin",
     "applications": "Codsiyada",
     "inProgress": "Socda",
-    "nominations": "Magacaabista",
+    "nominations": "Magacaabisyada",
     "offers": "Dalabyada",
     "placements": "Meel dhigidda",
     "active": "Firfircoon",
     "needsAction": "Waxay u baahan tahay jawaabtaada",
-    "clear": "Waxba ma harin"
+    "clear": "Waxba ma harin",
+    "greeting": "Ku soo dhawoow, {{name}}",
+    "greetingSubtitle": "Hel fursad horumarisa xirfaddaada.",
+    "interviews": "Waraysiyada",
+    "viewAll": "Fiiri dhammaan",
+    "openInternships": "Tababarrada furan",
+    "recentApplications": "Codsiyada dhawaan",
+    "openPlacement": "Fur tababarkayga",
+    "readinessTitle": "U diyaar garow codsiga",
+    "readinessLabel": "Dhammaystirka astaanta",
+    "readinessCta": "Dhammaystir tallaabada xigta",
+    "readinessSteps": {
+      "profile": "Ku dar magacaaga iyo xiriirkaaga",
+      "cv": "Soo geli CV-gaaga",
+      "enrollment": "Sheeg diiwaangelintaada jaamacadeed",
+      "verification": "Xaqiijiso diiwaangelintaada"
+    }
   },
   "profile": {
     "title": "Astaantaada",
@@ -28,7 +45,11 @@
     "createHint": "Weli ma lihid astaan — buuxi macluumaadka hoose si aad u samayso mid.",
     "errors": {
       "generic": "Wax baa qaldamay. Fadlan isku day mar kale."
-    }
+    },
+    "detailsTitle": "Faahfaahinta shakhsiga",
+    "enrollmentHint": "Jaamacaddaadu way xaqiijisaa diiwaannadan, sidaa darteed waxaa lagu maamulaa bogga diiwaangelinta.",
+    "manageEnrollment": "Maamul diiwaangelinta",
+    "claimEnrollment": "Sheeg diiwaangelintaada"
   },
   "enrollment": {
     "title": "Diiwaangelinta jaamacadda",

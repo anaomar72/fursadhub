@@ -91,7 +91,7 @@ export function ApplyPage() {
           <p className="text-sm text-foreground-secondary">{t('recruitment:apply.successBody')}</p>
           <Link
             to="/student/applications"
-            className="text-sm font-medium text-brand-primary hover:underline"
+            className="text-sm font-medium text-link hover:underline"
           >
             {t('recruitment:apply.viewApplications')}
           </Link>
