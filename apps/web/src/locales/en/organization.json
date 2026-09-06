@@ -124,13 +124,46 @@
       "ORGANIZATION_LOGO_FILE_INVALID": "That file isn't accepted — upload a JPEG or PNG under 3MB.",
       "FILE_TOO_LARGE": "That file is larger than the maximum allowed size.",
       "VALIDATION_FAILED": "Please check the form and try again.",
-      "generic": "Something went wrong. Please try again."
+      "generic": "Something went wrong. Please try again.",
+      "invalidUrl": "Enter a full web address starting with http:// or https://",
+      "invalidCountry": "Use a two-letter country code.",
+      "invalidYear": "Enter a founding year between 1800 and today."
     },
     "subtitle": "Your organization's public record and its verification status.",
     "detailsTitle": "Organization details",
     "detailsHint": "What students and universities see when they look you up.",
     "verificationTitle": "Verification",
-    "verifiedOn": "Verified {{date}}"
+    "verifiedOn": "Verified {{date}}",
+    "notStated": "Not stated",
+    "shortDescriptionLabel": "Short description",
+    "shortDescriptionHint": "One line shown on your card in the public directory. Up to 200 characters.",
+    "industryLabel": "Industry",
+    "cityLabel": "City",
+    "countryLabel": "Country",
+    "countryHint": "Two-letter code, e.g. SO.",
+    "companySizeLabel": "Organization size",
+    "companySizeHint": "A band, not an exact headcount.",
+    "companySizeValues": {
+      "SIZE_1_10": "1–10 people",
+      "SIZE_11_50": "11–50 people",
+      "SIZE_51_200": "51–200 people",
+      "SIZE_201_500": "201–500 people",
+      "SIZE_501_1000": "501–1,000 people",
+      "SIZE_1001_5000": "1,001–5,000 people",
+      "SIZE_5001_PLUS": "More than 5,000 people"
+    },
+    "foundedYearLabel": "Founded",
+    "socialLegend": "Social links",
+    "linkedinLabel": "LinkedIn",
+    "xLabel": "X",
+    "instagramLabel": "Instagram",
+    "youtubeLabel": "YouTube",
+    "cover": {
+      "label": "Cover image",
+      "hint": "JPG or PNG. Shown as the banner on your public profile.",
+      "emptyHint": "No cover image yet. Upload one to give your public profile a banner.",
+      "replaceHint": "Uploading a new image replaces the current cover."
+    }
   },
   "staff": {
     "title": "Staff",
@@ -162,13 +195,15 @@
     "empty": "No staff created yet.",
     "errors": {
       "STAFF_EMAIL_ALREADY_EXISTS": "An account with this email already exists.",
-      "STAFF_ROLE_NOT_ASSIGNABLE": "Organization admins may only assign Recruiter or Organization Supervisor.",
+      "STAFF_ROLE_NOT_ASSIGNABLE": "You cannot manage this account through staff management.",
       "STAFF_PASSWORD_CONFIRMATION_MISMATCH": "Password and confirmation do not match.",
       "STAFF_MEMBERSHIP_NOT_FOUND": "Staff membership not found.",
       "USER_CLOSED": "A closed account cannot be suspended or reactivated.",
       "ACCESS_DENIED": "Only an organization admin can manage staff.",
       "VALIDATION_FAILED": "Please check the form and try again.",
-      "generic": "Something went wrong. Please try again."
+      "generic": "Something went wrong. Please try again.",
+      "USERNAME_ALREADY_EXISTS": "That username is already taken.",
+      "USERNAME_IMMUTABLE": "This account already has a username, and it cannot be changed."
     },
     "subtitle": "Create and manage internal organization staff accounts.",
     "addStaff": "Add staff account",
@@ -180,7 +215,20 @@
     "assignedPlacements_other": "Supervising {{count}} interns",
     "emptyHint": "No staff accounts yet. Create one to delegate recruiting or supervision.",
     "usernameLabel": "Username",
-    "usernameHint": "The staff member signs in with this. Lowercase letters, digits, dots, underscores or hyphens."
+    "usernameHint": "The staff member signs in with this. Lowercase letters, digits, dots, underscores or hyphens.",
+    "displayNameLabel": "Full name",
+    "displayNameHint": "How this person appears across FursadHub. Optional.",
+    "usernameReadOnly": "Username",
+    "noUsername": "No username yet",
+    "assignUsername": "Assign username",
+    "assignUsernameTitle": "Assign a login username",
+    "assignUsernameHint": "This is permanent. Once assigned, the account signs in by username and its email stops working as a credential.",
+    "assignUsernameSubmit": "Assign permanently",
+    "changeDisplayName": "Change name",
+    "changeDisplayNameTitle": "Change display name",
+    "saveDisplayName": "Save name",
+    "clearDisplayName": "Clear name",
+    "noDisplayName": "No name set"
   },
   "partners": {
     "title": "University partners",
@@ -262,5 +310,20 @@
     "submittedOn": "Submitted {{date}}",
     "evaluationsClear": "Every evaluation is final",
     "evaluationsClearHint": "Nothing left to write up for the interns you supervise."
+  },
+  "verificationGate": {
+    "title": "Verification required to publish",
+    "body": "Your organization is currently {{status}}. Internships can only be published or resumed once FursadHub has verified your organization.",
+    "goToProfile": "Go to organization profile",
+    "statusGuidance": {
+      "DRAFT": "Attach your registration document on the organization profile and submit for verification.",
+      "SUBMITTED": "Your submission is with FursadHub. You will be notified when the review is complete.",
+      "UNDER_REVIEW": "FursadHub is reviewing your submission. You will be notified when it is complete.",
+      "NEEDS_CHANGES": "FursadHub has asked for changes. Update your organization profile and submit again.",
+      "REJECTED": "Your verification was rejected. Contact FursadHub before submitting again.",
+      "SUSPENDED": "Your verification is suspended. Contact FursadHub to resolve it.",
+      "REVOKED": "Your verification has been revoked. Contact FursadHub to resolve it.",
+      "VERIFIED": ""
+    }
   }
 }

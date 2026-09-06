@@ -8,6 +8,7 @@ import * as placementsApi from '../../placements/api/placementsApi'
 import { useOrganizationMembership } from '../components/OrganizationMembershipContext'
 import { ASSIGNABLE_ORGANIZATION_ROLES, organizationCapabilities } from '../organizationCapabilities'
 import { createMemberSchema, type CreateMemberFormValues } from '../schemas/createMemberSchema'
+import { StaffIdentity, StaffIdentityControls } from '../../../components/staff'
 import { changeMemberRoleSchema, type ChangeMemberRoleFormValues } from '../schemas/changeMemberRoleSchema'
 import { apiErrorMessage } from '../../../lib/api/errorMessage'
 import {
@@ -100,17 +101,23 @@ export function StaffPage() {
 
   const form = useForm<CreateMemberFormValues>({
     resolver: zodResolver(createMemberSchema),
-    defaultValues: { email: '', username: '', password: '', confirmPassword: '', role: 'RECRUITER' },
+    defaultValues: { displayName: '', email: '', username: '', password: '', confirmPassword: '', role: 'RECRUITER' },
   })
 
   const invalidateMembers = () => queryClient.invalidateQueries({ queryKey: ['organization', 'members', organizationId] })
 
   const createMutation = useMutation({
-    mutationFn: (values: CreateMemberFormValues) => organizationApi.createMember(organizationId, values),
+    mutationFn: ({ displayName, ...values }: CreateMemberFormValues) =>
+      organizationApi.createMember(organizationId, {
+        ...values,
+        // Omitted rather than sent as '': Backend Phase B5 makes displayName optional, and an empty
+        // string is not a name the admin chose to give.
+        ...(displayName?.trim() ? { displayName: displayName.trim() } : {}),
+      }),
     onSuccess: () => {
       // The admin already knows the password they typed, so nothing is echoed back — the form is
       // cleared, which also drops it from browser form state (CLAUDE.md section 26A).
-      form.reset({ email: '', password: '', confirmPassword: '', role: 'RECRUITER' })
+      form.reset({ displayName: '', email: '', username: '', password: '', confirmPassword: '', role: 'RECRUITER' })
       setCreateOpen(false)
       void invalidateMembers()
     },
@@ -163,6 +170,18 @@ export function StaffPage() {
             onSubmit={form.handleSubmit((values) => createMutation.mutate(values))}
           >
             <div className="grid gap-4 sm:grid-cols-2">
+              {/* Backend Phase B5. Optional server-side: omitting it creates an account with no
+                  display name, which the roster then shows by email. */}
+              <FormField
+                label={t('organization:staff.displayNameLabel')}
+                htmlFor="org-staff-display-name"
+                className="sm:col-span-2"
+                hint={t('organization:staff.displayNameHint')}
+                error={form.formState.errors.displayName && t(form.formState.errors.displayName.message ?? '')}
+              >
+                <Input id="org-staff-display-name" type="text" autoComplete="off" {...form.register('displayName')} />
+              </FormField>
+
               <FormField
                 label={t('organization:staff.emailLabel')}
                 htmlFor="org-staff-email"
@@ -246,11 +265,18 @@ export function StaffPage() {
       {credential && (
         <Alert tone="warning" title={t('organization:staff.resetPasswordOnceWarning')}>
           <div className="mt-2 flex flex-col gap-3">
-            <p className="text-foreground">
-              {credential.email}
-              {': '}
-              <span className="font-mono font-semibold">{credential.temporaryPassword}</span>
-            </p>
+            <dl className="grid gap-1 text-sm">
+              <div className="flex flex-wrap gap-2">
+                <dt className="text-foreground-secondary">{t('organization:staff.usernameReadOnly')}</dt>
+                {/* A legacy account with no username still signs in by email — show whichever
+                    credential this account actually uses, never both as if either worked. */}
+                <dd className="font-mono font-semibold text-foreground">{credential.username ?? credential.email}</dd>
+              </div>
+              <div className="flex flex-wrap gap-2">
+                <dt className="text-foreground-secondary">{t('organization:staff.passwordLabel')}</dt>
+                <dd className="font-mono font-semibold text-foreground">{credential.temporaryPassword}</dd>
+              </div>
+            </dl>
             <div className="flex flex-wrap gap-2">
               <Button
                 type="button"
@@ -359,8 +385,11 @@ function MemberRow({
     onSuccess: onEditSaved,
   })
 
-  // The founding admin is not a managed staff account — the backend refuses to change or revoke an
-  // ORGANIZATION_ADMIN membership through these endpoints, so the row shows no controls that fail.
+  // The founding admin is not a managed staff account. The identity commands genuinely refuse one —
+  // changeDisplayName and assignUsername both call requireAssignableRole on the membership's CURRENT
+  // role. The lifecycle commands (role, suspend, reset, revoke) do NOT, so hiding those here is this
+  // page's own conservatism rather than a mirror of the server: an admin should not be handed a
+  // one-click path to lock their own organization out of its administration.
   const isAdmin = member.role === 'ORGANIZATION_ADMIN'
 
   return (
@@ -370,15 +399,20 @@ function MemberRow({
           <span className="flex size-10 shrink-0 items-center justify-center rounded-full bg-brand-blue-soft text-brand-blue dark:bg-info-bg dark:text-info">
             <Icon name="user" className="size-5" />
           </span>
-          <div className="min-w-0">
-            <p className="truncate font-semibold text-foreground">{member.email}</p>
-            <p className="mt-0.5 text-sm text-foreground-secondary">{t(`organization:staff.roles.${member.role}`)}</p>
+          <StaffIdentity
+            displayName={member.displayName}
+            email={member.email}
+            username={member.username}
+            noDisplayNameLabel={t('organization:staff.noDisplayName')}
+            noUsernameLabel={t('organization:staff.noUsername')}
+          >
+            <p className="mt-1 text-sm text-foreground-secondary">{t(`organization:staff.roles.${member.role}`)}</p>
             {member.role === 'ORGANIZATION_SUPERVISOR' && (
               <p className="mt-1 text-xs text-muted">
                 {t('organization:staff.assignedPlacements', { count: assignedPlacementCount })}
               </p>
             )}
-          </div>
+          </StaffIdentity>
         </div>
         {member.status && (
           <StatusBadge tone={STATUS_TONE[member.status]}>
@@ -386,6 +420,27 @@ function MemberRow({
           </StatusBadge>
         )}
       </div>
+
+      {/* Identity commands (Backend Phase B5/B5.5). Managed staff only: the server refuses an
+          ORGANIZATION_ADMIN membership with STAFF_ROLE_NOT_ASSIGNABLE, so the founder's row offers
+          nothing that would fail. */}
+      {!isAdmin && canManageStaff && (
+        <div className="mt-4 border-t border-border pt-4">
+          <StaffIdentityControls
+            namespace="organization"
+            currentDisplayName={member.displayName}
+            currentUsername={member.username}
+            idPrefix={`org-staff-${member.membershipId}`}
+            onAssignUsername={(username) =>
+              organizationApi.assignMemberUsername(organizationId, member.membershipId, username)
+            }
+            onChangeDisplayName={(displayName) =>
+              organizationApi.changeMemberDisplayName(organizationId, member.membershipId, displayName)
+            }
+            onSaved={onEditSaved}
+          />
+        </div>
+      )}
 
       {!isAdmin && canManageStaff && (
         <div className="mt-4 flex flex-wrap items-center gap-2 border-t border-border pt-4">

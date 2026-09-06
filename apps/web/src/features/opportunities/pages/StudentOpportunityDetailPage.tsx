@@ -6,6 +6,9 @@ import * as recruitmentApi from '../../recruitment/api/recruitmentApi'
 import * as studentApi from '../../student/api/studentApi'
 import * as placementsApi from '../../placements/api/placementsApi'
 import { applyBlocker } from '../../student/studentReadiness'
+import { useSavedOpportunityStatus } from '../../student/hooks/useSavedOpportunities'
+import { BookmarkButton } from '../../student/components/BookmarkButton'
+import { OpportunityEnrichment } from '../components/OpportunityEnrichment'
 import {
   Alert,
   Badge,
@@ -41,6 +44,9 @@ export function StudentOpportunityDetailPage() {
   const enrollmentQuery = useQuery({ queryKey: ['student', 'enrollment'], queryFn: studentApi.getMyEnrollment, retry: false })
   const candidaciesQuery = useQuery({ queryKey: ['student', 'candidacies'], queryFn: recruitmentApi.listMyCandidacies, retry: false })
   const placementsQuery = useQuery({ queryKey: ['student', 'placements'], queryFn: placementsApi.listMyPlacements, retry: false })
+  // Backend Phase B4. One id, so this is the same batch endpoint answering a batch of one — it
+  // shares its cache with the listing the student arrived from, so the bookmark does not flicker.
+  const savedStatus = useSavedOpportunityStatus(opportunityId ? [opportunityId] : [])
 
   if (opportunityQuery.isLoading) {
     return (
@@ -93,7 +99,16 @@ export function StudentOpportunityDetailPage() {
               </Link>
               {opportunity.organization.verified && <VerifiedBadge />}
             </div>
-            <PageHeader className="mt-2" title={opportunity.title} />
+            <div className="mt-2 flex items-start justify-between gap-3">
+              <PageHeader title={opportunity.title} />
+              <BookmarkButton
+                opportunityId={opportunity.id}
+                saved={savedStatus.isSaved(opportunity.id)}
+                available={!savedStatus.isUnavailable}
+                variant="inline"
+                className="mt-1 shrink-0"
+              />
+            </div>
             <div className="mt-3 flex flex-wrap gap-2">
               <Badge tone="brand">{t(`opportunities:workModeValues.${opportunity.workMode}`)}</Badge>
               {opportunity.location && <Badge>{opportunity.location}</Badge>}
@@ -108,6 +123,14 @@ export function StudentOpportunityDetailPage() {
           {opportunity.requirements && (
             <Section title={t('opportunities:form.requirementsLabel')} body={opportunity.requirements} />
           )}
+          {/* Backend Phase B3: pay, hours, skills and perks — rendered only where the organization
+              actually supplied them. */}
+          <OpportunityEnrichment
+            compensation={opportunity.compensation}
+            hoursPerWeek={opportunity.hoursPerWeek}
+            skills={opportunity.skills}
+            perks={opportunity.perks}
+          />
         </div>
 
         <Card padding="lg" className="lg:sticky lg:top-24">

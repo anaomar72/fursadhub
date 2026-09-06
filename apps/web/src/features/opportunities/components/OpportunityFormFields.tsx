@@ -1,7 +1,16 @@
-import type { UseFormReturn } from 'react-hook-form'
+import { Controller, type UseFormReturn } from 'react-hook-form'
 import { useTranslation } from 'react-i18next'
-import { FormField, Input, Select, Textarea } from '../../../components/ui'
-import type { OpportunityFormValues } from '../schemas/opportunityFormSchema'
+import { FormField, Input, Select, TagInput, Textarea } from '../../../components/ui'
+import {
+  MAX_HOURS_PER_WEEK,
+  MAX_PERKS,
+  MAX_PERK_LENGTH,
+  MAX_SKILLS,
+  MAX_SKILL_LENGTH,
+  MIN_HOURS_PER_WEEK,
+  type OpportunityFormValues,
+} from '../schemas/opportunityFormSchema'
+import { CompensationFields } from './CompensationFields'
 
 const MODES: OpportunityFormValues['mode'][] = ['PUBLIC', 'UNIVERSITY_TARGETED', 'HYBRID']
 const WORK_MODES: OpportunityFormValues['workMode'][] = ['ONSITE', 'HYBRID', 'REMOTE']
@@ -92,6 +101,80 @@ export function OpportunityFormFields({ form }: { form: UseFormReturn<Opportunit
         error={errors.applicationDeadline && t(errors.applicationDeadline.message ?? '')}
       >
         <Input id="opp-deadline" type="date" {...form.register('applicationDeadline')} />
+      </FormField>
+
+      {/* ------------------------------------------------------------ Backend Phase B3 */}
+      <CompensationFields form={form} />
+
+      <FormField
+        label={t('opportunities:form.hoursPerWeekLabel')}
+        htmlFor="opp-hours-per-week"
+        hint={t('opportunities:form.hoursPerWeekHint')}
+        error={errors.hoursPerWeek && t('opportunities:form.errors.hoursRange')}
+        className="sm:max-w-xs"
+      >
+        <Controller
+          control={form.control}
+          name="hoursPerWeek"
+          render={({ field }) => (
+            <Input
+              id="opp-hours-per-week"
+              type="number"
+              inputMode="numeric"
+              min={MIN_HOURS_PER_WEEK}
+              max={MAX_HOURS_PER_WEEK}
+              value={field.value === '' ? '' : String(field.value)}
+              onBlur={field.onBlur}
+              // An emptied number input yields '', which must STAY ''. Number('') is 0 and
+              // parseInt('') is NaN, and either would submit a value the user just deleted.
+              onChange={(event) => field.onChange(event.target.value === '' ? '' : Number(event.target.value))}
+            />
+          )}
+        />
+      </FormField>
+
+      <FormField
+        label={t('opportunities:form.skillsLabel')}
+        htmlFor="opp-skills"
+        hint={t('opportunities:form.skillsHint')}
+        error={errors.skills && t(errors.skills.message ?? '')}
+      >
+        <Controller
+          control={form.control}
+          name="skills"
+          render={({ field }) => (
+            <TagInput
+              id="opp-skills"
+              value={field.value}
+              onChange={field.onChange}
+              maxTags={MAX_SKILLS}
+              maxLength={MAX_SKILL_LENGTH}
+              placeholder={t('opportunities:form.skillsPlaceholder')}
+            />
+          )}
+        />
+      </FormField>
+
+      <FormField
+        label={t('opportunities:form.perksLabel')}
+        htmlFor="opp-perks"
+        hint={t('opportunities:form.perksHint')}
+        error={errors.perks && t(errors.perks.message ?? '')}
+      >
+        <Controller
+          control={form.control}
+          name="perks"
+          render={({ field }) => (
+            <TagInput
+              id="opp-perks"
+              value={field.value}
+              onChange={field.onChange}
+              maxTags={MAX_PERKS}
+              maxLength={MAX_PERK_LENGTH}
+              placeholder={t('opportunities:form.perksPlaceholder')}
+            />
+          )}
+        />
       </FormField>
     </>
   )

@@ -9,9 +9,14 @@ import { ScreeningQuestionEditor } from '../../recruitment/components/ScreeningQ
 import { OpportunityFormFields } from '../components/OpportunityFormFields'
 import * as universityApi from '../../university/api/universityApi'
 import { opportunityFormSchema, type OpportunityFormValues } from '../schemas/opportunityFormSchema'
+import { buildOpportunityPayload, emptyOpportunityFormValues, toOpportunityFormValues } from '../opportunityPayload'
+import { OpportunityEnrichment } from '../components/OpportunityEnrichment'
 import { targetFormSchema, type TargetFormValues } from '../schemas/targetFormSchema'
 import { useOrganizationMembership } from '../../organization/components/OrganizationMembershipContext'
 import { organizationCapabilities } from '../../organization/organizationCapabilities'
+import * as organizationApi from '../../organization/api/organizationApi'
+import { isOrganizationVerified } from '../../organization/organizationVerificationGating'
+import { VerificationGateNotice } from '../../organization/components/VerificationGateNotice'
 import { OPPORTUNITY_STATUS_TONE, OPPORTUNITY_TARGET_STATUS_TONE } from '../components/statusTone'
 import { apiErrorMessage } from '../../../lib/api/errorMessage'
 import {
@@ -58,33 +63,42 @@ export function OpportunityDetailPage() {
     enabled: !!opportunityId,
   })
 
+  // Backend Phase B1.5. Publish and resume are the ONLY two actions here that can fail with
+  // ORGANIZATION_NOT_VERIFIED (OrganizationStateTransitionService is the sole caller of
+  // requireVerifiedForOwnAction), so this reads the current status to explain them up front
+  // rather than letting the recruiter discover it from a 409.
+  const organizationQuery = useQuery({
+    queryKey: ['organization', 'detail', membership.organizationId],
+    queryFn: () => organizationApi.getOrganization(membership.organizationId),
+  })
+  const verificationStatus = organizationQuery.data?.verificationStatus
+  // Unknown status fails OPEN for the UI only — the button is offered and the backend decides.
+  // Disabling on a failed profile fetch would block a verified organization from publishing.
+  const verificationBlocks = !!verificationStatus && !isOrganizationVerified(verificationStatus)
+
   const invalidate = () => {
     void queryClient.invalidateQueries({ queryKey: ['opportunities', 'detail', opportunityId] })
     void queryClient.invalidateQueries({ queryKey: ['opportunities', 'organization'] })
   }
 
-  const form = useForm<OpportunityFormValues>({ resolver: zodResolver(opportunityFormSchema) })
+  const form = useForm<OpportunityFormValues>({
+    resolver: zodResolver(opportunityFormSchema),
+    defaultValues: emptyOpportunityFormValues(),
+  })
 
+  // Loads the stored record INCLUDING the Backend Phase B3 fields, so the edit form shows exactly
+  // what is saved. Without this the compensation section would open blank on a paid internship and
+  // the next save would clear it — the B3 update semantics only protect a form that omits a field,
+  // and this form does not omit them.
   useEffect(() => {
     if (opportunityQuery.data) {
-      form.reset({
-        title: opportunityQuery.data.title,
-        description: opportunityQuery.data.description,
-        responsibilities: opportunityQuery.data.responsibilities ?? '',
-        requirements: opportunityQuery.data.requirements ?? '',
-        mode: opportunityQuery.data.mode,
-        numberOfOpenings: opportunityQuery.data.numberOfOpenings,
-        workMode: opportunityQuery.data.workMode,
-        location: opportunityQuery.data.location ?? '',
-        startDate: opportunityQuery.data.startDate,
-        endDate: opportunityQuery.data.endDate,
-        applicationDeadline: opportunityQuery.data.applicationDeadline ?? '',
-      })
+      form.reset(toOpportunityFormValues(opportunityQuery.data))
     }
   }, [opportunityQuery.data, form])
 
   const updateMutation = useMutation({
-    mutationFn: (values: OpportunityFormValues) => opportunityApi.updateOpportunity(opportunityId!, values),
+    mutationFn: (values: OpportunityFormValues) =>
+      opportunityApi.updateOpportunity(opportunityId!, buildOpportunityPayload(values)),
     onSuccess: invalidate,
   })
   const publishMutation = useMutation({ mutationFn: () => opportunityApi.publishOpportunity(opportunityId!), onSuccess: invalidate })
@@ -158,9 +172,21 @@ export function OpportunityDetailPage() {
           </h2>
           <p className="mt-1 text-sm text-foreground-secondary">{t('opportunities:detail.lifecycleHint')}</p>
 
+          {verificationStatus && (
+            <VerificationGateNotice
+              status={verificationStatus}
+              canEditProfile={can.canEditProfile}
+              className="mt-4"
+            />
+          )}
+
           <div className="mt-4 flex flex-wrap gap-2">
             {isDraft && (
-              <Button loading={publishMutation.isPending} disabled={anyTransitionPending} onClick={() => publishMutation.mutate()}>
+              <Button
+                loading={publishMutation.isPending}
+                disabled={anyTransitionPending || verificationBlocks}
+                onClick={() => publishMutation.mutate()}
+              >
                 {t('opportunities:actions.publish')}
               </Button>
             )}
@@ -176,7 +202,11 @@ export function OpportunityDetailPage() {
             )}
             {opportunity.status === 'PAUSED' && (
               <>
-                <Button loading={resumeMutation.isPending} disabled={anyTransitionPending} onClick={() => resumeMutation.mutate()}>
+                <Button
+                  loading={resumeMutation.isPending}
+                  disabled={anyTransitionPending || verificationBlocks}
+                  onClick={() => resumeMutation.mutate()}
+                >
                   {t('opportunities:actions.resume')}
                 </Button>
                 <Button variant="outline" loading={closeMutation.isPending} disabled={anyTransitionPending} onClick={() => closeMutation.mutate()}>
@@ -228,6 +258,13 @@ export function OpportunityDetailPage() {
             </div>
           </Card>
         </form>
+      )}
+
+      {/* Not editable outside DRAFT — InternshipOpportunity itself refuses the change. Saying so is
+          better than an absent form the recruiter cannot account for, and better still than an edit
+          button that only ever produces a 400 (Phase D section 23). */}
+      {can.canManageOpportunities && !isDraft && (
+        <Alert tone="info">{t(`opportunities:detail.readOnly.${opportunity.status}`)}</Alert>
       )}
 
       {/* Screening questions are authored while the opportunity is still a draft, mirroring how the
@@ -282,6 +319,13 @@ function OpportunityFacts({ opportunity }: { opportunity: OpportunityResponse })
         {opportunity.requirements && (
           <Section title={t('opportunities:form.requirementsLabel')} body={opportunity.requirements} />
         )}
+        {/* Backend Phase B3. Renders nothing when the organization supplied none of these. */}
+        <OpportunityEnrichment
+          compensation={opportunity.compensation}
+          hoursPerWeek={opportunity.hoursPerWeek}
+          skills={opportunity.skills}
+          perks={opportunity.perks}
+        />
       </div>
     </Card>
   )

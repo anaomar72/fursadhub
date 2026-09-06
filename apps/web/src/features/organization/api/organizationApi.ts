@@ -2,6 +2,7 @@ import { env } from '../../../app/config/env'
 import { ApiError, apiFetch } from '../../../lib/api/client'
 import { getAccessToken } from '../../../lib/auth/tokenStore'
 import type {
+  CompanySizeRange,
   MyOrganizationMembershipResponse,
   OrganizationEvidenceResponse,
   OrganizationMemberResponse,
@@ -29,10 +30,32 @@ export function getOrganization(organizationId: string) {
   return apiFetch<OrganizationResponse>(`/organizations/${organizationId}`, { method: 'GET' })
 }
 
-export function updateOrganization(
-  organizationId: string,
-  input: { name: string; registrationNumber?: string; website?: string; description?: string },
-) {
+/**
+ * The organization's editable profile.
+ *
+ * <p>The four original fields are FULL REPLACEMENT — omitting one clears it. The Backend Phase B2
+ * fields are PRESENCE-AWARE: a key that is absent from `input` preserves the stored value, and an
+ * explicit `null` clears it. Build the body with `buildOrganizationProfilePayload` rather than by
+ * hand, so an untouched field is never serialized as null.
+ */
+export interface UpdateOrganizationInput {
+  name: string
+  registrationNumber?: string
+  website?: string
+  description?: string
+  industry?: string | null
+  city?: string | null
+  countryCode?: string | null
+  shortDescription?: string | null
+  companySizeRange?: CompanySizeRange | null
+  foundedYear?: number | null
+  linkedinUrl?: string | null
+  xUrl?: string | null
+  instagramUrl?: string | null
+  youtubeUrl?: string | null
+}
+
+export function updateOrganization(organizationId: string, input: UpdateOrganizationInput) {
   return apiFetch<OrganizationResponse>(`/organizations/${organizationId}`, { method: 'PATCH', body: input })
 }
 
@@ -126,6 +149,34 @@ export async function uploadOrganizationLogo(organizationId: string, file: File)
 
   const accessToken = getAccessToken()
   const response = await fetch(`${env.apiBaseUrl}/organizations/${organizationId}/logo`, {
+    method: 'POST',
+    credentials: 'include',
+    headers: accessToken ? { Authorization: `Bearer ${accessToken}` } : {},
+    body,
+  })
+
+  if (!response.ok) {
+    const errorBody = await response.json().catch(() => null)
+    if (errorBody) throw new ApiError(errorBody)
+    throw new Error(`Upload failed with status ${response.status}`)
+  }
+  return (await response.json()) as OrganizationLogoResponse
+}
+
+/**
+ * Uploads or replaces the organization's public profile banner (Backend Phase B2).
+ * `ORGANIZATION_ADMIN` only, same contract as the logo above.
+ *
+ * <p>There is deliberately NO remove function: `OrganizationController` exposes `POST .../cover`
+ * and nothing else — no DELETE — so a cover can be replaced but not taken down. Offering a Remove
+ * button here would be a control with no endpoint behind it.
+ */
+export async function uploadOrganizationCover(organizationId: string, file: File): Promise<OrganizationLogoResponse> {
+  const body = new FormData()
+  body.append('file', file)
+
+  const accessToken = getAccessToken()
+  const response = await fetch(`${env.apiBaseUrl}/organizations/${organizationId}/cover`, {
     method: 'POST',
     credentials: 'include',
     headers: accessToken ? { Authorization: `Bearer ${accessToken}` } : {},

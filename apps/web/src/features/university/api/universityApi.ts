@@ -60,10 +60,25 @@ export function getUniversityDetail(universityId: string) {
   return apiFetch<UniversityDetailResponse>(`/universities/${universityId}`, { method: 'GET' })
 }
 
-export function updateUniversity(
-  universityId: string,
-  input: { name: string; city?: string; registrationNumber?: string; website?: string; description?: string },
-) {
+/**
+ * The university's editable profile.
+ *
+ * <p>The five original fields are FULL REPLACEMENT — omitting one clears it. The two Backend Phase
+ * B2 fields (`countryCode`, `publicContactEmail`) are PRESENCE-AWARE: a key absent from `input`
+ * preserves the stored value, and an explicit `null` clears it. Build the body with
+ * `buildUniversityProfilePayload` rather than by hand, so an untouched field is never sent as null.
+ */
+export interface UpdateUniversityInput {
+  name: string
+  city?: string
+  registrationNumber?: string
+  website?: string
+  description?: string
+  countryCode?: string | null
+  publicContactEmail?: string | null
+}
+
+export function updateUniversity(universityId: string, input: UpdateUniversityInput) {
   return apiFetch<UniversityDetailResponse>(`/universities/${universityId}`, { method: 'PATCH', body: input })
 }
 
@@ -103,6 +118,33 @@ interface UniversityLogoResponse {
 }
 
 /** Uploads or replaces the university's public logo. `UNIVERSITY_ADMIN` only. */
+/**
+ * Uploads or replaces the university's public profile banner (Backend Phase B2).
+ * `UNIVERSITY_ADMIN` only, same contract as the logo below.
+ *
+ * <p>There is deliberately NO remove function: `UniversityController` exposes `POST .../cover`
+ * and nothing else — no DELETE — so a cover can be replaced but not taken down.
+ */
+export async function uploadUniversityCover(universityId: string, file: File): Promise<UniversityLogoResponse> {
+  const body = new FormData()
+  body.append('file', file)
+
+  const accessToken = getAccessToken()
+  const response = await fetch(`${env.apiBaseUrl}/universities/${universityId}/cover`, {
+    method: 'POST',
+    credentials: 'include',
+    headers: accessToken ? { Authorization: `Bearer ${accessToken}` } : {},
+    body,
+  })
+
+  if (!response.ok) {
+    const errorBody = await response.json().catch(() => null)
+    if (errorBody) throw new ApiError(errorBody)
+    throw new Error(`Upload failed with status ${response.status}`)
+  }
+  return (await response.json()) as UniversityLogoResponse
+}
+
 export async function uploadUniversityLogo(universityId: string, file: File): Promise<UniversityLogoResponse> {
   const body = new FormData()
   body.append('file', file)

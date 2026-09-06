@@ -108,7 +108,9 @@ describe('OpportunityDetailPage', () => {
     stubFetch(opportunity({ status: 'CANCELLED' }))
     renderPage()
 
-    expect(await screen.findByText(/cancelled/i)).toBeInTheDocument()
+    // The status badge, specifically: the page also carries a read-only explanation mentioning
+    // "cancelled", and this assertion is about the status being shown.
+    expect(await screen.findByText('Cancelled')).toBeInTheDocument()
     expect(screen.queryByRole('button', { name: /^publish$/i })).not.toBeInTheDocument()
     expect(screen.queryByRole('button', { name: /^resume$/i })).not.toBeInTheDocument()
     expect(screen.queryByRole('button', { name: /^cancel$/i })).not.toBeInTheDocument()

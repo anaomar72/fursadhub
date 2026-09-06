@@ -27,9 +27,14 @@ const LIVE_PLACEMENT_STATUSES = new Set(['PLANNED', 'ACTIVE', 'COMPLETION_PENDIN
  * open internships, their latest applications, and how close they are to being able to take part.
  *
  * <p>Every number is counted from an endpoint the student's own pages already use — there is no
- * dashboard aggregate on the backend and none is invented here. Where the approved design shows a
- * metric FursadHub has no concept of (saved internships), the card keeps its shape and carries a
- * real one instead (nominations awaiting the student's consent).
+ * dashboard aggregate on the backend and none is invented here.
+ *
+ * <p>The approved reference's four counters are Active Applications, Interviews, Saved Internships
+ * and Recommended. Saved Internships is now real (Backend Phase B4) and is read from the saved list
+ * itself. "Recommended" has NO backend concept — FursadHub does not compute recommendations — so
+ * that slot carries a truthful counter instead: nominations awaiting the student's consent. The
+ * reference's profile-completion percentage is likewise not invented: the readiness card below
+ * counts only the concrete steps the API can actually confirm.
  */
 export function DashboardPage() {
   const { t } = useTranslation()
@@ -41,6 +46,13 @@ export function DashboardPage() {
   const nominationsQuery = useQuery({ queryKey: ['student', 'nominations'], queryFn: recruitmentApi.listMyNominations })
   const offersQuery = useQuery({ queryKey: ['student', 'offers'], queryFn: recruitmentApi.listMyOffers })
   const placementsQuery = useQuery({ queryKey: ['student', 'placements'], queryFn: placementsApi.listMyPlacements })
+  // Backend Phase B4. size=1 — only the TOTAL is wanted here, not the rows; the Saved Internships
+  // page fetches the page it actually renders.
+  const savedQuery = useQuery({
+    queryKey: ['student', 'saved-list', 'dashboard-count'],
+    queryFn: () => studentApi.listSavedOpportunities({ page: 0, size: 1 }),
+    retry: false,
+  })
   const openRolesQuery = useQuery({
     queryKey: ['public-opportunities', 'dashboard'],
     queryFn: () => publicOpportunityApi.listPublicOpportunities({ page: 0, size: 3 }),
@@ -87,12 +99,16 @@ export function DashboardPage() {
     <PageContainer className="flex flex-col gap-6">
       <header>
         <h1 className="font-display text-2xl font-bold tracking-tight text-brand-navy dark:text-foreground sm:text-3xl">
-          {t('student:dashboard.greeting', { name: firstName(profileQuery.data?.fullName) })}
+          {/* A student who has not filled in their profile has no name to greet, and
+              "Welcome back, " with a dangling comma is worse than a plain greeting. */}
+          {firstName(profileQuery.data?.fullName)
+            ? t('student:dashboard.greeting', { name: firstName(profileQuery.data?.fullName) })
+            : t('student:dashboard.greetingNoName')}
         </h1>
         <p className="mt-1.5 text-sm text-foreground-secondary">{t('student:dashboard.greetingSubtitle')}</p>
       </header>
 
-      <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
+      <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-5">
         <MetricCard
           icon="clipboard"
           tone="brand"
@@ -108,6 +124,13 @@ export function DashboardPage() {
           to="/student/applications"
         />
         <MetricCard
+          icon="bookmark"
+          tone="amber"
+          label={t('student:dashboard.savedInternships')}
+          value={savedQuery.data?.totalElements ?? 0}
+          to="/student/saved"
+        />
+        <MetricCard
           icon="userCheck"
           tone="teal"
           label={t('student:dashboard.nominations')}
@@ -116,7 +139,7 @@ export function DashboardPage() {
         />
         <MetricCard
           icon="badgeCheck"
-          tone="amber"
+          tone="violet"
           label={t('student:dashboard.offers')}
           value={pendingOffers}
           to="/student/applications"
@@ -290,7 +313,10 @@ function MetricCard({
           <Icon name={icon} className="size-5" />
         </span>
         <div className="min-w-0">
-          <p className="truncate text-sm font-medium text-foreground-secondary">{label}</p>
+          {/* Wraps rather than truncates: at five across, "Saved internships" and its longer Somali
+              counterpart do not fit on one line, and a counter whose label reads "Saved internshi…"
+              has lost the thing the number is about. */}
+          <p className="text-sm font-medium leading-snug text-foreground-secondary">{label}</p>
           <p className="mt-1 text-3xl font-bold leading-none text-brand-navy dark:text-foreground">{value}</p>
         </div>
       </div>

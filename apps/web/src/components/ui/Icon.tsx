@@ -3,6 +3,8 @@ import type { SVGProps } from 'react'
 export type IconName = 'alert' | 'check' | 'chevronDown' | 'chevronLeft' | 'chevronRight' | 'close' | 'document' | 'eye' | 'eyeOff' | 'filter' | 'globe' | 'info' | 'menu' | 'moon' | 'search' | 'sun' | 'upload'
   // Phase 7 authenticated-shell navigation icons.
   | 'home' | 'briefcase' | 'clipboard' | 'users' | 'building' | 'bank' | 'graduationCap' | 'shield' | 'chart' | 'settings' | 'logout' | 'bell' | 'user' | 'userCheck' | 'badgeCheck' | 'layers' | 'scale' | 'lock'
+  // Phase D portal interiors: saved internships (B4), opportunity enrichment (B3), staff identity (B5/B5.5).
+  | 'bookmark' | 'bookmarkFilled' | 'plus' | 'trash' | 'coins' | 'clock' | 'sparkle' | 'idCard' | 'image' | 'link'
 
 const paths: Record<IconName, React.ReactNode> = {
   alert: <><path d="M12 9v4"/><path d="M12 17h.01"/><path d="M10.3 3.7 2.5 17.2A2 2 0 0 0 4.2 20h15.6a2 2 0 0 0 1.7-2.8L13.7 3.7a2 2 0 0 0-3.4 0Z"/></>,
@@ -30,6 +32,18 @@ const paths: Record<IconName, React.ReactNode> = {
   layers: <><path d="m12 3 9 5-9 5-9-5 9-5Z"/><path d="m3 13 9 5 9-5"/></>,
   scale: <><path d="M12 3v18M7 21h10M4 8h16M12 8 8 15h8L12 8Z"/><path d="M4 8 2 15h4L4 8ZM20 8l-2 7h4l-2-7Z"/></>,
   lock: <><rect x="4" y="10" width="16" height="11" rx="2"/><path d="M8 10V7a4 4 0 0 1 8 0v3"/><path d="M12 14.5v2.5"/></>,
+  bookmark: <path d="M6 4.5A1.5 1.5 0 0 1 7.5 3h9A1.5 1.5 0 0 1 18 4.5V21l-6-3.5L6 21V4.5Z"/>,
+  // The saved state is the SAME outline filled in, not a different glyph: a bookmark that changed
+  // shape when toggled would read as two unrelated controls rather than one control in two states.
+  bookmarkFilled: <path d="M6 4.5A1.5 1.5 0 0 1 7.5 3h9A1.5 1.5 0 0 1 18 4.5V21l-6-3.5L6 21V4.5Z" fill="currentColor"/>,
+  plus: <path d="M12 5v14M5 12h14"/>,
+  trash: <><path d="M4 7h16M10 4h4M6 7l1 13h10l1-13"/><path d="M10 11v6M14 11v6"/></>,
+  coins: <><circle cx="9" cy="9" r="5"/><path d="M15.5 5.2a5 5 0 0 1 0 13.6"/><path d="M4.8 13.5A5 5 0 0 0 9 20a5 5 0 0 0 4.2-2.3"/></>,
+  clock: <><circle cx="12" cy="12" r="9"/><path d="M12 7v5.2l3.2 2"/></>,
+  sparkle: <path d="m12 3 1.9 5.1L19 10l-5.1 1.9L12 17l-1.9-5.1L5 10l5.1-1.9L12 3Z"/>,
+  idCard: <><rect x="2.5" y="5" width="19" height="14" rx="2"/><circle cx="8.5" cy="11" r="2"/><path d="M5.5 16a3.2 3.2 0 0 1 6 0M14 10h4M14 14h3"/></>,
+  image: <><rect x="3" y="4" width="18" height="16" rx="2"/><circle cx="8.5" cy="9.5" r="1.5"/><path d="m3.5 17 4.5-4.5 3.5 3.5L15 12l5.5 5.5"/></>,
+  link: <><path d="M10 13.5a3.5 3.5 0 0 0 5 0l3-3a3.5 3.5 0 0 0-5-5l-1.2 1.2"/><path d="M14 10.5a3.5 3.5 0 0 0-5 0l-3 3a3.5 3.5 0 0 0 5 5l1.2-1.2"/></>,
 }
 
 export function Icon({ name, ...props }: { name: IconName } & SVGProps<SVGSVGElement>) {

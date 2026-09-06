@@ -1,26 +1,23 @@
 import { useState } from 'react'
 import { useQuery } from '@tanstack/react-query'
 import { useTranslation } from 'react-i18next'
-import { Link, useSearchParams } from 'react-router-dom'
+import { useSearchParams } from 'react-router-dom'
 import * as publicOpportunityApi from '../api/publicOpportunityApi'
 import * as recruitmentApi from '../../recruitment/api/recruitmentApi'
+import { useSavedOpportunityStatus } from '../../student/hooks/useSavedOpportunities'
+import { StudentOpportunityCard } from '../../student/components/StudentOpportunityCard'
 import type { WorkMode } from '../types'
 import {
-  Badge,
-  Card,
   EmptyState,
   ErrorState,
   FilterBar,
-  Icon,
   LoadingState,
   Pagination,
   PageHeader,
   SearchInput,
   Select,
-  StatusBadge,
 } from '../../../components/ui'
 import { PageContainer } from '../../../app/layouts/PageContainer'
-import { formatDate } from '../../../lib/utils/formatDate'
 
 const WORK_MODES: WorkMode[] = ['ONSITE', 'HYBRID', 'REMOTE']
 const PAGE_SIZE = 9
@@ -70,6 +67,11 @@ export function BrowseOpportunitiesPage() {
     retry: false,
   })
   const appliedOpportunityIds = new Set((candidaciesQuery.data ?? []).map((candidacy) => candidacy.opportunityId))
+
+  // Backend Phase B4. ONE request for the whole page of cards, not one per card — see
+  // useSavedOpportunityStatus. A 9-card grid is a single call, and the hook chunks anything longer
+  // to the server's 50-id bound.
+  const savedStatus = useSavedOpportunityStatus((opportunitiesQuery.data?.content ?? []).map((item) => item.id))
 
   function resetToFirstPage<T>(setter: (value: T) => void) {
     return (value: T) => {
@@ -134,46 +136,12 @@ export function BrowseOpportunitiesPage() {
           <ul className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
             {result?.content.map((opportunity) => (
               <li key={opportunity.id} className="flex">
-                <Card
-                  interactive
-                  padding="lg"
-                  className="relative flex w-full flex-col focus-within:border-brand-primary"
-                >
-                  <div className="flex items-start gap-3">
-                    <span className="flex size-11 shrink-0 items-center justify-center rounded-xl bg-brand-blue-soft text-brand-blue dark:bg-info-bg dark:text-info">
-                      <Icon name="briefcase" className="size-5" />
-                    </span>
-                    <div className="min-w-0 flex-1">
-                      <h2 className="line-clamp-2 font-semibold text-foreground">
-                        <Link
-                          to={`/student/opportunities/${opportunity.id}`}
-                          className="focus-visible:outline-none focus-visible:underline after:absolute after:inset-0"
-                        >
-                          {opportunity.title}
-                        </Link>
-                      </h2>
-                      <p className="mt-0.5 truncate text-sm text-foreground-secondary">
-                        {opportunity.organization.name}
-                      </p>
-                    </div>
-                  </div>
-
-                  <div className="mt-3 flex flex-wrap gap-2">
-                    <Badge tone="brand">{t(`opportunities:workModeValues.${opportunity.workMode}`)}</Badge>
-                    {opportunity.location && <Badge>{opportunity.location}</Badge>}
-                    {appliedOpportunityIds.has(opportunity.id) && (
-                      <StatusBadge tone="info">{t('opportunities:browse.applied')}</StatusBadge>
-                    )}
-                  </div>
-
-                  <p className="mt-3 line-clamp-2 text-sm text-foreground-secondary">{opportunity.description}</p>
-
-                  <p className="mt-auto pt-4 text-xs text-muted">
-                    {opportunity.applicationDeadline
-                      ? t('opportunities:browse.deadline', { date: formatDate(opportunity.applicationDeadline) })
-                      : t('opportunities:browse.startsOn', { date: formatDate(opportunity.startDate) })}
-                  </p>
-                </Card>
+                <StudentOpportunityCard
+                  opportunity={opportunity}
+                  saved={savedStatus.isSaved(opportunity.id)}
+                  bookmarkAvailable={!savedStatus.isUnavailable}
+                  applied={appliedOpportunityIds.has(opportunity.id)}
+                />
               </li>
             ))}
           </ul>

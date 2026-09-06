@@ -3,7 +3,8 @@
     "dashboard": "Dashboard",
     "enrollment": "Enrollment",
     "profile": "Profile",
-    "exploreInternships": "Explore internships"
+    "exploreInternships": "Explore internships",
+    "savedInternships": "Saved internships"
   },
   "dashboard": {
     "title": "Your dashboard",
@@ -33,7 +34,9 @@
       "cv": "Upload your CV",
       "enrollment": "Claim your university enrollment",
       "verification": "Get your enrollment verified"
-    }
+    },
+    "savedInternships": "Saved internships",
+    "greetingNoName": "Welcome back"
   },
   "profile": {
     "title": "Your profile",
@@ -128,5 +131,17 @@
       "VERIFICATION_EVIDENCE_MISSING": "No evidence has been uploaded yet.",
       "VERIFICATION_CASE_NOT_FOUND": "Submit your enrollment for verification first."
     }
+  },
+  "saved": {
+    "title": "Saved internships",
+    "subtitle": "Internships you bookmarked while browsing. Only internships that are still open to applications appear here.",
+    "save": "Save internship",
+    "unsave": "Remove from saved",
+    "savedOn": "Saved {{date}}",
+    "resultCount_one": "{{count}} saved internship",
+    "resultCount_other": "{{count}} saved internships",
+    "empty": "You have not saved any internships yet",
+    "emptyHint": "Use the bookmark on any internship to keep it here for later.",
+    "error": "We could not load your saved internships."
   }
 }

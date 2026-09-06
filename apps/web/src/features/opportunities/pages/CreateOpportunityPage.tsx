@@ -5,9 +5,11 @@ import { useTranslation } from 'react-i18next'
 import { useNavigate } from 'react-router-dom'
 import * as opportunityApi from '../api/opportunityApi'
 import { opportunityFormSchema, type OpportunityFormValues } from '../schemas/opportunityFormSchema'
+import { buildOpportunityPayload, emptyOpportunityFormValues } from '../opportunityPayload'
 import { useOrganizationMembership } from '../../organization/components/OrganizationMembershipContext'
+import { organizationCapabilities } from '../../organization/organizationCapabilities'
 import { apiErrorMessage } from '../../../lib/api/errorMessage'
-import { Alert, Breadcrumbs, Button, ButtonLink, Card, PageHeader } from '../../../components/ui'
+import { Alert, Breadcrumbs, Button, ButtonLink, Card, EmptyState, PageHeader } from '../../../components/ui'
 import { PageContainer } from '../../../app/layouts/PageContainer'
 import { OpportunityFormFields } from '../components/OpportunityFormFields'
 
@@ -26,29 +28,44 @@ import { OpportunityFormFields } from '../components/OpportunityFormFields'
 export function CreateOpportunityPage() {
   const { t } = useTranslation()
   const navigate = useNavigate()
-  const { organizationId } = useOrganizationMembership()
+  const membership = useOrganizationMembership()
+  const { organizationId } = membership
+  // CreateOpportunityService admits ORGANIZATION_ADMIN and RECRUITER only, so an
+  // ORGANIZATION_SUPERVISOR reaching this URL directly would get a form whose every submit is a
+  // 403. The sidebar already omits the destination; this is the same rule applied to the page a
+  // typed URL still reaches (CLAUDE.md section 24 — the backend remains the boundary either way).
+  const canManageOpportunities = organizationCapabilities(membership).canManageOpportunities
 
   const form = useForm<OpportunityFormValues>({
     resolver: zodResolver(opportunityFormSchema),
-    defaultValues: {
-      title: '',
-      description: '',
-      responsibilities: '',
-      requirements: '',
-      mode: 'PUBLIC',
-      numberOfOpenings: 1,
-      workMode: 'ONSITE',
-      location: '',
-      startDate: '',
-      endDate: '',
-      applicationDeadline: '',
-    },
+    defaultValues: emptyOpportunityFormValues(),
   })
 
   const createMutation = useMutation({
-    mutationFn: (values: OpportunityFormValues) => opportunityApi.createOpportunity(organizationId, values),
+    // Never the raw form values: buildOpportunityPayload rebuilds compensation from the CURRENT
+    // type, so an amount left in form state by a type switch is not submitted (Backend Phase B3).
+    mutationFn: (values: OpportunityFormValues) =>
+      opportunityApi.createOpportunity(organizationId, buildOpportunityPayload(values)),
     onSuccess: (opportunity) => navigate(`/organization/opportunities/${opportunity.id}`),
   })
+
+  if (!canManageOpportunities) {
+    return (
+      <PageContainer className="flex flex-col gap-6">
+        <Breadcrumbs
+          items={[
+            { label: t('opportunities:list.title'), to: '/organization/opportunities' },
+            { label: t('opportunities:form.createTitle') },
+          ]}
+        />
+        <EmptyState
+          title={t('opportunities:form.notAuthorizedTitle')}
+          description={t('opportunities:form.notAuthorizedBody')}
+          action={<ButtonLink variant="outline" to="/organization/opportunities">{t('opportunities:list.title')}</ButtonLink>}
+        />
+      </PageContainer>
+    )
+  }
 
   return (
     <PageContainer className="flex flex-col gap-6">

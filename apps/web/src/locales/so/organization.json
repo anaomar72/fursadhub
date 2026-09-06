@@ -124,13 +124,46 @@
       "ORGANIZATION_LOGO_FILE_INVALID": "Faylkaasi lama aqbalo — soo geli JPEG ama PNG ka yar 3MB.",
       "FILE_TOO_LARGE": "Faylku wuu ka weyn yahay xadka ugu badan ee la ogol yahay.",
       "VALIDATION_FAILED": "Fadlan hubi foomka oo isku day mar kale.",
-      "generic": "Wax baa qaldamay. Fadlan isku day mar kale."
+      "generic": "Wax baa qaldamay. Fadlan isku day mar kale.",
+      "invalidUrl": "Geli cinwaan buuxa oo ku bilaabma http:// ama https://",
+      "invalidCountry": "Isticmaal laba xaraf oo dal ah.",
+      "invalidYear": "Geli sannad aasaas oo u dhexeeya 1800 iyo maanta."
     },
     "subtitle": "Diiwaanka dadweynaha ee ururkaaga iyo xaaladdiisa xaqiijinta.",
     "detailsTitle": "Faahfaahinta ururka",
     "detailsHint": "Waxa ardayda iyo jaamacaduhu arkaan marka ay ku eegaan.",
     "verificationTitle": "Xaqiijinta",
-    "verifiedOn": "Waa la xaqiijiyay {{date}}"
+    "verifiedOn": "Waa la xaqiijiyay {{date}}",
+    "notStated": "Lama sheegin",
+    "shortDescriptionLabel": "Faahfaahin gaaban",
+    "shortDescriptionHint": "Hal sadar oo ka muuqda kaarkaaga tusmada dadweynaha. Ilaa 200 xaraf.",
+    "industryLabel": "Warshadaha",
+    "cityLabel": "Magaalada",
+    "countryLabel": "Dalka",
+    "countryHint": "Laba xaraf, tusaale SO.",
+    "companySizeLabel": "Cabbirka ururka",
+    "companySizeHint": "Kala dhexaad, ma aha tirada saxda ah ee shaqaalaha.",
+    "companySizeValues": {
+      "SIZE_1_10": "1–10 qof",
+      "SIZE_11_50": "11–50 qof",
+      "SIZE_51_200": "51–200 qof",
+      "SIZE_201_500": "201–500 qof",
+      "SIZE_501_1000": "501–1,000 qof",
+      "SIZE_1001_5000": "1,001–5,000 qof",
+      "SIZE_5001_PLUS": "In ka badan 5,000 qof"
+    },
+    "foundedYearLabel": "Sannadka la aasaasay",
+    "socialLegend": "Xiriirinta baraha bulshada",
+    "linkedinLabel": "LinkedIn",
+    "xLabel": "X",
+    "instagramLabel": "Instagram",
+    "youtubeLabel": "YouTube",
+    "cover": {
+      "label": "Sawirka daboolka",
+      "hint": "JPG ama PNG. Waxa uu ka muuqdaa astaanta profile-kaaga dadweynaha.",
+      "emptyHint": "Weli sawir daboolka ah ma jiro. Mid soo geli si profile-kaagu u helo astaan.",
+      "replaceHint": "Soo gelinta sawir cusub waxay bedeshaa kan hadda jira."
+    }
   },
   "staff": {
     "title": "Shaqaalaha",
@@ -162,13 +195,15 @@
     "empty": "Weli shaqaale lama abuurin.",
     "errors": {
       "STAFF_EMAIL_ALREADY_EXISTS": "Iimaylkan akoon horeba u leeyahay.",
-      "STAFF_ROLE_NOT_ASSIGNABLE": "Maamulaha ururka wuxuu kaliya u meelin karaa Qaadaha shaqaalaha ama Kormeeraha ururka.",
+      "STAFF_ROLE_NOT_ASSIGNABLE": "Akoonkan kama maamuli kartid maaraynta shaqaalaha.",
       "STAFF_PASSWORD_CONFIRMATION_MISMATCH": "Furaha sirta ah iyo xaqiijintiisu isku mid ma aha.",
       "STAFF_MEMBERSHIP_NOT_FOUND": "Xubinnimada shaqaalaha lama helin.",
       "USER_CLOSED": "Akoon la xiray lama hakin karo ama dib looma firfircoonayn karo.",
       "ACCESS_DENIED": "Kaliya maamulaha ururka ayaa maamuli kara shaqaalaha.",
       "VALIDATION_FAILED": "Fadlan hubi foomka oo isku day mar kale.",
-      "generic": "Wax baa qaldamay. Fadlan isku day mar kale."
+      "generic": "Wax baa qaldamay. Fadlan isku day mar kale.",
+      "USERNAME_ALREADY_EXISTS": "Magaca isticmaalahaas horey ayaa loo qaatay.",
+      "USERNAME_IMMUTABLE": "Akoonkani horey ayuu u leeyahay magac isticmaale, lamana beddeli karo."
     },
     "subtitle": "Abuur oo maamul akoonnada shaqaalaha gudaha ee ururka.",
     "addStaff": "Ku dar akoon shaqaale",
@@ -180,7 +215,20 @@
     "assignedPlacements_other": "Wuxuu kormeeraa {{count}} tababare",
     "emptyHint": "Weli akoon shaqaale ma jiro. Mid abuur si aad u wareejiso qorista ama kormeerka.",
     "usernameLabel": "Magaca isticmaalaha",
-    "usernameHint": "Shaqaaluhu tan ayuu ku soo gelayaa. Xarfo yaryar, tirooyin, dhibco, xariiqyo hoose ama jajab."
+    "usernameHint": "Shaqaaluhu tan ayuu ku soo gelayaa. Xarfo yaryar, tirooyin, dhibco, xariiqyo hoose ama jajab.",
+    "displayNameLabel": "Magaca buuxa",
+    "displayNameHint": "Sida qofkan uga muuqdo FursadHub. Ikhtiyaari.",
+    "usernameReadOnly": "Magaca isticmaalaha",
+    "noUsername": "Weli magac isticmaale ma leh",
+    "assignUsername": "U qoondee magac isticmaale",
+    "assignUsernameTitle": "U qoondee magac isticmaale oo gelitaan",
+    "assignUsernameHint": "Tani waa mid joogto ah. Marka la qoondeeyo, akoonku wuxuu ku soo galayaa magaca isticmaalaha, emailkuna wuxuu joojinayaa inuu noqdo aqoonsi.",
+    "assignUsernameSubmit": "U qoondee si joogto ah",
+    "changeDisplayName": "Beddel magaca",
+    "changeDisplayNameTitle": "Beddel magaca muuqda",
+    "saveDisplayName": "Kaydi magaca",
+    "clearDisplayName": "Tirtir magaca",
+    "noDisplayName": "Magac lama dejin"
   },
   "partners": {
     "title": "Jaamacadaha iskaashiga",
@@ -262,5 +310,20 @@
     "submittedOn": "La gudbiyay {{date}}",
     "evaluationsClear": "Qiimeyn kastaa waa dhammaystiran",
     "evaluationsClearHint": "Waxba kuuma harin tababarayaasha aad kormeerto."
+  },
+  "verificationGate": {
+    "title": "Xaqiijin ayaa loo baahan yahay daabacaadda",
+    "body": "Ururkaagu hadda waa {{status}}. Tababarrada waa la daabici karaa oo keliya marka FursadHub uu xaqiijiyo ururkaaga.",
+    "goToProfile": "Aad profile-ka ururka",
+    "statusGuidance": {
+      "DRAFT": "Ku lifaaq dukumeentiga diiwaangelinta profile-ka ururka kadibna u gudbi xaqiijinta.",
+      "SUBMITTED": "Codsigaagu wuxuu la joogaa FursadHub. Waa lagu wargelin doonaa marka dib-u-eegistu dhammaato.",
+      "UNDER_REVIEW": "FursadHub wuxuu dib u eegayaa codsigaaga. Waa lagu wargelin doonaa marka la dhammeeyo.",
+      "NEEDS_CHANGES": "FursadHub wuxuu codsaday isbeddello. Cusbooneysii profile-ka ururka kadibna dib u gudbi.",
+      "REJECTED": "Xaqiijintaadii waa la diiday. La xiriir FursadHub ka hor inta aadan dib u gudbin.",
+      "SUSPENDED": "Xaqiijintaadu waa hakad. La xiriir FursadHub si loo xalliyo.",
+      "REVOKED": "Xaqiijintaadii waa la burburiyay. La xiriir FursadHub si loo xalliyo.",
+      "VERIFIED": ""
+    }
   }
 }

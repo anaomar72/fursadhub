@@ -1,7 +1,8 @@
 import type { ReactNode } from 'react'
+import { Link } from 'react-router-dom'
 import { Card } from './Card'
 import { Badge } from './Badge'
-import { Icon } from './Icon'
+import { Icon, type IconName } from './Icon'
 import { VerifiedBadge } from './VerifiedBadge'
 import { cn } from '../../lib/utils/cn'
 
@@ -13,11 +14,34 @@ export interface InternshipCardProps {
   location?: string
   workMode?: string
   duration?: string
+  /**
+   * Backend Phase B3 facts, rendered in the same icon meta row as location and duration because
+   * they are the same KIND of fact — already formatted by the caller, since money and hours are
+   * locale-sensitive and this component does no formatting.
+   */
+  compensation?: string
+  hours?: string
+  /**
+   * Makes the TITLE the card's link, covering the whole card via a stretched overlay.
+   *
+   * <p>Opt-in rather than automatic: the public marketplace cards of Phase C carry their navigation
+   * in an explicit "View details" footer control and are left exactly as approved. Inside the
+   * student portal the title itself is the link, because a signed-in student scans a grid by role
+   * title and a screen reader should reach the internship by its name rather than by the tenth
+   * identical "View details".
+   */
+  titleTo?: string
   /** Blue category chips, as on the approved cards. */
   tags?: string[]
   deadline?: ReactNode
   logo?: ReactNode
   actions?: ReactNode
+  /**
+   * The save/unsave control, pinned to the header's trailing edge as in the approved student
+   * reference. A slot rather than a built-in bookmark: this card also renders for signed-out
+   * visitors on the public marketplace, where there is nothing to save to.
+   */
+  bookmark?: ReactNode
   /**
    * `comfortable` is the three-up directory card of reference 02, which carries a "View details"
    * control in a ruled footer. `compact` is the six-up featured strip of reference 01: narrower,
@@ -43,21 +67,29 @@ export function InternshipCard({
   location,
   workMode,
   duration,
+  compensation,
+  hours,
+  titleTo,
   tags,
   deadline,
   logo,
   actions,
+  bookmark,
   density = 'comfortable',
   children,
   className,
 }: InternshipCardProps) {
   const compact = density === 'compact'
 
-  const meta = [
-    location ? { icon: 'globe' as const, label: location } : null,
-    duration ? { icon: 'clipboard' as const, label: duration } : null,
-    workMode ? { icon: 'briefcase' as const, label: workMode } : null,
-  ].filter((entry): entry is { icon: 'globe' | 'clipboard' | 'briefcase'; label: string } => entry !== null)
+  type MetaEntry = { icon: IconName; label: string }
+  const candidates: (MetaEntry | null)[] = [
+    location ? { icon: 'globe', label: location } : null,
+    duration ? { icon: 'clipboard', label: duration } : null,
+    workMode ? { icon: 'briefcase', label: workMode } : null,
+    compensation ? { icon: 'coins', label: compensation } : null,
+    hours ? { icon: 'clock', label: hours } : null,
+  ]
+  const meta = candidates.filter((entry): entry is MetaEntry => entry !== null)
 
   return (
     <Card interactive padding="none" className={cn('flex h-full flex-col', className)}>
@@ -66,6 +98,7 @@ export function InternshipCard({
           {logo && <span className="flex size-7 shrink-0 items-center justify-center overflow-hidden rounded">{logo}</span>}
           <span className="truncate text-xs font-bold text-brand-navy dark:text-foreground">{organization}</span>
           {organizationVerified && <VerifiedBadge size="sm" />}
+          {bookmark && <span className="ms-auto -me-1.5 -mt-1.5">{bookmark}</span>}
         </div>
 
         <h3
@@ -74,7 +107,18 @@ export function InternshipCard({
             compact ? 'mt-2 text-[15px]' : 'mt-2.5 text-[17px]',
           )}
         >
-          {title}
+          {titleTo ? (
+            // `after:absolute after:inset-0` stretches the hit area over the whole card. The
+            // bookmark above sits at z-10 so it stays clickable through this overlay.
+            <Link
+              to={titleTo}
+              className="after:absolute after:inset-0 focus-visible:underline focus-visible:outline-none"
+            >
+              {title}
+            </Link>
+          ) : (
+            title
+          )}
         </h3>
 
         {meta.length > 0 && (

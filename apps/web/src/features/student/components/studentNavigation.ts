@@ -16,6 +16,10 @@ export function buildStudentNav(t: TFunction): NavSection[] {
       items: [
         { to: '/student/dashboard', label: t('student:nav.dashboard'), icon: 'home' },
         { to: '/student/opportunities', label: t('student:nav.exploreInternships'), icon: 'briefcase' },
+        // Backend Phase B4. Every signed-in account reaches this area, and the page itself renders
+        // the endpoint's own answer — a non-student simply sees the error state, not another
+        // student's bookmarks, because the route is scoped to the caller server-side.
+        { to: '/student/saved', label: t('student:nav.savedInternships'), icon: 'bookmark' },
         { to: '/student/applications', label: t('recruitment:nav.applications'), icon: 'clipboard' },
         { to: '/student/nominations', label: t('recruitment:nav.nominations'), icon: 'userCheck' },
         { to: '/student/placements', label: t('placements:nav.myPlacements'), icon: 'badgeCheck' },

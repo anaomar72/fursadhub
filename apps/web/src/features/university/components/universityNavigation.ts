@@ -80,14 +80,23 @@ export function buildUniversityNav(t: TFunction, membership: MyMembershipRespons
   if (can.canProvisionStaff) {
     manage.push({ to: '/university/staff', label: t('university:nav.staff'), icon: 'users' })
   }
-  manage.push({ to: '/university/profile', label: t('university:nav.profile'), icon: 'bank' })
+  // Editing the university record is UNIVERSITY_ADMIN only (UpdateUniversityService), so for an
+  // admin it belongs under "Manage". Everyone else may still READ it — UniversityProfilePage shows
+  // them the record without a form — so it appears under "Account" as a reference instead, matching
+  // how the organization portal files the same distinction. A "Manage" heading over something the
+  // role cannot manage is the misleading part, not the destination itself.
+  if (can.canEditUniversityProfile) {
+    manage.push({ to: '/university/profile', label: t('university:nav.profile'), icon: 'bank' })
+  }
+
+  const account: NavItem[] = [{ to: '/account/notifications', label: t('notifications:title'), icon: 'bell' }]
+  if (!can.canEditUniversityProfile) {
+    account.push({ to: '/university/profile', label: t('university:nav.university'), icon: 'bank' })
+  }
 
   return [
     { items: primary },
-    { label: t('common:shell.sections.manage'), items: manage },
-    {
-      label: t('common:shell.sections.account'),
-      items: [{ to: '/account/notifications', label: t('notifications:title'), icon: 'bell' }],
-    },
+    ...(manage.length > 0 ? [{ label: t('common:shell.sections.manage'), items: manage }] : []),
+    { label: t('common:shell.sections.account'), items: account },
   ]
 }

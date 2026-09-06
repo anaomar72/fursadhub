@@ -369,5 +369,13 @@
     "title": "Bogga lama helin",
     "description": "Bogga aad raadinayso ma jiro ama waa la beddelay.",
     "action": "Aad bogga hore"
+  },
+  "tagInput": {
+    "hint": "Riix Enter ama comma si aad u darto.",
+    "count": "{{used}} ka mid ah {{max}}",
+    "remove": "Ka saar {{tag}}",
+    "duplicate": "Horey ayaa loo daray.",
+    "tooLong": "Mid kastaa ha dhaafin {{count}} xaraf.",
+    "limitReached": "Ugu badnaan waxaad dari kartaa {{count}}."
   }
 }

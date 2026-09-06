@@ -13,6 +13,8 @@ import { StudentAreaLayout } from '../../features/student/components/StudentArea
 import { DashboardPage as StudentDashboardPage } from '../../features/student/pages/DashboardPage'
 import { StudentProfilePage } from '../../features/student/pages/ProfilePage'
 import { EnrollmentPage } from '../../features/student/pages/EnrollmentPage'
+// Backend Phase B4 frontend enablement: the student's private saved internships.
+import { SavedInternshipsPage } from '../../features/student/pages/SavedInternshipsPage'
 import { UniversityAreaLayout } from '../../features/university/components/UniversityAreaLayout'
 import { DashboardPage as UniversityDashboardPage } from '../../features/university/pages/DashboardPage'
 import { DepartmentsPage } from '../../features/university/pages/DepartmentsPage'
@@ -154,6 +156,7 @@ export const router = createBrowserRouter([
           { path: 'opportunities', element: <BrowseOpportunitiesPage /> },
           { path: 'opportunities/:opportunityId', element: <StudentOpportunityDetailPage /> },
           { path: 'opportunities/:opportunityId/apply', element: <ApplyPage /> },
+          { path: 'saved', element: <SavedInternshipsPage /> },
           { path: 'applications', element: <MyApplicationsPage /> },
           { path: 'applications/:candidacyId', element: <CandidacyDetailPage /> },
           { path: 'nominations', element: <MyNominationsPage /> },

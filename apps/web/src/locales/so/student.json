@@ -3,7 +3,8 @@
     "dashboard": "Guudmarka",
     "enrollment": "Diiwaangelinta",
     "profile": "Astaanta",
-    "exploreInternships": "Raadi tababarro"
+    "exploreInternships": "Raadi tababarro",
+    "savedInternships": "Tababarrada la keydiyay"
   },
   "dashboard": {
     "title": "Guddoomahaaga",
@@ -33,7 +34,9 @@
       "cv": "Soo geli CV-gaaga",
       "enrollment": "Sheeg diiwaangelintaada jaamacadeed",
       "verification": "Xaqiijiso diiwaangelintaada"
-    }
+    },
+    "savedInternships": "Tababarro la keydiyay",
+    "greetingNoName": "Ku soo dhawoow"
   },
   "profile": {
     "title": "Astaantaada",
@@ -128,5 +131,17 @@
       "VERIFICATION_EVIDENCE_MISSING": "Weli caddayn lama soo gelin.",
       "VERIFICATION_CASE_NOT_FOUND": "Marka hore u gudbi diiwaangelintaada xaqiijin."
     }
+  },
+  "saved": {
+    "title": "Tababarrada la keydiyay",
+    "subtitle": "Tababarrada aad calaamadisay markii aad baadhaysay. Waxaa halkan ka muuqda oo keliya tababarrada weli codsi u furan.",
+    "save": "Keydi tababarka",
+    "unsave": "Ka saar kuwa la keydiyay",
+    "savedOn": "La keydiyay {{date}}",
+    "resultCount_one": "Tababar {{count}} ah oo la keydiyay",
+    "resultCount_other": "{{count}} tababar oo la keydiyay",
+    "empty": "Weli ma aad keydin tababar",
+    "emptyHint": "Isticmaal calaamadda keydinta ee tababar kasta si aad halkan ugu hayso.",
+    "error": "Ma soo bandhigi karno tababarradaada la keydiyay."
   }
 }

@@ -9,7 +9,8 @@
     "noMembership": "You don't have an active staff role at a university.",
     "partners": "Partner organizations",
     "myStudents": "My students",
-    "supervision": "Supervision"
+    "supervision": "Supervision",
+    "university": "University"
   },
   "dashboard": {
     "title": "University overview",
@@ -78,7 +79,8 @@
     },
     "verifiedLabel": "Verified university",
     "logo": {
-      "hint": "JPEG or PNG, up to 3MB. Shown publicly on your profile."
+      "hint": "JPEG or PNG, up to 3MB. Shown publicly on your profile.",
+      "label": "Logo"
     },
     "saveChanges": "Save changes",
     "submitForVerification": "Submit for verification",
@@ -98,7 +100,24 @@
       "UNIVERSITY_LOGO_FILE_INVALID": "That file isn't accepted — upload a JPEG or PNG under 3MB.",
       "FILE_TOO_LARGE": "That file is larger than the maximum allowed size.",
       "VALIDATION_FAILED": "Please check the form and try again.",
-      "generic": "Something went wrong. Please try again."
+      "generic": "Something went wrong. Please try again.",
+      "invalidUrl": "Enter a full web address starting with http:// or https://",
+      "invalidCountry": "Use a two-letter country code.",
+      "invalidEmail": "Enter a valid email address."
+    },
+    "subtitle": "Your institution record and its verification state on FursadHub.",
+    "detailsTitle": "Institution details",
+    "detailsHint": "These details appear on your public university profile.",
+    "verificationTitle": "Institution verification",
+    "countryLabel": "Country",
+    "countryHint": "Two-letter code, e.g. SO.",
+    "publicContactEmailLabel": "Public contact email",
+    "publicContactEmailHint": "A shared institutional address such as careers@ — never a staff member’s personal login address.",
+    "cover": {
+      "label": "Cover image",
+      "hint": "JPG or PNG. Shown as the banner on your public profile.",
+      "emptyHint": "No cover image yet. Upload one to give your public profile a banner.",
+      "replaceHint": "Uploading a new image replaces the current cover."
     }
   },
   "departments": {
@@ -229,14 +248,16 @@
     "errors": {
       "departmentsRequired": "Select at least one department.",
       "STAFF_EMAIL_ALREADY_EXISTS": "An account with this email already exists.",
-      "STAFF_ROLE_NOT_ASSIGNABLE": "University admins may only assign Department Coordinator or University Supervisor.",
+      "STAFF_ROLE_NOT_ASSIGNABLE": "You cannot manage this account through staff management.",
       "STAFF_SCOPE_REQUIRED": "Please select at least one department.",
       "STAFF_PASSWORD_CONFIRMATION_MISMATCH": "Password and confirmation do not match.",
       "STAFF_MEMBERSHIP_NOT_FOUND": "Staff membership not found.",
       "USER_CLOSED": "A closed account cannot be suspended or reactivated.",
       "DEPARTMENT_NOT_IN_UNIVERSITY": "One or more departments do not belong to this university.",
       "VALIDATION_FAILED": "Please check the form and try again.",
-      "generic": "Something went wrong. Please try again."
+      "generic": "Something went wrong. Please try again.",
+      "USERNAME_ALREADY_EXISTS": "That username is already taken.",
+      "USERNAME_IMMUTABLE": "This account already has a username, and it cannot be changed."
     },
     "subtitle": "Create and manage internal university staff accounts.",
     "createTitle": "Create a staff account",
@@ -248,7 +269,19 @@
     "noDepartmentsBody": "Every staff role must be scoped to at least one department, so create a department before adding staff.",
     "addStaff": "Add staff account",
     "usernameLabel": "Username",
-    "usernameHint": "The staff member signs in with this. Lowercase letters, digits, dots, underscores or hyphens."
+    "usernameHint": "The staff member signs in with this. Lowercase letters, digits, dots, underscores or hyphens.",
+    "displayNameLabel": "Full name",
+    "displayNameHint": "How this person appears across FursadHub. Optional.",
+    "usernameReadOnly": "Username",
+    "noUsername": "No username yet",
+    "noDisplayName": "No name set",
+    "assignUsername": "Assign username",
+    "assignUsernameTitle": "Assign a login username",
+    "assignUsernameHint": "This is permanent. Once assigned, the account signs in by username and its email stops working as a credential.",
+    "assignUsernameSubmit": "Assign permanently",
+    "changeDisplayName": "Change name",
+    "changeDisplayNameTitle": "Change display name",
+    "saveDisplayName": "Save name"
   },
   "partners": {
     "title": "Partner organizations",

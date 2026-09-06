@@ -9,7 +9,8 @@
     "noMembership": "Kama qaybgalayso shaqaale ahaan jaamacad.",
     "partners": "Ururrada iskaashiga",
     "myStudents": "Ardaydayda",
-    "supervision": "Kormeerka"
+    "supervision": "Kormeerka",
+    "university": "Jaamacadda"
   },
   "dashboard": {
     "title": "Guudmarka jaamacadda",
@@ -78,7 +79,8 @@
     },
     "verifiedLabel": "Jaamacad la xaqiijiyay",
     "logo": {
-      "hint": "JPEG ama PNG, ilaa 3MB. Waxaa si guud loogu muujiyaa astaantaada."
+      "hint": "JPEG ama PNG, ilaa 3MB. Waxaa si guud loogu muujiyaa astaantaada.",
+      "label": "Astaanta"
     },
     "saveChanges": "Kaydi isbeddelada",
     "submitForVerification": "U gudbi xaqiijinta",
@@ -98,7 +100,24 @@
       "UNIVERSITY_LOGO_FILE_INVALID": "Faylkaasi lama aqbalo — soo geli JPEG ama PNG ka yar 3MB.",
       "FILE_TOO_LARGE": "Faylku wuu ka weyn yahay xadka ugu badan ee la ogol yahay.",
       "VALIDATION_FAILED": "Fadlan hubi foomka oo isku day mar kale.",
-      "generic": "Wax baa qaldamay. Fadlan isku day mar kale."
+      "generic": "Wax baa qaldamay. Fadlan isku day mar kale.",
+      "invalidUrl": "Geli cinwaan buuxa oo ku bilaabma http:// ama https://",
+      "invalidCountry": "Isticmaal laba xaraf oo dal ah.",
+      "invalidEmail": "Geli cinwaan email sax ah."
+    },
+    "subtitle": "Diiwaanka machadkaaga iyo xaaladdiisa xaqiijinta ee FursadHub.",
+    "detailsTitle": "Faahfaahinta machadka",
+    "detailsHint": "Faahfaahintan waxay ka muuqataa profile-ka jaamacadda ee dadweynaha.",
+    "verificationTitle": "Xaqiijinta machadka",
+    "countryLabel": "Dalka",
+    "countryHint": "Laba xaraf, tusaale SO.",
+    "publicContactEmailLabel": "Emailka xiriirka dadweynaha",
+    "publicContactEmailHint": "Cinwaan machadeed oo la wadaago sida careers@ — marnaba ma aha cinwaanka gelitaanka shaqaale gaar ah.",
+    "cover": {
+      "label": "Sawirka daboolka",
+      "hint": "JPG ama PNG. Waxa uu ka muuqdaa astaanta profile-kaaga dadweynaha.",
+      "emptyHint": "Weli sawir daboolka ah ma jiro. Mid soo geli si profile-kaagu u helo astaan.",
+      "replaceHint": "Soo gelinta sawir cusub waxay bedeshaa kan hadda jira."
     }
   },
   "departments": {
@@ -229,14 +248,16 @@
     "errors": {
       "departmentsRequired": "Dooro ugu yaraan hal qaybood.",
       "STAFF_EMAIL_ALREADY_EXISTS": "Iimaylkan akoon horeba u leeyahay.",
-      "STAFF_ROLE_NOT_ASSIGNABLE": "Maamulaha jaamacadda wuxuu kaliya u meelin karaa Isku-duwaha qaybta ama Kormeeraha jaamacadda.",
+      "STAFF_ROLE_NOT_ASSIGNABLE": "Akoonkan kama maamuli kartid maaraynta shaqaalaha.",
       "STAFF_SCOPE_REQUIRED": "Fadlan dooro ugu yaraan hal qaybood.",
       "STAFF_PASSWORD_CONFIRMATION_MISMATCH": "Furaha sirta ah iyo xaqiijintiisu isku mid ma aha.",
       "STAFF_MEMBERSHIP_NOT_FOUND": "Xubinnimada shaqaalaha lama helin.",
       "USER_CLOSED": "Akoon la xiray lama hakin karo ama dib looma firfircoonayn karo.",
       "DEPARTMENT_NOT_IN_UNIVERSITY": "Hal ama in ka badan oo qaybo ah kama tirsana jaamacaddan.",
       "VALIDATION_FAILED": "Fadlan hubi foomka oo isku day mar kale.",
-      "generic": "Wax baa qaldamay. Fadlan isku day mar kale."
+      "generic": "Wax baa qaldamay. Fadlan isku day mar kale.",
+      "USERNAME_ALREADY_EXISTS": "Magaca isticmaalahaas horey ayaa loo qaatay.",
+      "USERNAME_IMMUTABLE": "Akoonkani horey ayuu u leeyahay magac isticmaale, lamana beddeli karo."
     },
     "subtitle": "Samee oo maamul akoonnada shaqaalaha gudaha jaamacadda.",
     "createTitle": "Samee akoon shaqaale",
@@ -248,7 +269,19 @@
     "noDepartmentsBody": "Dooraska shaqaale kastaa waa inuu ku xidhan yahay ugu yaraan hal waax, sidaa darteed marka hore samee waax.",
     "addStaff": "Ku dar akoon shaqaale",
     "usernameLabel": "Magaca isticmaalaha",
-    "usernameHint": "Shaqaaluhu tan ayuu ku soo gelayaa. Xarfo yaryar, tirooyin, dhibco, xariiqyo hoose ama jajab."
+    "usernameHint": "Shaqaaluhu tan ayuu ku soo gelayaa. Xarfo yaryar, tirooyin, dhibco, xariiqyo hoose ama jajab.",
+    "displayNameLabel": "Magaca buuxa",
+    "displayNameHint": "Sida qofkan uga muuqdo FursadHub. Ikhtiyaari.",
+    "usernameReadOnly": "Magaca isticmaalaha",
+    "noUsername": "Weli magac isticmaale ma leh",
+    "noDisplayName": "Magac lama dejin",
+    "assignUsername": "U qoondee magac isticmaale",
+    "assignUsernameTitle": "U qoondee magac isticmaale oo gelitaan",
+    "assignUsernameHint": "Tani waa mid joogto ah. Marka la qoondeeyo, akoonku wuxuu ku soo galayaa magaca isticmaalaha, emailkuna wuxuu joojinayaa inuu noqdo aqoonsi.",
+    "assignUsernameSubmit": "U qoondee si joogto ah",
+    "changeDisplayName": "Beddel magaca",
+    "changeDisplayNameTitle": "Beddel magaca muuqda",
+    "saveDisplayName": "Kaydi magaca"
   },
   "partners": {
     "title": "Ururrada iskaashiga",

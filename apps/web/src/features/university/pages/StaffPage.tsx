@@ -6,6 +6,7 @@ import { useTranslation } from 'react-i18next'
 import * as universityApi from '../api/universityApi'
 import { useUniversityMembership } from '../components/UniversityMembershipContext'
 import { createStaffSchema, type CreateStaffFormValues } from '../schemas/createStaffSchema'
+import { StaffIdentity, StaffIdentityControls } from '../../../components/staff'
 import { changeStaffRoleSchema, type ChangeStaffRoleFormValues } from '../schemas/changeStaffRoleSchema'
 import { apiErrorMessage } from '../../../lib/api/errorMessage'
 import {
@@ -62,17 +63,22 @@ export function StaffPage() {
 
   const form = useForm<CreateStaffFormValues>({
     resolver: zodResolver(createStaffSchema),
-    defaultValues: { email: '', username: '', password: '', confirmPassword: '', role: 'DEPARTMENT_COORDINATOR', departmentIds: [] },
+    defaultValues: { displayName: '', email: '', username: '', password: '', confirmPassword: '', role: 'DEPARTMENT_COORDINATOR', departmentIds: [] },
   })
 
   const invalidateStaff = () => queryClient.invalidateQueries({ queryKey: ['university', 'staff', universityId] })
 
   const createMutation = useMutation({
-    mutationFn: (values: CreateStaffFormValues) => universityApi.createStaff(universityId, values),
+    mutationFn: ({ displayName, ...values }: CreateStaffFormValues) =>
+      universityApi.createStaff(universityId, {
+        ...values,
+        // Omitted rather than sent as '' — see the organization page for the reasoning.
+        ...(displayName?.trim() ? { displayName: displayName.trim() } : {}),
+      }),
     onSuccess: () => {
       // The admin already knows the password they typed, so nothing is echoed back — the form is
       // simply cleared, which also drops it from browser form state (CLAUDE.md section 26A).
-      form.reset({ email: '', password: '', confirmPassword: '', role: 'DEPARTMENT_COORDINATOR', departmentIds: [] })
+      form.reset({ displayName: '', email: '', username: '', password: '', confirmPassword: '', role: 'DEPARTMENT_COORDINATOR', departmentIds: [] })
       setCreateOpen(false)
       invalidateStaff()
     },
@@ -130,6 +136,18 @@ export function StaffPage() {
             onSubmit={form.handleSubmit((values) => createMutation.mutate(values))}
           >
             <div className="grid gap-4 sm:grid-cols-2">
+              {/* Backend Phase B5. Optional server-side: omitting it creates an account with no
+                  display name, which the roster then shows by email. */}
+              <FormField
+                label={t('university:staff.displayNameLabel')}
+                htmlFor="staff-display-name"
+                className="sm:col-span-2"
+                hint={t('university:staff.displayNameHint')}
+                error={form.formState.errors.displayName && t(form.formState.errors.displayName.message ?? '')}
+              >
+                <Input id="staff-display-name" type="text" autoComplete="off" {...form.register('displayName')} />
+              </FormField>
+
               <FormField
                 label={t('university:staff.emailLabel')}
                 htmlFor="staff-email"
@@ -355,6 +373,10 @@ function StaffRow({
     onSuccess: onEditSaved,
   })
 
+  // The founding admin is not managed staff: UniversityStaffService restricts every staff command
+  // to the assignable roles, so an admin membership's row shows no identity controls.
+  const isFounderAdmin = member.role === 'UNIVERSITY_ADMIN'
+
   const scopeNames = member.departmentIds
     .map((id) => departments.find((department) => department.id === id)?.name ?? id)
     .join(', ')
@@ -366,13 +388,18 @@ function StaffRow({
           <span className="flex size-10 shrink-0 items-center justify-center rounded-full bg-brand-blue-soft text-brand-blue dark:bg-info-bg dark:text-info">
             <Icon name="user" className="size-5" />
           </span>
-          <div className="min-w-0">
-            <p className="truncate font-semibold text-foreground">{member.email}</p>
-            <p className="mt-0.5 text-sm text-foreground-secondary">{t(`university:staff.roles.${member.role}`)}</p>
+          <StaffIdentity
+            displayName={member.displayName}
+            email={member.email}
+            username={member.username}
+            noDisplayNameLabel={t('university:staff.noDisplayName')}
+            noUsernameLabel={t('university:staff.noUsername')}
+          >
+            <p className="mt-1 text-sm text-foreground-secondary">{t(`university:staff.roles.${member.role}`)}</p>
             {scopeNames && (
               <p className="mt-1 text-xs text-muted">{t('university:staff.scopeSummary', { departments: scopeNames })}</p>
             )}
-          </div>
+          </StaffIdentity>
         </div>
         {member.status && (
           <StatusBadge tone={STATUS_TONE[member.status]}>
@@ -380,6 +407,28 @@ function StaffRow({
           </StatusBadge>
         )}
       </div>
+
+      {/* Identity commands (Backend Phase B5/B5.5). Managed staff only: every one of these
+          endpoints calls requireAssignableRole on the membership's CURRENT role, so a
+          UNIVERSITY_ADMIN founder is refused with STAFF_ROLE_NOT_ASSIGNABLE and is offered nothing
+          here that would fail. */}
+      {!isFounderAdmin && (
+        <div className="mt-4 border-t border-border pt-4">
+          <StaffIdentityControls
+            namespace="university"
+            currentDisplayName={member.displayName}
+            currentUsername={member.username}
+            idPrefix={`uni-staff-${member.membershipId}`}
+            onAssignUsername={(username) =>
+              universityApi.assignStaffUsername(universityId, member.membershipId, username)
+            }
+            onChangeDisplayName={(displayName) =>
+              universityApi.changeStaffDisplayName(universityId, member.membershipId, displayName)
+            }
+            onSaved={onEditSaved}
+          />
+        </div>
+      )}
 
       <div className="mt-4 flex flex-wrap items-center gap-2 border-t border-border pt-4">
         <Button type="button" size="sm" variant="outline" onClick={onToggleEdit}>

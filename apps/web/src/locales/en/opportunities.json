@@ -64,9 +64,49 @@
       "VALIDATION_FAILED": "Please check the form and try again.",
       "OPPORTUNITY_NOT_EDITABLE": "Only a draft opportunity can be edited.",
       "ACCESS_DENIED": "You do not have access to this opportunity.",
-      "generic": "Something went wrong. Please try again."
+      "generic": "Something went wrong. Please try again.",
+      "amountFormat": "Enter an amount with at most two decimal places.",
+      "amountRequired": "A fixed compensation needs an amount.",
+      "rangeRequired": "A range needs both a minimum and a maximum.",
+      "rangeOrder": "The maximum must not be below the minimum.",
+      "maximumNeedsMinimum": "A maximum needs a minimum as well.",
+      "currencyFormat": "Use a three-letter currency code.",
+      "currencyRequired": "Choose a currency for this amount.",
+      "periodRequired": "Choose what this amount is per.",
+      "hoursRange": "Hours per week must be between 1 and 80.",
+      "skillsMax": "You can list at most 20 skills.",
+      "perksMax": "You can list at most 15."
     },
-    "createHint": "Saved as a draft — you publish it as a separate step once it looks right."
+    "createHint": "Saved as a draft — you publish it as a separate step once it looks right.",
+    "compensationLegend": "Compensation",
+    "compensationTypeLabel": "How is this internship compensated?",
+    "compensationTypeHint": "Leave this unset if you would rather not say. That is different from marking it unpaid.",
+    "compensationNotStated": "Not stated",
+    "amountLabel": "Amount",
+    "minimumAmountLabel": "Minimum amount",
+    "maximumAmountLabel": "Maximum amount",
+    "negotiableAmountHint": "Optional — an indicative figure to start the conversation.",
+    "currencyLabel": "Currency",
+    "currencyHint": "Three-letter code, e.g. USD or SOS.",
+    "compensationPeriodLabel": "Per",
+    "periodNotStated": "Select a period",
+    "periodValues": {
+      "HOUR": "Hour",
+      "DAY": "Day",
+      "WEEK": "Week",
+      "MONTH": "Month",
+      "TOTAL": "Whole internship"
+    },
+    "hoursPerWeekLabel": "Hours per week",
+    "hoursPerWeekHint": "Optional. Between 1 and 80.",
+    "skillsLabel": "Skills",
+    "skillsHint": "Up to 20. These appear as chips on the internship card.",
+    "skillsPlaceholder": "e.g. React",
+    "perksLabel": "What you offer",
+    "perksHint": "Up to 15, e.g. transport allowance, mentorship.",
+    "perksPlaceholder": "e.g. Transport allowance",
+    "notAuthorizedTitle": "You cannot create internships",
+    "notAuthorizedBody": "Only organization admins and recruiters can post internships. Ask an administrator at your organization if you need this."
   },
   "actions": {
     "publish": "Publish",
@@ -186,6 +226,42 @@
     "lifecycleHint": "Each change is its own action, so nothing goes live or closes by accident.",
     "editTitle": "Edit internship",
     "editHint": "Details can be changed while the internship is still a draft.",
-    "publishedAt": "Published"
+    "publishedAt": "Published",
+    "readOnly": {
+      "PUBLISHED": "This internship is published, so its details can no longer be edited. Pause or close it first if something needs to change.",
+      "PAUSED": "This internship is paused. Published internships cannot be edited — close it and create a new one if the details need to change.",
+      "CLOSED": "This internship is closed. Closed internships cannot be edited.",
+      "CANCELLED": "This internship was cancelled. Cancelled internships cannot be edited.",
+      "DRAFT": ""
+    }
+  },
+  "compensation": {
+    "unpaid": "Unpaid",
+    "negotiable": "Negotiable",
+    "negotiableFrom": "{{amount}} · negotiable",
+    "typeValues": {
+      "UNPAID": "Unpaid",
+      "FIXED": "Fixed amount",
+      "RANGE": "Range",
+      "NEGOTIABLE": "Negotiable"
+    },
+    "periodValues": {
+      "HOUR": "{{amount}} per hour",
+      "DAY": "{{amount}} per day",
+      "WEEK": "{{amount}} per week",
+      "MONTH": "{{amount}} per month",
+      "TOTAL": "{{amount}} in total"
+    }
+  },
+  "enrichment": {
+    "title": "Compensation and requirements",
+    "compensationLabel": "Compensation",
+    "hoursPerWeekLabel": "Hours per week",
+    "hoursPerWeekValue_one": "{{count}} hour",
+    "hoursPerWeekValue_other": "{{count}} hours",
+    "hoursPerWeekShort_one": "{{count}} hr/week",
+    "hoursPerWeekShort_other": "{{count}} hrs/week",
+    "skillsLabel": "Skills",
+    "perksLabel": "What we offer"
   }
 }

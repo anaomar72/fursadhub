@@ -369,5 +369,13 @@
     "title": "Page not found",
     "description": "The page you're looking for doesn't exist or may have moved.",
     "action": "Go to homepage"
+  },
+  "tagInput": {
+    "hint": "Press Enter or comma to add.",
+    "count": "{{used}} of {{max}}",
+    "remove": "Remove {{tag}}",
+    "duplicate": "That has already been added.",
+    "tooLong": "Keep each entry to {{count}} characters or fewer.",
+    "limitReached": "You can add at most {{count}}."
   }
 }
