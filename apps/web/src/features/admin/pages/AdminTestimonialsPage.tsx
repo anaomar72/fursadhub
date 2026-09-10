@@ -9,7 +9,6 @@ import {
   ErrorState,
   FilterBar,
   FormField,
-  LoadingState,
   PageHeader,
   Pagination,
   Select,
@@ -20,6 +19,7 @@ import {
   type StatusTone,
 } from '../../../components/ui'
 import { apiErrorMessage } from '../../../lib/api/errorMessage'
+import { AdminTableSkeleton } from '../components/AdminSkeletons'
 import * as adminApi from '../api/adminApi'
 import { formatDateTime } from '../../../lib/utils/formatDate'
 import { testimonialAttribution } from '../../testimonials/attribution'
@@ -241,7 +241,7 @@ export function AdminTestimonialsPage() {
       </FilterBar>
 
       {testimonialsQuery.isLoading ? (
-        <LoadingState label={t('common:status.loading')} />
+        <AdminTableSkeleton columns={5} />
       ) : testimonialsQuery.isError ? (
         <ErrorState
           title={t('common:status.error')}

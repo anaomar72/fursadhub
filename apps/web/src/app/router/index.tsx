@@ -80,6 +80,10 @@ import { InternshipPolicyPage } from '../../features/university/pages/Internship
 // Phase 7 platform administration. Which tabs render is driven by the caller's platform roles;
 // every endpoint behind them re-authorizes independently (CLAUDE.md section 24).
 import { AdminAreaLayout } from '../../features/admin/components/AdminAreaLayout'
+import {
+  AdminLandingRedirect,
+  RequirePlatformCapability,
+} from '../../features/admin/components/RequirePlatformCapability'
 import { AdminDashboardPage } from '../../features/admin/pages/AdminDashboardPage'
 import { AdminOrganizationsPage } from '../../features/admin/pages/AdminOrganizationsPage'
 import { AdminUniversitiesPage } from '../../features/admin/pages/AdminUniversitiesPage'
@@ -355,29 +359,66 @@ export const router = createBrowserRouter([
     children: [
       {
         children: [
-          // Dashboard is SUPER_ADMIN-only; a verification officer landing here sees the API's 403
-          // rather than a fabricated client-side decision, so the redirect is to organizations —
-          // the one area both platform roles share.
-          { index: true, element: <Navigate to="organizations" replace /> },
-          { path: 'dashboard', element: <AdminDashboardPage /> },
-          { path: 'organizations', element: <AdminOrganizationsPage /> },
-          // Phase 14. Institution review happens on the record, not in a list row — GET
-          // /admin/{organizations,universities}/{id} already existed and was never called.
-          { path: 'organizations/:organizationId', element: <AdminOrganizationDetailPage /> },
-          { path: 'universities', element: <AdminUniversitiesPage /> },
-          { path: 'universities/:universityId', element: <AdminUniversityDetailPage /> },
-          { path: 'verification-escalations', element: <AdminEscalationsPage /> },
-          { path: 'users', element: <AdminUsersPage /> },
-          // Backend Phase B6: platform-wide opportunity oversight. Read-only — no detail route,
-          // because the record opens in a drawer over the filtered table.
-          { path: 'opportunities', element: <AdminOpportunitiesPage /> },
-          // Phase 14. GET /admin/users/{id}, likewise already on AdminController.
-          { path: 'users/:userId', element: <AdminUserDetailPage /> },
-          { path: 'privacy-requests', element: <AdminPrivacyRequestsPage /> },
-          { path: 'legal-documents', element: <AdminLegalDocumentsPage /> },
-          { path: 'testimonials', element: <AdminTestimonialsPage /> },
-          { path: 'audit', element: <AdminAuditPage /> },
-          { path: 'platform-roles', element: <AdminPlatformRolesPage /> },
+          // Phase E. Each destination sits behind the capability that governs its API, mirrored from
+          // PlatformAuthorization through adminCapabilities — the same flags that build the sidebar,
+          // so a hidden destination is also unreachable by typing its URL. UX only: every endpoint
+          // re-authorizes from current PostgreSQL data regardless of who reaches the route
+          // (CLAUDE.md section 24). What the guards remove is a verification officer opening a
+          // Super Admin page and watching every query on it answer 403.
+          { index: true, element: <AdminLandingRedirect /> },
+          {
+            // requireReviewer — SUPER_ADMIN + VERIFICATION_OFFICER. The reason the second role
+            // exists, so it is the widest gate in the console.
+            element: <RequirePlatformCapability capability="canReviewInstitutions" />,
+            children: [
+              { path: 'organizations', element: <AdminOrganizationsPage /> },
+              // Phase 14. Institution review happens on the record, not in a list row — GET
+              // /admin/{organizations,universities}/{id} already existed and was never called.
+              { path: 'organizations/:organizationId', element: <AdminOrganizationDetailPage /> },
+              { path: 'universities', element: <AdminUniversitiesPage /> },
+              { path: 'universities/:universityId', element: <AdminUniversityDetailPage /> },
+            ],
+          },
+          {
+            element: <RequirePlatformCapability capability="canReviewStudentCases" />,
+            children: [{ path: 'verification-escalations', element: <AdminEscalationsPage /> }],
+          },
+          {
+            element: <RequirePlatformCapability capability="canReadStatistics" />,
+            children: [{ path: 'dashboard', element: <AdminDashboardPage /> }],
+          },
+          {
+            element: <RequirePlatformCapability capability="canAdministerAccounts" />,
+            children: [
+              { path: 'users', element: <AdminUsersPage /> },
+              // Phase 14. GET /admin/users/{id}, likewise already on AdminController.
+              { path: 'users/:userId', element: <AdminUserDetailPage /> },
+            ],
+          },
+          {
+            // Backend Phase B6: platform-wide opportunity oversight. Read-only — no detail route,
+            // because the record opens in a drawer over the filtered table.
+            element: <RequirePlatformCapability capability="canOverseeOpportunities" />,
+            children: [{ path: 'opportunities', element: <AdminOpportunitiesPage /> }],
+          },
+          {
+            element: <RequirePlatformCapability capability="canAdministerCompliance" />,
+            children: [
+              { path: 'privacy-requests', element: <AdminPrivacyRequestsPage /> },
+              { path: 'legal-documents', element: <AdminLegalDocumentsPage /> },
+              { path: 'testimonials', element: <AdminTestimonialsPage /> },
+            ],
+          },
+          {
+            element: <RequirePlatformCapability capability="canReadAuditTrail" />,
+            children: [{ path: 'audit', element: <AdminAuditPage /> }],
+          },
+          {
+            // Platform-role grants and the managed verification-officer accounts that live on the
+            // same page. Provisioning is not self-replicating: an officer must never reach this.
+            element: <RequirePlatformCapability capability="canManagePlatformRoles" />,
+            children: [{ path: 'platform-roles', element: <AdminPlatformRolesPage /> }],
+          },
         ],
       },
     ],

@@ -11,7 +11,6 @@ import {
   ErrorState,
   FormField,
   Input,
-  LoadingState,
   PageHeader,
   Select,
   StatusBadge,
@@ -19,6 +18,7 @@ import {
 } from '../../../components/ui'
 import { apiErrorMessage } from '../../../lib/api/errorMessage'
 import { VerificationOfficersPanel } from '../components/VerificationOfficersPanel'
+import { AdminTableSkeleton } from '../components/AdminSkeletons'
 import * as adminApi from '../api/adminApi'
 import { formatDateTime } from '../../../lib/utils/formatDate'
 import type { PlatformAdminGrant, PlatformRole } from '../types'
@@ -217,7 +217,7 @@ export function AdminPlatformRolesPage() {
       </Card>
 
       {grantsQuery.isLoading ? (
-        <LoadingState label={t('common:status.loading')} />
+        <AdminTableSkeleton columns={6} />
       ) : grantsQuery.isError ? (
         <ErrorState
           title={t('common:status.error')}

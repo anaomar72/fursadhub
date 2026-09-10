@@ -10,7 +10,6 @@ import {
   ErrorState,
   FormField,
   Input,
-  LoadingState,
   PageHeader,
   Select,
   StatusBadge,
@@ -19,6 +18,7 @@ import {
 } from '../../../components/ui'
 import { apiErrorMessage } from '../../../lib/api/errorMessage'
 import type { LegalDocument, LegalDocumentType } from '../../legal/types'
+import { AdminTableSkeleton } from '../components/AdminSkeletons'
 import * as adminApi from '../api/adminApi'
 import { formatDate } from '../../../lib/utils/formatDate'
 
@@ -221,7 +221,7 @@ export function AdminLegalDocumentsPage() {
       <section className="flex flex-col gap-3">
         <h2 className="font-semibold text-foreground">{t('admin:legalDocuments.published')}</h2>
         {documentsQuery.isLoading ? (
-          <LoadingState label={t('common:status.loading')} />
+          <AdminTableSkeleton columns={6} />
         ) : documentsQuery.isError ? (
           <ErrorState
             title={t('common:status.error')}

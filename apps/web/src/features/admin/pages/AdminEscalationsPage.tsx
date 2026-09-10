@@ -10,13 +10,13 @@ import {
   EmptyState,
   ErrorState,
   FormField,
-  LoadingState,
   PageHeader,
   StatusBadge,
   Textarea,
   type DataTableColumn,
 } from '../../../components/ui'
 import { apiErrorMessage } from '../../../lib/api/errorMessage'
+import { AdminTableSkeleton } from '../components/AdminSkeletons'
 import * as adminApi from '../api/adminApi'
 import { DetailField } from '../components/DetailField'
 import { useEvidenceDownload } from '../hooks/useEvidenceDownload'
@@ -152,7 +152,7 @@ export function AdminEscalationsPage() {
       {error && !openCase && <Alert tone="danger">{error}</Alert>}
 
       {escalationsQuery.isLoading ? (
-        <LoadingState label={t('common:status.loading')} />
+        <AdminTableSkeleton columns={6} />
       ) : escalationsQuery.isError ? (
         <ErrorState
           title={t('common:status.error')}

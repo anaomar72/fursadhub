@@ -10,13 +10,13 @@ import {
   ConfirmationDialog,
   ErrorState,
   FormField,
-  LoadingState,
   Modal,
   PageHeader,
   StatusBadge,
   Textarea,
 } from '../../../components/ui'
 import { apiErrorMessage } from '../../../lib/api/errorMessage'
+import { AdminDetailSkeleton } from '../components/AdminSkeletons'
 import * as adminApi from '../api/adminApi'
 import { USER_STATUS_TONE } from '../statusTone'
 import { formatDateTime } from '../../../lib/utils/formatDate'
@@ -94,7 +94,7 @@ export function AdminUserDetailPage() {
       />
 
       {userQuery.isLoading ? (
-        <LoadingState label={t('common:status.loading')} />
+        <AdminDetailSkeleton />
       ) : userQuery.isError || !userQuery.data ? (
         <ErrorState
           title={t('common:status.error')}

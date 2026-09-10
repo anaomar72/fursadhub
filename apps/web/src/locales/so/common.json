@@ -20,7 +20,8 @@
     "portals": {
       "university": "Bogga Jaamacadda",
       "organization": "Bogga Qorista Shaqaalaha",
-      "admin": "Konsool-ka Maamulaha Sare"
+      "admin": "Konsool-ka Maamulaha Sare",
+      "verificationOfficer": "Konsool-ka Xaqiijinta"
     }
   },
   "publicPages": {

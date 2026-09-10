@@ -7,11 +7,11 @@ import {
   Button,
   Card,
   ErrorState,
-  LoadingState,
   PageHeader,
   StatusBadge,
 } from '../../../components/ui'
 import { apiErrorMessage } from '../../../lib/api/errorMessage'
+import { AdminDetailSkeleton } from '../components/AdminSkeletons'
 import * as adminApi from '../api/adminApi'
 import { InstitutionReviewActions } from '../components/InstitutionReviewActions'
 import { useEvidenceDownload } from '../hooks/useEvidenceDownload'
@@ -76,7 +76,7 @@ export function AdminOrganizationDetailPage() {
       />
 
       {organizationQuery.isLoading ? (
-        <LoadingState label={t('common:status.loading')} />
+        <AdminDetailSkeleton />
       ) : organizationQuery.isError || !organization ? (
         <ErrorState
           title={t('common:status.error')}

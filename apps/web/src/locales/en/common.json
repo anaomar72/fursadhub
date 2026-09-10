@@ -20,7 +20,8 @@
     "portals": {
       "university": "University Portal",
       "organization": "Recruiter Portal",
-      "admin": "Super Admin Console"
+      "admin": "Super Admin Console",
+      "verificationOfficer": "Verification Console"
     }
   },
   "publicPages": {

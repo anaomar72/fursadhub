@@ -10,12 +10,12 @@ import {
   ErrorState,
   FilterBar,
   Input,
-  LoadingState,
   PageHeader,
   Pagination,
   Select,
   type DataTableColumn,
 } from '../../../components/ui'
+import { AdminTableSkeleton } from '../components/AdminSkeletons'
 import * as adminApi from '../api/adminApi'
 import { formatDateTime } from '../../../lib/utils/formatDate'
 import type { AuditEvent } from '../types'
@@ -202,7 +202,7 @@ export function AdminAuditPage() {
       {invalidRange && <Alert tone="warning">{t('admin:audit.invalidRange')}</Alert>}
 
       {eventsQuery.isLoading ? (
-        <LoadingState label={t('common:status.loading')} />
+        <AdminTableSkeleton columns={5} />
       ) : eventsQuery.isError ? (
         <ErrorState
           title={t('common:status.error')}

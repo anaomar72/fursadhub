@@ -94,6 +94,47 @@ class TestimonialModerationIT extends AbstractPhase7IT {
         assertThat(publicIds()).doesNotContain(id.toString());
     }
 
+    /**
+     * Phase E. Both platform roles are "admins"; only one of them moderates.
+     *
+     * <p>{@code TestimonialService} guards every moderation command with {@code requireSuperAdmin},
+     * not {@code requireReviewer}. That distinction is easy to lose — a verification officer holds a
+     * real platform grant, reaches {@code /api/v1/admin/...} paths, and reviews institutions on the
+     * adjacent screen — so it is pinned here rather than left to the reading of one annotation.
+     * Deciding which quotes appear on FursadHub's public site is editorial control of the product,
+     * which is not what a reviewer was appointed to do.
+     */
+    @Test
+    void aVerificationOfficerReviewsInstitutionsAndNeverModeratesTestimonials() {
+        String author = studentAuthor("testimonial-officer-denied");
+        UUID id = UUID.fromString((String) authorizedPost(MINE, author,
+                submission("Hodan I.", "My coordinator nominated me and the placement started on time."))
+                .getBody().get("id"));
+
+        Staff officer = verificationOfficer("testimonial-officer");
+
+        // The reviewer surface the role exists for: reachable, so this cannot pass by the token
+        // being broken or the account being inactive.
+        assertThat(authorizedGet("/api/v1/admin/organizations", officer.token()).getStatusCode())
+                .isEqualTo(HttpStatus.OK);
+
+        // The moderation surface: refused, in every direction.
+        assertThat(authorizedGet("/api/v1/admin/testimonials", officer.token()).getStatusCode())
+                .isEqualTo(HttpStatus.FORBIDDEN);
+        assertThat(authorizedPost("/api/v1/admin/testimonials/" + id + "/publish", officer.token(), null)
+                .getStatusCode()).isEqualTo(HttpStatus.FORBIDDEN);
+        // Unpublish carries a body (the note is optional, the body is not), so it is sent with one:
+        // a missing body is refused by request binding BEFORE the method runs, which would make this
+        // assertion pass on a 400 without ever reaching the authorization check it exists to prove.
+        assertThat(authorizedPost("/api/v1/admin/testimonials/" + id + "/unpublish", officer.token(), Map.of())
+                .getStatusCode()).isEqualTo(HttpStatus.FORBIDDEN);
+        assertThat(authorizedPost("/api/v1/admin/testimonials/" + id + "/reject", officer.token(),
+                Map.of("note", "Not suitable")).getStatusCode()).isEqualTo(HttpStatus.FORBIDDEN);
+
+        // And the refusal was real: the testimonial never reached the public site.
+        assertThat(publicIds()).doesNotContain(id.toString());
+    }
+
     @Test
     void rejectedTestimonialsStayOffTheSiteAndRequireAReason() {
         String author = studentAuthor("testimonial-rejected");

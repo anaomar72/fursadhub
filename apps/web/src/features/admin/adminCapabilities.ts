@@ -77,3 +77,46 @@ export function adminCapabilities(session: AdminSession): AdminCapabilities {
     canOverseeOpportunities: isSuperAdmin,
   }
 }
+
+/**
+ * Where a platform administrator should land when they open {@code /admin} with no destination, and
+ * where {@link RequirePlatformCapability} sends them when they reach one they cannot use.
+ *
+ * <p>Derived from the same capability flags as the sidebar, in the order the console presents them,
+ * so the answer is always a destination whose nav item that caller can actually see. A Super Admin
+ * lands on the dashboard; a verification officer lands on the institution queue, which is their
+ * work rather than a page of numbers they are refused.
+ *
+ * <p>Returns {@code null} when the caller holds a platform grant but no capability the console has a
+ * page for — an unknown or withdrawn role. That case must NOT resolve to a path: the guard renders
+ * a refusal instead, because redirecting a capability-less caller to a guarded route would bounce
+ * between the two forever. Fail closed, and fail without a loop (CLAUDE.md section 26A).
+ */
+export function adminLandingPath(session: AdminSession): string | null {
+  const can = adminCapabilities(session)
+
+  if (can.canReadStatistics) return '/admin/dashboard'
+  if (can.canReviewInstitutions) return '/admin/organizations'
+  if (can.canReviewStudentCases) return '/admin/verification-escalations'
+  if (can.canAdministerAccounts) return '/admin/users'
+  return null
+}
+
+/**
+ * The i18n key naming the console the caller is actually in.
+ *
+ * <p>Both platform roles share one shell, and it used to introduce itself as the "Super Admin
+ * Console" to everyone — so a verification officer, whose sidebar is three review queues and who is
+ * refused every Super Admin endpoint, was told they were sitting in the Super Admin console. Naming
+ * a workspace after authority the reader does not have is the exact role confusion Phase E is meant
+ * to remove.
+ *
+ * <p>Derived from capability rather than a role string, like everything else here: full platform
+ * authority is what makes the console the Super Admin's, and {@code canManagePlatformRoles} is the
+ * narrowest flag that means it.
+ */
+export function adminWorkspaceLabelKey(session: AdminSession): string {
+  return adminCapabilities(session).canManagePlatformRoles
+    ? 'common:shell.portals.admin'
+    : 'common:shell.portals.verificationOfficer'
+}

@@ -7,7 +7,6 @@ import {
   EmptyState,
   ErrorState,
   FilterBar,
-  LoadingState,
   PageHeader,
   Pagination,
   SearchInput,
@@ -15,6 +14,7 @@ import {
   StatusBadge,
   type DataTableColumn,
 } from '../../../components/ui'
+import { AdminTableSkeleton } from '../components/AdminSkeletons'
 import * as adminApi from '../api/adminApi'
 import { INSTITUTION_FILTER_STATUSES } from '../institutionWorkflow'
 import { INSTITUTION_STATUS_TONE } from '../statusTone'
@@ -149,7 +149,7 @@ export function AdminUniversitiesPage() {
       </form>
 
       {universitiesQuery.isLoading ? (
-        <LoadingState label={t('common:status.loading')} />
+        <AdminTableSkeleton columns={5} />
       ) : universitiesQuery.isError ? (
         <ErrorState
           title={t('common:status.error')}

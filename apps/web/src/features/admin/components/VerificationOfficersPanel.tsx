@@ -12,11 +12,11 @@ import {
   ErrorState,
   FormField,
   Input,
-  LoadingState,
   PasswordInput,
   StatusBadge,
 } from '../../../components/ui'
 import { apiErrorMessage } from '../../../lib/api/errorMessage'
+import { AdminDetailSkeleton } from './AdminSkeletons'
 import * as adminApi from '../api/adminApi'
 import {
   assignOfficerUsernameSchema,
@@ -276,7 +276,7 @@ export function VerificationOfficersPanel() {
       )}
 
       {officersQuery.isLoading ? (
-        <LoadingState label={t('common:status.loading')} />
+        <AdminDetailSkeleton fields={3} />
       ) : officersQuery.isError ? (
         <ErrorState
           title={t('common:status.error')}

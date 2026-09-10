@@ -7,13 +7,13 @@ import {
   ErrorState,
   Icon,
   LineChart,
-  LoadingState,
   PageHeader,
   Select,
   StatusBadge,
   StatusDistribution,
   type IconName,
 } from '../../../components/ui'
+import { AdminChartSkeleton, AdminListSkeleton, AdminMetricsSkeleton } from '../components/AdminSkeletons'
 import * as adminApi from '../api/adminApi'
 import {
   attentionItems,
@@ -81,7 +81,7 @@ export function AdminDashboardPage() {
       />
 
       {statisticsQuery.isLoading ? (
-        <LoadingState label={t('common:status.loading')} />
+        <AdminMetricsSkeleton />
       ) : statisticsQuery.isError || !statisticsQuery.data ? (
         <ErrorState
           title={t('common:status.error')}
@@ -309,7 +309,7 @@ function ActivityPanel({ className }: { className?: string }) {
 
       <div className="mt-4">
         {typesQuery.isLoading || activity.isLoading ? (
-          <LoadingState label={t('common:status.loading')} />
+          <AdminChartSkeleton />
         ) : types.length === 0 ? (
           <p className="py-10 text-center text-sm text-foreground-secondary">
             {t('admin:dashboard.activity.empty')}
@@ -387,7 +387,7 @@ function RecentRegistrations() {
       </div>
 
       {usersQuery.isLoading ? (
-        <LoadingState label={t('common:status.loading')} />
+        <AdminListSkeleton />
       ) : usersQuery.isError ? (
         <p className="py-6 text-sm text-foreground-secondary">{t('admin:dashboard.recent.unavailable')}</p>
       ) : users.length === 0 ? (

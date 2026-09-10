@@ -7,6 +7,7 @@ import { PageContainer } from '../../../app/layouts/PageContainer'
 import * as adminApi from '../api/adminApi'
 import { AdminSessionContext } from './AdminSessionContext'
 import { buildAdminNav } from './adminNavigation'
+import { adminWorkspaceLabelKey } from '../adminCapabilities'
 
 /**
  * Resolves the caller's platform roles once, shares them with every admin page, and builds the
@@ -57,7 +58,7 @@ export function AdminAreaLayout() {
       <AppShell workspace="platform"
         areaLabel={t('common:nav.admin')}
         tone="navy"
-        brand={{ portalLabel: t('common:shell.portals.admin') }}
+        brand={{ portalLabel: t(adminWorkspaceLabelKey(session)) }}
         sections={buildAdminNav(t, session)}
       >
         <PageContainer>

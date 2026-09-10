@@ -8,7 +8,6 @@ import {
   EmptyState,
   ErrorState,
   FilterBar,
-  LoadingState,
   PageHeader,
   Pagination,
   SearchInput,
@@ -16,6 +15,7 @@ import {
   StatusBadge,
   type DataTableColumn,
 } from '../../../components/ui'
+import { AdminTableSkeleton } from '../components/AdminSkeletons'
 import * as adminApi from '../api/adminApi'
 import { USER_STATUS_TONE } from '../statusTone'
 import { formatDate } from '../../../lib/utils/formatDate'
@@ -150,7 +150,7 @@ export function AdminUsersPage() {
       </form>
 
       {usersQuery.isLoading ? (
-        <LoadingState label={t('common:status.loading')} />
+        <AdminTableSkeleton columns={5} />
       ) : usersQuery.isError ? (
         <ErrorState
           title={t('common:status.error')}

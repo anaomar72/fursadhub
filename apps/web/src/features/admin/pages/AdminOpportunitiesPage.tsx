@@ -10,7 +10,6 @@ import {
   EmptyState,
   ErrorState,
   FilterBar,
-  LoadingState,
   PageHeader,
   Pagination,
   SearchInput,
@@ -18,6 +17,7 @@ import {
   StatusBadge,
   type DataTableColumn,
 } from '../../../components/ui'
+import { AdminDetailSkeleton, AdminTableSkeleton } from '../components/AdminSkeletons'
 import * as adminApi from '../api/adminApi'
 import { distributionTone } from '../statusTone'
 import { formatDate } from '../../../lib/utils/formatDate'
@@ -186,7 +186,7 @@ export function AdminOpportunitiesPage() {
       </form>
 
       {opportunitiesQuery.isLoading ? (
-        <LoadingState label={t('common:status.loading')} />
+        <AdminTableSkeleton columns={6} />
       ) : opportunitiesQuery.isError ? (
         <ErrorState
           title={t('common:status.error')}
@@ -259,7 +259,7 @@ function OpportunityDetailDrawer({
       closeLabel={t('common:actions.close')}
     >
       {detailQuery.isLoading ? (
-        <LoadingState label={t('common:status.loading')} />
+        <AdminDetailSkeleton fields={5} />
       ) : detailQuery.isError || !detail ? (
         <ErrorState
           title={t('common:status.error')}

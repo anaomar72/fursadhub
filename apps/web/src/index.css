@@ -307,6 +307,26 @@
   --workspace-tint: color-mix(in srgb, var(--color-brand-navy) 3%, transparent);
 }
 
+/* Phase E. The platform control plane: the most restrained family of the four, and deliberately the
+   least decorated thing in FursadHub.
+
+   Densest rhythm and squarest corners because these pages are mostly tables — a Super Admin reading
+   the account directory or the audit trail wants more rows on screen and a grid that reads as a
+   grid, not as a stack of soft cards. The rule is the strong NEUTRAL border rather than a brand
+   mix: every admin table is already full of status colour, and a tinted rule would compete with the
+   one thing being scanned for. No wash at all, in either theme — a control plane earns trust by
+   being plain, and a decorative tint over an audit log reads as a product trying to be liked.
+
+   It is still unmistakably FursadHub: the shell tone, brand anchors, typography, both colour themes
+   and every shared primitive are the same ones the other three families use. */
+[data-workspace='platform'] {
+  --workspace-page-y: 1.25rem;
+  --workspace-gap: 1rem;
+  --workspace-radius: var(--radius-md);
+  --workspace-rule: var(--color-border-strong);
+  --workspace-tint: transparent;
+}
+
 /* In dark mode the tints would read as grime over the navy ground — the ramp already carries the
    plane order, so the families keep their rhythm and rules and drop the wash. */
 :root[data-theme='dark'] [data-workspace='student'],

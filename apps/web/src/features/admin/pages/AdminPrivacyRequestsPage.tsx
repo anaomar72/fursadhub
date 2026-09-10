@@ -11,7 +11,6 @@ import {
   ErrorState,
   FilterBar,
   FormField,
-  LoadingState,
   PageHeader,
   Pagination,
   Select,
@@ -20,6 +19,7 @@ import {
   type DataTableColumn,
 } from '../../../components/ui'
 import { apiErrorMessage } from '../../../lib/api/errorMessage'
+import { AdminTableSkeleton } from '../components/AdminSkeletons'
 import * as adminApi from '../api/adminApi'
 import { DetailField } from '../components/DetailField'
 import { PRIVACY_REQUEST_TONE } from '../statusTone'
@@ -176,7 +176,7 @@ export function AdminPrivacyRequestsPage() {
       </FilterBar>
 
       {requestsQuery.isLoading ? (
-        <LoadingState label={t('common:status.loading')} />
+        <AdminTableSkeleton columns={5} />
       ) : requestsQuery.isError ? (
         <ErrorState
           title={t('common:status.error')}

@@ -406,7 +406,7 @@
     "revoke": "Revoke",
     "active": "Active",
     "revoked": "Revoked",
-    "grantedAt": "{{role}} · granted {{date}}",
+    "grantedAt": "Granted",
     "errors": {
       "generic": "That action could not be completed. Please try again.",
       "USER_NOT_FOUND": "That account could not be found.",

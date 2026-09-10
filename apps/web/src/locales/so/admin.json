@@ -406,7 +406,7 @@
     "revoke": "Ka qaad",
     "active": "Firfircoon",
     "revoked": "La qaaday",
-    "grantedAt": "{{role}} · la siiyay {{date}}",
+    "grantedAt": "La siiyay",
     "errors": {
       "generic": "Tallaabadaas lama dhammayn karin. Fadlan mar kale isku day.",
       "USER_NOT_FOUND": "Akoonkaas lama helin.",

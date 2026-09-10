@@ -91,6 +91,7 @@ describe('the family variables are a real system, not decoration', () => {
   const student = block("[data-workspace='student']")
   const organization = block("[data-workspace='organization']")
   const university = block("[data-workspace='university']")
+  const platform = block("[data-workspace='platform']")
 
   it('gives each family its own rhythm, and orders them student > university > organization', () => {
     const y = (v: string) => parseFloat(v)
@@ -104,11 +105,35 @@ describe('the family variables are a real system, not decoration', () => {
   })
 
   /*
+   * Phase E. The platform console is a control plane, and the brief asks for it to be the most
+   * restrained family of the four. That is a measurable claim, so it is measured rather than
+   * asserted in a comment.
+   */
+  it('makes the platform console the densest family, because its pages are tables', () => {
+    const y = (v: string) => parseFloat(v)
+    for (const family of [student, university]) {
+      expect(y(platform['--workspace-page-y'])).toBeLessThan(y(family['--workspace-page-y']))
+    }
+    expect(y(platform['--workspace-page-y'])).toBeLessThanOrEqual(y(organization['--workspace-page-y']))
+  })
+
+  it('never washes the control plane in a tint, in either theme', () => {
+    // A decorative wash over an audit log reads as a product trying to be liked. The base block
+    // already defaults to transparent, so this pins the platform block's own value.
+    expect(platform['--workspace-tint']).toBe('transparent')
+  })
+
+  it('rules the platform console in neutral, so status colour is the only colour in a table', () => {
+    expect(platform['--workspace-rule']).toBe('var(--color-border-strong)')
+    expect(platform['--workspace-rule']).not.toMatch(/--color-brand-/)
+  })
+
+  /*
    * The brief's constraint, encoded: the families differ in rhythm, surface and rule — NOT in brand
    * colour. A family block that redefined a brand anchor would be the start of three products.
    */
   it('never redefines a brand anchor', () => {
-    for (const family of [student, organization, university]) {
+    for (const family of [student, organization, university, platform]) {
       for (const name of Object.keys(family)) {
         expect(name.startsWith('--workspace-')).toBe(true)
       }
