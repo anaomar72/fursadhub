@@ -49,7 +49,7 @@ class UniversityStaffRoleAssignabilityTest {
     void createRejectsUniversityAdminRole() {
         assertThatThrownBy(() -> service.create(
                 UUID.randomUUID(), UUID.randomUUID(), "new-admin@example.test", "Password123", "Password123",
-                UniversityRole.UNIVERSITY_ADMIN, List.of(), "127.0.0.1", "test"))
+                null, "newadmin", UniversityRole.UNIVERSITY_ADMIN, List.of(), "127.0.0.1", "test"))
                 .isInstanceOf(ApiException.class)
                 .extracting(e -> ((ApiException) e).getCode())
                 .isEqualTo("STAFF_ROLE_NOT_ASSIGNABLE");
@@ -76,7 +76,7 @@ class UniversityStaffRoleAssignabilityTest {
 
         UniversityStaffService.StaffMember created = service.create(
                 UUID.randomUUID(), universityId, "new-staff@example.test", "Password123", "Password123",
-                role, List.of(departmentId), "127.0.0.1", "test");
+                null, "newstaff", role, List.of(departmentId), "127.0.0.1", "test");
 
         assertThat(created.membership().getRole()).isEqualTo(role);
     }

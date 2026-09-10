@@ -1,0 +1,52 @@
+{
+  "nav": {
+    "title": "Share your story"
+  },
+  "title": "Share your story",
+  "description": "Tell other students, organizations and universities what working through FursadHub was actually like.",
+  "form": {
+    "title": "Write your testimonial",
+    "moderationNotice": "Submitting sends your words to the FursadHub team for review. Nothing appears on the public site until a moderator publishes it, and your words are published exactly as you wrote them or not at all.",
+    "displayName": "Name to publish",
+    "displayNameHint": "This is the name shown beside your quote. Your account email is never published.",
+    "body": "Your testimonial",
+    "bodyHint": "Between 40 and 1000 characters.",
+    "submit": "Submit for review",
+    "errors": {
+      "TESTIMONIAL_ALREADY_SUBMITTED": "You already have a testimonial awaiting review or published.",
+      "TESTIMONIAL_INVALID_TRANSITION": "That testimonial cannot change state that way.",
+      "TESTIMONIAL_NOT_FOUND": "That testimonial does not exist.",
+      "VALIDATION_FAILED": "Check the highlighted fields and try again.",
+      "generic": "Your testimonial could not be submitted. Try again.",
+      "TESTIMONIAL_ROLE_NOT_ELIGIBLE": "Your account does not yet have a FursadHub role we can attribute a story to."
+    },
+    "rating": "Rate your FursadHub experience",
+    "sharingAs": "You are sharing as",
+    "sharingAsHint": "FursadHub takes this from your account, so your story is always published under the role you really hold. It cannot be changed here."
+  },
+  "mine": {
+    "title": "Your submissions",
+    "empty": "You have not submitted a testimonial yet.",
+    "moderatorNote": "Reviewer note: {{note}}"
+  },
+  "status": {
+    "SUBMITTED": "Awaiting review",
+    "PUBLISHED": "Published",
+    "REJECTED": "Not published"
+  },
+  "errors": {
+    "nameRequired": "Enter the name to publish beside your quote.",
+    "nameTooLong": "Use 120 characters or fewer.",
+    "bodyTooShort": "Write at least 40 characters.",
+    "bodyTooLong": "Use 1000 characters or fewer.",
+    "ratingRequired": "Choose a rating between 1 and 5 stars."
+  },
+  "rating": {
+    "outOfFive": "{{rating}} out of 5",
+    "none": "No rating selected yet"
+  },
+  "ineligible": {
+    "title": "Not available yet",
+    "body": "Stories are published under a real FursadHub role. Once you have a student profile or a staff role at a university or organization, you can share yours here."
+  }
+}

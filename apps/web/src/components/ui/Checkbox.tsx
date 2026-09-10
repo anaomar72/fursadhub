@@ -17,9 +17,9 @@ export const Checkbox = forwardRef<HTMLInputElement, CheckboxProps>(
           type="checkbox"
           aria-invalid={invalid || undefined}
           className={cn(
-            'mt-0.5 h-4 w-4 shrink-0 rounded border bg-surface text-brand-primary',
-            'transition-colors duration-150 ease-in-out',
-            'focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-primary',
+            'mt-0.5 h-4 w-4 shrink-0 rounded border bg-surface accent-brand-primary',
+            'transition-colors duration-150 ease-in-out disabled:cursor-not-allowed disabled:opacity-50 motion-reduce:transition-none',
+            'focus:outline-none focus-visible:ring-2 focus-visible:ring-focus-ring',
             invalid ? 'border-danger' : 'border-border',
           )}
           {...props}

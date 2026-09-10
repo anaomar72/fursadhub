@@ -3,6 +3,8 @@ package com.fursadhub.organization.api;
 import com.fursadhub.common.api.MessageResponse;
 import com.fursadhub.common.api.TemporaryCredentialResponse;
 import com.fursadhub.common.web.RequestMetadata;
+import com.fursadhub.identity.domain.DisplayNamePolicy;
+import com.fursadhub.identity.domain.ManagedUsernameAssignment;
 import com.fursadhub.organization.application.OrganizationMembershipService;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
@@ -45,7 +47,8 @@ public class OrganizationMembershipController {
             @Valid @RequestBody CreateOrganizationMemberRequest request, HttpServletRequest httpRequest) {
         OrganizationMembershipService.Member member = membershipService.create(
                 currentUserId(jwt), organizationId, request.email(), request.password(), request.confirmPassword(),
-                request.role(), RequestMetadata.clientIp(httpRequest), RequestMetadata.userAgent(httpRequest));
+                request.displayName(), request.username(), request.role(),
+                RequestMetadata.clientIp(httpRequest), RequestMetadata.userAgent(httpRequest));
         return ResponseEntity.status(HttpStatus.CREATED).body(OrganizationMemberResponse.from(member));
     }
 
@@ -55,6 +58,37 @@ public class OrganizationMembershipController {
             @Valid @RequestBody ChangeOrganizationMemberRoleRequest request, HttpServletRequest httpRequest) {
         OrganizationMembershipService.Member member = membershipService.changeRole(
                 currentUserId(jwt), organizationId, membershipId, request.role(),
+                RequestMetadata.clientIp(httpRequest), RequestMetadata.userAgent(httpRequest));
+        return OrganizationMemberResponse.from(member);
+    }
+
+    /** Sets or clears a managed staff member's display name (Backend Phase B5). */
+    /** Assigns the one-time login username to a managed staff account (Backend Phase B5.5). */
+    @PostMapping("/{membershipId}/username")
+    public OrganizationMemberResponse assignUsername(
+            @AuthenticationPrincipal Jwt jwt,
+            @PathVariable UUID organizationId,
+            @PathVariable UUID membershipId,
+            @Valid @RequestBody AssignOrganizationMemberUsernameRequest request,
+            HttpServletRequest httpRequest) {
+        try {
+            return OrganizationMemberResponse.from(membershipService.assignUsername(
+                    currentUserId(jwt), organizationId, membershipId, request.username(),
+                    RequestMetadata.clientIp(httpRequest), RequestMetadata.userAgent(httpRequest)));
+        } catch (org.springframework.dao.DataIntegrityViolationException race) {
+            throw ManagedUsernameAssignment.translate(race);
+        }
+    }
+
+    @PostMapping("/{membershipId}/display-name")
+    public OrganizationMemberResponse changeDisplayName(
+            @AuthenticationPrincipal Jwt jwt,
+            @PathVariable UUID organizationId,
+            @PathVariable UUID membershipId,
+            @Valid @RequestBody ChangeOrganizationMemberDisplayNameRequest request,
+            HttpServletRequest httpRequest) {
+        OrganizationMembershipService.Member member = membershipService.changeDisplayName(
+                currentUserId(jwt), organizationId, membershipId, DisplayNamePolicy.requireSubmitted(request.displayName()),
                 RequestMetadata.clientIp(httpRequest), RequestMetadata.userAgent(httpRequest));
         return OrganizationMemberResponse.from(member);
     }
@@ -85,7 +119,8 @@ public class OrganizationMembershipController {
         OrganizationMembershipService.MemberCredential credential = membershipService.resetPassword(
                 currentUserId(jwt), organizationId, membershipId,
                 RequestMetadata.clientIp(httpRequest), RequestMetadata.userAgent(httpRequest));
-        return new TemporaryCredentialResponse(membershipId.toString(), credential.email(), credential.temporaryPassword());
+        return new TemporaryCredentialResponse(
+                membershipId.toString(), credential.username(), credential.email(), credential.temporaryPassword());
     }
 
     @PostMapping("/{membershipId}/revoke")

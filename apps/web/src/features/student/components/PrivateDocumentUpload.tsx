@@ -3,6 +3,8 @@ import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { useTranslation } from 'react-i18next'
 import { Button, StatusIndicator } from '../../../components/ui'
 import { apiErrorMessage } from '../../../lib/api/errorMessage'
+import { PhotoCapture } from '../../../components/ui/PhotoCapture'
+import { PrivateDocumentPreview } from '../../../components/ui/PrivateDocumentPreview'
 
 interface PrivateDocumentUploadProps {
   title: string
@@ -18,6 +20,8 @@ interface PrivateDocumentUploadProps {
   onDownload: () => Promise<Blob>
   onRemove?: () => Promise<unknown>
   downloadFilename: string
+  allowPhoto?: boolean
+  disabled?: boolean
 }
 
 /**
@@ -40,6 +44,8 @@ export function PrivateDocumentUpload({
   onDownload,
   onRemove,
   downloadFilename,
+  allowPhoto = false,
+  disabled = false,
 }: PrivateDocumentUploadProps) {
   const { t } = useTranslation()
   const queryClient = useQueryClient()
@@ -74,14 +80,14 @@ export function PrivateDocumentUpload({
       const objectUrl = URL.createObjectURL(blob)
       const anchor = document.createElement('a')
       anchor.href = objectUrl
-      anchor.download = downloadFilename
+      anchor.download = blob instanceof File ? blob.name : downloadFilename
       anchor.click()
       // Released immediately so the blob does not outlive the click that needed it.
       URL.revokeObjectURL(objectUrl)
     },
   })
 
-  const busy = uploadMutation.isPending || removeMutation.isPending || downloadMutation.isPending
+  const busy = disabled || uploadMutation.isPending || removeMutation.isPending || downloadMutation.isPending
 
   return (
     <section className="flex flex-col gap-3 rounded-lg border border-border bg-surface p-4">
@@ -100,6 +106,7 @@ export function PrivateDocumentUpload({
         ref={inputRef}
         type="file"
         accept={accept}
+        disabled={busy}
         className="sr-only"
         aria-label={title}
         onChange={(event) => {
@@ -111,6 +118,8 @@ export function PrivateDocumentUpload({
       />
 
       <div className="flex flex-wrap gap-2">
+        {present && <PrivateDocumentPreview load={onDownload} />}
+        {allowPhoto && <PhotoCapture disabled={busy} onUse={(file) => uploadMutation.mutate(file)} />}
         <Button
           type="button"
           size="sm"

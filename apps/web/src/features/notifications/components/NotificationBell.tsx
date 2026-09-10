@@ -118,7 +118,7 @@ export function NotificationBell() {
                 type="button"
                 onClick={() => markAllMutation.mutate()}
                 disabled={markAllMutation.isPending}
-                className="text-xs font-medium text-brand-primary underline-offset-2 hover:underline disabled:opacity-60"
+                className="text-xs font-medium text-link underline-offset-2 hover:underline disabled:opacity-60"
               >
                 {t('notifications:markAllRead')}
               </button>
@@ -144,7 +144,7 @@ export function NotificationBell() {
             <Link
               to="/account/notifications"
               onClick={() => setOpen(false)}
-              className="text-xs font-medium text-brand-primary underline-offset-2 hover:underline"
+              className="text-xs font-medium text-link underline-offset-2 hover:underline"
             >
               {t('notifications:viewAll')}
             </Link>

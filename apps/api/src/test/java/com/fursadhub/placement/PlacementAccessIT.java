@@ -365,7 +365,7 @@ class PlacementAccessIT extends AbstractPhase5IT {
     }
 
     private UUID runOfferFlow(String recruiterToken, UUID opportunityId, StudentFixture student) {
-        ResponseEntity<Map> applied = authorizedPost(
+        ResponseEntity<Map> applied = applicationWithCv(
                 "/api/v1/opportunities/" + opportunityId + "/applications", student.accessToken(), Map.of());
         UUID candidacyId = UUID.fromString((String) applied.getBody().get("id"));
 

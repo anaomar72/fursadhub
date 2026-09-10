@@ -30,7 +30,7 @@ public class StudentProfileController {
 
     @PutMapping
     public StudentProfileResponse upsert(@AuthenticationPrincipal Jwt jwt, @Valid @RequestBody StudentProfileRequest request) {
-        return StudentProfileResponse.from(profileService.upsert(currentUserId(jwt), request.fullName(), request.phone()));
+        return StudentProfileResponse.from(profileService.upsert(currentUserId(jwt), request.fullName(), request.phone(), request.professional()));
     }
 
     private UUID currentUserId(Jwt jwt) {

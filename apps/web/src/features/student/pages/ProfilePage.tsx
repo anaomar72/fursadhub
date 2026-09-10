@@ -1,16 +1,25 @@
 import { useEffect } from 'react'
-import { useForm } from 'react-hook-form'
+import { Controller, useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { useTranslation } from 'react-i18next'
+import { Link } from 'react-router-dom'
 import * as studentApi from '../api/studentApi'
-import * as documentsApi from '../api/documentsApi'
-import { PrivateDocumentUpload } from '../components/PrivateDocumentUpload'
+import type { StudentProfileResponse } from '../types'
+import * as universityApi from '../../university/api/universityApi'
+import { StudentProfilePhoto } from '../components/StudentProfilePhoto'
+import { ProfessionalProfileSummary } from '../components/ProfessionalProfileSummary'
+import { ProfileFormSection } from '../../../components/ui/Presentation'
 import { profileSchema, type ProfileFormValues } from '../schemas/profileSchema'
 import { apiErrorMessage } from '../../../lib/api/errorMessage'
 import { ApiError } from '../../../lib/api/client'
-import { Button, FormField, Input, LoadingSpinner, PageHeader } from '../../../components/ui'
+import { Alert, Button, Card, FormField, Input, LoadingState, PageHeader, StatusBadge, TagInput, Textarea } from '../../../components/ui'
+import { PageContainer } from '../../../app/layouts/PageContainer'
 
+/**
+ * Professional fields belong to the student profile. Email and verified academic records
+ * remain in their canonical account/enrollment flows; CVs belong to individual applications.
+ */
 export function StudentProfilePage() {
   const { t } = useTranslation()
   const queryClient = useQueryClient()
@@ -21,96 +30,140 @@ export function StudentProfilePage() {
     retry: false,
   })
 
-  // Metadata only — whether a CV exists. The bytes come from the download route.
-  const cvQuery = useQuery({
-    queryKey: ['student', 'cv'],
-    queryFn: documentsApi.getMyCv,
+  const enrollmentQuery = useQuery({
+    queryKey: ['student', 'enrollment'],
+    queryFn: studentApi.getMyEnrollment,
     retry: false,
   })
 
   const form = useForm<ProfileFormValues>({
     resolver: zodResolver(profileSchema),
-    defaultValues: { fullName: '', phone: '' },
+    defaultValues: { fullName: '', phone: '', headline: '', summary: '', city: '', countryCode: '', skills: [], linkedinUrl: '', githubUrl: '', portfolioUrl: '' },
   })
+  const universityId = enrollmentQuery.data?.universityId
+  const universityQuery = useQuery({ queryKey: ['public-university', universityId], queryFn: () => universityApi.getPublicUniversity(universityId!), enabled: !!universityId })
+  const departmentsQuery = useQuery({ queryKey: ['university', universityId, 'departments'], queryFn: () => universityApi.listDepartments(universityId!), enabled: !!universityId })
 
   useEffect(() => {
-    if (profileQuery.data) {
-      form.reset({ fullName: profileQuery.data.fullName, phone: profileQuery.data.phone ?? '' })
+    if (profileQuery.data && !form.formState.isDirty) {
+      form.reset(toFormValues(profileQuery.data))
     }
   }, [profileQuery.data, form])
 
   const saveMutation = useMutation({
     mutationFn: studentApi.saveMyProfile,
     onSuccess: (data) => {
+      form.reset(toFormValues(data))
       queryClient.setQueryData(['student', 'profile'], data)
     },
   })
 
   const notFound = profileQuery.error instanceof ApiError && profileQuery.error.body.status === 404
+  const enrollment = enrollmentQuery.data ?? null
 
   if (profileQuery.isLoading) {
     return (
-      <div className="flex justify-center py-16">
-        <LoadingSpinner size="lg" />
-      </div>
+      <PageContainer width="narrow">
+        <LoadingState label={t('common:status.loading')} />
+      </PageContainer>
     )
   }
 
   return (
-    <div className="mx-auto max-w-lg px-4 py-10 sm:px-6">
+    <PageContainer className="flex max-w-5xl flex-col gap-6">
       <PageHeader title={t('student:profile.title')} description={t('student:profile.subtitle')} />
+      <Card padding="lg"><StudentProfilePhoto name={profileQuery.data?.fullName ?? ''} /></Card>
+      <ProfessionalProfileSummary profile={profileQuery.data?.professional} />
 
-      <form
-        className="mt-6 flex flex-col gap-4"
-        noValidate
-        onSubmit={form.handleSubmit((values) => saveMutation.mutate({ fullName: values.fullName, phone: values.phone }))}
-      >
-        <FormField
-          label={t('student:profile.fullNameLabel')}
-          htmlFor="fullName"
-          error={form.formState.errors.fullName && t(form.formState.errors.fullName.message ?? '')}
+      <Card padding="lg">
+        <h2 className="font-display text-base font-bold text-brand-navy dark:text-foreground">
+          {t('student:profile.detailsTitle')}
+        </h2>
+
+        <form
+          className="mt-4 flex flex-col gap-4"
+          noValidate
+          onSubmit={form.handleSubmit(({ fullName, phone, ...professional }) => saveMutation.mutate({
+            fullName, phone, professional: { ...professional, skills: professional.skills ?? [], countryCode: professional.countryCode || null },
+          }))}
         >
-          <Input id="fullName" invalid={!!form.formState.errors.fullName} {...form.register('fullName')} />
-        </FormField>
+          <fieldset disabled={saveMutation.isPending} className="contents">
+          <FormField
+            label={t('student:profile.fullNameLabel')}
+            htmlFor="fullName"
+            error={form.formState.errors.fullName && t(form.formState.errors.fullName.message ?? '')}
+          >
+            <Input id="fullName" autoComplete="name" maxLength={255} invalid={!!form.formState.errors.fullName} {...form.register('fullName')} />
+          </FormField>
 
-        <FormField label={t('student:profile.phoneLabel')} htmlFor="phone">
-          <Input id="phone" type="tel" {...form.register('phone')} />
-        </FormField>
+          <FormField label={t('student:profile.phoneLabel')} htmlFor="phone">
+            <Input id="phone" type="tel" autoComplete="tel" {...form.register('phone')} />
+          </FormField>
 
-        {saveMutation.isError && (
-          <p className="text-sm text-danger" role="alert">
-            {apiErrorMessage(t, 'student', 'profile', saveMutation.error)}
-          </p>
-        )}
-        {saveMutation.isSuccess && <p className="text-sm text-success">{t('student:profile.saved')}</p>}
-        {notFound && !profileQuery.data && (
-          <p className="text-sm text-foreground-secondary">{t('student:profile.createHint')}</p>
-        )}
+          <ProfileFormSection title={t('common:professional.about')} icon="user">
+            <FormField htmlFor="headline" label={t('common:professional.headline')}><Input id="headline" maxLength={160} {...form.register('headline')} /></FormField>
+            <FormField htmlFor="city" label={t('common:professional.city')}><Input id="city" autoComplete="address-level2" maxLength={120} {...form.register('city')} /></FormField>
+            <FormField htmlFor="countryCode" label={t('common:professional.countryCode')} hint={t('common:professional.countryHint')} error={form.formState.errors.countryCode && t('common:professional.countryError')}><Input id="countryCode" autoComplete="country" maxLength={2} {...form.register('countryCode', { setValueAs: (value: string) => value.toUpperCase() })} /></FormField>
+            <div className="sm:col-span-2"><FormField htmlFor="summary" label={t('common:professional.summary')}><Textarea id="summary" rows={5} maxLength={3000} {...form.register('summary')} /></FormField></div>
+          </ProfileFormSection>
+          <ProfileFormSection title={t('common:professional.skills')} icon="sparkle">
+            <FormField htmlFor="skills" label={t('common:professional.skills')} hint={t('common:professional.skillsHint')}>
+              <Controller control={form.control} name="skills" render={({ field }) => <TagInput id="skills" value={field.value ?? []} onChange={field.onChange} onBlur={field.onBlur} ref={field.ref} maxTags={25} maxLength={60} aria-describedby="skills-hint" />} />
+            </FormField>
+          </ProfileFormSection>
+          <ProfileFormSection title={t('common:professional.links')} icon="link">
+            {(['linkedinUrl', 'githubUrl', 'portfolioUrl'] as const).map((key) => <FormField key={key} htmlFor={key} label={t(`common:professional.${key}`)} error={form.formState.errors[key] && t('common:professional.urlError')}><Input id={key} type="url" maxLength={500} {...form.register(key)} /></FormField>)}
+          </ProfileFormSection>
 
-        <Button type="submit" loading={saveMutation.isPending} className="mt-2 w-full sm:w-auto">
-          {t('student:profile.submit')}
-        </Button>
-      </form>
+          {saveMutation.isError && (
+            <p className="text-sm text-danger" role="alert">
+              {apiErrorMessage(t, 'student', 'profile', saveMutation.error)}
+            </p>
+          )}
+          {saveMutation.isSuccess && <Alert tone="success">{t('student:profile.saved')}</Alert>}
+          {notFound && !profileQuery.data && <Alert tone="info">{t('student:profile.createHint')}</Alert>}
 
-      {/*
-        Phase 7. The CV is private: it is never given a URL, and the only people who can read it are
-        the student and recruiters at organizations where they have a candidacy — reached through
-        that candidacy, never through the student (CLAUDE.md section 47).
-      */}
-      <div className="mt-6">
-        <PrivateDocumentUpload
-          title={t('student:cv.title')}
-          description={t('student:cv.description')}
-          present={cvQuery.data?.present ?? false}
-          accept="application/pdf"
-          errorPage="cv"
-          invalidateKeys={[['student', 'cv']]}
-          onUpload={documentsApi.uploadMyCv}
-          onDownload={documentsApi.downloadMyCv}
-          onRemove={documentsApi.removeMyCv}
-          downloadFilename="cv.pdf"
-        />
-      </div>
-    </div>
+          <div>
+            <Button type="submit" loading={saveMutation.isPending}>
+              {t('student:profile.submit')}
+            </Button>
+          </div>
+          </fieldset>
+        </form>
+      </Card>
+
+      {/* Enrollment is the university's record, not a profile field — linked, never edited here. */}
+      <Card padding="lg">
+        <div className="flex flex-wrap items-start justify-between gap-3">
+          <div>
+            <h2 className="font-display text-base font-bold text-brand-navy dark:text-foreground">
+              {t('student:enrollment.title')}
+            </h2>
+            <p className="mt-1 text-sm text-foreground-secondary">{t('student:profile.enrollmentHint')}</p>
+          </div>
+          {enrollment && (
+            <StatusBadge tone={enrollment.verificationStatus === 'VERIFIED' ? 'success' : 'warning'}>
+              {t(`student:enrollment.status.${enrollment.verificationStatus}`)}
+            </StatusBadge>
+          )}
+        </div>
+        {enrollment && <dl className="mt-4 grid gap-3 text-sm sm:grid-cols-2">
+          {universityQuery.data && <div><dt className="text-muted">{t('common:professional.university')}</dt><dd className="font-semibold">{universityQuery.data.name}</dd></div>}
+          {departmentsQuery.data?.find((department) => department.id === enrollment.departmentId) && <div><dt className="text-muted">{t('common:professional.department')}</dt><dd className="font-semibold">{departmentsQuery.data.find((department) => department.id === enrollment.departmentId)?.name}</dd></div>}
+          <div><dt className="text-muted">{t('student:enrollment.programLabel')}</dt><dd className="font-semibold">{enrollment.program}</dd></div>
+          <div><dt className="text-muted">{t('student:enrollment.academicYearLabel')}</dt><dd className="font-semibold">{enrollment.academicYear}</dd></div>
+        </dl>}
+        <Link to="/student/enrollment" className="mt-4 inline-block text-sm font-semibold text-link hover:underline">
+          {enrollment ? t('student:profile.manageEnrollment') : t('student:profile.claimEnrollment')}
+        </Link>
+      </Card>
+    </PageContainer>
   )
+}
+
+function toFormValues(profile: StudentProfileResponse): ProfileFormValues {
+  const professional = profile.professional
+  return { fullName: profile.fullName, phone: profile.phone ?? '', headline: professional?.headline ?? '',
+    summary: professional?.summary ?? '', city: professional?.city ?? '', countryCode: professional?.countryCode ?? '',
+    skills: professional?.skills ?? [], linkedinUrl: professional?.linkedinUrl ?? '', githubUrl: professional?.githubUrl ?? '', portfolioUrl: professional?.portfolioUrl ?? '' }
 }

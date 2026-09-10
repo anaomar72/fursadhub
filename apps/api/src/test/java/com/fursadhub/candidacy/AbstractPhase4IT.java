@@ -9,6 +9,7 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 
 import java.time.LocalDate;
+import java.time.ZoneOffset;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -24,6 +25,47 @@ import java.util.UUID;
  * than a parallel test-only universe.
  */
 public abstract class AbstractPhase4IT extends AbstractIdentityIT {
+
+    /** Explicit real upload prerequisite for application fixtures; negative requests use authorizedPost. */
+    protected ResponseEntity<Map> applicationWithCv(String path, String token, Map<String, ?> answers) {
+        return applicationWithCv(path, token, answers, uploadApplicationCv(path, token));
+    }
+
+    /** Applies using a CV id obtained earlier — see {@link #uploadApplicationCv}. */
+    protected ResponseEntity<Map> applicationWithCv(
+            String path, String token, Map<String, ?> answers, Object cvUploadId) {
+        Map<String, Object> body = new LinkedHashMap<>(answers);
+        body.put("cvUploadId", cvUploadId);
+        return authorizedPost(path, token, body);
+    }
+
+    /**
+     * Uploads the per-application CV and returns its id, as a step of its own.
+     *
+     * <p>Separate from the application POST because the CV route resolves the opportunity too: once
+     * an organization loses verification its opportunity stops being reachable, so a test that wants
+     * to prove the APPLICATION is refused with {@code ORGANIZATION_NOT_VERIFIED} has to attach the
+     * CV while the organization is still verified. Bundling both steps would make such a test fail
+     * on the upload instead, one gate earlier than the one it is written to prove.
+     */
+    protected Object uploadApplicationCv(String applicationsPath, String token) {
+        String uploadPath =
+                applicationsPath.substring(0, applicationsPath.length() - "/applications".length()) + "/application-cv";
+        var parts = new org.springframework.util.LinkedMultiValueMap<String, Object>();
+        var file = new org.springframework.core.io.ByteArrayResource(
+                "%PDF-1.7\nTest application CV\n%%EOF".getBytes(java.nio.charset.StandardCharsets.UTF_8)) {
+            @Override public String getFilename() { return "application-cv.pdf"; }
+        };
+        var partHeaders = new HttpHeaders();
+        partHeaders.setContentType(MediaType.APPLICATION_PDF);
+        parts.add("file", new HttpEntity<>(file, partHeaders));
+        var headers = new HttpHeaders();
+        headers.setBearerAuth(token);
+        headers.setContentType(MediaType.MULTIPART_FORM_DATA);
+        var upload = restTemplate.exchange(url(uploadPath), HttpMethod.POST, new HttpEntity<>(parts, headers), Map.class);
+        if (!upload.getStatusCode().is2xxSuccessful()) throw new IllegalStateException("Application CV upload failed: " + upload.getBody());
+        return upload.getBody().get("id");
+    }
 
     protected ResponseEntity<Map> authorizedGet(String path, String accessToken) {
         HttpHeaders headers = new HttpHeaders();
@@ -261,9 +303,31 @@ public abstract class AbstractPhase4IT extends AbstractIdentityIT {
         return count == null ? 0 : count;
     }
 
-    /** Forces an offer past its response deadline without waiting, for expiry tests. */
+    /**
+     * Today as the PRODUCT sees it.
+     *
+     * <p>Date-only business rules are evaluated against {@code Clock.systemUTC()} — see
+     * {@code ClockConfig} and CLAUDE.md section 53. A fixture that builds "yesterday" from
+     * {@code LocalDate.now()} instead uses the host's zone, and the two disagree for the first hours
+     * of every local day east of Greenwich: at UTC+3, between 00:00 and 03:00 local, the fixture's
+     * "yesterday" IS the product's today, and the deadline rules — inclusive by design — correctly
+     * decline to treat it as past. CI runs in UTC and never sees it.
+     *
+     * <p>Every deadline fixture must derive its dates from here so the suite means the same thing in
+     * every zone at every hour.
+     */
+    protected LocalDate today() {
+        return LocalDate.now(ZoneOffset.UTC);
+    }
+
+    /**
+     * Forces an offer past its response deadline without waiting, for expiry tests.
+     *
+     * <p>The date is computed here rather than as SQL {@code current_date - 1}: the JDBC session's
+     * date follows the JVM's zone, not the product's UTC clock — see {@link #today()}.
+     */
     protected void expireOfferDeadline(UUID offerId) {
         jdbcTemplate.update(
-                "UPDATE internship_offers SET response_deadline = current_date - 1 WHERE id = ?", offerId);
+                "UPDATE internship_offers SET response_deadline = ? WHERE id = ?", today().minusDays(1), offerId);
     }
 }

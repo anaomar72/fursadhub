@@ -4,7 +4,8 @@ import { useParams } from 'react-router-dom'
 import * as recruitmentApi from '../api/recruitmentApi'
 import { useUniversityMembership } from '../../university/components/UniversityMembershipContext'
 import { apiErrorMessage } from '../../../lib/api/errorMessage'
-import { Button, EmptyState, LoadingSpinner, PageHeader, StatusBadge } from '../../../components/ui'
+import { Badge, Button, EmptyState, LoadingSpinner, PageHeader, StatusBadge } from '../../../components/ui'
+import { PageContainer } from '../../../app/layouts/PageContainer'
 
 /**
  * Nominating eligible students for one targeted opportunity (CLAUDE.md Phase 4 section 26).
@@ -48,7 +49,7 @@ export function NominateStudentsPage() {
   if (requestsQuery.isLoading || studentsQuery.isLoading) {
     return (
       <div className="flex justify-center py-16">
-        <LoadingSpinner size="lg" />
+        <LoadingSpinner size="lg" label={t('common:status.loading')} />
       </div>
     )
   }
@@ -64,7 +65,7 @@ export function NominateStudentsPage() {
   const students = studentsQuery.data ?? []
 
   return (
-    <div className="mx-auto max-w-3xl px-4 py-8 sm:px-6">
+    <PageContainer className="flex flex-col gap-6">
       <PageHeader title={request.opportunityTitle} description={request.organizationName} />
       <p className="mt-3 text-sm text-foreground-secondary">
         {t('recruitment:requests.progress', {
@@ -84,15 +85,54 @@ export function NominateStudentsPage() {
           {students.map((student) => (
             <li
               key={student.studentUserId}
-              className="flex flex-wrap items-center justify-between gap-3 rounded-lg border border-border bg-surface p-4"
+              className="flex flex-wrap items-start justify-between gap-3 rounded-lg border border-border bg-surface p-4"
             >
-              <div>
+              <div className="min-w-0 flex-1">
                 <p className="font-medium text-foreground">
                   {student.fullName ?? student.email ?? student.studentUserId}
                 </p>
                 <p className="text-xs text-foreground-secondary">
                   {student.studentNumber} · {student.program} · {student.academicYear}
                 </p>
+
+                {/*
+                  Enough of the student's own professional profile to decide, inline. Putting a name
+                  forward to an employer on the strength of a student number and a program name is
+                  not a decision anyone can actually make; the full profile is one disclosure away.
+
+                  Only what the student wrote. No CV and no enrollment evidence — those stay on
+                  their own authorized routes, and nothing here widens either.
+                */}
+                {student.professional?.headline && (
+                  <p className="mt-2 text-sm leading-6 text-foreground">{student.professional.headline}</p>
+                )}
+                {(student.professional?.skills?.length ?? 0) > 0 && (
+                  <ul className="mt-2 flex flex-wrap gap-1.5">
+                    {student.professional!.skills.slice(0, 6).map((skill) => (
+                      <li key={skill}>
+                        <Badge tone="brand" className="px-2 py-0.5">{skill}</Badge>
+                      </li>
+                    ))}
+                  </ul>
+                )}
+                {student.professional?.summary ? (
+                  <details className="group mt-2">
+                    <summary className="inline-flex cursor-pointer list-none items-center gap-1 rounded text-xs font-semibold text-link focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus-ring">
+                      {t('recruitment:nominate.viewProfile')}
+                    </summary>
+                    <p className="mt-2 whitespace-pre-line text-sm leading-6 text-foreground-secondary">
+                      {student.professional.summary}
+                    </p>
+                  </details>
+                ) : (
+                  !student.professional?.headline && (
+                    // Said plainly rather than left blank, so an empty profile does not read as a
+                    // failure to load.
+                    <p className="mt-2 text-xs italic text-foreground-muted">
+                      {t('recruitment:nominate.noProfile')}
+                    </p>
+                  )
+                )}
               </div>
 
               {student.alreadyNominated ? (
@@ -117,6 +157,6 @@ export function NominateStudentsPage() {
           {apiErrorMessage(t, 'recruitment', 'nominate', nominateMutation.error)}
         </p>
       )}
-    </div>
+    </PageContainer>
   )
 }

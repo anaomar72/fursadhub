@@ -5,6 +5,8 @@ import com.fursadhub.identity.domain.User;
 import com.fursadhub.identity.domain.UserRepository;
 import com.fursadhub.student.domain.StudentEnrollment;
 import com.fursadhub.student.domain.StudentEnrollmentRepository;
+import com.fursadhub.student.domain.StudentProfile;
+import com.fursadhub.student.domain.StudentProfileRepository;
 import com.fursadhub.university.application.UniversityAuthorization;
 import com.fursadhub.university.domain.UniversityMembership;
 import com.fursadhub.university.domain.UniversityMembershipDepartment;
@@ -36,24 +38,26 @@ public class VerificationQueryService {
     private final UniversityAuthorization universityAuthorization;
     private final UniversityMembershipDepartmentRepository membershipDepartments;
     private final UserRepository users;
+    private final StudentProfileRepository profiles;
 
     public VerificationQueryService(
             StudentVerificationCaseRepository cases,
             StudentEnrollmentRepository enrollments,
             UniversityAuthorization universityAuthorization,
             UniversityMembershipDepartmentRepository membershipDepartments,
-            UserRepository users) {
+            UserRepository users, StudentProfileRepository profiles) {
         this.cases = cases;
         this.enrollments = enrollments;
         this.universityAuthorization = universityAuthorization;
         this.membershipDepartments = membershipDepartments;
         this.users = users;
+        this.profiles = profiles;
     }
 
     public record StudentRow(StudentEnrollment enrollment, String email) {
     }
 
-    public record CaseRow(StudentVerificationCase verificationCase, StudentEnrollment enrollment, String email) {
+    public record CaseRow(StudentVerificationCase verificationCase, StudentEnrollment enrollment, String email, StudentProfile profile) {
     }
 
     /** Self-service: the caller's own case, so they can see reviewer notes (e.g. NEEDS_MORE_EVIDENCE). */
@@ -76,7 +80,7 @@ public class VerificationQueryService {
                 .filter(c -> statusFilter == null || c.getStatus() == statusFilter)
                 .map(c -> {
                     StudentEnrollment enrollment = byId.get(c.getEnrollmentId());
-                    return new CaseRow(c, enrollment, emailOf(enrollment.getStudentUserId()));
+                    return new CaseRow(c, enrollment, emailOf(enrollment.getStudentUserId()), profiles.findByUserId(enrollment.getStudentUserId()).orElse(null));
                 })
                 .toList();
     }
@@ -93,7 +97,7 @@ public class VerificationQueryService {
                 staffUserId, universityId, UniversityRole.UNIVERSITY_ADMIN, UniversityRole.DEPARTMENT_COORDINATOR);
         universityAuthorization.requireDepartmentScope(membership, enrollment.getDepartmentId());
 
-        return new CaseRow(verificationCase, enrollment, emailOf(enrollment.getStudentUserId()));
+        return new CaseRow(verificationCase, enrollment, emailOf(enrollment.getStudentUserId()), profiles.findByUserId(enrollment.getStudentUserId()).orElse(null));
     }
 
     private List<StudentEnrollment> scopedEnrollments(UUID staffUserId, UUID universityId, UUID departmentIdFilter) {

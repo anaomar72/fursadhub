@@ -42,11 +42,13 @@ const both = {
   status: 'UNDER_REVIEW',
 }
 
+const OPPORTUNITY = { id: 'opp-1', title: 'Backend Intern', status: 'PUBLISHED', mode: 'HYBRID' }
+
 function stubFetch(candidates: unknown[]) {
   const fetchMock = vi.fn((input: RequestInfo | URL) => {
-    if (String(input).includes('/candidacies')) {
-      return jsonResponse(candidates)
-    }
+    const url = String(input)
+    if (url.includes('/candidacies')) return jsonResponse(candidates)
+    if (url.includes('/opportunities/')) return jsonResponse(OPPORTUNITY)
     return jsonResponse({})
   })
   vi.stubGlobal('fetch', fetchMock)
@@ -81,19 +83,50 @@ describe('CandidatePoolPage', () => {
     expect(screen.getByText('Hodan Farah')).toBeInTheDocument()
   })
 
-  it('renders each candidacy source on its row', async () => {
+  it('groups the board by the REAL backend statuses, not the prototype labels', async () => {
+    // The approved design's columns (New / Reviewing / Shortlisted / Interview / Accepted) are not
+    // statuses. The board uses the domain's own states — and includes OFFERED, which the prototype
+    // left out entirely even though a candidate genuinely sits there (CLAUDE.md section 37).
     stubFetch([applicant, nominee, both])
     renderPage()
 
-    // Wait for the rows themselves — the filter buttons reuse these same source labels, so assert
-    // within list items rather than over the whole document.
-    await screen.findByText('Hodan Farah')
-    const rows = screen.getAllByRole('listitem')
+    const board = await screen.findByRole('list', { name: 'Candidate pipeline by stage' })
 
-    expect(rows).toHaveLength(3)
-    expect(rows[0]).toHaveTextContent('Applied directly')
-    expect(rows[1]).toHaveTextContent('University nomination')
-    expect(rows[2]).toHaveTextContent('Applied and nominated')
+    expect(board).toHaveTextContent('Submitted')
+    expect(board).toHaveTextContent('Under review')
+    expect(board).toHaveTextContent('Shortlisted')
+    expect(board).toHaveTextContent('Interview')
+    expect(board).toHaveTextContent('Offer sent')
+    expect(board).toHaveTextContent('Accepted')
+    // Terminal states are not stages and get no column.
+    expect(board).not.toHaveTextContent('Rejected')
+    expect(board).not.toHaveTextContent('Withdrawn')
+  })
+
+  it('never offers a control that would move a candidate without the API agreeing', async () => {
+    // Stage changes are named commands on the candidate's own page. A draggable board would either
+    // guess which moves are legal or show a move the server then rejects.
+    stubFetch([applicant])
+    renderPage()
+
+    const board = await screen.findByRole('list', { name: 'Candidate pipeline by stage' })
+    expect(board.querySelector('[draggable="true"]')).toBeNull()
+    expect(board.querySelectorAll('button')).toHaveLength(0)
+  })
+
+  it('renders each candidacy source on its row in the list view', async () => {
+    stubFetch([applicant, nominee, both])
+    renderPage()
+
+    await screen.findByText('Hodan Farah')
+    await userEvent.click(screen.getByRole('tab', { name: 'List' }))
+
+    const rows = await screen.findAllByRole('row')
+    // One header row plus one per candidate.
+    expect(rows).toHaveLength(4)
+    expect(rows[1]).toHaveTextContent('Applied directly')
+    expect(rows[2]).toHaveTextContent('University nomination')
+    expect(rows[3]).toHaveTextContent('Applied and nominated')
   })
 
   it('defaults to no source filter in the request', async () => {
@@ -106,13 +139,12 @@ describe('CandidatePoolPage', () => {
     expect(String(poolCall[0])).not.toContain('source=')
   })
 
-  it('requests a filtered pool when a source filter is chosen', async () => {
-    const user = userEvent.setup()
+  it('sends the source filter to the server, which genuinely supports it', async () => {
     const fetchMock = stubFetch([nominee])
     renderPage()
 
     await screen.findByText('Omar Ali')
-    await user.click(screen.getByRole('button', { name: /university nomination/i }))
+    await userEvent.selectOptions(screen.getByLabelText('Source'), 'UNIVERSITY_NOMINATION')
 
     await waitFor(() => {
       expect(
@@ -121,20 +153,21 @@ describe('CandidatePoolPage', () => {
     })
   })
 
-  it('marks the active filter with aria-pressed', async () => {
-    const user = userEvent.setup()
-    stubFetch([applicant])
+  it('narrows by stage on the client, because the endpoint has no stage filter', async () => {
+    const fetchMock = stubFetch([applicant, nominee])
     renderPage()
 
     await screen.findByText('Amina Yusuf')
-    expect(screen.getByRole('button', { name: /all candidates/i })).toHaveAttribute('aria-pressed', 'true')
+    const callsBefore = fetchMock.mock.calls.length
 
-    await user.click(screen.getByRole('button', { name: /applied directly/i }))
+    await userEvent.selectOptions(screen.getByLabelText('Stage'), 'SHORTLISTED')
 
     await waitFor(() => {
-      expect(screen.getByRole('button', { name: /applied directly/i })).toHaveAttribute('aria-pressed', 'true')
+      expect(screen.queryByText('Amina Yusuf')).not.toBeInTheDocument()
     })
-    expect(screen.getByRole('button', { name: /all candidates/i })).toHaveAttribute('aria-pressed', 'false')
+    expect(screen.getByText('Omar Ali')).toBeInTheDocument()
+    // No extra request: GET /opportunities/{id}/candidacies accepts only `source`.
+    expect(fetchMock.mock.calls.length).toBe(callsBefore)
   })
 
   it('shows an empty state when the pool has no candidates', async () => {

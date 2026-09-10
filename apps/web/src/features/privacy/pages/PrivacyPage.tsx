@@ -1,9 +1,10 @@
 import { useState } from 'react'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { useTranslation } from 'react-i18next'
-import { Button, EmptyState, FormField, LoadingSpinner, PageHeader, Select, StatusBadge, Textarea } from '../../../components/ui'
+import { Button, EmptyState, ErrorState, FormField, LoadingState, PageHeader, Select, StatusBadge, Textarea } from '../../../components/ui'
 import type { StatusTone } from '../../../components/ui'
 import { apiErrorMessage } from '../../../lib/api/errorMessage'
+import { formatDate } from '../../../lib/utils/formatDate'
 import * as privacyApi from '../api/privacyApi'
 import type { ConsentType, PrivacyRequestState, PrivacyRequestType } from '../types'
 
@@ -78,7 +79,13 @@ export function PrivacyPage() {
         </div>
 
         {consentsQuery.isLoading ? (
-          <LoadingSpinner />
+          <LoadingState label={t('common:status.loading')} />
+        ) : consentsQuery.isError ? (
+          <ErrorState
+            title={t('common:status.error')}
+            onRetry={() => void consentsQuery.refetch()}
+            retryLabel={t('common:actions.retry')}
+          />
         ) : (
           <ul className="divide-y divide-border overflow-hidden rounded-lg border border-border bg-surface">
             {(consentsQuery.data ?? []).map((consent) => (
@@ -165,7 +172,13 @@ export function PrivacyPage() {
         </form>
 
         {requestsQuery.isLoading ? (
-          <LoadingSpinner />
+          <LoadingState label={t('common:status.loading')} />
+        ) : requestsQuery.isError ? (
+          <ErrorState
+            title={t('common:status.error')}
+            onRetry={() => void requestsQuery.refetch()}
+            retryLabel={t('common:actions.retry')}
+          />
         ) : (requestsQuery.data ?? []).length === 0 ? (
           <EmptyState title={t('privacy:requests.empty')} />
         ) : (
@@ -182,7 +195,7 @@ export function PrivacyPage() {
                 </div>
                 <p className="text-xs text-foreground-secondary">
                   {t('privacy:requests.submittedAt', {
-                    date: new Date(request.submittedAt).toLocaleDateString(),
+                    date: formatDate(request.submittedAt),
                   })}
                 </p>
                 {request.details && <p className="text-sm text-foreground">{request.details}</p>}

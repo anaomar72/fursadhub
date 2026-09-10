@@ -27,7 +27,7 @@ class CandidacyAccessIT extends AbstractPhase4IT {
         UUID departmentId = insertDepartment(universityId, "Computer Science", "CS");
         StudentFixture student = createVerifiedStudent(prefix + "-student", universityId, departmentId);
 
-        ResponseEntity<Map> applied = authorizedPost(
+        ResponseEntity<Map> applied = applicationWithCv(
                 "/api/v1/opportunities/" + published.opportunityId() + "/applications", student.accessToken(), Map.of());
         return new Applied(
                 published.recruiterToken(), published.organizationId(), published.opportunityId(), student,
@@ -287,7 +287,7 @@ class CandidacyAccessIT extends AbstractPhase4IT {
         StudentFixture applicant = createVerifiedStudent("applicant", universityId, departmentId);
         StudentFixture nominee = createVerifiedStudent("nominee", universityId, departmentId);
 
-        authorizedPost("/api/v1/opportunities/" + opportunityId + "/applications", applicant.accessToken(), Map.of());
+        applicationWithCv("/api/v1/opportunities/" + opportunityId + "/applications", applicant.accessToken(), Map.of());
 
         UUID nominationId = UUID.fromString((String) authorizedPost(
                 "/api/v1/universities/" + universityId + "/nominations", coordinatorToken,

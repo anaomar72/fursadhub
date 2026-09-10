@@ -1,6 +1,7 @@
 package com.fursadhub.opportunity.api;
 
 import com.fursadhub.common.api.PageResponse;
+import com.fursadhub.opportunity.application.OpportunityTagService;
 import com.fursadhub.opportunity.application.PublicOpportunityQueryService;
 import com.fursadhub.opportunity.application.ScreeningQuestionService;
 import com.fursadhub.opportunity.domain.InternshipOpportunity;
@@ -8,6 +9,7 @@ import com.fursadhub.opportunity.domain.PublicOpportunityFilter;
 import com.fursadhub.opportunity.domain.WorkMode;
 import com.fursadhub.organization.api.OrganizationSummaryResponse;
 import com.fursadhub.organization.application.OrganizationQueryService;
+import com.fursadhub.organization.domain.Organization;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -20,6 +22,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 
 /**
@@ -37,13 +40,15 @@ public class PublicOpportunityController {
     private final PublicOpportunityQueryService queryService;
     private final OrganizationQueryService organizationQueryService;
     private final ScreeningQuestionService screeningQuestionService;
+    private final OpportunityTagService tags;
 
     public PublicOpportunityController(
             PublicOpportunityQueryService queryService, OrganizationQueryService organizationQueryService,
-            ScreeningQuestionService screeningQuestionService) {
+            ScreeningQuestionService screeningQuestionService, OpportunityTagService tags) {
         this.queryService = queryService;
         this.organizationQueryService = organizationQueryService;
         this.screeningQuestionService = screeningQuestionService;
+        this.tags = tags;
     }
 
     @GetMapping
@@ -56,12 +61,35 @@ public class PublicOpportunityController {
         Pageable safePageable = capPageSize(pageable);
         PublicOpportunityFilter filter = new PublicOpportunityFilter(query, location, workMode, organization);
         Page<InternshipOpportunity> page = queryService.search(filter, safePageable);
-        return PageResponse.from(page, this::toResponse);
+
+        // ONE query for every organization on the page, instead of one per row (Backend Phase B1).
+        // Page.map preserves the page's own ordering, size and totals exactly — the response
+        // contract and the result order are unchanged.
+        Map<UUID, Organization> organizations = organizationQueryService.getAllByIds(
+                page.getContent().stream().map(InternshipOpportunity::getOrganizationId).distinct().toList());
+
+        // Backend Phase B3 adds two more batch loads, for the same reason and in the same shape: the
+        // listing renders skill chips on every card, so a per-row lookup would be a 20-row page
+        // issuing 40 extra queries. The page stays at a fixed number of statements regardless of size.
+        List<UUID> opportunityIds = page.getContent().stream().map(InternshipOpportunity::getId).toList();
+        Map<UUID, List<String>> skills = tags.skillsByOpportunity(opportunityIds);
+        Map<UUID, List<String>> perks = tags.perksByOpportunity(opportunityIds);
+
+        return PageResponse.from(page, opportunity -> toResponse(
+                opportunity,
+                organizationQueryService.requireFrom(organizations, opportunity.getOrganizationId()),
+                skills.getOrDefault(opportunity.getId(), List.of()),
+                perks.getOrDefault(opportunity.getId(), List.of())));
     }
 
     @GetMapping("/{opportunityId}")
     public PublicOpportunityResponse get(@PathVariable UUID opportunityId) {
-        return toResponse(queryService.getPublicOrThrow(opportunityId));
+        InternshipOpportunity opportunity = queryService.getPublicOrThrow(opportunityId);
+        // A single opportunity needs a single organization; the batch path would be one query either
+        // way, so this keeps reading as the simple lookup it is.
+        return toResponse(
+                opportunity, organizationQueryService.getOrThrow(opportunity.getOrganizationId()),
+                tags.skillsOf(opportunityId), tags.perksOf(opportunityId));
     }
 
     /**
@@ -83,9 +111,9 @@ public class PublicOpportunityController {
         return PageRequest.of(pageable.getPageNumber(), size, sort);
     }
 
-    private PublicOpportunityResponse toResponse(InternshipOpportunity opportunity) {
-        OrganizationSummaryResponse organization =
-                OrganizationSummaryResponse.from(organizationQueryService.getOrThrow(opportunity.getOrganizationId()));
-        return PublicOpportunityResponse.from(opportunity, organization);
+    private PublicOpportunityResponse toResponse(
+            InternshipOpportunity opportunity, Organization organization, List<String> skills, List<String> perks) {
+        return PublicOpportunityResponse.from(
+                opportunity, OrganizationSummaryResponse.from(organization), skills, perks);
     }
 }

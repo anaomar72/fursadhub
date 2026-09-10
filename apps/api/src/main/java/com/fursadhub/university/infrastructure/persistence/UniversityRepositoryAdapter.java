@@ -1,6 +1,7 @@
 package com.fursadhub.university.infrastructure.persistence;
 
 import com.fursadhub.university.domain.University;
+import com.fursadhub.university.domain.PublicUniversityFilter;
 import com.fursadhub.university.domain.UniversityRepository;
 import com.fursadhub.verification.domain.InstitutionVerificationStatus;
 import org.springframework.data.domain.Page;
@@ -8,6 +9,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
+import java.util.Locale;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -45,6 +47,20 @@ class UniversityRepositoryAdapter implements UniversityRepository {
         // Empty string, never null — see the Javadoc on the query.
         String fragment = (nameFragment == null || nameFragment.isBlank()) ? "" : nameFragment.trim();
         return jpaRepository.search(status, fragment, pageable);
+    }
+
+    @Override
+    public Page<University> searchPublicDirectory(PublicUniversityFilter filter, Pageable pageable) {
+        // Empty string, never null — see the Javadoc on the query.
+        return jpaRepository.searchPublicDirectory(
+                blankToEmpty(filter.city()).toLowerCase(Locale.ROOT),
+                blankToEmpty(filter.country()).toUpperCase(Locale.ROOT),
+                blankToEmpty(filter.query()),
+                pageable);
+    }
+
+    private String blankToEmpty(String value) {
+        return (value == null || value.isBlank()) ? "" : value.trim();
     }
 
     @Override

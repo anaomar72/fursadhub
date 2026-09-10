@@ -1,0 +1,6 @@
+import type { ReactNode } from 'react'
+import { useTranslation } from 'react-i18next'
+import { cn } from '../../lib/utils/cn'
+export interface TimelineItem { id:string; title:string; description?:ReactNode; time?:ReactNode; tone?:'brand'|'success'|'warning'|'danger'|'neutral' }
+const dots={brand:'bg-brand-primary',success:'bg-success',warning:'bg-warning',danger:'bg-danger',neutral:'bg-border-strong'}
+export function Timeline({items,label}:{items:TimelineItem[];label?:string}){const {t}=useTranslation();return <ol aria-label={label??t('common:a11y.timeline')} className="space-y-0">{items.map((item,i)=><li key={item.id} className="relative grid grid-cols-[1rem_1fr] gap-3 pb-5 last:pb-0">{i<items.length-1&&<span className="absolute left-[7px] top-4 h-full w-px bg-border"/>}<span className={cn('relative mt-1 size-4 rounded-full border-4 border-surface',dots[item.tone??'neutral'])}/><div><div className="flex flex-wrap justify-between gap-2"><p className="text-sm font-semibold text-foreground">{item.title}</p>{item.time&&<span className="text-xs text-muted">{item.time}</span>}</div>{item.description&&<div className="mt-1 text-sm text-foreground-secondary">{item.description}</div>}</div></li>)}</ol>}

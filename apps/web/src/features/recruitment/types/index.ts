@@ -1,5 +1,7 @@
 /** Phase 4 recruitment contracts. Mirrors the backend DTOs exactly (CLAUDE.md section 10/11). */
 
+import type { StudentProfessionalProfile } from '../../student/types'
+
 export type CandidacySource = 'SELF_APPLICATION' | 'UNIVERSITY_NOMINATION' | 'BOTH'
 
 export type CandidacyStatus =
@@ -68,6 +70,8 @@ export interface CandidateRowResponse {
 }
 
 export interface CandidateDetailResponse {
+  professional?: import('../../student/types').StudentProfessionalProfile | null
+  hasApplicationCv?: boolean
   candidacyId: string
   opportunityId: string
   studentUserId: string
@@ -147,6 +151,14 @@ export interface EligibleStudentResponse {
   program: string
   academicYear: string
   alreadyNominated: boolean
+  /**
+   * The student's own professional presentation, so a nominator reads who they are putting forward
+   * rather than picking a name out of a list. Absent when the student has not written one — the API
+   * omits null fields.
+   *
+   * It is NOT a CV and NOT enrollment evidence. Both of those remain on their own authorized routes.
+   */
+  professional?: StudentProfessionalProfile | null
 }
 
 /** Accepting an offer returns the single placement it created (CLAUDE.md section 38). */

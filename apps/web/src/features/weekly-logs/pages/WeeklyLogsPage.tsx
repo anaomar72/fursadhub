@@ -2,7 +2,7 @@ import { useState } from 'react'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { useTranslation } from 'react-i18next'
 import { useParams } from 'react-router-dom'
-import { Button, LoadingSpinner } from '../../../components/ui'
+import { Button, ErrorState, LoadingState, EmptyState } from '../../../components/ui'
 import { apiErrorMessage } from '../../../lib/api/errorMessage'
 import * as weeklyLogsApi from '../api/weeklyLogsApi'
 import { WeeklyLogCard } from '../components/WeeklyLogCard'
@@ -88,10 +88,16 @@ export function WeeklyLogsPage({ audience }: WeeklyLogsPageProps) {
   })
 
   if (logsQuery.isLoading) {
+    return <LoadingState label={t('common:status.loading')} />
+  }
+
+  if (logsQuery.isError) {
     return (
-      <div className="flex justify-center py-16">
-        <LoadingSpinner size="lg" />
-      </div>
+      <ErrorState
+        title={t('common:status.error')}
+        onRetry={() => void logsQuery.refetch()}
+        retryLabel={t('common:actions.retry')}
+      />
     )
   }
 
@@ -148,11 +154,14 @@ export function WeeklyLogsPage({ audience }: WeeklyLogsPageProps) {
       )}
 
       {logs.length === 0 && !composing ? (
-        <p className="rounded-lg border border-border bg-surface p-6 text-center text-sm text-foreground-secondary">
-          {audience === 'student'
+        <EmptyState
+          title={audience === 'student'
             ? t('internship:weeklyLogs.emptyStudent')
             : t('internship:weeklyLogs.emptyReviewer')}
-        </p>
+          description={audience === 'student'
+            ? t('internship:weeklyLogs.emptyStudentHint')
+            : t('internship:weeklyLogs.emptyReviewerHint')}
+        />
       ) : (
         <div className="flex flex-col gap-3">
           {logs.map((log) => (

@@ -1,9 +1,229 @@
 {
   "app": {
     "name": "FursadHub",
-    "tagline": "Furaya albaabbada mustaqbalkaaga."
+    "tagline": "Fursado Berri Ka Iftiin Badan"
+  },
+  "password": {
+    "show": "Muuji furaha sirta ah",
+    "hide": "Qari furaha sirta ah"
+  },
+  "shell": {
+    "primaryNavigation": "Habraaca weyn",
+    "openNavigation": "Fur habraaca",
+    "collapseSidebar": "Yaree qaybta dhinaca",
+    "expandSidebar": "Balaari qaybta dhinaca",
+    "sections": {
+      "manage": "Maamul",
+      "account": "Akoon"
+    },
+    "poweredBy": "Waxaa ku shaqeeya",
+    "portals": {
+      "university": "Bogga Jaamacadda",
+      "organization": "Bogga Qorista Shaqaalaha",
+      "admin": "Konsool-ka Maamulaha Sare",
+      "verificationOfficer": "Konsool-ka Xaqiijinta"
+    }
+  },
+  "publicPages": {
+    "about": {
+      "titleStart": "Dhisidda",
+      "titleAccent": "Xidhiidh Wanaagsan",
+      "titleEnd": "oo u Dhexeeya Waxbarashada iyo Fursadda",
+      "intro": "FursadHub waxay isku xidhaa ardayda, ururrada iyo jaamacadaha iyadoo adeegsanaysa habab tababar oo dhab ah oo taageera waxbarashada iyo horumarinta shaqada.",
+      "join": "Ku Biir FursadHub",
+      "why": "Maxaa FursadHub loo doortaa?",
+      "mission": {
+        "title": "Himiladeenna",
+        "body": "Ku xidh ardayda fursado dhab ah, ururrada hibo soo koraysa, jaamacadahana natiijooyin tababar oo cad."
+      },
+      "vision": {
+        "title": "Aragtideenna",
+        "body": "Bulsho tababar oo la isku halayn karo halkaas oo waxbarashada iyo waayo-aragnimada shaqadu wada shaqeeyaan."
+      },
+      "reasons": {
+        "students": "Ardaydu waxay u baahan yihiin fursado tababar oo khuseeya.",
+        "organizations": "Ururradu waxay u baahan yihiin hibo cusub oo karti leh.",
+        "universities": "Jaamacaduhu waxay u baahan yihiin kormeer tababar oo habaysan.",
+        "platform": "FursadHub waxay hababkan ku xidhaa hal madal."
+      },
+      "eyebrow": "Ku saabsan FursadHub",
+      "browse": "Fiiri tababarrada",
+      "countsTitle": "FursadHub maanta",
+      "countsHint": "Tirooyin toos ah oo ka yimid tusmooyinka dadweynaha. Waxba halkan qiyaas ma aha.",
+      "counts": {
+        "internships": "Tababarro la daabacay",
+        "organizations": "Hay'ado",
+        "universities": "Jaamacado"
+      },
+      "journeyTitle": "Sida tababar ugu socdo FursadHub",
+      "journeyHint": "Hal marin oo laga bilaabo daabacaadda ilaa dhammaystirka. Codsiyada dadweynaha iyo magacaabista jaamacadaha waxay ku wada biiraan isla liiska musharraxiinta.",
+      "journey": {
+        "sourcing": {
+          "title": "Raadinta",
+          "body": "Hay'addu waxay tababar u daabacdaa dadweynaha, ama waxay si gaar ah ugu tilmaantaa jaamacado iyo waaxyo, ama labadaba isku mar."
+        },
+        "candidacy": {
+          "title": "Hal marin musharrax",
+          "body": "Ardaygu si toos ah ayuu u codsadaa, ama isuduwaha waaxdu wuu magacaabaa isagoo raalli ka ah. Labada marinba waxay dhaliyaan hal musharrax oo keliya arday iyo tababar kasta."
+        },
+        "offer": {
+          "title": "Dalab iyo meelayn",
+          "body": "Shaqaalaysiintu waxay ku socotaa tallaabooyin cad. Marka ardaygu dalabka aqbalo, meelaynta waxaa la abuuraa isla wakhtigaas."
+        },
+        "supervision": {
+          "title": "Kormeerid",
+          "body": "Diiwaanka toddobaadlaha, xaadirinta, iyo kormeerayaasha jaamacadda iyo hay'adda, sida ay siyaasadda jaamacaddu dhigto."
+        },
+        "completion": {
+          "title": "Qiimayn iyo dhammaystir",
+          "body": "Qiimayn, warbixin ugu dambaysa iyo difaac marka siyaasaddu u baahan tahay, iyo diiwaan dhammaystir oo ku xiran macnaha waxbarasho ee saxda ah."
+        }
+      },
+      "audienceTitle": "Yaa FursadHub loogu talagalay",
+      "audience": {
+        "students": {
+          "title": "Ardayda",
+          "body": "Fiiri oo codso marka jaamacaddaadu xaqiijiso diiwaangelintaada, ka dibna hal meel ku maamul meelayntaada, diiwaannadaada iyo warbixinnadaada."
+        },
+        "organizations": {
+          "title": "Hay'adaha",
+          "body": "Daabac tababarro, ka codso magacaabis jaamacadaha aad la shaqaynaysid, eeg hal liis musharraxiin, oo kormeer tababarlayaasha aad qaadato."
+        },
+        "universities": {
+          "title": "Jaamacadaha",
+          "body": "Xaqiiji ardaydaada, u magacaab tababarrada la beegsaday, dhig siyaasadda tababarka, oo kormeer meelaynta ilaa dhammaystir."
+        }
+      },
+      "trustTitle": "Waxa aanan samayn",
+      "trustHint": "Si cad ayaa loo sheegayaa, maxaa yeelay kalsooni waa fudud tahay in la ilaaliyo marka loo eego dib u dhis.",
+      "trust": {
+        "biometrics": "Ma jiro aqoonsi waji, hubin biometric ah ama xaadirin biometric ah.",
+        "evidence": "Caddaymaha xaqiijinta iyo dukumiintiyada gaarka ah waligood dadweyne ma noqdaan, soo dejin kastana waa la oggolaadaa waana la diiwaangeliyaa.",
+        "testimonials": "Kaliya markhaatiyada ay qoreen isticmaalayaal dhab ah oo uu daabacay maamule ayaa bogga ka muuqda.",
+        "pilot": "Tijaabadu waa bilaash. Ma jiro wax lacag bixin ah oo alaabta ku jira."
+      },
+      "ctaTitle": "Ka bilow meesha kuu habboon",
+      "ctaBody": "Samayso akoon arday, hay'ad ama jaamacad ahaan."
+    },
+    "organizations": {
+      "title": "Hel Ururro",
+      "subtitle": "Baadh ururrada hadda bixiya fursado tababar oo guud.",
+      "searchLabel": "Raadi ururro",
+      "search": "Raadi ururro…",
+      "typeLabel": "Nooca ururka",
+      "allTypes": "Dhammaan noocyada ururrada",
+      "loading": "Ururrada waa la soo rarayaa…",
+      "error": "Ururrada lama soo rari karin.",
+      "empty": "Ma jiraan ururro la mid ah raadintaada.",
+      "view": "Bogga eeg",
+      "scopeNote": "Buug-gacmeedkani wuxuu liistaa hay'adaha lagu daabacay tusmada guud ee FursadHub.",
+      "heroLead": "La iskaashi ujeeddo.",
+      "heroBuild": "Dhis",
+      "heroAccent": "saameyn dhab ah.",
+      "heroDescription": "Hel hay'ado la xaqiijiyay oo abuuraya fursado, wadaagaya aqoon, kuna dhisaya mustaqbalka ardayda iyo jaamacadaha.",
+      "showing": "Waxaa la tusayaa {{from}}–{{to}} oo ka mid ah {{total}} hay'adood",
+      "openOpportunities_one": "{{count}} fursad furan",
+      "openOpportunities_other": "{{count}} fursadood oo furan",
+      "locationLabel": "Ku kala saar goobta",
+      "locationPlaceholder": "Goobta",
+      "sortLabel": "U kala hormari",
+      "sortName": "Magaca (A-Z)",
+      "sortNameDesc": "Magaca (Z-A)",
+      "sortRecentlyVerified": "Dhawaan la xaqiijiyay"
+    },
+    "universities": {
+      "title": "Horumari Maamulka Tababarka",
+      "subtitle": "Sii jaamacaddaada habaysan ay ardayda ku taageerto laga bilaabo magacaabista ilaa dhammaystirka tababarka.",
+      "getStarted": "Bilow",
+      "learn": "Wax Badan Baro",
+      "benefits": "Faa'iidooyinka Jaamacadaha",
+      "directoryNote": "Ka eeg bogagga jaamacadaha tusaha dadweynaha ee kore.",
+      "items": {
+        "students": {
+          "title": "Maamulka Ardayda",
+          "body": "Maamul ardayda diiwaangashan iyo xubinnimada waaxyaha."
+        },
+        "nominations": {
+          "title": "Magacaabista Ardayda",
+          "body": "U magacaab ardayda u qalanta fursadaha jaamacadaha loo beegsaday."
+        },
+        "placements": {
+          "title": "La Socodka Meel-dhigista",
+          "body": "La soco meel-dhigista laga bilaabo aqbalidda ilaa dhammaystirka."
+        },
+        "supervision": {
+          "title": "Kormeerka Tacliinta",
+          "body": "U qoondee kormeerayaal oo dib u eeg horumarka tababarka."
+        },
+        "policies": {
+          "title": "Siyaasadaha Tababarka",
+          "body": "Deji shuruudaha tacliimeed ee dhammaystirka."
+        },
+        "verification": {
+          "title": "Hay'ad La Xaqiijiyay",
+          "body": "Ku dhis kalsooni habka xaqiijinta madasha."
+        }
+      },
+      "heroLead": "Jaamacadaha Iskaashiga.",
+      "heroBuild": "Fursado",
+      "heroAccent": "Ka Xoog Badan.",
+      "heroDescription": "Hel jaamacadaha la iskaashada FursadHub si ardayda loogu xidho fursado dhab ah, xidhiidh warshadeed, iyo guul xirfadeed.",
+      "directoryTitle": "Dhammaan jaamacadaha",
+      "showing": "Waxaa la tusayaa {{from}}–{{to}} oo ka mid ah {{total}} jaamacadood",
+      "searchLabel": "Raadi jaamacado",
+      "search": "Ku raadi jaamacadaha magaca",
+      "loading": "Waa la soo rarayaa jaamacadaha…",
+      "error": "Jaamacadaha lama soo rari karin.",
+      "empty": "Ma jiraan jaamacado ku habboon raadintaada.",
+      "view": "Eeg astaanta",
+      "locationLabel": "Ku kala saar goobta",
+      "locationPlaceholder": "Goobta",
+      "sortLabel": "U kala hormari",
+      "sortName": "Magaca (A-Z)",
+      "sortNameDesc": "Magaca (Z-A)",
+      "sortRecentlyVerified": "Dhawaan la xaqiijiyay"
+    }
   },
   "landing": {
+    "hero": {
+      "connect": "Isku xidh.",
+      "learn": "Baro.",
+      "grow": "Koboc.",
+      "description": "FursadHub waxay ardayda ku xidhaa fursadaha tababarka, ururradana xirfadlayaal da'yar oo karti leh, jaamacadahana waayo-aragnimo shaqo oo dhab ah.",
+      "browse": "Hel Tababar",
+      "getStarted": "Bilow"
+    },
+    "capabilities": {
+      "label": "Awoodaha FursadHub",
+      "internships": {
+        "title": "Tababarro guud",
+        "body": "Raadi fursadaha dhab ahaan la daabacay"
+      },
+      "entities": {
+        "title": "Bulsho la xaqiijiyay",
+        "body": "Jaamacado iyo ururro"
+      },
+      "pipeline": {
+        "title": "Hab dhammaystiran",
+        "body": "Codsiga ilaa dhammaystirka"
+      }
+    },
+    "ecosystem": {
+      "title": "Sida FursadHub u Shaqayso",
+      "subtitle": "Hal madal oo loogu talagalay ardayda, ururrada iyo jaamacadaha",
+      "student": {
+        "title": "Ardayda",
+        "body": "Hel tababarrada la daabacay, mari hababka codsiga ee la taageero, lana soco tababarkaaga ilaa dhammaystirka."
+      },
+      "organization": {
+        "title": "Ururrada",
+        "body": "Daabac fursado, dib u eeg musharraxiinta, oo maamul waajibaadka tababarka goobta shaqada."
+      },
+      "university": {
+        "title": "Jaamacadaha",
+        "body": "Taageer magacaabista ardayda oo kormeer shuruudaha tacliimeed iyo hagidda tababarka."
+      }
+    },
     "eyebrow": "FursadHub · Soomaaliya",
     "subhead": "FursadHub waxay isku xirtaa ardayda, jaamacadaha iyo ururrada hal habka tababarka — laga bilaabo codsiga ugu horreeya ilaa difaaca ugu dambeeya.",
     "doors": {
@@ -58,6 +278,82 @@
       "body": "Diiwaan-gelintu waa bilaash intii lagu jiro tijaabada — samee akoon adigoo arday, urur, ama jaamacad ah.",
       "primary": "Samee akoon",
       "secondary": "Gal"
+    },
+    "hero2": {
+      "titleLead": "Hel Tababaro.",
+      "titleBuild": "Dhis",
+      "titleAccent": "Mustaqbal Dhab ah.",
+      "description": "Hel fursado la xaqiijiyay, wax ka baro hay'ado dhab ah, oo bilow xirfad saameyn leh.",
+      "searchPlaceholder": "Raadi tababaro, xirfado, ama hay'ado",
+      "searchLabel": "Raadi tababaro",
+      "locationPlaceholder": "Goobta",
+      "locationLabel": "Ku kala saar goobta",
+      "workModeLabel": "Ku kala saar habka shaqada",
+      "allWorkModes": "Hab kasta oo shaqo",
+      "search": "Raadi",
+      "popular": "Caan ah:",
+      "viewAll": "Dhammaan eeg"
+    },
+    "stats": {
+      "label": "FursadHub hal eegis",
+      "internships": "Tababarro la daabacay",
+      "organizations": "Hay'ado iskaashi",
+      "universities": "Jaamacado iskaashi"
+    },
+    "featured": {
+      "title": "Tababaro la soo bandhigay",
+      "viewAll": "Dhammaan tababarada eeg",
+      "empty": "Wali ma jiraan tababaro la daabacay."
+    },
+    "verifiedOrganizations": {
+      "title": "Hay'adaha ugu sarreeya ee la xaqiijiyay",
+      "viewAll": "Dhammaan hay'adaha eeg"
+    },
+    "works": {
+      "student": {
+        "points": [
+          "Raadi oo kala saar tababaro la xaqiijiyay",
+          "Ka raac codsiyadaada hal meel",
+          "Kala soco meelaynta ilaa dhammaystirka"
+        ],
+        "cta": "Bilow arday ahaan"
+      },
+      "organization": {
+        "points": [
+          "Gaar ardayda jaamacadaha la xaqiijiyay",
+          "Hal tuubbo codsiyo iyo magacaabisba",
+          "Maamul meelaynta iyo qiimeynta"
+        ],
+        "cta": "Soo dhig tababar"
+      },
+      "university": {
+        "points": [
+          "Magacaw ardayda fursadaha la beegsaday",
+          "Kormeer meelaynta iyo diiwaanka toddobaadka",
+          "Fuli qiimeynta iyo difaaca ugu dambeeya"
+        ],
+        "cta": "Nala iskaashi"
+      }
+    },
+    "band": {
+      "title": "Ma diyaar u tahay inaad fursado abuurto?",
+      "body": "Soo dhig tababaro ama bilow daqiiqado gudahood.",
+      "primary": "Soo dhig tababar",
+      "secondary": "Hadda bilow"
+    },
+    "pills": {
+      "verified": {
+        "title": "La xaqiijiyay",
+        "body": "Fursado tayo leh oo lagu kalsoonaan karo"
+      },
+      "learn": {
+        "title": "Baro",
+        "body": "Ka hel xirfado khubarada warshadaha"
+      },
+      "grow": {
+        "title": "Kobco",
+        "body": "Dhis khibrad. Qaabee mustaqbalkaaga."
+      }
     }
   },
   "footer": {
@@ -67,9 +363,13 @@
     "home": "Bogga hore",
     "howItWorks": "Sida ay u shaqeyso",
     "opportunities": "Fursadaha",
-    "copyright": "© {{year}} FursadHub. Dhammaan xuquuqda way dhowran tahay."
+    "copyright": "© {{year}} FursadHub. Dhammaan xuquuqda way dhowran tahay.",
+    "platformNav": "Baraha",
+    "accountNav": "Akoonka",
+    "strapline": "Berri ka iftiin badan, wadajir."
   },
   "nav": {
+    "publicMarketplace": "Fursadaha dadweynaha",
     "home": "Bogga hore",
     "student": "Arday",
     "university": "Jaamacad",
@@ -78,8 +378,18 @@
     "account": "Akoonka",
     "howItWorks": "Sida ay u shaqeyso",
     "register": "Diiwaangeli",
+    "internships": "Tababarro",
+    "organizations": "Ururrada",
+    "universities": "Jaamacadaha",
+    "about": "Nagu saabsan",
+    "login": "Gal",
+    "getStarted": "Bilow",
+    "publicNavigation": "Hagidda bogagga guud",
     "openMenu": "Fur liiska",
-    "closeMenu": "Xir liiska"
+    "closeMenu": "Xir liiska",
+    "workspace": "Aad goobtayda shaqada",
+    "accountSettings": "Dejinta akoonka",
+    "signOut": "Ka bax"
   },
   "status": {
     "loading": "Waa la soo raray",
@@ -87,7 +397,9 @@
     "pending": "Sugaya",
     "underReview": "Dib loo eegayo",
     "actionRequired": "Tallaabo ayaa loo baahan yahay",
-    "rejected": "La diiday"
+    "rejected": "La diiday",
+    "notProvided": "Lama bixin",
+    "error": "Wax qaldan ayaa dhacay"
   },
   "language": {
     "en": "Ingiriisi",
@@ -98,5 +410,200 @@
     "previous": "Hore",
     "next": "Xiga",
     "pageOf": "Bogga {{page}} ee {{totalPages}}"
+  },
+  "actions": {
+    "retry": "Mar kale isku day",
+    "cancel": "Jooji",
+    "confirm": "Xaqiiji",
+    "close": "Xir",
+    "apply": "Codso",
+    "clear": "Nadiifi"
+  },
+  "a11y": {
+    "skipToContent": "U gudub nuxurka",
+    "notifications": "Ogeysiisyada",
+    "dismissNotification": "Xir ogeysiiska",
+    "closeDialog": "Xir sanduuqa",
+    "closeDrawer": "Xir bogga dhinaca",
+    "search": "Raadi",
+    "progress": "Horumar",
+    "timeline": "Taxanaha wakhtiga"
+  },
+  "notFound": {
+    "title": "Bogga lama helin",
+    "description": "Bogga aad raadinayso ma jiro ama waa la beddelay.",
+    "action": "Aad bogga hore"
+  },
+  "tagInput": {
+    "hint": "Riix Enter ama comma si aad u darto.",
+    "count": "{{used}} ka mid ah {{max}}",
+    "remove": "Ka saar {{tag}}",
+    "duplicate": "Horey ayaa loo daray.",
+    "tooLong": "Mid kastaa ha dhaafin {{count}} xaraf.",
+    "limitReached": "Ugu badnaan waxaad dari kartaa {{count}}."
+  },
+  "remediation": {
+    "studentActionsOnly": "Codsiyada ardayda oo keliya",
+    "support": "Taageero",
+    "help": "Caawimaad iyo hagid",
+    "how": "Sida ay u shaqayso",
+    "updates": "La soco fursadaha",
+    "updatesBody": "Sahami tababarrada cusub ee la daabacay oo hel fursaddaada xigta.",
+    "stories": "Sheekooyin ka kala yimid FursadHub",
+    "storiesPending": "Sugaya sheekooyin la ansixiyey",
+    "storiesBody": "Sheekooyinka macaamiisha ayaa halkan ka muuqan doona marka la ansixiyo.",
+    "railTitle": "Horumari xirfaddaada",
+    "railBody": "Hel tababarro, diyaari boggaaga, oo la soco codsiyadaada.",
+    "browse": "Sahami fursado ka socda hay’ado dhab ah",
+    "apply": "Ku codso habka ardayga ee la taageero",
+    "track": "La soco codsiyadaada iyo tababarradaada",
+    "explore": "Sahami fursadaha",
+    "bandTitle": "Weli ma raadineysaa fursad kugu habboon?",
+    "bandBody": "Sahami tababarro la daabacay iyo hay’adaha la shaqeeya ardayda.",
+    "basic": "Macluumaadka aasaasiga ah",
+    "basicHint": "Faahfaahinta aqoonsiga hay’addaada.",
+    "publicProfile": "Bogga dadweynaha",
+    "publicHint": "Ka caawi ardayda inay fahmaan hay’addaada iyo goobta shaqada.",
+    "web": "Bogagga internetka",
+    "webHint": "Daabac xiriiriyeyaasha rasmiga ah ee hay’adda.",
+    "media": "Astaanta hay’adda",
+    "mediaHint": "Soo geli ama beddel astaanta iyo sawirka daboolka.",
+    "basics": "Aasaaska tababarka",
+    "description": "Sharaxaad",
+    "responsibilities": "Mas’uuliyadaha iyo shuruudaha",
+    "arrangement": "Goobta iyo habka shaqada",
+    "dates": "Taariikhaha iyo boosaska",
+    "audience": "Cidda loogu talagalay / habka daabacaadda",
+    "share": "Nuqul xiriiriyaha",
+    "copied": "Xiriiriyaha waa la nuqulay",
+    "shareFailed": "Nuqul cinwaankan",
+    "overview": "Dulmar",
+    "about": "Ku saabsan",
+    "contact": "Xiriir",
+    "culture": "Sahami fursadaha",
+    "genericCover": "Fursadaha tababarka",
+    "sort": "Kala horreynta daabacaadda",
+    "sortNote": "Kala horreynta ay bixiso madashu",
+    "notProvided": "Hay’addu ma bixin",
+    "partnerTitle": "Ku xiriir tababarro",
+    "partnerBody": "Sahami fursadaha hay’addan oo ku codso FursadHub.",
+    "opportunityTitle": "Dhis waayo-aragnimo qiimo leh",
+    "opportunityBody": "Hel tababarro la daabacay oo la soco codsigaaga.",
+    "sections": "Qaybaha bogga",
+    "quickActions": "Ficillo degdeg ah",
+    "studentIdRequired": "Soo geli aqoonsigaaga ardaynimo ka hor intaadan gudbin xaqiijinta diiwaangelinta.",
+    "viewPublicProfile": "Eeg bogga dadweynaha",
+    "storiesLead": "Waxaa qoray arday, shaqaalaysiiyayaal, isuduwayaal iyo kormeerayaal dhab ah — mid walbana waxaa lagu daabacay doorka uu dhab ahaan hayo, kaliya dib-u-eegis kadib.",
+    "storiesEyebrow": "Bulshada FursadHub"
+  },
+  "photo": {
+    "take": "Sawir qaad",
+    "live": "Muuqaalka kamaradda tooska ah",
+    "preview": "Sawirka la qaaday",
+    "unavailable": "Kamaradda lama heli karo. Xir daaqaddan oo isticmaal Soo geli.",
+    "use": "Isticmaal sawirka",
+    "retake": "Mar kale qaad",
+    "capture": "Qaad"
+  },
+  "documentPreview": {
+    "open": "Eeg dukumentiga",
+    "failed": "Dukumentiga lama eegi karo. Isku day inaad soo dejiso asalka.",
+    "image": "Muuqaalka dukumentiga gaarka ah",
+    "pdf": "Muuqaalka PDF-ga gaarka ah"
+  },
+  "applicationCv": {
+    "title": "CV-ga codsigan",
+    "description": "Soo geli CV PDF ah oo loogu talagalay tababarkan. Codsigan wuxuu haynayaa nuqulkan marka la gudbiyo.",
+    "verifyEnrollment": "Xaqiiji diiwaangelintaada ka hor intaadan codsan."
+  },
+  "professional": {
+    "about": "Adiga kugu saabsan",
+    "headline": "Cinwaanka xirfadda",
+    "city": "Magaalada",
+    "countryCode": "Koodhka dalka",
+    "countryHint": "Isticmaal koodhka dalka ee laba xaraf ah, tusaale SO.",
+    "countryError": "Geli koodh dal oo sax ah oo laba xaraf ah.",
+    "summary": "Soo koobid",
+    "skills": "Xirfadaha",
+    "skillsHint": "Ku dar ilaa 25 xirfadood, midkiiba ugu badnaan 60 xaraf.",
+    "links": "Xiriiriyeyaasha xirfadda",
+    "linkedinUrl": "LinkedIn",
+    "githubUrl": "GitHub",
+    "portfolioUrl": "Shaqooyinkaaga",
+    "urlError": "Geli xiriiriye HTTP ama HTTPS sax ah oo aan lahayn xogta gelitaanka.",
+    "university": "Jaamacad",
+    "department": "Waax"
+  },
+  "social": {
+    "linkedin": "LinkedIn",
+    "x": "X",
+    "instagram": "Instagram",
+    "youtube": "YouTube"
+  },
+  "similar": {
+    "title": "Tababarro la mid ah",
+    "description": "Tababarro dadweyne oo wadaaga xirfado, goob, hab shaqo ama hay’ad."
+  },
+  "authPresentation": {
+    "backHome": "Ku noqo Bogga Hore",
+    "panels": {
+      "login": {
+        "eyebrow": "Ku soo dhawoow",
+        "title": "Ka sii wad meeshii aad ka tagtay.",
+        "body": "Codsiyadaada, magacaabistaada iyo diiwaanka tababarkaagu waxay kugu sugayaan portalkaaga."
+      },
+      "register": {
+        "eyebrow": "Ku biir FursadHub",
+        "title": "Fursaddaada xigta halkan ayey ka bilaabmaysaa.",
+        "body": "Hal akoon ayaa kugu xidhaya tababarro, hay’ado iyo jaamacado Soomaaliya oo dhan."
+      },
+      "verifyEmail": {
+        "eyebrow": "Hal tallaabo ayaa hadhay",
+        "title": "Xaqiiji inaad tahay adiga.",
+        "body": "Waxaan kuu dirnay koodh gaaban emailkaaga. Gelintiisu waxay firfircoonaynaysaa akoonkaaga."
+      },
+      "forgotPassword": {
+        "eyebrow": "Soo celinta akoonka",
+        "title": "Ma xidhmay? Way dhacdaa.",
+        "body": "Na sii emailka akoonkaaga, waxaanan kuu diri doonaa link hal mar shaqeeya oo aad ku beddesho furahaaga."
+      },
+      "resetPassword": {
+        "eyebrow": "Soo celinta akoonka",
+        "title": "Dooro furaha cusub.",
+        "body": "Linkigan hal mar buu shaqeeyaa. Dhig furahaaga, ka dibna gal si aad u bilowdo fadhi cusub."
+      }
+    },
+    "trust": {
+      "verified": "Jaamacadaha iyo hay’adaha waa la xaqiijiyaa ka hor inta aysan qaadan calaamadda buluugga ah.",
+      "private": "CV-gaaga iyo dukumintiyada xaqiijintu waa qarsoodi, marnabana si guud loolama xidhno.",
+      "bilingual": "Waxaa lagu heli karaa Ingiriisi iyo Soomaali."
+    }
+  },
+  "theme": {
+    "useDark": "Adeegso muuqaalka madow",
+    "useLight": "Adeegso muuqaalka iftiinka"
+  },
+  "testimonials": {
+    "audiences": {
+      "STUDENT": "Arday",
+      "ORGANIZATION": "Hay'ad",
+      "UNIVERSITY": "Jaamacad",
+      "PLATFORM": "Kooxda FursadHub"
+    },
+    "attribution": {
+      "atInstitution": "{{role}} ee {{institution}}",
+      "platform": "{{role}}, FursadHub"
+    }
+  },
+  "roles": {
+    "STUDENT": "Arday",
+    "ORGANIZATION_ADMIN": "Maamulaha Hay'adda",
+    "RECRUITER": "Qorsheeyaha Shaqaalaysiinta",
+    "ORGANIZATION_SUPERVISOR": "Kormeeraha Hay'adda",
+    "UNIVERSITY_ADMIN": "Maamulaha Jaamacadda",
+    "DEPARTMENT_COORDINATOR": "Isuduwaha Waaxda",
+    "UNIVERSITY_SUPERVISOR": "Kormeeraha Jaamacadda",
+    "SUPER_ADMIN": "Maamulaha Sare",
+    "VERIFICATION_OFFICER": "Sarkaalka Xaqiijinta"
   }
 }

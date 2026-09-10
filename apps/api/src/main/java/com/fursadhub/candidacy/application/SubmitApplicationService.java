@@ -8,7 +8,9 @@ import com.fursadhub.common.api.ApiException;
 import com.fursadhub.common.audit.AuditService;
 import com.fursadhub.opportunity.application.OpportunityQueryService;
 import com.fursadhub.opportunity.domain.InternshipOpportunity;
+import com.fursadhub.organization.application.OrganizationVerificationGuard;
 import com.fursadhub.student.domain.StudentEnrollment;
+import com.fursadhub.student.application.StudentMarketplaceAccess;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -29,23 +31,31 @@ public class SubmitApplicationService {
 
     private final OpportunityQueryService opportunities;
     private final OpportunityApplicationRules applicationRules;
+    private final OrganizationVerificationGuard verificationGuard;
     private final StudentEligibility studentEligibility;
     private final ScreeningAnswerValidator screeningAnswerValidator;
     private final ScreeningAnswerRepository screeningAnswers;
     private final CandidacyMerger candidacyMerger;
     private final AuditService audit;
+    private final StudentMarketplaceAccess marketplaceAccess;
+    private final ApplicationCvService applicationCvs;
 
     public SubmitApplicationService(
             OpportunityQueryService opportunities, OpportunityApplicationRules applicationRules,
+            OrganizationVerificationGuard verificationGuard,
             StudentEligibility studentEligibility, ScreeningAnswerValidator screeningAnswerValidator,
-            ScreeningAnswerRepository screeningAnswers, CandidacyMerger candidacyMerger, AuditService audit) {
+            ScreeningAnswerRepository screeningAnswers, CandidacyMerger candidacyMerger, AuditService audit,
+            StudentMarketplaceAccess marketplaceAccess, ApplicationCvService applicationCvs) {
         this.opportunities = opportunities;
         this.applicationRules = applicationRules;
+        this.verificationGuard = verificationGuard;
         this.studentEligibility = studentEligibility;
         this.screeningAnswerValidator = screeningAnswerValidator;
         this.screeningAnswers = screeningAnswers;
         this.candidacyMerger = candidacyMerger;
         this.audit = audit;
+        this.marketplaceAccess = marketplaceAccess;
+        this.applicationCvs = applicationCvs;
     }
 
     /**
@@ -55,9 +65,15 @@ public class SubmitApplicationService {
     @Transactional
     public Candidacy apply(
             UUID studentUserId, UUID opportunityId, List<ScreeningAnswerValidator.SubmittedAnswer> submittedAnswers,
-            String ipAddress, String userAgent) {
+            UUID cvUploadId, String ipAddress, String userAgent) {
+        marketplaceAccess.requireStudent(studentUserId);
         InternshipOpportunity opportunity = opportunities.getOrThrow(opportunityId);
         applicationRules.requireOpenForSelfApplication(opportunity);
+        // Backend Phase B1.5. Placed immediately after the opportunity's own rules and before any
+        // student-side check, so an organization that cannot receive candidates is reported as such
+        // without first probing the caller's enrollment. Every existing rule below is unchanged and
+        // in its original order.
+        verificationGuard.requireVerifiedForCandidateIntake(opportunity.getOrganizationId());
 
         StudentEnrollment enrollment = studentEligibility.requireVerifiedEnrollment(studentUserId);
         studentEligibility.requireAvailable(studentUserId);
@@ -65,6 +81,7 @@ public class SubmitApplicationService {
         // Validated before the merge so a rejected answer set never leaves a half-created candidacy
         // behind, and so an invalid answer is reported even when merging into an existing candidacy.
         Map<UUID, String> validatedAnswers = screeningAnswerValidator.validate(opportunityId, submittedAnswers);
+        var cvUpload = applicationCvs.requireReady(studentUserId, opportunityId, cvUploadId);
 
         CandidacyMerger.MergeResult result = candidacyMerger.createOrMerge(
                 opportunity, enrollment, CandidacySource.SELF_APPLICATION, studentUserId);
@@ -77,6 +94,7 @@ public class SubmitApplicationService {
         }
 
         storeAnswers(result.candidacy(), validatedAnswers);
+        applicationCvs.claim(cvUpload, result.candidacy());
 
         audit.record("CANDIDACY_APPLICATION_SUBMITTED", studentUserId, ipAddress, userAgent,
                 "candidacyId=" + result.candidacy().getId() + ";opportunityId=" + opportunityId);

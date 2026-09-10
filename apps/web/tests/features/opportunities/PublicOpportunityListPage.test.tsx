@@ -112,7 +112,8 @@ describe('PublicOpportunityListPage', () => {
 
     renderPage()
 
-    expect(await screen.findByRole('heading', { name: /fursadaha tababarka/i })).toBeInTheDocument()
+    // The approved internships hero headline (design-reference/presentation-refresh-2026, reference 02).
+    expect(await screen.findByRole('heading', { name: /hel tababaro la xaqiijiyay/i })).toBeInTheDocument()
 
     await i18n.changeLanguage('en')
   })

@@ -5,14 +5,24 @@ import com.fursadhub.university.application.UniversityStaffService;
 import java.util.List;
 import java.util.UUID;
 
+/**
+ * One managed staff member, for their own university's admin.
+ *
+ * <p>Backend Phase B5 added {@code displayName} ADDITIVELY. {@code email} is deliberately kept: it
+ * is what every existing client renders, and it remains the account's contact and login field. A
+ * staff member created before B5 has a null display name, and the UI falls back to email exactly as
+ * it does today.
+ */
 public record StaffMemberResponse(
-        String membershipId, String userId, String email, String role, String status,
+        String membershipId, String userId, String displayName, String username, String email, String role, String status,
         List<UUID> departmentIds, String assignedAt) {
 
     public static StaffMemberResponse from(UniversityStaffService.StaffMember staffMember) {
         return new StaffMemberResponse(
                 staffMember.membership().getId().toString(),
                 staffMember.membership().getUserId().toString(),
+                staffMember.displayName(),
+                staffMember.username(),
                 staffMember.email(),
                 staffMember.membership().getRole().name(),
                 staffMember.status() == null ? null : staffMember.status().name(),

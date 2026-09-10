@@ -1,5 +1,6 @@
 import { env } from '../../../app/config/env'
 import { ApiError, apiFetch } from '../../../lib/api/client'
+import { downloadPrivateDocument } from '../../../lib/api/privateDocument'
 import { getAccessToken } from '../../../lib/auth/tokenStore'
 
 /**
@@ -34,7 +35,7 @@ export function removeMyCv() {
 }
 
 export function downloadMyCv() {
-  return downloadDocument('/students/me/cv/document')
+  return downloadPrivateDocument('/students/me/cv/document')
 }
 
 // ---------------------------------------------------------------- verification evidence
@@ -44,7 +45,7 @@ export function uploadMyEvidence(file: File) {
 }
 
 export function downloadMyEvidence() {
-  return downloadDocument('/students/me/verification/evidence/document')
+  return downloadPrivateDocument('/students/me/verification/evidence/document')
 }
 
 // ---------------------------------------------------------------- transport
@@ -57,7 +58,7 @@ export function downloadMyEvidence() {
  * in-memory access token — never read from storage (CLAUDE.md section 15) — the same credentials
  * mode, and the same {@link ApiError} contract on failure.
  */
-async function uploadDocument(path: string, file: File): Promise<DocumentPresence> {
+async function uploadDocument<T = DocumentPresence>(path: string, file: File): Promise<T> {
   const body = new FormData()
   body.append('file', file)
 
@@ -76,23 +77,17 @@ async function uploadDocument(path: string, file: File): Promise<DocumentPresenc
     }
     throw new Error(`Upload failed with status ${response.status}`)
   }
-  return (await response.json()) as DocumentPresence
+  return (await response.json()) as T
 }
 
-async function downloadDocument(path: string): Promise<Blob> {
-  const accessToken = getAccessToken()
-  const response = await fetch(`${env.apiBaseUrl}${path}`, {
-    method: 'GET',
-    credentials: 'include',
-    headers: accessToken ? { Authorization: `Bearer ${accessToken}` } : {},
-  })
-
-  if (!response.ok) {
-    const errorBody = await response.json().catch(() => null)
-    if (errorBody) {
-      throw new ApiError(errorBody)
-    }
-    throw new Error(`Download failed with status ${response.status}`)
-  }
-  return response.blob()
+export interface ApplicationCvUpload { id: string; filename: string; contentType: string }
+export function uploadApplicationCv(opportunityId: string, file: File) {
+  return uploadDocument<ApplicationCvUpload>(`/opportunities/${opportunityId}/application-cv`, file)
 }
+export function removeApplicationCv(opportunityId: string, id: string) {
+  return apiFetch<void>(`/opportunities/${opportunityId}/application-cv/${id}`, { method: 'DELETE' })
+}
+export function downloadApplicationCv(opportunityId: string, id: string) {
+  return downloadPrivateDocument(`/opportunities/${opportunityId}/application-cv/${id}/document`)
+}
+

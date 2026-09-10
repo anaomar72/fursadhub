@@ -35,7 +35,7 @@ class InternshipOfferIT extends AbstractPhase4IT {
         UUID departmentId = insertDepartment(universityId, "Computer Science", "CS");
         StudentFixture student = createVerifiedStudent(prefix + "-student", universityId, departmentId);
 
-        ResponseEntity<Map> applied = authorizedPost(
+        ResponseEntity<Map> applied = applicationWithCv(
                 "/api/v1/opportunities/" + published.opportunityId() + "/applications", student.accessToken(), Map.of());
         if (applied.getStatusCode() != HttpStatus.CREATED) {
             throw new IllegalStateException("Application failed: " + applied.getBody());
@@ -143,7 +143,7 @@ class InternshipOfferIT extends AbstractPhase4IT {
                 Map.of(
                         "startDate", LocalDate.now().plusMonths(2).toString(),
                         "endDate", LocalDate.now().plusMonths(5).toString(),
-                        "responseDeadline", LocalDate.now().minusDays(1).toString()));
+                        "responseDeadline", today().minusDays(1).toString()));
 
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.BAD_REQUEST);
         assertThat(errorCode(response)).isEqualTo("VALIDATION_FAILED");
@@ -188,7 +188,7 @@ class InternshipOfferIT extends AbstractPhase4IT {
         UUID departmentId = insertDepartment(universityId, "Computer Science", "CS");
         StudentFixture student = createVerifiedStudent("context-student", universityId, departmentId);
 
-        UUID candidacyId = UUID.fromString((String) authorizedPost(
+        UUID candidacyId = UUID.fromString((String) applicationWithCv(
                 "/api/v1/opportunities/" + published.opportunityId() + "/applications",
                 student.accessToken(), Map.of()).getBody().get("id"));
 

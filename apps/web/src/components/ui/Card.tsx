@@ -28,13 +28,21 @@ export const Card = forwardRef<HTMLDivElement, CardProps>(
     return (
       <div
         ref={ref}
+        // The corner comes from the workspace family: softer in the student workspace, squarer in
+        // the organization and university ones. The fallback is exactly what `rounded-xl` gives, so
+        // outside a workspace — the public site, auth — this card is unchanged.
+        style={{ borderRadius: 'var(--workspace-radius, var(--radius-xl))' }}
         className={cn(
-          'rounded-lg border border-border bg-surface',
+          'min-w-0 rounded-xl border border-border bg-surface shadow-xs',
           PADDING_CLASSES[padding],
+          // Emphasis without geometry. The card used to lift on hover, which moves whatever sits
+          // under the pointer — a link the user was about to click shifts half a step away, and in
+          // a grid the neighbouring cards stay put so the row visibly breaks alignment. Border and
+          // shadow carry the same "this is interactive" signal while the layout holds still.
           interactive &&
             cn(
-              'transition-all duration-150 ease-in-out',
-              'hover:-translate-y-0.5 hover:border-brand-primary hover:shadow-md',
+              'transition-[border-color,box-shadow] duration-150 ease-in-out motion-reduce:transition-none',
+              'hover:border-brand-accent hover:shadow-md',
             ),
           className,
         )}

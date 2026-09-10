@@ -13,7 +13,8 @@
   },
   "student": {
     "title": "Tababarkayga",
-    "empty": "Weli ma haysatid meelayn tababar. Marka aad aqbasho dalab, halkan ayuu ka soo muuqan doonaa."
+    "empty": "Weli ma haysatid meelayn tababar. Marka aad aqbasho dalab, halkan ayuu ka soo muuqan doonaa.",
+    "subtitle": "Tababarradaada hadda iyo kuwii hore."
   },
   "university": {
     "title": "Meelaynta ardayda",
@@ -23,7 +24,24 @@
   "organization": {
     "title": "Meelaynta",
     "description": "Tababarlayaasha hay'addaadu hadda martigelinayso.",
-    "empty": "Weli meelayn ma jirto. Meelaynta waxaa la abuuraa marka musharraxu dalab aqbalo."
+    "empty": "Weli meelayn ma jirto. Meelaynta waxaa la abuuraa marka musharraxu dalab aqbalo.",
+    "intern": "Tababaraha",
+    "university": "Jaamacadda",
+    "dates": "Taariikhaha",
+    "supervisor": "Kormeeraha",
+    "supervisorMissing": "Lama magacaabin",
+    "status": "Xaaladda",
+    "allStatuses": "Dhammaan xaaladaha",
+    "searchLabel": "Raadi tababarayaasha",
+    "searchPlaceholder": "Ku raadi magac, jaamacad ama tababar",
+    "resultCount_one": "{{count}} tababare",
+    "resultCount_other": "{{count}} tababare",
+    "supervisorDescription": "Tababarrada lagugu xilsaaray inaad kormeerto.",
+    "attendance": "Xaadirinta",
+    "evaluation": "Qiimeynta",
+    "attendanceUnsettled_one": "{{count}} la xallinayo",
+    "attendanceUnsettled_other": "{{count}} la xallinayo",
+    "attendanceSettled": "Waa cusub tahay"
   },
   "list": {
     "supervisorMissing": "Weli kormeere lama magacaabin."
@@ -38,7 +56,10 @@
     "university": "Jaamacadda",
     "department": "Waaxda",
     "cancellationReason": "La joojiyay: {{reason}}",
-    "terminationReason": "Goor hore la joojiyay: {{reason}}"
+    "terminationReason": "Goor hore la joojiyay: {{reason}}",
+    "aboutTitle": "Faahfaahinta tababarka",
+    "evaluationHint": "Qiimaynta ururka martida loo yahay halkan ayay ka muuqan doontaa marka ay dhammaystirto.",
+    "evaluationUnavailable": "Qiimeyntaada lama soo bandhigi karin. Taasi macnaheedu maaha inay maqan tahay."
   },
   "supervisors": {
     "title": "Kormeerayaasha",

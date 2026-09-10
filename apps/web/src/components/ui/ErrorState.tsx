@@ -1,0 +1,4 @@
+import { useTranslation } from 'react-i18next'
+import { Icon } from './Icon'
+import { Button } from './Button'
+export function ErrorState({title,description,onRetry,retryLabel}:{title?:string;description?:string;onRetry?:()=>void;retryLabel?:string}){const {t}=useTranslation();const resolvedTitle=title??t('common:status.error');const resolvedRetryLabel=retryLabel??t('common:actions.retry');return <div role="alert" className="flex min-h-32 flex-col items-center justify-center rounded-lg border border-danger bg-danger-bg p-6 text-center"><Icon name="alert" className="size-7 text-danger"/><h3 className="mt-2 font-semibold text-foreground">{resolvedTitle}</h3>{description&&<p className="mt-1 max-w-md text-sm text-foreground-secondary">{description}</p>}{onRetry&&<Button className="mt-4" size="sm" variant="outline" onClick={onRetry}>{resolvedRetryLabel}</Button>}</div>}

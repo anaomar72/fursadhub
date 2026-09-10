@@ -1,5 +1,6 @@
 import { useTranslation } from 'react-i18next'
 import { cn } from '../../lib/utils/cn'
+import { Button } from './Button'
 
 export interface PaginationProps {
   page: number
@@ -17,26 +18,28 @@ export function Pagination({ page, totalPages, onPageChange, className }: Pagina
   }
 
   return (
-    <nav className={cn('flex items-center justify-center gap-3', className)} aria-label={t('common:pagination.label')}>
-      <button
+    <nav className={cn('flex flex-wrap items-center justify-center gap-3', className)} aria-label={t('common:pagination.label')}>
+      <Button
         type="button"
-        className="rounded-md border border-border px-3 py-1.5 text-sm font-medium text-foreground disabled:cursor-not-allowed disabled:opacity-50"
+        variant="outline"
+        size="sm"
         onClick={() => onPageChange(page - 1)}
         disabled={page <= 0}
       >
         {t('common:pagination.previous')}
-      </button>
-      <span className="text-sm text-foreground-secondary">
+      </Button>
+      <span className="text-sm text-foreground-secondary" aria-live="polite">
         {t('common:pagination.pageOf', { page: page + 1, totalPages })}
       </span>
-      <button
+      <Button
         type="button"
-        className="rounded-md border border-border px-3 py-1.5 text-sm font-medium text-foreground disabled:cursor-not-allowed disabled:opacity-50"
+        variant="outline"
+        size="sm"
         onClick={() => onPageChange(page + 1)}
         disabled={page >= totalPages - 1}
       >
         {t('common:pagination.next')}
-      </button>
+      </Button>
     </nav>
   )
 }

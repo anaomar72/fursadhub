@@ -29,7 +29,7 @@ class OrganizationManagedStaffProvisioningIT extends AbstractPhase7IT {
         String email = uniqueEmail(emailPrefix("org-new-recruiter"));
 
         ResponseEntity<Map> response = authorizedPost("/api/v1/organizations/" + organization.id() + "/members", organization.adminToken(),
-                Map.of("email", email, "password", "Password123", "confirmPassword", "Password123", "role", "RECRUITER"));
+                Map.of("email", email, "password", "Password123", "confirmPassword", "Password123", "username", uniqueUsername(), "role", "RECRUITER"));
 
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.CREATED);
         assertThat(response.getBody().get("role")).isEqualTo("RECRUITER");
@@ -44,12 +44,14 @@ class OrganizationManagedStaffProvisioningIT extends AbstractPhase7IT {
     void createdStaffLogsInImmediatelyWithoutVerification() {
         Organization organization = newOrganization("org-login");
         String email = uniqueEmail(emailPrefix("org-login-recruiter"));
+        String username = uniqueUsername();
 
         requireOk(authorizedPost("/api/v1/organizations/" + organization.id() + "/members", organization.adminToken(),
-                Map.of("email", email, "password", "Password123", "confirmPassword", "Password123", "role", "RECRUITER")),
+                Map.of("email", email, "password", "Password123", "confirmPassword", "Password123", "username", username, "role", "RECRUITER")),
                 "Create recruiter");
 
-        String staffToken = loginAndExtractAccessToken(email, "Password123");
+        // Backend Phase B5.5: a managed account authenticates by username, not by its email.
+        String staffToken = loginByUsernameAndExtractAccessToken(username, "Password123");
         assertThat(staffToken).isNotBlank();
         assertThat(authorizedGet("/api/v1/me", staffToken).getBody().get("status")).isEqualTo("ACTIVE");
     }
@@ -75,7 +77,7 @@ class OrganizationManagedStaffProvisioningIT extends AbstractPhase7IT {
 
         ResponseEntity<Map> response = authorizedPost("/api/v1/organizations/" + organization.id() + "/members", organization.adminToken(),
                 Map.of("email", uniqueEmail(emailPrefix("org-mismatch-staff")), "password", "Password123",
-                        "confirmPassword", "Password124", "role", "RECRUITER"));
+                        "confirmPassword", "Password124", "username", uniqueUsername(), "role", "RECRUITER"));
 
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.BAD_REQUEST);
         assertThat(errorCode(response)).isEqualTo("STAFF_PASSWORD_CONFIRMATION_MISMATCH");
@@ -89,7 +91,7 @@ class OrganizationManagedStaffProvisioningIT extends AbstractPhase7IT {
 
         requireOk(authorizedPost("/api/v1/organizations/" + organization.id() + "/members", organization.adminToken(),
                 Map.of("email", uniqueEmail(emailPrefix("org-no-leak-staff")), "password", password,
-                        "confirmPassword", password, "role", "RECRUITER")),
+                        "confirmPassword", password, "username", uniqueUsername(), "role", "RECRUITER")),
                 "Create recruiter");
 
         ResponseEntity<List> list = authorizedGetList("/api/v1/organizations/" + organization.id() + "/members", organization.adminToken());
@@ -107,7 +109,7 @@ class OrganizationManagedStaffProvisioningIT extends AbstractPhase7IT {
         registerVerifiedUser(existingEmail);
 
         ResponseEntity<Map> response = authorizedPost("/api/v1/organizations/" + organization.id() + "/members", organization.adminToken(),
-                Map.of("email", existingEmail, "password", "Password123", "confirmPassword", "Password123", "role", "RECRUITER"));
+                Map.of("email", existingEmail, "password", "Password123", "confirmPassword", "Password123", "username", uniqueUsername(), "role", "RECRUITER"));
 
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.CONFLICT);
         assertThat(errorCode(response)).isEqualTo("STAFF_EMAIL_ALREADY_EXISTS");
@@ -122,7 +124,7 @@ class OrganizationManagedStaffProvisioningIT extends AbstractPhase7IT {
 
         ResponseEntity<Map> response = authorizedPost("/api/v1/organizations/" + organization.id() + "/members", organization.adminToken(),
                 Map.of("email", uniqueEmail(emailPrefix("org-escalate-staff")), "password", "Password123",
-                        "confirmPassword", "Password123", "role", "ORGANIZATION_ADMIN"));
+                        "confirmPassword", "Password123", "username", uniqueUsername(), "role", "ORGANIZATION_ADMIN"));
 
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.FORBIDDEN);
         assertThat(errorCode(response)).isEqualTo("STAFF_ROLE_NOT_ASSIGNABLE");
@@ -136,13 +138,13 @@ class OrganizationManagedStaffProvisioningIT extends AbstractPhase7IT {
         ResponseEntity<Map> superAdminAttempt = authorizedPost(
                 "/api/v1/organizations/" + organization.id() + "/members", organization.adminToken(),
                 Map.of("email", uniqueEmail(emailPrefix("org-super-staff")), "password", "Password123",
-                        "confirmPassword", "Password123", "role", "SUPER_ADMIN"));
+                        "confirmPassword", "Password123", "username", uniqueUsername(), "role", "SUPER_ADMIN"));
         assertThat(superAdminAttempt.getStatusCode()).isEqualTo(HttpStatus.BAD_REQUEST);
 
         ResponseEntity<Map> coordinatorAttempt = authorizedPost(
                 "/api/v1/organizations/" + organization.id() + "/members", organization.adminToken(),
                 Map.of("email", uniqueEmail(emailPrefix("org-coordinator-staff")), "password", "Password123",
-                        "confirmPassword", "Password123", "role", "DEPARTMENT_COORDINATOR"));
+                        "confirmPassword", "Password123", "username", uniqueUsername(), "role", "DEPARTMENT_COORDINATOR"));
         assertThat(coordinatorAttempt.getStatusCode()).isEqualTo(HttpStatus.BAD_REQUEST);
     }
 
@@ -211,7 +213,7 @@ class OrganizationManagedStaffProvisioningIT extends AbstractPhase7IT {
 
         ResponseEntity<Map> response = authorizedPost("/api/v1/organizations/" + organization.id() + "/members", recruiter.token(),
                 Map.of("email", uniqueEmail(emailPrefix("org-blocked-target")), "password", "Password123",
-                        "confirmPassword", "Password123", "role", "RECRUITER"));
+                        "confirmPassword", "Password123", "username", uniqueUsername(), "role", "RECRUITER"));
 
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.FORBIDDEN);
         assertThat(errorCode(response)).isEqualTo("ACCESS_DENIED");
@@ -228,7 +230,7 @@ class OrganizationManagedStaffProvisioningIT extends AbstractPhase7IT {
 
         ResponseEntity<Map> response = authorizedPost("/api/v1/organizations/" + organization.id() + "/members", supervisorToken,
                 Map.of("email", uniqueEmail(emailPrefix("org-supervisor-target")), "password", "Password123",
-                        "confirmPassword", "Password123", "role", "ORGANIZATION_SUPERVISOR"));
+                        "confirmPassword", "Password123", "username", uniqueUsername(), "role", "ORGANIZATION_SUPERVISOR"));
 
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.FORBIDDEN);
         assertThat(errorCode(response)).isEqualTo("ACCESS_DENIED");
@@ -241,13 +243,13 @@ class OrganizationManagedStaffProvisioningIT extends AbstractPhase7IT {
     void suspendedStaffCannotLoginOrRefresh() {
         Organization organization = newOrganization("org-suspend");
         StaffAccount staff = createAndLoginRecruiter(organization);
-        String rawRefreshToken = loginAndExtractRawRefreshToken(staff.email(), "Password123");
+        String rawRefreshToken = loginByUsernameAndExtractRawRefreshToken(staff.username(), "Password123");
 
         requireOk(authorizedPost(
                 "/api/v1/organizations/" + organization.id() + "/members/" + staff.membershipId() + "/suspend",
                 organization.adminToken(), null), "Suspend");
 
-        ResponseEntity<Map> loginAttempt = login(staff.email(), "Password123");
+        ResponseEntity<Map> loginAttempt = loginByUsername(staff.username(), "Password123");
         assertThat(loginAttempt.getStatusCode()).isEqualTo(HttpStatus.FORBIDDEN);
         assertThat(errorCode(loginAttempt)).isEqualTo("ACCOUNT_SUSPENDED");
         assertThat(refreshWith(rawRefreshToken).getStatusCode().is2xxSuccessful()).isFalse();
@@ -266,7 +268,7 @@ class OrganizationManagedStaffProvisioningIT extends AbstractPhase7IT {
                 "/api/v1/organizations/" + organization.id() + "/members/" + staff.membershipId() + "/reactivate",
                 organization.adminToken(), null), "Reactivate");
 
-        assertThat(loginAndExtractAccessToken(staff.email(), "Password123")).isNotBlank();
+        assertThat(loginByUsernameAndExtractAccessToken(staff.username(), "Password123")).isNotBlank();
     }
 
     @Test
@@ -274,7 +276,7 @@ class OrganizationManagedStaffProvisioningIT extends AbstractPhase7IT {
     void resetPasswordRevokesSessionsAndIssuesWorkingCredential() {
         Organization organization = newOrganization("org-reset");
         StaffAccount staff = createAndLoginRecruiter(organization);
-        String rawRefreshToken = loginAndExtractRawRefreshToken(staff.email(), "Password123");
+        String rawRefreshToken = loginByUsernameAndExtractRawRefreshToken(staff.username(), "Password123");
 
         ResponseEntity<Map> reset = authorizedPost(
                 "/api/v1/organizations/" + organization.id() + "/members/" + staff.membershipId() + "/reset-password",
@@ -284,8 +286,8 @@ class OrganizationManagedStaffProvisioningIT extends AbstractPhase7IT {
         assertThat(temporaryPassword).isNotBlank();
 
         assertThat(refreshWith(rawRefreshToken).getStatusCode().is2xxSuccessful()).isFalse();
-        assertThat(login(staff.email(), "Password123").getStatusCode()).isEqualTo(HttpStatus.UNAUTHORIZED);
-        assertThat(loginAndExtractAccessToken(staff.email(), temporaryPassword)).isNotBlank();
+        assertThat(loginByUsername(staff.username(), "Password123").getStatusCode()).isEqualTo(HttpStatus.UNAUTHORIZED);
+        assertThat(loginByUsernameAndExtractAccessToken(staff.username(), temporaryPassword)).isNotBlank();
     }
 
     @Test
@@ -309,7 +311,8 @@ class OrganizationManagedStaffProvisioningIT extends AbstractPhase7IT {
     private record Organization(UUID id, String adminToken) {
     }
 
-    private record StaffAccount(UUID membershipId, String email, String token) {
+    /** Backend Phase B5.5: managed staff log in by username, so the fixture carries it. */
+    private record StaffAccount(UUID membershipId, String email, String username, String token) {
     }
 
     /** A verified organization with a freshly logged-in ORGANIZATION_ADMIN (the real create-organization endpoint auto-assigns it). */
@@ -323,7 +326,7 @@ class OrganizationManagedStaffProvisioningIT extends AbstractPhase7IT {
     private UUID createRecruiter(Organization organization) {
         String email = uniqueEmail(emailPrefix("org-recruiter"));
         ResponseEntity<Map> response = authorizedPost("/api/v1/organizations/" + organization.id() + "/members", organization.adminToken(),
-                Map.of("email", email, "password", "Password123", "confirmPassword", "Password123", "role", "RECRUITER"));
+                Map.of("email", email, "password", "Password123", "confirmPassword", "Password123", "username", uniqueUsername(), "role", "RECRUITER"));
         requireOk(response, "Create recruiter");
         return UUID.fromString((String) response.getBody().get("membershipId"));
     }
@@ -331,11 +334,17 @@ class OrganizationManagedStaffProvisioningIT extends AbstractPhase7IT {
     /** Creates and logs a recruiter in (no verification step — see "Contact Verification" above). */
     private StaffAccount createAndLoginRecruiter(Organization organization) {
         String email = uniqueEmail(emailPrefix("org-recruiter"));
+        String username = uniqueUsername();
         ResponseEntity<Map> response = authorizedPost("/api/v1/organizations/" + organization.id() + "/members", organization.adminToken(),
-                Map.of("email", email, "password", "Password123", "confirmPassword", "Password123", "role", "RECRUITER"));
+                Map.of("email", email, "password", "Password123", "confirmPassword", "Password123", "username", username, "role", "RECRUITER"));
         requireOk(response, "Create recruiter");
         UUID membershipId = UUID.fromString((String) response.getBody().get("membershipId"));
-        String token = loginAndExtractAccessToken(email, "Password123");
-        return new StaffAccount(membershipId, email, token);
+        String token = loginByUsernameAndExtractAccessToken(username, "Password123");
+        return new StaffAccount(membershipId, email, username, token);
+    }
+
+    /** A globally unique canonical username; Backend Phase B5.5 requires one per managed account. */
+    private String uniqueUsername() {
+        return "u" + UUID.randomUUID().toString().replace("-", "").substring(0, 16);
     }
 }

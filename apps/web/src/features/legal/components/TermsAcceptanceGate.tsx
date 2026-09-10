@@ -108,7 +108,7 @@ export function TermsAcceptanceGate({ children }: TermsAcceptanceGateProps) {
             href={`/legal/${document.documentType.toLowerCase().replace(/_/g, '-')}`}
             target="_blank"
             rel="noreferrer"
-            className="text-sm font-medium text-brand-primary underline-offset-2 hover:underline"
+            className="text-sm font-medium text-link underline-offset-2 hover:underline"
           >
             {t('legal:acceptance.read')}
           </a>

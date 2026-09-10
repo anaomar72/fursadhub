@@ -2,10 +2,13 @@ package com.fursadhub.university.application;
 
 import com.fursadhub.common.api.ApiException;
 import com.fursadhub.university.domain.Department;
+import com.fursadhub.university.domain.PublicUniversityFilter;
 import com.fursadhub.university.domain.DepartmentRepository;
 import com.fursadhub.university.domain.University;
 import com.fursadhub.university.domain.UniversityRepository;
 import com.fursadhub.verification.domain.InstitutionVerificationStatus;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -53,6 +56,19 @@ public class UniversityQueryService {
         return universities.findAll().stream()
                 .filter(university -> university.getStatus() == InstitutionVerificationStatus.VERIFIED)
                 .toList();
+    }
+
+    /**
+     * The public university directory (Backend Phase B1) — no authentication required.
+     *
+     * <p><strong>Approved visibility policy:</strong> a university is publicly discoverable if and
+     * only if its status is {@code VERIFIED}, using the existing
+     * {@link InstitutionVerificationStatus} model rather than any second verification concept. The
+     * rule lives in the repository query, so unlike {@link #listUniversities} above this never loads
+     * a wider set and narrows it in memory.
+     */
+    public Page<University> searchPublicDirectory(PublicUniversityFilter filter, Pageable pageable) {
+        return universities.searchPublicDirectory(filter, pageable);
     }
 
     public University getUniversity(UUID universityId) {

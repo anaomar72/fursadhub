@@ -88,9 +88,22 @@ public class NominationQueryService {
     }
 
     /** A student this coordinator may legitimately nominate. */
+    /**
+     * A student this coordinator may legitimately nominate.
+     *
+     * <p>{@code professional} is the student's PROFESSIONAL PROFILE — headline, summary, skills,
+     * links. It is carried here so a coordinator can read who they are about to put forward instead
+     * of nominating a name from a dropdown. It is null for a student who has not written one.
+     *
+     * <p>It is NOT enrollment evidence and NOT a CV. Those remain on their own authorized routes
+     * (CLAUDE.md sections 47/48): evidence is verification-specific and reachable only by a scoped
+     * university reviewer or a platform verification officer, and a CV is per-application. Nothing
+     * on this row widens either of them.
+     */
     public record EligibleStudentRow(
             UUID studentUserId, String email, String fullName, UUID departmentId, String studentNumber,
-            String program, String academicYear, boolean alreadyNominated) {
+            String program, String academicYear, boolean alreadyNominated,
+            com.fursadhub.student.domain.StudentProfessionalProfile professional) {
     }
 
     public List<NominationRow> listForUniversity(UUID staffUserId, UUID universityId) {
@@ -179,7 +192,13 @@ public class NominationQueryService {
                 enrollment.getStudentNumber(),
                 enrollment.getProgram(),
                 enrollment.getAcademicYear(),
-                nominations.existsLiveByOpportunityIdAndStudentUserId(opportunityId, enrollment.getStudentUserId()));
+                nominations.existsLiveByOpportunityIdAndStudentUserId(opportunityId, enrollment.getStudentUserId()),
+                // Null when the student has not written one — the UI says so rather than inventing
+                // a headline. Reached only through `listEligibleStudents`, which has already scoped
+                // this row to the caller's own university and assigned departments.
+                studentProfiles.findByUserId(enrollment.getStudentUserId())
+                        .map(com.fursadhub.student.domain.StudentProfile::getProfessional)
+                        .orElse(null));
     }
 
     private NominationRow toRow(Nomination nomination) {

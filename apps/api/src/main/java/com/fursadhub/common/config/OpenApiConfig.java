@@ -1,5 +1,7 @@
 package com.fursadhub.common.config;
 
+import com.fursadhub.common.api.PatchFieldModelConverter;
+import io.swagger.v3.core.converter.ModelConverter;
 import io.swagger.v3.oas.models.Components;
 import io.swagger.v3.oas.models.OpenAPI;
 import io.swagger.v3.oas.models.info.Info;
@@ -22,5 +24,15 @@ public class OpenApiConfig {
                                 .type(SecurityScheme.Type.HTTP)
                                 .scheme("bearer")
                                 .bearerFormat("JWT")));
+    }
+
+    /**
+     * Makes the published contract describe a presence-aware request field as the value it carries —
+     * a nullable string, integer or enum — rather than as the server-side wrapper that implements
+     * omitted-versus-null. See {@link PatchFieldModelConverter}.
+     */
+    @Bean
+    public ModelConverter patchFieldModelConverter() {
+        return new PatchFieldModelConverter();
     }
 }

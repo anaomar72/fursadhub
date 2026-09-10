@@ -1,0 +1,52 @@
+{
+  "nav": {
+    "title": "La wadaag sheekadaada"
+  },
+  "title": "La wadaag sheekadaada",
+  "description": "U sheeg ardayda, hay'adaha iyo jaamacadaha kale sida ay dhab ahaan u ahayd inaad FursadHub ku shaqeyso.",
+  "form": {
+    "title": "Qor markhaatigaaga",
+    "moderationNotice": "Gudbintu waxay hadalkaaga u dirtaa kooxda FursadHub si ay u eegaan. Waxba kama muuqdaan bogga dadweynaha ilaa uu maamulaha daabaco, hadalkaagana waa la daabacayaa sidii aad u qortay ama lama daabacayo.",
+    "displayName": "Magaca la daabacayo",
+    "displayNameHint": "Kanu waa magaca ku xiga hadalkaaga. Emaylka akoonkaaga waligiis lama daabaco.",
+    "body": "Markhaatigaaga",
+    "bodyHint": "Inta u dhaxaysa 40 iyo 1000 xaraf.",
+    "submit": "U gudbi eegis",
+    "errors": {
+      "TESTIMONIAL_ALREADY_SUBMITTED": "Waxaad hore u leedahay markhaati eegis sugaya ama la daabacay.",
+      "TESTIMONIAL_INVALID_TRANSITION": "Markhaatigaas si taas ah xaaladdiisa looma beddeli karo.",
+      "TESTIMONIAL_NOT_FOUND": "Markhaatigaas ma jiro.",
+      "VALIDATION_FAILED": "Hubi goobaha la calaamadeeyay oo isku day mar kale.",
+      "generic": "Markhaatigaaga lama gudbin karin. Isku day mar kale.",
+      "TESTIMONIAL_ROLE_NOT_ELIGIBLE": "Akoonkaagu weli ma laha door FursadHub oo aan sheeko ku tilmaami karno."
+    },
+    "rating": "Qiimee waayo-aragnimadaada FursadHub",
+    "sharingAs": "Waxaad u wadaagaysaa sida",
+    "sharingAsHint": "FursadHub waxay tan ka soo qaadataa akoonkaaga, si sheekadaada had iyo jeer loogu daabaco doorka aad dhab ahaan haysato. Halkan lagama beddeli karo."
+  },
+  "mine": {
+    "title": "Waxaad gudbisay",
+    "empty": "Weli markhaati ma aadan gudbin.",
+    "moderatorNote": "Qoraalka dib-u-eegaha: {{note}}"
+  },
+  "status": {
+    "SUBMITTED": "Eegis sugaya",
+    "PUBLISHED": "La daabacay",
+    "REJECTED": "Lama daabacin"
+  },
+  "errors": {
+    "nameRequired": "Geli magaca lagu daabacayo hadalkaaga agtiisa.",
+    "nameTooLong": "Isticmaal 120 xaraf ama ka yar.",
+    "bodyTooShort": "Qor ugu yaraan 40 xaraf.",
+    "bodyTooLong": "Isticmaal 1000 xaraf ama ka yar.",
+    "ratingRequired": "Dooro qiimayn u dhaxaysa 1 ilaa 5 xiddigood."
+  },
+  "rating": {
+    "outOfFive": "{{rating}} ka mid ah 5",
+    "none": "Weli qiimayn lama dooran"
+  },
+  "ineligible": {
+    "title": "Weli lama heli karo",
+    "body": "Sheekooyinka waxaa lagu daabacaa door FursadHub oo dhab ah. Marka aad yeelato boggaaga ardayga ama door shaqaale oo jaamacad ama hay'ad ah, halkan ayaad kaaga wadaagi kartaa."
+  }
+}

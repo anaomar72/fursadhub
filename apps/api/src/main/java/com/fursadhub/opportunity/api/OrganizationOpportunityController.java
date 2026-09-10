@@ -3,6 +3,7 @@ package com.fursadhub.opportunity.api;
 import com.fursadhub.common.web.RequestMetadata;
 import com.fursadhub.opportunity.application.CreateOpportunityService;
 import com.fursadhub.opportunity.application.OpportunityQueryService;
+import com.fursadhub.opportunity.application.OpportunityTagService;
 import com.fursadhub.opportunity.domain.InternshipOpportunity;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
@@ -18,6 +19,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 
 /** Organization-scoped opportunity creation/listing (CLAUDE.md section 8). */
@@ -27,10 +29,13 @@ public class OrganizationOpportunityController {
 
     private final CreateOpportunityService createService;
     private final OpportunityQueryService queryService;
+    private final OpportunityTagService tags;
 
-    public OrganizationOpportunityController(CreateOpportunityService createService, OpportunityQueryService queryService) {
+    public OrganizationOpportunityController(
+            CreateOpportunityService createService, OpportunityQueryService queryService, OpportunityTagService tags) {
         this.createService = createService;
         this.queryService = queryService;
+        this.tags = tags;
     }
 
     @PostMapping
@@ -41,14 +46,30 @@ public class OrganizationOpportunityController {
                 currentUserId(jwt), organizationId, request.title(), request.description(), request.responsibilities(),
                 request.requirements(), request.mode(), request.numberOfOpenings(), request.workMode(), request.location(),
                 request.startDate(), request.endDate(), request.applicationDeadline(),
+                CompensationRequest.toDomain(request.compensation()), request.skills(), request.perks(),
+                request.hoursPerWeek(),
                 RequestMetadata.clientIp(httpRequest), RequestMetadata.userAgent(httpRequest));
-        return ResponseEntity.status(HttpStatus.CREATED).body(OpportunityResponse.from(opportunity));
+        return ResponseEntity.status(HttpStatus.CREATED).body(OpportunityResponse.from(
+                opportunity, tags.skillsOf(opportunity.getId()), tags.perksOf(opportunity.getId())));
     }
 
+    /**
+     * The organization's own opportunity list. Skills and perks are batch-loaded for the whole page
+     * in one query each rather than per row — the same N+1 avoidance the public listing uses.
+     */
     @GetMapping
     public List<OpportunityResponse> list(@AuthenticationPrincipal Jwt jwt, @PathVariable UUID organizationId) {
-        return queryService.listForOrganization(currentUserId(jwt), organizationId).stream()
-                .map(OpportunityResponse::from)
+        List<InternshipOpportunity> opportunities =
+                queryService.listForOrganization(currentUserId(jwt), organizationId);
+        List<UUID> ids = opportunities.stream().map(InternshipOpportunity::getId).toList();
+        Map<UUID, List<String>> skills = tags.skillsByOpportunity(ids);
+        Map<UUID, List<String>> perks = tags.perksByOpportunity(ids);
+
+        return opportunities.stream()
+                .map(opportunity -> OpportunityResponse.from(
+                        opportunity,
+                        skills.getOrDefault(opportunity.getId(), List.of()),
+                        perks.getOrDefault(opportunity.getId(), List.of())))
                 .toList();
     }
 

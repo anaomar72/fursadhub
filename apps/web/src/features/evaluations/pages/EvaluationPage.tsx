@@ -2,7 +2,7 @@ import { useState } from 'react'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { useTranslation } from 'react-i18next'
 import { useParams } from 'react-router-dom'
-import { Button, FormField, LoadingSpinner, Select, StatusBadge, Textarea } from '../../../components/ui'
+import { Button, ErrorState, FormField, LoadingState, Select, StatusBadge, Textarea, EmptyState } from '../../../components/ui'
 import type { StatusTone } from '../../../components/ui'
 import { apiErrorMessage } from '../../../lib/api/errorMessage'
 import * as evaluationsApi from '../api/evaluationsApi'
@@ -48,10 +48,16 @@ export function EvaluationPage({ audience }: EvaluationPageProps) {
   })
 
   if (evaluationQuery.isLoading) {
+    return <LoadingState label={t('common:status.loading')} />
+  }
+
+  if (evaluationQuery.isError) {
     return (
-      <div className="flex justify-center py-16">
-        <LoadingSpinner size="lg" />
-      </div>
+      <ErrorState
+        title={t('common:status.error')}
+        onRetry={() => void evaluationQuery.refetch()}
+        retryLabel={t('common:actions.retry')}
+      />
     )
   }
 
@@ -59,9 +65,10 @@ export function EvaluationPage({ audience }: EvaluationPageProps) {
 
   if (!evaluation && audience === 'reader') {
     return (
-      <p className="rounded-lg border border-border bg-surface p-6 text-center text-sm text-foreground-secondary">
-        {t('internship:evaluation.notAvailable')}
-      </p>
+      <EmptyState
+        title={t('internship:evaluation.notAvailable')}
+        description={t('internship:evaluation.notAvailableHint')}
+      />
     )
   }
 

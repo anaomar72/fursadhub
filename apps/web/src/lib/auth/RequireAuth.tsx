@@ -1,4 +1,5 @@
 import type { ReactNode } from 'react'
+import { useTranslation } from 'react-i18next'
 import { Navigate, useLocation } from 'react-router-dom'
 import { useAuth } from './AuthContext'
 import { LoadingSpinner } from '../../components/ui'
@@ -10,13 +11,14 @@ import { TermsAcceptanceGate } from '../../features/legal/components/TermsAccept
  * protected endpoint regardless of what the frontend router allows (CLAUDE.md section 24).
  */
 export function RequireAuth({ children }: { children: ReactNode }) {
+  const { t } = useTranslation()
   const { isAuthenticated, isInitializing } = useAuth()
   const location = useLocation()
 
   if (isInitializing) {
     return (
       <div className="flex min-h-svh items-center justify-center">
-        <LoadingSpinner size="lg" />
+        <LoadingSpinner size="lg" label={t('common:status.loading')} />
       </div>
     )
   }

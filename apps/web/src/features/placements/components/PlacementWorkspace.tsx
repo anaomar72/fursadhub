@@ -1,7 +1,8 @@
 import { useQuery } from '@tanstack/react-query'
 import { useTranslation } from 'react-i18next'
 import { Outlet, useParams } from 'react-router-dom'
-import { LoadingSpinner } from '../../../components/ui'
+import { EmptyState, LoadingState } from '../../../components/ui'
+import { PageContainer } from '../../../app/layouts/PageContainer'
 import * as placementsApi from '../api/placementsApi'
 import { InternshipNav, type InternshipArea } from './InternshipNav'
 import { PlacementSummary } from './PlacementSummary'
@@ -34,30 +35,40 @@ export function PlacementWorkspace({ area }: PlacementWorkspaceProps) {
     enabled: !!placementId,
   })
 
+  // Loading and not-found sit in the SAME container as the loaded page, so the content does not
+  // jump position once the placement arrives.
   if (placementQuery.isLoading) {
     return (
-      <div className="flex justify-center py-16">
-        <LoadingSpinner size="lg" />
-      </div>
+      <PageContainer>
+        <LoadingState label={t('common:status.loading')} />
+      </PageContainer>
     )
   }
 
   const placement = placementQuery.data
   if (!placement) {
     return (
-      <p className="px-4 py-10 text-center text-sm text-foreground-secondary">
-        {t('placements:detail.notFound')}
-      </p>
+      <PageContainer>
+        <EmptyState title={t('placements:detail.notFound')} />
+      </PageContainer>
     )
   }
 
   const basePath = `/${area}/placements/${placement.id}`
 
   return (
-    <div className="mx-auto flex max-w-3xl flex-col gap-6 px-4 py-8 sm:px-6">
+    /*
+      `PageContainer`, not a hand-rolled column. This workspace used
+      `mx-auto max-w-3xl px-4 py-8` while every other page in all three portals goes through
+      PageContainer at `wide`, so moving between "My applications" and "My internship" visibly
+      narrowed the page and shifted the content inward by about 160px — the clearest way for a
+      sub-page to stop looking like it belongs to its portal. The overview already lays out two
+      columns, so `wide` is the right width for it as well as the consistent one.
+    */
+    <PageContainer className="flex flex-col gap-6">
       <PlacementSummary placement={placement} audience={area === 'student' ? 'student' : 'staff'} />
       <InternshipNav area={area} basePath={basePath} />
       <Outlet context={placement} />
-    </div>
+    </PageContainer>
   )
 }

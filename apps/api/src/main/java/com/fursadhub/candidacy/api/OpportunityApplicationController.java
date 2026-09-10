@@ -45,6 +45,7 @@ public class OpportunityApplicationController {
                 currentUserId(jwt),
                 opportunityId,
                 toSubmittedAnswers(request),
+                request == null ? null : request.cvUploadId(),
                 RequestMetadata.clientIp(httpRequest),
                 RequestMetadata.userAgent(httpRequest));
         return ResponseEntity.status(HttpStatus.CREATED).body(CandidacyResponse.from(candidacy));

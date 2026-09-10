@@ -2,6 +2,7 @@ import { env } from '../../../app/config/env'
 import { ApiError, apiFetch } from '../../../lib/api/client'
 import { getAccessToken } from '../../../lib/auth/tokenStore'
 import type {
+  CompanySizeRange,
   MyOrganizationMembershipResponse,
   OrganizationEvidenceResponse,
   OrganizationMemberResponse,
@@ -9,9 +10,11 @@ import type {
   OrganizationRole,
   OrganizationType,
   PublicOrganizationResponse,
+  PublicOrganizationSummaryResponse,
   TemporaryCredentialResponse,
 } from '../types'
 import type { MessageResponse } from '../../auth/types'
+import type { PageResponse } from '../../opportunities/types'
 
 export function createOrganization(input: {
   name: string
@@ -27,10 +30,32 @@ export function getOrganization(organizationId: string) {
   return apiFetch<OrganizationResponse>(`/organizations/${organizationId}`, { method: 'GET' })
 }
 
-export function updateOrganization(
-  organizationId: string,
-  input: { name: string; registrationNumber?: string; website?: string; description?: string },
-) {
+/**
+ * The organization's editable profile.
+ *
+ * <p>The four original fields are FULL REPLACEMENT — omitting one clears it. The Backend Phase B2
+ * fields are PRESENCE-AWARE: a key that is absent from `input` preserves the stored value, and an
+ * explicit `null` clears it. Build the body with `buildOrganizationProfilePayload` rather than by
+ * hand, so an untouched field is never serialized as null.
+ */
+export interface UpdateOrganizationInput {
+  name: string
+  registrationNumber?: string
+  website?: string
+  description?: string
+  industry?: string | null
+  city?: string | null
+  countryCode?: string | null
+  shortDescription?: string | null
+  companySizeRange?: CompanySizeRange | null
+  foundedYear?: number | null
+  linkedinUrl?: string | null
+  xUrl?: string | null
+  instagramUrl?: string | null
+  youtubeUrl?: string | null
+}
+
+export function updateOrganization(organizationId: string, input: UpdateOrganizationInput) {
   return apiFetch<OrganizationResponse>(`/organizations/${organizationId}`, { method: 'PATCH', body: input })
 }
 
@@ -49,7 +74,16 @@ export function listMembers(organizationId: string) {
 /** Creates a brand-new staff account — the email does not need to belong to an existing user. */
 export function createMember(
   organizationId: string,
-  input: { email: string; password: string; confirmPassword: string; role: OrganizationRole },
+  input: {
+    email: string
+    /** Backend Phase B5.5. REQUIRED: the login identifier for this managed account. */
+    username: string
+    password: string
+    confirmPassword: string
+    /** Backend Phase B5. Optional — omit it and the staff member simply has no display name. */
+    displayName?: string
+    role: OrganizationRole
+  },
 ) {
   return apiFetch<OrganizationMemberResponse>(`/organizations/${organizationId}/members`, { method: 'POST', body: input })
 }
@@ -129,6 +163,34 @@ export async function uploadOrganizationLogo(organizationId: string, file: File)
   return (await response.json()) as OrganizationLogoResponse
 }
 
+/**
+ * Uploads or replaces the organization's public profile banner (Backend Phase B2).
+ * `ORGANIZATION_ADMIN` only, same contract as the logo above.
+ *
+ * <p>There is deliberately NO remove function: `OrganizationController` exposes `POST .../cover`
+ * and nothing else — no DELETE — so a cover can be replaced but not taken down. Offering a Remove
+ * button here would be a control with no endpoint behind it.
+ */
+export async function uploadOrganizationCover(organizationId: string, file: File): Promise<OrganizationLogoResponse> {
+  const body = new FormData()
+  body.append('file', file)
+
+  const accessToken = getAccessToken()
+  const response = await fetch(`${env.apiBaseUrl}/organizations/${organizationId}/cover`, {
+    method: 'POST',
+    credentials: 'include',
+    headers: accessToken ? { Authorization: `Bearer ${accessToken}` } : {},
+    body,
+  })
+
+  if (!response.ok) {
+    const errorBody = await response.json().catch(() => null)
+    if (errorBody) throw new ApiError(errorBody)
+    throw new Error(`Upload failed with status ${response.status}`)
+  }
+  return (await response.json()) as OrganizationLogoResponse
+}
+
 /** Public, unauthenticated, cacheable — safe to use directly as an `<img src>`. */
 export function organizationLogoUrl(organizationId: string): string {
   return `${env.apiBaseUrl}/public/organizations/${organizationId}/logo/document`
@@ -138,4 +200,82 @@ export function organizationLogoUrl(organizationId: string): string {
 
 export function getPublicOrganization(organizationId: string) {
   return apiFetch<PublicOrganizationResponse>(`/public/organizations/${organizationId}`, { method: 'GET' })
+}
+
+/**
+ * Sets or clears a managed staff member's display name (Backend Phase B5).
+ *
+ * Only RECRUITER and ORGANIZATION_SUPERVISOR memberships may be named — the server refuses an
+ * organization admin's own membership with STAFF_ROLE_NOT_ASSIGNABLE. Pass null to clear.
+ */
+export function changeMemberDisplayName(organizationId: string, membershipId: string, displayName: string | null) {
+  return apiFetch<OrganizationMemberResponse>(
+    `/organizations/${organizationId}/members/${membershipId}/display-name`,
+    { method: 'POST', body: { displayName } },
+  )
+}
+
+/**
+ * Assigns the one-time login username to a legacy managed staff account (Backend Phase B5.5).
+ * Permanent: the account then signs in by username and its email stops working as a credential.
+ */
+export function assignMemberUsername(organizationId: string, membershipId: string, username: string) {
+  return apiFetch<OrganizationMemberResponse>(
+    `/organizations/${organizationId}/members/${membershipId}/username`,
+    { method: 'POST', body: { username } },
+  )
+}
+
+// ---------------------------------------------------------------- public directory
+
+/**
+ * The public organization directory (`GET /api/v1/public/organizations`, Backend Phase B1).
+ *
+ * <p>Unauthenticated and paged, and it already carries each organization's verification flag,
+ * logo flag and open-opportunity count — which is what the approved organizations page and the
+ * home page's "Top verified organizations" strip render. Previously the frontend approximated
+ * this directory by collapsing the opportunity feed; this calls the real endpoint.
+ */
+/** Rank the complete public directory by its actual open-opportunity counts. */
+export async function listMostActivePublicOrganizations(limit = 10) {
+  const first = await listPublicOrganizations({ page: 0, size: 100, sort: 'name' })
+  const byId = new Map(first.content.map(organization => [organization.id, organization]))
+  for (let page = 1; page < first.totalPages; page++) {
+    const next = await listPublicOrganizations({ page, size: 100, sort: 'name' })
+    next.content.forEach(organization => byId.set(organization.id, organization))
+  }
+  return { ...first, content: [...byId.values()].sort((a, b) => b.openOpportunityCount - a.openOpportunityCount || a.name.localeCompare(b.name) || a.id.localeCompare(b.id)).slice(0, limit) }
+}
+
+export function listPublicOrganizations(filters: {
+  query?: string
+  type?: OrganizationType
+  industry?: string
+  city?: string
+  country?: string
+  sort?: string
+  page?: number
+  size?: number
+} = {}) {
+  const params = new URLSearchParams()
+  if (filters.query) params.set('query', filters.query)
+  if (filters.type) params.set('type', filters.type)
+  if (filters.industry) params.set('industry', filters.industry)
+  if (filters.city) params.set('city', filters.city)
+  if (filters.country) params.set('country', filters.country)
+  if (filters.sort) params.set('sort', filters.sort)
+  params.set('page', String(filters.page ?? 0))
+  params.set('size', String(filters.size ?? 12))
+  return apiFetch<PageResponse<PublicOrganizationSummaryResponse>>(
+    `/public/organizations?${params.toString()}`,
+    { method: 'GET' },
+  )
+}
+
+/**
+ * The entity's public profile banner. Same contract as the logo route: unauthenticated, and
+ * only meaningful when the response says `hasCover` — otherwise it 404s.
+ */
+export function organizationCoverUrl(id: string): string {
+  return `${env.apiBaseUrl}/public/organizations/${id}/cover/document`
 }

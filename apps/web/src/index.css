@@ -4,29 +4,66 @@
 @import './lib/design-system/tokens.css';
 
 /*
- * Maps the runtime CSS custom properties in tokens.css into Tailwind v4 theme
- * variables, so feature code can use semantic utilities (bg-brand-primary,
- * text-foreground, border-border, ...) instead of arbitrary values.
- * See docs/adr/ADR-007-frontend-design-system.md.
+ * Bind Tailwind's `dark:` variant to FursadHub's OWN theme switch.
+ *
+ * The theme is chosen explicitly and stored per user (ThemeProvider -> `data-theme` on <html>,
+ * mirrored by the pre-hydration script in index.html); `getInitialTheme()` already resolves the OS
+ * preference into that attribute on first load, so `data-theme` is always present and is the single
+ * source of truth. Without this, `dark:` would still be Tailwind's default
+ * `prefers-color-scheme` media query — which the toggle does not change — so every `dark:` utility
+ * would fire on the wrong signal: dark-navy headings staying dark-navy on a dark surface for anyone
+ * toggling dark mode from a light OS, and dark-mode text colours bleeding onto light surfaces for
+ * anyone toggling light mode from a dark OS.
+ */
+@custom-variant dark (&:where([data-theme='dark'], [data-theme='dark'] *));
+
+/*
+ * Maps runtime brand and semantic variables into Tailwind v4 utilities.
  */
 @theme inline {
   --color-brand-primary: var(--color-brand-primary);
   --color-brand-secondary: var(--color-brand-secondary);
   --color-brand-accent: var(--color-brand-accent);
+  --color-brand-accent-strong: var(--color-brand-accent-strong);
+  --color-brand-accent-soft: var(--color-brand-accent-soft);
+  --color-brand-accent-ink: var(--color-brand-accent-ink);
   --color-brand-navy: var(--color-brand-navy);
-  --color-brand-orange: var(--color-brand-orange);
-  --color-brand-cream: var(--color-brand-cream);
-  --color-brand-beige: var(--color-brand-beige);
+  --color-brand-navy-deep: var(--color-brand-navy-deep);
+  --color-brand-navy-strong: var(--color-brand-navy-strong);
+  --color-brand-navy-soft: var(--color-brand-navy-soft);
+  --color-brand-blue: var(--color-brand-blue);
+  --color-brand-blue-strong: var(--color-brand-blue-strong);
+  --color-brand-blue-soft: var(--color-brand-blue-soft);
 
   --color-background: var(--color-background);
   --color-surface: var(--color-surface);
   --color-surface-muted: var(--color-surface-muted);
+  --color-surface-raised: var(--color-surface-raised);
+  --color-surface-inverse: var(--color-surface-inverse);
   --color-border: var(--color-border);
+  --color-border-strong: var(--color-border-strong);
+  --color-overlay: var(--color-overlay);
 
   --color-foreground: var(--color-text-primary);
   --color-foreground-secondary: var(--color-text-secondary);
   --color-muted: var(--color-text-muted);
+  --color-inverse: var(--color-text-inverse);
+  --color-link: var(--color-text-link);
   --color-on-brand: var(--color-text-on-brand);
+  --color-focus-ring: var(--color-focus-ring);
+  --color-control-hover: var(--color-control-hover);
+  --color-control-disabled: var(--color-control-disabled);
+  --color-sidebar: var(--color-sidebar-background);
+  --color-sidebar-foreground: var(--color-sidebar-text);
+  --color-sidebar-strong: var(--color-sidebar-text-strong);
+  --color-sidebar-active: var(--color-sidebar-active-bg);
+  --color-sidebar-active-text: var(--color-sidebar-active-text);
+  --color-sidebar-active-edge: var(--color-sidebar-active-edge);
+  --color-sidebar-hover: var(--color-sidebar-hover);
+  --color-sidebar-border: var(--color-sidebar-border);
+  --color-sidebar-heading: var(--color-sidebar-heading);
+  --color-chart-series: var(--color-chart-series);
+  --color-chart-grid: var(--color-chart-grid);
 
   --color-success: var(--color-success);
   --color-success-bg: var(--color-success-bg);
@@ -37,12 +74,17 @@
   --color-info: var(--color-info);
   --color-info-bg: var(--color-info-bg);
 
+  --radius-xs: var(--radius-xs);
   --radius-sm: var(--radius-sm);
   --radius-md: var(--radius-md);
   --radius-lg: var(--radius-lg);
+  --radius-xl: var(--radius-xl);
+  --radius-2xl: var(--radius-2xl);
 
+  --shadow-xs: var(--shadow-xs);
   --shadow-sm: var(--shadow-sm);
   --shadow-md: var(--shadow-md);
+  --shadow-lg: var(--shadow-lg);
 
   --font-display: var(--font-display);
   --font-body: var(--font-body);
@@ -65,6 +107,24 @@
   /* Popover open for <Menu /> — quick and small, matching the fast duration used for hover/focus
      feedback rather than the slow one-time entrances above. */
   --animate-menu-in: menu-in var(--duration-fast) var(--ease-enter) both;
+
+  /* Surfaces that arrive from off-screen: <Drawer /> and the mobile navigation rail. They travel
+     the panel's own width, so they take the panel duration and slide from the edge they are
+     anchored to. Using the dropdown's pop here made a full-height panel flicker instead of open. */
+  --animate-panel-in-right: panel-in-right var(--duration-panel) var(--ease-enter) both;
+  --animate-panel-in-left: panel-in-left var(--duration-panel) var(--ease-enter) both;
+
+  /* <Modal /> — centred, so it fades and settles rather than travelling. Deliberately shallower
+     than the dropdown's scale: a dialog that zooms reads as an alert. */
+  --animate-dialog-in: dialog-in var(--duration-panel) var(--ease-enter) both;
+
+  /* The scrim behind a panel or dialog. Fading it in is what makes the page recede instead of
+     being abruptly stamped over. */
+  --animate-backdrop-in: backdrop-in var(--duration-panel) var(--ease-enter) both;
+
+  /* Portal route change — see <RouteTransition />. Opacity plus a 4px lift, and nothing else:
+     enough that content reads as arriving, small enough that it never delays a click. */
+  --animate-route-in: route-in var(--duration-normal) var(--ease-enter) both;
 }
 
 @keyframes verified-circle-in {
@@ -120,6 +180,59 @@
   }
 }
 
+@keyframes panel-in-right {
+  from {
+    opacity: 0;
+    transform: translateX(100%);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+@keyframes panel-in-left {
+  from {
+    opacity: 0;
+    transform: translateX(-100%);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+@keyframes dialog-in {
+  from {
+    opacity: 0;
+    transform: scale(0.985) translateY(6px);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
+}
+
+@keyframes backdrop-in {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes route-in {
+  from {
+    opacity: 0;
+    transform: translateY(4px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
 @keyframes otp-shake {
   0%,
   100% {
@@ -132,6 +245,127 @@
   40%,
   80% {
     transform: translateX(4px);
+  }
+}
+
+/*
+ * WORKSPACE FAMILIES.
+ *
+ * Student, Organization and University are one product wearing three personalities. The brand
+ * anchors, typography, components, accessibility and both colour themes are shared and untouched;
+ * what differs is rhythm, density, surface tone and the colour of a section rule.
+ *
+ * All of it is five custom properties, resolved from `data-workspace` on the shell root. A card, a
+ * page header or a section heading reads them wherever it is rendered — which is why there is no
+ * StudentCard / OrganizationCard / UniversityCard to keep in sync, and no prop threaded through
+ * every page. Adding a family later is one block here.
+ *
+ * The differences are functional, not decorative:
+ *   - a student is reading and deciding, so the page breathes and modules sit further apart;
+ *   - a recruiter is working a queue, so the same page is tighter and the rules are crisper;
+ *   - a university reviews in order, so the composition is squarer and more formal.
+ */
+[data-workspace] {
+  /* Vertical rhythm of the content column, and the gap between modules on a page. */
+  --workspace-page-y: 1.5rem;
+  --workspace-gap: 1.25rem;
+  /* Corner treatment. Softer reads warmer; squarer reads more formal. */
+  --workspace-radius: var(--radius-xl);
+  /* The rule under a page header and beside a section heading. */
+  --workspace-rule: var(--color-border);
+  /* A very low-opacity wash over the page ground — enough to feel, not enough to read as a colour. */
+  --workspace-tint: transparent;
+}
+
+/* Warmer and roomier: a student is reading their own progress, not working a queue. The accent
+   wash and the orange rule carry the "this is helping you move forward" tone without decoration. */
+[data-workspace='student'] {
+  --workspace-page-y: 2rem;
+  --workspace-gap: 1.5rem;
+  --workspace-radius: var(--radius-2xl);
+  --workspace-rule: color-mix(in srgb, var(--color-brand-accent) 32%, var(--color-border));
+  --workspace-tint: color-mix(in srgb, var(--color-brand-accent) 3%, transparent);
+}
+
+/* Tighter and crisper: more of the pipeline on screen, and a neutral rule that does not compete
+   with status colour, which is what a recruiter is actually scanning for. */
+[data-workspace='organization'] {
+  --workspace-page-y: 1.25rem;
+  --workspace-gap: 1rem;
+  --workspace-radius: var(--radius-lg);
+  --workspace-rule: var(--color-border-strong);
+  --workspace-tint: transparent;
+}
+
+/* Squarer, calmer, navy-ruled: an institutional workspace where work arrives in order and is
+   reviewed in order. Between the other two on density. */
+[data-workspace='university'] {
+  --workspace-page-y: 1.75rem;
+  --workspace-gap: 1.25rem;
+  --workspace-radius: var(--radius-lg);
+  --workspace-rule: color-mix(in srgb, var(--color-brand-navy) 30%, var(--color-border));
+  --workspace-tint: color-mix(in srgb, var(--color-brand-navy) 3%, transparent);
+}
+
+/* Phase E. The platform control plane: the most restrained family of the four, and deliberately the
+   least decorated thing in FursadHub.
+
+   Densest rhythm and squarest corners because these pages are mostly tables — a Super Admin reading
+   the account directory or the audit trail wants more rows on screen and a grid that reads as a
+   grid, not as a stack of soft cards. The rule is the strong NEUTRAL border rather than a brand
+   mix: every admin table is already full of status colour, and a tinted rule would compete with the
+   one thing being scanned for. No wash at all, in either theme — a control plane earns trust by
+   being plain, and a decorative tint over an audit log reads as a product trying to be liked.
+
+   It is still unmistakably FursadHub: the shell tone, brand anchors, typography, both colour themes
+   and every shared primitive are the same ones the other three families use. */
+[data-workspace='platform'] {
+  --workspace-page-y: 1.25rem;
+  --workspace-gap: 1rem;
+  --workspace-radius: var(--radius-md);
+  --workspace-rule: var(--color-border-strong);
+  --workspace-tint: transparent;
+}
+
+/* In dark mode the tints would read as grime over the navy ground — the ramp already carries the
+   plane order, so the families keep their rhythm and rules and drop the wash. */
+:root[data-theme='dark'] [data-workspace='student'],
+:root[data-theme='dark'] [data-workspace='university'] {
+  --workspace-tint: transparent;
+}
+
+/*
+ * Public scroll entrance — see <Reveal />.
+ *
+ * Longer and more expressive than portal motion (500ms against 240ms) because a marketing page is
+ * explored while a workspace is used. Only opacity and transform, both compositor properties, so a
+ * reveal costs no layout and cannot shift the page.
+ *
+ * Under reduced motion the final state is painted outright with no transition at all — content
+ * appears immediately rather than being delayed or hidden.
+ */
+.fh-reveal {
+  opacity: 0;
+  transform: translateY(14px);
+  transition:
+    opacity 500ms var(--ease-enter),
+    transform 500ms var(--ease-enter);
+  will-change: opacity, transform;
+}
+
+.fh-reveal-in {
+  opacity: 1;
+  transform: none;
+  /* Released once the entrance is done — a permanent hint costs memory on every revealed node. */
+  will-change: auto;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .fh-reveal {
+    opacity: 1;
+    transform: none;
+    transition: none;
+    transition-delay: 0ms !important;
   }
 }
 
@@ -158,10 +392,47 @@
        body/UI default (Public Sans), with the same system-font fallback as
        before if either fails to load. */
     font-family: var(--font-body);
+    line-height: var(--line-height-body);
+    transition:
+      background-color var(--duration-normal) var(--ease-standard),
+      color var(--duration-normal) var(--ease-standard);
+  }
+
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6 {
+    font-family: var(--font-display);
+    line-height: var(--line-height-tight);
   }
 
   :focus-visible {
-    outline: 2px solid var(--color-brand-primary);
+    outline: 2px solid var(--color-focus-ring);
     outline-offset: 2px;
   }
+}
+/*
+ * Desktop composition for the public home page and its footer.
+ *
+ * WHAT THIS USED TO DO, AND WHY IT IS GONE. An earlier pass matched reference 01's proportions by
+ * shrinking type: the featured-card metadata, every line of "How FursadHub Works", the testimonial
+ * lead and the entire footer were forced to 10px on a 12-14px line-height, and section headings to
+ * 14px. A mockup rendered at screenshot scale is not a type scale — copying its apparent size gave
+ * the flagship page reading text smaller than any control sitting next to it, which is the opposite
+ * of premium and the opposite of comfortable.
+ *
+ * WHAT REMAINS. The same compositional intent carried by the lever that actually carries it —
+ * vertical rhythm. Sections close up at desktop width and the footer compacts; nothing a person is
+ * expected to READ is shrunk below the size its own component chose.
+ */
+@media (min-width: 1280px) {
+  .home-presentation > section:first-child { padding-top: 24px; padding-bottom: 12px; }
+  .home-presentation > section:first-child h1 { line-height: 1.05; }
+  .home-presentation > section:first-child h1 + p { margin-top: 12px; }
+  .home-presentation [aria-labelledby="organizations-heading"] > ul { margin-top: 12px; }
+  .home-presentation > section:last-child > section:first-child { padding-block: 16px; }
+  .public-site > footer > div { padding-block: 32px; }
+  .public-site > footer img { max-height: 58px; }
 }

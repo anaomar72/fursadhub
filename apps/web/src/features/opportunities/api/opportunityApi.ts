@@ -1,7 +1,25 @@
 import { apiFetch } from '../../../lib/api/client'
 import type { MessageResponse } from '../../auth/types'
-import type { OpportunityMode, OpportunityResponse, OpportunityTargetResponse, WorkMode } from '../types'
+import type {
+  CompensationInput,
+  OpportunityMode,
+  OpportunityResponse,
+  OpportunityTargetResponse,
+  WorkMode,
+} from '../types'
 
+/**
+ * The opportunity create/edit payload.
+ *
+ * The Backend Phase B3 fields are optional here on purpose, and it is SAFE to omit them: the
+ * update endpoint treats an omitted B3 field as "leave the stored value alone" and only clears one
+ * on an explicit `null` (or `[]` for a list). That is why the current form — which sends only the
+ * original eleven fields — cannot erase an opportunity's compensation, skills, perks or hours.
+ *
+ * The eleven original fields keep FULL REPLACEMENT: omitting `responsibilities`, `requirements`,
+ * `location` or `applicationDeadline` still CLEARS them, so a form editing those must submit every
+ * one it wants kept.
+ */
 export interface OpportunityFormInput {
   title: string
   description: string
@@ -14,6 +32,12 @@ export interface OpportunityFormInput {
   startDate: string
   endDate: string
   applicationDeadline?: string
+  /** Backend Phase B3 — omit to preserve, `null` to clear. */
+  compensation?: CompensationInput | null
+  /** Omit to preserve; `[]` clears the list. */
+  skills?: string[]
+  perks?: string[]
+  hoursPerWeek?: number | null
 }
 
 export function listOrganizationOpportunities(organizationId: string) {

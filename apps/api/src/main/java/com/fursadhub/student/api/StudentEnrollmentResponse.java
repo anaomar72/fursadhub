@@ -9,7 +9,8 @@ public record StudentEnrollmentResponse(
         String studentNumber,
         String program,
         String academicYear,
-        String verificationStatus) {
+        String verificationStatus,
+        boolean hasDraftEvidence) {
 
     public static StudentEnrollmentResponse from(StudentEnrollment enrollment) {
         return new StudentEnrollmentResponse(
@@ -19,6 +20,7 @@ public record StudentEnrollmentResponse(
                 enrollment.getStudentNumber(),
                 enrollment.getProgram(),
                 enrollment.getAcademicYear(),
-                enrollment.getVerificationStatus().name());
+                enrollment.getVerificationStatus().name(),
+                enrollment.getDraftEvidenceStoredFileId() != null);
     }
 }

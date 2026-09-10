@@ -1,4 +1,4 @@
-import { render, screen, waitFor, within } from '@testing-library/react'
+import { render, screen, within } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 import { MemoryRouter } from 'react-router-dom'
@@ -25,14 +25,17 @@ function user(overrides: Partial<AdminUser> = {}): AdminUser {
   }
 }
 
-function stubFetch(users: AdminUser[] = [user()], onCommand?: (url: string) => Promise<Response>) {
-  const fetchMock = vi.fn((input: RequestInfo | URL, init?: RequestInit) => {
+function stubFetch(users: AdminUser[] = [user()]) {
+  const fetchMock = vi.fn((input: RequestInfo | URL) => {
     const url = String(input)
-    if (init?.method && init.method !== 'GET') {
-      return onCommand ? onCommand(url) : jsonResponse({ message: 'ok' })
-    }
     if (url.includes('/admin/users')) {
-      return jsonResponse({ content: users, page: 0, size: 25, totalElements: users.length, totalPages: 1 })
+      return jsonResponse({
+        content: users,
+        page: 0,
+        size: 25,
+        totalElements: users.length,
+        totalPages: 1,
+      })
     }
     return jsonResponse({})
   })
@@ -65,39 +68,16 @@ describe('AdminUsersPage', () => {
     expect(within(screen.getByRole('table')).getByText('Active')).toBeInTheDocument()
   })
 
-  it('requires a reason before suspending, and sends it', async () => {
-    const fetchMock = stubFetch()
+  it('links each account to its own page rather than acting on it in the row', async () => {
+    stubFetch()
     renderPage()
 
-    await userEvent.click(await screen.findByRole('button', { name: 'Suspend' }))
-    // The reason field appears first — suspension is never a single unconfirmed click.
-    const reason = screen.getByLabelText('Reason for suspension')
-    await userEvent.type(reason, 'Abuse report')
-    await userEvent.click(screen.getByRole('button', { name: 'Confirm suspension' }))
-
-    await waitFor(() => {
-      // Matched by URL: AuthContext also POSTs to /auth/refresh on mount.
-      const call = fetchMock.mock.calls.find(([url]) => String(url).includes('/admin/users/u-1/suspend'))
-      expect(call).toBeDefined()
-      expect(JSON.parse((call![1] as RequestInit).body as string)).toEqual({ reason: 'Abuse report' })
-    })
-  })
-
-  it('offers reactivation for a suspended account instead of suspension', async () => {
-    stubFetch([user({ status: 'SUSPENDED' })])
-    renderPage()
-
-    expect(await screen.findByRole('button', { name: 'Reactivate' })).toBeInTheDocument()
-    expect(screen.queryByRole('button', { name: 'Suspend' })).not.toBeInTheDocument()
-  })
-
-  it('offers no actions on a closed account', async () => {
-    stubFetch([user({ status: 'CLOSED' })])
-    renderPage()
-
-    expect(await screen.findByText('No actions')).toBeInTheDocument()
-    expect(screen.queryByRole('button', { name: 'Suspend' })).not.toBeInTheDocument()
-    expect(screen.queryByRole('button', { name: 'Reactivate' })).not.toBeInTheDocument()
+    expect(await screen.findByRole('link', { name: 'student@example.test' })).toHaveAttribute(
+      'href',
+      '/admin/users/u-1',
+    )
+    // Suspension moved to the account page, where the administrator can see what they are changing.
+    expect(screen.queryByRole('button', { name: /suspend/i })).not.toBeInTheDocument()
   })
 
   it('offers no impersonation control anywhere', async () => {
@@ -105,29 +85,20 @@ describe('AdminUsersPage', () => {
     renderPage()
 
     await screen.findByText('student@example.test')
-    expect(screen.queryByRole('button', { name: /impersonate|sign in as|act as/i })).not.toBeInTheDocument()
+    expect(
+      screen.queryByRole('button', { name: /impersonate|sign in as|act as/i }),
+    ).not.toBeInTheDocument()
   })
 
-  it('translates a machine-readable error rather than showing the API message', async () => {
-    stubFetch([user()], () =>
-      jsonResponse(
-        {
-          code: 'CANNOT_SUSPEND_SELF',
-          message: 'You cannot suspend your own account.',
-          status: 409,
-          path: '/api/v1/admin/users/u-1/suspend',
-          timestamp: '2026-10-01T09:00:00Z',
-          fieldErrors: [],
-        },
-        409,
-      ),
-    )
+  it('sends the search and status filters to the server instead of filtering a page locally', async () => {
+    const fetchMock = stubFetch()
     renderPage()
+    await screen.findByText('student@example.test')
 
-    await userEvent.click(await screen.findByRole('button', { name: 'Suspend' }))
-    await userEvent.click(screen.getByRole('button', { name: 'Confirm suspension' }))
+    await userEvent.selectOptions(screen.getByLabelText('Account status'), 'SUSPENDED')
 
-    expect(await screen.findByRole('alert')).toHaveTextContent('You cannot suspend your own account.')
+    const requested = fetchMock.mock.calls.map(([url]) => String(url))
+    expect(requested.some((url) => url.includes('status=SUSPENDED'))).toBe(true)
   })
 
   it('renders in Somali when the UI language is Somali', async () => {
@@ -136,6 +107,6 @@ describe('AdminUsersPage', () => {
     renderPage()
 
     expect(await screen.findByRole('heading', { name: 'Akoonnada' })).toBeInTheDocument()
-    expect(screen.getByText('Firfircoon')).toBeInTheDocument()
+    expect(within(await screen.findByRole('table')).getByText('Firfircoon')).toBeInTheDocument()
   })
 })

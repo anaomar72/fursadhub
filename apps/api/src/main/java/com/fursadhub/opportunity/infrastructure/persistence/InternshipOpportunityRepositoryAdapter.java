@@ -1,15 +1,20 @@
 package com.fursadhub.opportunity.infrastructure.persistence;
 
+import com.fursadhub.opportunity.domain.AdminOpportunityFilter;
 import com.fursadhub.opportunity.domain.InternshipOpportunity;
 import com.fursadhub.opportunity.domain.InternshipOpportunityRepository;
 import com.fursadhub.opportunity.domain.PublicOpportunityFilter;
+import com.fursadhub.opportunity.domain.PublicOpportunityVisibility;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Repository;
 
+import java.util.Collection;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 @Repository
 class InternshipOpportunityRepositoryAdapter implements InternshipOpportunityRepository {
@@ -46,7 +51,37 @@ class InternshipOpportunityRepositoryAdapter implements InternshipOpportunityRep
     }
 
     @Override
+    public Page<InternshipOpportunity> searchForAdmin(AdminOpportunityFilter filter, Pageable pageable) {
+        return jpaRepository.findAll(InternshipOpportunitySpecifications.matchingForAdmin(filter), pageable);
+    }
+
+    @Override
+    public long countPubliclyDiscoverable() {
+        return jpaRepository.countPubliclyDiscoverable(
+                PublicOpportunityVisibility.STATUS,
+                PublicOpportunityVisibility.MODES,
+                PublicOpportunityVisibility.REQUIRED_ORGANIZATION_STATUS);
+    }
+
+    @Override
     public List<InternshipOpportunity> findPublishedTargetingUniversity(UUID universityId) {
-        return jpaRepository.findPublishedTargetingUniversity(universityId);
+        return jpaRepository.findPublishedTargetingUniversity(
+                universityId, PublicOpportunityVisibility.REQUIRED_ORGANIZATION_STATUS);
+    }
+
+    @Override
+    public Map<UUID, Long> countPublicByOrganizationIds(Collection<UUID> organizationIds) {
+        // An empty IN () list is invalid SQL on PostgreSQL, and an empty page has nothing to count.
+        if (organizationIds.isEmpty()) {
+            return Map.of();
+        }
+        return jpaRepository
+                .countPublicByOrganizationIds(
+                        organizationIds,
+                        PublicOpportunityVisibility.STATUS,
+                        PublicOpportunityVisibility.MODES,
+                        PublicOpportunityVisibility.REQUIRED_ORGANIZATION_STATUS)
+                .stream()
+                .collect(Collectors.toMap(row -> (UUID) row[0], row -> (Long) row[1]));
     }
 }

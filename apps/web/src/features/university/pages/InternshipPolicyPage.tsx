@@ -136,7 +136,7 @@ export function InternshipPolicyPage() {
   if (policyQuery.isLoading || !draft) {
     return (
       <div className="flex justify-center py-16">
-        <LoadingSpinner size="lg" />
+        <LoadingSpinner size="lg" label={t('common:status.loading')} />
       </div>
     )
   }

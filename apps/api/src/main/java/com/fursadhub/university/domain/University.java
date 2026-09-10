@@ -55,6 +55,24 @@ public class University {
     @Column(length = 2000)
     private String description;
 
+    // ------------------------------------------------------------ Backend Phase B2 public profile
+    // Optional; null on existing rows. `city`, `website` and `description` above already existed
+    // and are reused rather than duplicated.
+
+    /** ISO-3166-1 alpha-2, uppercase. A code, not a name, so it renders in English and Somali. */
+    @Column(name = "country_code", length = 2)
+    private String countryCode;
+
+    /** An address the university publishes. Never derived from a staff account — see UniversityProfileFields. */
+    @Column(name = "public_contact_email", length = 320)
+    private String publicContactEmail;
+
+    @Column(name = "cover_stored_file_id")
+    private UUID coverStoredFileId;
+
+    @Column(name = "cover_uploaded_at")
+    private Instant coverUploadedAt;
+
     /**
      * The institution verification status. Named {@code status} rather than
      * {@code verificationStatus} because that is the column Phase 2 created; renaming the field would
@@ -104,12 +122,20 @@ public class University {
         return university;
     }
 
-    public void updateProfile(String name, String city, String registrationNumber, String website, String description) {
-        this.name = name;
-        this.city = city;
-        this.registrationNumber = registrationNumber;
-        this.website = website;
-        this.description = description;
+    /**
+     * Replaces the whole editable profile. Every field is assigned, so a null clears the stored
+     * value — this method takes the profile's RESOLVED end state, not a request. Which fields an
+     * omitted request field may clear is decided in {@code UpdateUniversityService}; see
+     * {@link UniversityProfileFields}.
+     */
+    public void updateProfile(UniversityProfileFields fields) {
+        this.name = fields.name();
+        this.city = fields.city();
+        this.countryCode = fields.countryCode();
+        this.registrationNumber = fields.registrationNumber();
+        this.website = fields.website();
+        this.description = fields.description();
+        this.publicContactEmail = fields.publicContactEmail();
         this.updatedAt = Instant.now();
     }
 
@@ -118,6 +144,32 @@ public class University {
         this.evidenceStoredFileId = storedFileId;
         this.evidenceUploadedAt = Instant.now();
         this.updatedAt = Instant.now();
+    }
+
+    /**
+     * Attaches or replaces the university's public profile banner (Backend Phase B2). The previous
+     * file is removed by the service, exactly as {@code attachLogo} does.
+     */
+    public void attachCover(UUID storedFileId) {
+        this.coverStoredFileId = storedFileId;
+        this.coverUploadedAt = Instant.now();
+        this.updatedAt = this.coverUploadedAt;
+    }
+
+    public String getCountryCode() {
+        return countryCode;
+    }
+
+    public String getPublicContactEmail() {
+        return publicContactEmail;
+    }
+
+    public UUID getCoverStoredFileId() {
+        return coverStoredFileId;
+    }
+
+    public Instant getCoverUploadedAt() {
+        return coverUploadedAt;
     }
 
     /** Attaches or replaces the university's public logo. The previous file is removed by the service. */

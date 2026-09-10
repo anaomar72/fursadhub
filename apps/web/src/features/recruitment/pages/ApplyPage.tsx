@@ -8,6 +8,12 @@ import { ScreeningQuestionFields } from '../components/ScreeningQuestionFields'
 import { apiErrorMessage } from '../../../lib/api/errorMessage'
 import { AnimatedCheck, Button, LoadingSpinner, PageHeader } from '../../../components/ui'
 import type { ScreeningQuestionResponse } from '../types'
+import * as documentsApi from '../../student/api/documentsApi'
+import * as studentApi from '../../student/api/studentApi'
+import * as placementsApi from '../../placements/api/placementsApi'
+import { applyBlocker } from '../../student/studentReadiness'
+import { PrivateDocumentUpload } from '../../student/components/PrivateDocumentUpload'
+import { useStudentMarketplaceAccess } from '../../student/hooks/useStudentMarketplaceAccess'
 
 /**
  * Student self-application to a PUBLIC/HYBRID opportunity (CLAUDE.md Phase 4 section 25).
@@ -19,6 +25,13 @@ export function ApplyPage() {
   const { t } = useTranslation()
   const { opportunityId } = useParams<{ opportunityId: string }>()
   const queryClient = useQueryClient()
+  const access = useStudentMarketplaceAccess()
+  const [cv, setCv] = useState<(documentsApi.ApplicationCvUpload & { opportunityId: string }) | null>(null)
+  const [cvBusy, setCvBusy] = useState(false)
+  const selectedCv = cv?.opportunityId === opportunityId ? cv : null
+  const enrollment = useQuery({ queryKey: ['student', 'enrollment'], queryFn: studentApi.getMyEnrollment, enabled: access.canAct, retry: false })
+  const placements = useQuery({ queryKey: ['student', 'placements'], queryFn: placementsApi.listMyPlacements, enabled: access.canAct, retry: false })
+  const candidacies = useQuery({ queryKey: ['student', 'candidacies'], queryFn: recruitmentApi.listMyCandidacies, enabled: access.canAct, retry: false })
 
   const [answers, setAnswers] = useState<Record<string, string>>({})
   const [fieldErrors, setFieldErrors] = useState<Record<string, string>>({})
@@ -43,17 +56,22 @@ export function ApplyPage() {
         Object.entries(answers)
           .filter(([, value]) => value.trim() !== '')
           .map(([questionId, answer]) => ({ questionId, answer })),
+        selectedCv?.id,
       ),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['recruitment', 'my-candidacies'] })
+      queryClient.invalidateQueries({ queryKey: ['student', 'candidacies'] })
     },
   })
 
   const questions: ScreeningQuestionResponse[] = questionsQuery.data ?? []
+  const readinessLoaded = enrollment.isSuccess && placements.isSuccess && candidacies.isSuccess && opportunityQuery.isSuccess && questionsQuery.isSuccess
+  const blocker = readinessLoaded ? applyBlocker({ enrollment: enrollment.data, placements: placements.data, candidacies: candidacies.data, opportunity: opportunityQuery.data }) : null
+  const canSubmit = readinessLoaded && !blocker && !!selectedCv && access.canAct && !cvBusy
 
   const handleSubmit = (event: React.FormEvent) => {
     event.preventDefault()
-    if (applyMutation.isPending || applyMutation.isSuccess) {
+    if (!canSubmit || applyMutation.isPending || applyMutation.isSuccess) {
       return
     }
 
@@ -74,7 +92,7 @@ export function ApplyPage() {
   if (opportunityQuery.isLoading || questionsQuery.isLoading) {
     return (
       <div className="flex justify-center py-16">
-        <LoadingSpinner size="lg" />
+        <LoadingSpinner size="lg" label={t('common:status.loading')} />
       </div>
     )
   }
@@ -91,7 +109,7 @@ export function ApplyPage() {
           <p className="text-sm text-foreground-secondary">{t('recruitment:apply.successBody')}</p>
           <Link
             to="/student/applications"
-            className="text-sm font-medium text-brand-primary hover:underline"
+            className="text-sm font-medium text-link hover:underline"
           >
             {t('recruitment:apply.viewApplications')}
           </Link>
@@ -108,6 +126,34 @@ export function ApplyPage() {
       />
 
       <form className="mt-6 flex flex-col gap-5" noValidate onSubmit={handleSubmit}>
+        {access.canAct && <>
+          <PrivateDocumentUpload
+            title={t('common:applicationCv.title')}
+            disabled={applyMutation.isPending}
+            description={t('common:applicationCv.description')}
+            present={!!selectedCv}
+            accept="application/pdf"
+            errorPage="cv"
+            invalidateKeys={[]}
+            onUpload={async (file) => {
+              setCvBusy(true)
+              try {
+              const uploaded = await documentsApi.uploadApplicationCv(opportunityId!, file)
+              // The previous selection remains valid if uploading the replacement fails.
+              setCv({ ...uploaded, opportunityId: opportunityId! })
+              if (selectedCv) await documentsApi.removeApplicationCv(opportunityId!, selectedCv.id)
+              } finally { setCvBusy(false) }
+            }}
+            onDownload={() => documentsApi.downloadApplicationCv(opportunityId!, selectedCv!.id)}
+            onRemove={async () => { setCvBusy(true); try { await documentsApi.removeApplicationCv(opportunityId!, selectedCv!.id); setCv(null) } finally { setCvBusy(false) } }}
+            downloadFilename={selectedCv?.filename ?? 'cv.pdf'}
+          />
+          {selectedCv && <p className="text-sm" role="status">{selectedCv.filename} · {selectedCv.contentType}</p>}
+        </>}
+        {!access.canAct && !access.isLoading && <p>{t('common:remediation.studentActionsOnly')}</p>}
+        {blocker && <p role="status" className="text-sm text-foreground-secondary">{t(`recruitment:apply.errors.${blocker}`)}</p>}
+        {access.canAct && (enrollment.isError || placements.isError || candidacies.isError || opportunityQuery.isError || questionsQuery.isError) && <p role="alert" className="text-sm text-danger">{t('common:status.error')}</p>}
+        {access.canAct && enrollment.data?.verificationStatus !== 'VERIFIED' && <Link to="/student/enrollment" className="text-sm text-link">{t('common:applicationCv.verifyEnrollment')}</Link>}
         <ScreeningQuestionFields
           questions={questions}
           answers={answers}
@@ -136,7 +182,7 @@ export function ApplyPage() {
           </p>
         )}
 
-        <Button type="submit" loading={applyMutation.isPending} className="w-full sm:w-auto">
+        <Button type="submit" disabled={!canSubmit} loading={applyMutation.isPending} className="w-full sm:w-auto">
           {t('recruitment:apply.submit')}
         </Button>
       </form>

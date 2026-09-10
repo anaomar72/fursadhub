@@ -38,6 +38,11 @@ class StudentEnrollmentRepositoryAdapter implements StudentEnrollmentRepository 
     }
 
     @Override
+    public Optional<StudentEnrollment> findByStudentUserIdForUpdate(UUID studentUserId) {
+        return jpaRepository.findByStudentUserIdForUpdate(studentUserId);
+    }
+
+    @Override
     public boolean existsByUniversityIdAndStudentNumber(UUID universityId, String studentNumber) {
         return jpaRepository.existsByUniversityIdAndStudentNumber(universityId, studentNumber);
     }

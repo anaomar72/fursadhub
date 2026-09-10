@@ -74,7 +74,7 @@ public abstract class AbstractPhase5IT extends AbstractPhase4IT {
         UUID departmentId = insertDepartment(universityId, "Computer Science", "CS-" + shortId());
         StudentFixture student = createVerifiedStudent(emailPrefix(prefix + "-student"), universityId, departmentId);
 
-        ResponseEntity<Map> applied = authorizedPost(
+        ResponseEntity<Map> applied = applicationWithCv(
                 "/api/v1/opportunities/" + opportunityId + "/applications", student.accessToken(), Map.of());
         requireSuccess(applied, "Application");
         UUID candidacyId = UUID.fromString((String) applied.getBody().get("id"));

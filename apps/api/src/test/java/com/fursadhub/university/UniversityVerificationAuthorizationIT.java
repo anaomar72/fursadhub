@@ -3,12 +3,17 @@ package com.fursadhub.university;
 import com.fursadhub.identity.AbstractIdentityIT;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.springframework.core.io.ByteArrayResource;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.util.LinkedMultiValueMap;
+import org.springframework.util.MultiValueMap;
 
+import java.nio.charset.StandardCharsets;
 import java.util.Map;
 import java.util.UUID;
 
@@ -210,6 +215,14 @@ class UniversityVerificationAuthorizationIT extends AbstractIdentityIT {
         return loginAndExtractAccessToken(email, "Password123");
     }
 
+    /**
+     * Claims an enrollment and submits it for review, through the product's own endpoints.
+     *
+     * <p>Student-ID evidence is uploaded between the two steps because submission requires it
+     * ({@code STUDENT_ID_EVIDENCE_REQUIRED}). This fixture predates that rule and submitted without
+     * any, so every test in this class — including the coordinator department-scope case — was
+     * failing during setup and proving nothing. The rule itself is left exactly as it is.
+     */
     private void claimAndSubmit(String studentToken, UUID departmentId, String studentNumber) {
         ResponseEntity<Map> claim = authorizedPost("/api/v1/students/me/enrollment", studentToken,
                 Map.of("universityId", defaultUniversityId.toString(), "departmentId", departmentId.toString(),
@@ -217,9 +230,44 @@ class UniversityVerificationAuthorizationIT extends AbstractIdentityIT {
         if (claim.getStatusCode() != HttpStatus.CREATED) {
             throw new IllegalStateException("Enrollment claim failed: " + claim.getBody());
         }
+        uploadStudentIdEvidence(studentToken);
         ResponseEntity<Map> submit = authorizedPost("/api/v1/students/me/enrollment/submit-verification", studentToken, null);
         if (submit.getStatusCode() != HttpStatus.OK) {
             throw new IllegalStateException("Verification submit failed: " + submit.getBody());
+        }
+    }
+
+    /**
+     * Posts a Student-ID document to the real multipart evidence endpoint — the same route the
+     * student uses in the product. The magic-byte check is genuine, so the payload really is a PDF.
+     *
+     * <p>Written locally rather than inherited: this class sits directly on {@link AbstractIdentityIT}
+     * and declares its own private {@code authorizedGet}/{@code authorizedPost}/insert helpers, which
+     * a later phase base class also declares as protected — re-parenting to reach one upload helper
+     * would break compilation on the weaker access, for no gain.
+     */
+    private void uploadStudentIdEvidence(String studentToken) {
+        byte[] pdf = "%PDF-1.7\n1 0 obj\n<<>>\nendobj\ntrailer\n<<>>\n%%EOF\n".getBytes(StandardCharsets.UTF_8);
+        ByteArrayResource resource = new ByteArrayResource(pdf) {
+            @Override
+            public String getFilename() {
+                return "student-id.pdf";
+            }
+        };
+        HttpHeaders partHeaders = new HttpHeaders();
+        partHeaders.setContentType(MediaType.APPLICATION_PDF);
+        MultiValueMap<String, Object> body = new LinkedMultiValueMap<>();
+        body.add("file", new HttpEntity<>(resource, partHeaders));
+
+        HttpHeaders headers = new HttpHeaders();
+        headers.setBearerAuth(studentToken);
+        headers.setContentType(MediaType.MULTIPART_FORM_DATA);
+
+        ResponseEntity<Map> response = restTemplate.exchange(
+                url("/api/v1/students/me/verification/evidence"), HttpMethod.POST,
+                new HttpEntity<>(body, headers), Map.class);
+        if (!response.getStatusCode().is2xxSuccessful()) {
+            throw new IllegalStateException("Student ID evidence upload failed: " + response.getBody());
         }
     }
 

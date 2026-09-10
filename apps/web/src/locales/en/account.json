@@ -10,6 +10,13 @@
       "AVATAR_FILE_INVALID": "That file isn't accepted — upload a JPEG or PNG under 3MB.",
       "FILE_TOO_LARGE": "That file is larger than the maximum allowed size.",
       "generic": "Something went wrong. Please try again."
-    }
+    },
+    "subtitle": "Your identity on FursadHub, and the devices signed in to it.",
+    "changePicture": "Change profile picture",
+    "sessionsTitle": "Signed-in devices",
+    "sessionsBody": "If you have lost a device, or think someone else knows your password, you can end every session at once. You will need to sign in again.",
+    "signOutEverywhere": "Sign out everywhere",
+    "signOutEverywhereTitle": "Sign out of every device?",
+    "signOutEverywhereDescription": "Every browser and device signed in to this account will be signed out immediately, including this one."
   }
 }

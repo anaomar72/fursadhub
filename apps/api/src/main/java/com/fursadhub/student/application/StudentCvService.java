@@ -108,6 +108,12 @@ public class StudentCvService {
     @Transactional
     public Document openForCandidacy(UUID actingUserId, UUID candidacyId, String ipAddress, String userAgent) {
         Candidacy candidacy = candidacyAuthorization.requireRecruiterAccess(actingUserId, candidacyId);
+        if (candidacy.getApplicationCvStoredFileId() != null) {
+            StoredFile file = fileService.metadata(candidacy.getApplicationCvStoredFileId());
+            return new Document(file, fileService.openAudited(file, actingUserId,
+                    "candidacyId=" + candidacyId, ipAddress, userAgent));
+        }
+        // Historical candidacies only: preserve the pre-existing global CV contract.
         StudentProfile profile = requireProfile(candidacy.getStudentUserId());
         return open(profile, actingUserId, "candidacyId=" + candidacyId, ipAddress, userAgent);
     }

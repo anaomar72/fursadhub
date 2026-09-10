@@ -3,9 +3,11 @@ package com.fursadhub.organization.api;
 import com.fursadhub.common.web.RequestMetadata;
 import com.fursadhub.file.api.PrivateDocumentResponses;
 import com.fursadhub.organization.application.CreateOrganizationService;
+import com.fursadhub.organization.application.OrganizationCoverService;
 import com.fursadhub.organization.application.OrganizationLogoService;
 import com.fursadhub.organization.application.OrganizationQueryService;
 import com.fursadhub.organization.application.OrganizationVerificationEvidenceService;
+import com.fursadhub.organization.application.OrganizationProfileUpdate;
 import com.fursadhub.organization.application.UpdateOrganizationService;
 import com.fursadhub.organization.domain.Organization;
 import jakarta.servlet.http.HttpServletRequest;
@@ -37,16 +39,18 @@ public class OrganizationController {
     private final OrganizationQueryService queryService;
     private final OrganizationVerificationEvidenceService evidenceService;
     private final OrganizationLogoService logoService;
+    private final OrganizationCoverService coverService;
 
     public OrganizationController(
             CreateOrganizationService createService, UpdateOrganizationService updateService,
             OrganizationQueryService queryService, OrganizationVerificationEvidenceService evidenceService,
-            OrganizationLogoService logoService) {
+            OrganizationLogoService logoService, OrganizationCoverService coverService) {
         this.createService = createService;
         this.updateService = updateService;
         this.queryService = queryService;
         this.evidenceService = evidenceService;
         this.logoService = logoService;
+        this.coverService = coverService;
     }
 
     @PostMapping
@@ -67,9 +71,14 @@ public class OrganizationController {
     public OrganizationResponse update(
             @AuthenticationPrincipal Jwt jwt, @PathVariable UUID organizationId,
             @Valid @RequestBody UpdateOrganizationRequest request, HttpServletRequest httpRequest) {
+        OrganizationProfileUpdate update = new OrganizationProfileUpdate(
+                request.name(), request.registrationNumber(), request.website(), request.description(),
+                request.industry(), request.city(), request.countryCode(), request.shortDescription(),
+                request.companySizeRange(), request.foundedYear(),
+                request.linkedinUrl(), request.xUrl(), request.instagramUrl(), request.youtubeUrl());
         Organization organization = updateService.update(
-                currentUserId(jwt), organizationId, request.name(), request.registrationNumber(), request.website(),
-                request.description(), RequestMetadata.clientIp(httpRequest), RequestMetadata.userAgent(httpRequest));
+                currentUserId(jwt), organizationId, update,
+                RequestMetadata.clientIp(httpRequest), RequestMetadata.userAgent(httpRequest));
         return OrganizationResponse.from(organization);
     }
 
@@ -114,6 +123,19 @@ public class OrganizationController {
     public OrganizationLogoResponse uploadLogo(
             @AuthenticationPrincipal Jwt jwt, @PathVariable UUID organizationId, @RequestParam("file") MultipartFile file) {
         logoService.upload(currentUserId(jwt), organizationId, file);
+        return new OrganizationLogoResponse(true);
+    }
+
+    /**
+     * The public profile banner (Backend Phase B2). Same route shape, same verb, same
+     * {@code ORGANIZATION_ADMIN}-only authorization and the same managed-file lifecycle as the logo
+     * directly above — the bytes are read back through the unauthenticated
+     * {@code /api/v1/public/organizations/{id}/cover/document} route, not this one.
+     */
+    @PostMapping("/{organizationId}/cover")
+    public OrganizationLogoResponse uploadCover(
+            @AuthenticationPrincipal Jwt jwt, @PathVariable UUID organizationId, @RequestParam("file") MultipartFile file) {
+        coverService.upload(currentUserId(jwt), organizationId, file);
         return new OrganizationLogoResponse(true);
     }
 

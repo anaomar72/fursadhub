@@ -90,7 +90,7 @@ public class AuthController {
     public ResponseEntity<LoginResponse> login(
             @Valid @RequestBody LoginRequest request, HttpServletRequest httpRequest) {
         LoginService.LoginResult result = loginService.login(
-                request.email(), request.password(), clientIp(httpRequest), userAgent(httpRequest));
+                request.email(), request.username(), request.password(), clientIp(httpRequest), userAgent(httpRequest));
 
         return ResponseEntity.ok()
                 .header(org.springframework.http.HttpHeaders.SET_COOKIE, cookieFactory.build(result.rawRefreshToken(), result.refreshExpiresAt()).toString())

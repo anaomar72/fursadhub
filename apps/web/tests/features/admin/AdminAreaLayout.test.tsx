@@ -51,7 +51,7 @@ describe('AdminAreaLayout', () => {
     stubSession(['SUPER_ADMIN'])
     renderLayout()
 
-    expect(await screen.findByRole('link', { name: 'Dashboard' })).toBeInTheDocument()
+    expect(await screen.findByRole('link', { name: 'Overview' })).toBeInTheDocument()
     expect(screen.getByRole('link', { name: 'Accounts' })).toBeInTheDocument()
     expect(screen.getByRole('link', { name: 'Audit' })).toBeInTheDocument()
     expect(screen.getByRole('link', { name: 'Platform roles' })).toBeInTheDocument()
@@ -71,7 +71,7 @@ describe('AdminAreaLayout', () => {
     expect(screen.queryByRole('link', { name: 'Accounts' })).not.toBeInTheDocument()
     expect(screen.queryByRole('link', { name: 'Audit' })).not.toBeInTheDocument()
     expect(screen.queryByRole('link', { name: 'Platform roles' })).not.toBeInTheDocument()
-    expect(screen.queryByRole('link', { name: 'Dashboard' })).not.toBeInTheDocument()
+    expect(screen.queryByRole('link', { name: 'Overview' })).not.toBeInTheDocument()
   })
 
   it('renders the routed page for an authorized admin', async () => {

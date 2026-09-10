@@ -12,6 +12,7 @@ import com.fursadhub.university.domain.UniversityMembership;
 import com.fursadhub.university.domain.UniversityRole;
 import com.fursadhub.verification.domain.StudentVerificationCase;
 import com.fursadhub.verification.domain.StudentVerificationCaseRepository;
+import com.fursadhub.verification.domain.StudentVerificationStatus;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -77,23 +78,43 @@ public class VerificationEvidenceService {
      */
     @Transactional
     public StoredFile upload(UUID studentUserId, MultipartFile upload) {
-        StudentVerificationCase verificationCase = myCase(studentUserId);
-
+        StudentEnrollment enrollment = enrollments.findByStudentUserIdForUpdate(studentUserId)
+                .orElseThrow(() -> new ApiException("ENROLLMENT_NOT_FOUND", HttpStatus.NOT_FOUND,
+                        "Claim your enrollment before uploading evidence."));
+        if (enrollment.getVerificationStatus() != StudentVerificationStatus.DRAFT
+                && enrollment.getVerificationStatus() != StudentVerificationStatus.NEEDS_MORE_EVIDENCE) {
+            throw new ApiException("STUDENT_ENROLLMENT_LOCKED", HttpStatus.CONFLICT,
+                    "Evidence can only be replaced before submission or when more evidence is requested.");
+        }
         StoredFile stored = fileService.store(upload, FileClassification.VERIFICATION_EVIDENCE, studentUserId);
-        UUID previous = verificationCase.getEvidenceStoredFileId();
-
-        verificationCase.attachEvidence(stored.getId());
-        cases.save(verificationCase);
-
-        // Best-effort, after the pointer has moved: a storage hiccup here must not roll back an
-        // upload the student has already completed. The worst case is one orphaned object.
-        fileService.deleteQuietly(previous);
+        UUID previous;
+        if (enrollment.getVerificationStatus() == StudentVerificationStatus.DRAFT) {
+            previous = enrollment.getDraftEvidenceStoredFileId();
+            enrollment.attachDraftEvidence(stored.getId());
+            enrollments.save(enrollment);
+        } else {
+            StudentVerificationCase verificationCase = myCase(studentUserId);
+            previous = verificationCase.getEvidenceStoredFileId();
+            verificationCase.attachEvidence(stored.getId());
+            cases.save(verificationCase);
+        }
+        fileService.deleteAfterCommit(previous);
         return stored;
     }
 
     /** The student reading back their own evidence. */
     @Transactional
     public Document openOwn(UUID studentUserId, String ipAddress, String userAgent) {
+        StudentEnrollment enrollment = enrollments.findByStudentUserId(studentUserId)
+                .orElseThrow(() -> new ApiException("ENROLLMENT_NOT_FOUND", HttpStatus.NOT_FOUND, "Enrollment not found."));
+        if (enrollment.getVerificationStatus() == StudentVerificationStatus.DRAFT) {
+            if (enrollment.getDraftEvidenceStoredFileId() == null) {
+                throw new ApiException("VERIFICATION_EVIDENCE_MISSING", HttpStatus.NOT_FOUND, "No Student ID uploaded.");
+            }
+            StoredFile file = fileService.metadata(enrollment.getDraftEvidenceStoredFileId());
+            return new Document(file, fileService.openAudited(file, studentUserId,
+                    "enrollmentId=" + enrollment.getId(), ipAddress, userAgent));
+        }
         StudentVerificationCase verificationCase = myCase(studentUserId);
         return open(verificationCase, studentUserId, ipAddress, userAgent);
     }

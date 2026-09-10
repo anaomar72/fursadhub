@@ -35,4 +35,30 @@ interface JpaUniversityRepository extends JpaRepository<University, UUID> {
             @Param("status") InstitutionVerificationStatus status,
             @Param("nameFragment") String nameFragment,
             Pageable pageable);
+
+    /**
+     * The public directory query (Backend Phase B1).
+     *
+     * <p>{@code status = VERIFIED} is a literal in the query, not a parameter: the caller cannot
+     * widen it and no future refactor can accidentally pass a different status in. That is the whole
+     * security property of this endpoint, so it is not left to a call site.
+     *
+     * <p>{@code nameFragment} follows the same never-null contract as {@link #search} above, and
+     * Backend Phase B2's {@code city}/{@code country} filters follow it too: an absent filter arrives
+     * as the EMPTY STRING and short-circuits its own clause. Both are exact matches rather than
+     * {@code LIKE} — a city filter comes from a chosen value, so substring matching would let "Bos"
+     * select both "Bosaso" and any other city containing it.
+     */
+    @Query("""
+            SELECT u FROM University u
+            WHERE u.status = com.fursadhub.verification.domain.InstitutionVerificationStatus.VERIFIED
+              AND (:city = '' OR LOWER(u.city) = :city)
+              AND (:country = '' OR u.countryCode = :country)
+              AND LOWER(u.name) LIKE LOWER(CONCAT('%', :nameFragment, '%'))
+            """)
+    Page<University> searchPublicDirectory(
+            @Param("city") String city,
+            @Param("country") String country,
+            @Param("nameFragment") String nameFragment,
+            Pageable pageable);
 }

@@ -9,6 +9,8 @@ import com.fursadhub.placement.application.PlacementQueryService;
 public record SupervisorAssignmentResponse(
         String id,
         String supervisorUserId,
+        /** Backend Phase B5. Null for staff who have never been given a name; email is kept alongside. */
+        String supervisorDisplayName,
         String supervisorEmail,
         String type,
         String assignedAt,
@@ -19,6 +21,7 @@ public record SupervisorAssignmentResponse(
         return new SupervisorAssignmentResponse(
                 view.assignment().getId().toString(),
                 view.assignment().getSupervisorUserId().toString(),
+                view.displayName(),
                 view.email(),
                 view.assignment().getType().name(),
                 view.assignment().getAssignedAt().toString(),

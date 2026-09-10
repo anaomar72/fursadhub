@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { useTranslation } from 'react-i18next'
-import { AnimatedCheck, Button, Skeleton } from '../../../components/ui'
+import { AnimatedCheck, Button, Skeleton, SkeletonRegion } from '../../../components/ui'
 import { ApiError } from '../../../lib/api/client'
 import { apiErrorMessage } from '../../../lib/api/errorMessage'
 import * as placementsApi from '../api/placementsApi'
@@ -62,7 +62,11 @@ export function CompletionPanel({ placement, canComplete }: CompletionPanelProps
   })
 
   if (statusQuery.isLoading) {
-    return <Skeleton className="h-32 w-full" />
+    return (
+      <SkeletonRegion>
+        <Skeleton className="h-32 w-full" />
+      </SkeletonRegion>
+    )
   }
 
   const status = statusQuery.data

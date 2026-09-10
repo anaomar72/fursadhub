@@ -12,6 +12,9 @@ public interface StudentEnrollmentRepository {
 
     Optional<StudentEnrollment> findByStudentUserId(UUID studentUserId);
 
+    /** Serializes submission, claim edits and evidence replacement for one student. */
+    Optional<StudentEnrollment> findByStudentUserIdForUpdate(UUID studentUserId);
+
     boolean existsByStudentUserId(UUID studentUserId);
 
     boolean existsByUniversityIdAndStudentNumber(UUID universityId, String studentNumber);

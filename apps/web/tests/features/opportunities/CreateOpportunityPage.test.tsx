@@ -11,11 +11,11 @@ function jsonResponse(body: unknown, status = 200) {
   return Promise.resolve(new Response(JSON.stringify(body), { status, headers: { 'Content-Type': 'application/json' } }))
 }
 
-function renderPage() {
+function renderPage(role: 'ORGANIZATION_ADMIN' | 'RECRUITER' | 'ORGANIZATION_SUPERVISOR' = 'ORGANIZATION_ADMIN') {
   return render(
     <MemoryRouter initialEntries={['/organization/opportunities/new']}>
       <AppProviders>
-        <OrganizationMembershipContext.Provider value={{ organizationId: 'org-1', role: 'ORGANIZATION_ADMIN' }}>
+        <OrganizationMembershipContext.Provider value={{ organizationId: 'org-1', role }}>
           <CreateOpportunityPage />
         </OrganizationMembershipContext.Provider>
       </AppProviders>
@@ -103,11 +103,47 @@ describe('CreateOpportunityPage', () => {
     expect(await screen.findByText(/at least one opening/i)).toBeInTheDocument()
   })
 
+  /**
+   * CreateOpportunityService admits ORGANIZATION_ADMIN and RECRUITER only. The sidebar already
+   * omits this destination for a supervisor, but a typed URL still reaches the route — and a form
+   * whose every submit returns 403 is worse than an honest explanation.
+   *
+   * Frontend only: the backend re-authorizes the request regardless (CLAUDE.md section 24).
+   */
+  describe('authorization', () => {
+    it.each(['ORGANIZATION_ADMIN', 'RECRUITER'] as const)('gives %s the create form', (role) => {
+      renderPage(role)
+
+      expect(screen.getByLabelText('Title')).toBeInTheDocument()
+      expect(screen.getByRole('button', { name: 'Create draft' })).toBeInTheDocument()
+    })
+
+    it('gives an ORGANIZATION_SUPERVISOR an explanation instead of a form that cannot submit', () => {
+      renderPage('ORGANIZATION_SUPERVISOR')
+
+      expect(screen.getByText('You cannot create internships')).toBeInTheDocument()
+      expect(screen.queryByRole('button', { name: 'Create draft' })).not.toBeInTheDocument()
+      expect(screen.queryByLabelText('Title')).not.toBeInTheDocument()
+    })
+
+    it('still offers the supervisor a way back to the internship list', () => {
+      renderPage('ORGANIZATION_SUPERVISOR')
+
+      // The breadcrumb and the empty state's action both offer the way back, and both must lead
+      // to the list rather than leaving the supervisor on a dead end.
+      const backLinks = screen.getAllByRole('link', { name: 'Internships' })
+      expect(backLinks.length).toBeGreaterThan(0)
+      for (const link of backLinks) {
+        expect(link).toHaveAttribute('href', '/organization/opportunities')
+      }
+    })
+  })
+
   it('renders Somali translations when the language is Somali', async () => {
     await i18n.changeLanguage('so')
     renderPage()
 
-    expect(screen.getByRole('heading', { name: /fursad cusub/i })).toBeInTheDocument()
+    expect(screen.getByRole('heading', { name: /tababar cusub/i })).toBeInTheDocument()
     expect(screen.getByLabelText(/habka raadinta/i)).toBeInTheDocument()
 
     await i18n.changeLanguage('en')

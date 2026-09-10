@@ -21,10 +21,14 @@ const SECTIONS: Record<InternshipArea, { path: string; labelKey: string }[]> = {
     { path: 'final-report', labelKey: 'internship:nav.finalReport' },
     { path: 'defense', labelKey: 'internship:nav.defense' },
   ],
+  // The evaluation is included as a READ: requireWorkplaceReadAccess admits university staff in
+  // scope, while every write on it requires the assigned organization supervisor. The student is
+  // deliberately not offered it, because the backend returns nothing to them until it is FINAL.
   university: [
     { path: '', labelKey: 'internship:nav.overview' },
     { path: 'weekly-logs', labelKey: 'internship:nav.weeklyLogs' },
     { path: 'attendance', labelKey: 'internship:nav.attendance' },
+    { path: 'evaluation', labelKey: 'internship:nav.evaluation' },
     { path: 'final-report', labelKey: 'internship:nav.finalReport' },
     { path: 'defense', labelKey: 'internship:nav.defense' },
   ],
