@@ -46,6 +46,10 @@ const questions = [
 function stubFetch(applicationHandler: (body: unknown) => Promise<Response>) {
   const fetchMock = vi.fn((input: RequestInfo | URL, init?: RequestInit) => {
     const url = String(input)
+    if (url.endsWith('/students/me/placements') || url.endsWith('/students/me/candidacies')) return jsonResponse([])
+    if (url.includes('/marketplace-access')) return jsonResponse({ studentActions: true })
+    if (url.endsWith('/students/me/enrollment')) return jsonResponse({ verificationStatus: 'VERIFIED' })
+    if (url.endsWith('/application-cv')) return jsonResponse({ id: 'cv-upload-1', filename: 'cv.pdf', contentType: 'application/pdf' })
     if (url.includes('/screening-questions')) {
       return jsonResponse(questions)
     }
@@ -86,6 +90,17 @@ describe('ApplyPage', () => {
     await i18n.changeLanguage('en')
     vi.unstubAllGlobals()
   })
+  it('does not submit without a CV even after the screening answers are complete', async () => {
+    const user = userEvent.setup()
+    const fetchMock = stubFetch(() => jsonResponse({}, 201))
+    renderPage()
+    await user.type(await screen.findByLabelText(/why this internship/i), 'To learn.')
+    await user.selectOptions(screen.getByLabelText(/preferred track/i), 'Backend')
+    const submit = screen.getByRole('button', { name: /submit application/i })
+    expect(submit).toBeDisabled()
+    await user.click(submit)
+    expect(applicationPostCalls(fetchMock)).toHaveLength(0)
+  })
 
   it('renders the screening questions for the opportunity', async () => {
     stubFetch(() => jsonResponse({}, 201))
@@ -103,6 +118,8 @@ describe('ApplyPage', () => {
     renderPage()
 
     await screen.findByText(/why this internship\?/i)
+    await user.upload(await screen.findByLabelText('CV for this application'), new File(['%PDF-1.7 CV'], 'cv.pdf', { type: 'application/pdf' }))
+    await screen.findByText('cv.pdf · application/pdf')
     await user.click(screen.getByRole('button', { name: /submit application/i }))
 
     expect(await screen.findAllByText(/this question requires an answer/i)).toHaveLength(2)
@@ -117,6 +134,8 @@ describe('ApplyPage', () => {
     await screen.findByText(/why this internship\?/i)
     await user.type(screen.getByLabelText(/why this internship/i), 'To learn.')
     await user.selectOptions(screen.getByLabelText(/preferred track/i), 'Backend')
+    await user.upload(await screen.findByLabelText('CV for this application'), new File(['%PDF-1.7 CV'], 'cv.pdf', { type: 'application/pdf' }))
+    await screen.findByText('cv.pdf · application/pdf')
     await user.click(screen.getByRole('button', { name: /submit application/i }))
 
     await waitFor(() => {
@@ -141,6 +160,8 @@ describe('ApplyPage', () => {
     await screen.findByText(/why this internship\?/i)
     await user.type(screen.getByLabelText(/why this internship/i), 'To learn.')
     await user.selectOptions(screen.getByLabelText(/preferred track/i), 'Backend')
+    await user.upload(await screen.findByLabelText('CV for this application'), new File(['%PDF-1.7 CV'], 'cv.pdf', { type: 'application/pdf' }))
+    await screen.findByText('cv.pdf · application/pdf')
     await user.click(screen.getByRole('button', { name: /submit application/i }))
 
     expect(await screen.findByText(/application submitted/i)).toBeInTheDocument()
@@ -167,6 +188,8 @@ describe('ApplyPage', () => {
     await screen.findByText(/why this internship\?/i)
     await user.type(screen.getByLabelText(/why this internship/i), 'To learn.')
     await user.selectOptions(screen.getByLabelText(/preferred track/i), 'Backend')
+    await user.upload(await screen.findByLabelText('CV for this application'), new File(['%PDF-1.7 CV'], 'cv.pdf', { type: 'application/pdf' }))
+    await screen.findByText('cv.pdf · application/pdf')
     await user.click(screen.getByRole('button', { name: /submit application/i }))
 
     expect(await screen.findByRole('alert')).toHaveTextContent(

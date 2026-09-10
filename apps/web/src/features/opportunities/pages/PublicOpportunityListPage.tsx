@@ -17,6 +17,9 @@ import {
   Select,
 } from '../../../components/ui'
 import { HomeHeroIllustration } from '../../../app/pages/HomeHeroIllustration'
+import { MarketplaceRail, PresentationBand } from '../../../components/ui/Presentation'
+import { PublicBookmarks, PublicBookmark } from '../../student/components/PublicBookmarks'
+import { formatCompensation } from '../compensation'
 
 const WORK_MODES: WorkMode[] = ['ONSITE', 'HYBRID', 'REMOTE']
 const POPULAR_SEARCHES = ['Software Engineering', 'Data Science', 'Marketing', 'Design', 'Business'] as const
@@ -83,17 +86,17 @@ export function PublicOpportunityListPage() {
   const to = Math.min(total, (page + 1) * PAGE_SIZE)
 
   return (
-    <div className="bg-background">
-      <section className="mx-auto grid w-full max-w-[1400px] gap-8 px-4 pb-7 pt-7 sm:px-6 lg:grid-cols-[1.05fr_1fr] lg:items-start lg:px-14">
+    <PublicBookmarks ids={result.data?.content.map(item => item.id) ?? []}><div className="bg-background">
+      <section className="mx-auto grid w-full max-w-[1448px] gap-8 px-4 pb-3 pt-6 sm:px-6 lg:grid-cols-[1.05fr_1fr] lg:items-start lg:px-12">
         <div>
-          <h1 className="font-display text-[30px] font-extrabold leading-[1.06] tracking-[-0.035em] text-brand-navy dark:text-foreground sm:text-[36px] lg:text-[40px]">
+          <h1 className="font-display text-[30px] font-extrabold leading-[1.06] tracking-[-0.035em] text-brand-navy dark:text-foreground sm:text-[30px] lg:text-[30px]">
             <span className="block">{t('opportunities:public.heroLead')}</span>
             <span className="mt-1.5 block">
               {t('opportunities:public.heroBuild')}{' '}
               <span className="text-brand-accent">{t('opportunities:public.heroAccent')}</span>
             </span>
           </h1>
-          <p className="mt-3.5 max-w-xl text-sm leading-6 text-foreground-secondary">
+          <p className="mt-3 max-w-md text-xs leading-5 text-foreground-secondary">
             {t('opportunities:public.heroDescription')}
           </p>
 
@@ -153,11 +156,11 @@ export function PublicOpportunityListPage() {
         </div>
 
         <div className="hidden lg:block">
-          <HomeHeroIllustration />
+          <HomeHeroIllustration marketplace />
         </div>
       </section>
 
-      <section className="mx-auto w-full max-w-[1400px] px-4 pb-10 sm:px-6 lg:px-14">
+      <section className="mx-auto w-full max-w-[1448px] px-4 pb-5 sm:px-6 lg:px-12">
         <div className="flex flex-wrap items-baseline justify-between gap-3">
           <div className="flex flex-wrap items-baseline gap-3">
             <h2 className="font-display text-lg font-extrabold tracking-tight text-brand-navy dark:text-foreground">
@@ -171,7 +174,7 @@ export function PublicOpportunityListPage() {
           </div>
         </div>
 
-        <div className="mt-4">
+        <div className="mt-4 grid gap-4 xl:grid-cols-[minmax(0,1fr)_256px]"><div>
           {result.isLoading ? (
             <LoadingState label={t('opportunities:public.loading')} />
           ) : result.isError ? (
@@ -188,12 +191,16 @@ export function PublicOpportunityListPage() {
             </ul>
           )}
         </div>
+        <MarketplaceRail />
+        </div>
 
         {result.data && result.data.totalPages > 1 && (
           <Pagination page={result.data.page} totalPages={result.data.totalPages} onPageChange={setPage} className="mt-10" />
         )}
       </section>
+      <div className="mx-auto max-w-[1448px] px-4 pb-5 lg:px-12"><PresentationBand title={t('common:remediation.bandTitle')} body={t('common:remediation.bandBody')}><Link to="/organizations" className="rounded bg-brand-accent px-5 py-2.5 text-xs font-bold text-white">{t('common:nav.organizations')} →</Link></PresentationBand></div>
     </div>
+    </PublicBookmarks>
   )
 }
 
@@ -216,6 +223,11 @@ function OpportunityCard({
 
   return (
     <InternshipCard
+      className="public-internship-card"
+      bookmark={<PublicBookmark id={opportunity.id} />}
+      tags={[t('common:nav.internships'), ...(opportunity.skills ?? []).slice(0, 1), t(`opportunities:workModeValues.${opportunity.workMode}`)]}
+      compensation={formatCompensation(opportunity.compensation, t, locale) ?? undefined}
+      hours={opportunity.hoursPerWeek ? t('opportunities:enrichment.hoursPerWeekValue', { count: opportunity.hoursPerWeek }) : undefined}
       title={opportunity.title}
       organization={opportunity.organization.name}
       organizationVerified={opportunity.organization.verified}
@@ -243,13 +255,11 @@ function OpportunityCard({
       actions={
         <Link
           to={`/opportunities/${opportunity.id}`}
-          className="inline-flex h-9 items-center rounded-lg border border-border-strong px-3.5 text-sm font-semibold text-foreground transition-colors hover:bg-control-hover focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus-ring motion-reduce:transition-none"
+          className="inline-flex h-9 items-center rounded-lg border border-brand-accent/40 px-3.5 text-xs font-semibold text-brand-accent-ink transition-colors hover:bg-control-hover focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus-ring motion-reduce:transition-none"
         >
           {t('opportunities:public.viewDetails')}
         </Link>
       }
-    >
-      <p className="line-clamp-2">{opportunity.description}</p>
-    </InternshipCard>
+    />
   )
 }

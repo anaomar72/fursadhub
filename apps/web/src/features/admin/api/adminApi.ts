@@ -2,6 +2,7 @@ import { apiFetch } from '../../../lib/api/client'
 import { downloadPrivateDocument } from '../../../lib/api/privateDocument'
 import type { LegalDocument, LegalDocumentType } from '../../legal/types'
 import type { PrivacyRequest, PrivacyRequestState } from '../../privacy/types'
+import type { Testimonial, TestimonialStatus } from '../../testimonials/types'
 import type {
   AdminOpportunity,
   AdminOpportunityDetail,
@@ -341,4 +342,30 @@ export function listAuditEvents(
 
 export function listAuditEventTypes() {
   return apiFetch<string[]>('/admin/audit-events/types')
+}
+
+// ---------------------------------------------------------------- testimonials
+
+/**
+ * Testimonial moderation. Every transition is its own command endpoint — there is no generic status
+ * write, so a client cannot PATCH a testimonial into PUBLISHED (CLAUDE.md section 10). Authorization
+ * lives in TestimonialService, which calls requireSuperAdmin on each of these.
+ */
+export function listTestimonials(options: { status?: TestimonialStatus; page?: number } = {}) {
+  const params = new URLSearchParams()
+  if (options.status) params.set('status', options.status)
+  if (options.page !== undefined) params.set('page', String(options.page))
+  const query = params.toString()
+  return apiFetch<Page<Testimonial>>(`/admin/testimonials${query ? `?${query}` : ''}`)
+}
+
+export function moderateTestimonial(
+  testimonialId: string,
+  action: 'publish' | 'unpublish' | 'reject',
+  note?: string,
+) {
+  return apiFetch<Testimonial>(`/admin/testimonials/${testimonialId}/${action}`, {
+    method: 'POST',
+    body: action === 'publish' ? undefined : { note: note ?? '' },
+  })
 }

@@ -45,9 +45,15 @@ class OrganizationVerificationIntakeIT extends AbstractPhase4IT {
         UUID departmentId = insertDepartment(universityId, "Computer Science", "CS");
         StudentFixture student = createVerifiedStudent("b15-apply-no-stu", universityId, departmentId);
 
+        // Attached while the organization is still verified, so the assertion below lands on the
+        // APPLICATION gate. Suspending first would make the CV route itself 404 — a real rule, but
+        // one gate earlier than the one this test exists to prove.
+        Object cvUploadId = uploadApplicationCv(applicationsPath(published.opportunityId()), student.accessToken());
+
         setOrganizationVerificationStatus(published.organizationId(), "SUSPENDED");
 
-        ResponseEntity<Map> response = apply(student, published.opportunityId());
+        ResponseEntity<Map> response = applicationWithCv(
+                applicationsPath(published.opportunityId()), student.accessToken(), Map.of("answers", List.of()), cvUploadId);
 
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.CONFLICT);
         assertThat(errorCode(response)).isEqualTo("ORGANIZATION_NOT_VERIFIED");
@@ -61,12 +67,18 @@ class OrganizationVerificationIntakeIT extends AbstractPhase4IT {
         UUID departmentId = insertDepartment(universityId, "Computer Science", "CS");
 
         for (String status : List.of("SUBMITTED", "UNDER_REVIEW", "NEEDS_CHANGES", "REJECTED", "SUSPENDED", "REVOKED")) {
-            setOrganizationVerificationStatus(published.organizationId(), status);
             StudentFixture student = createVerifiedStudent("b15-as-" + status.substring(0, 3).toLowerCase(), universityId, departmentId);
+            // CV first, while the organization is still verified — then move it to the status under
+            // test, so what the application hits is the organization gate and nothing before it.
+            Object cvUploadId = uploadApplicationCv(applicationsPath(published.opportunityId()), student.accessToken());
+            setOrganizationVerificationStatus(published.organizationId(), status);
 
-            assertThat(errorCode(apply(student, published.opportunityId())))
+            assertThat(errorCode(applicationWithCv(
+                    applicationsPath(published.opportunityId()), student.accessToken(), Map.of("answers", List.of()), cvUploadId)))
                     .as("a %s organization must not receive a new application", status)
                     .isEqualTo("ORGANIZATION_NOT_VERIFIED");
+
+            setOrganizationVerificationStatus(published.organizationId(), "VERIFIED");
         }
     }
 
@@ -209,9 +221,22 @@ class OrganizationVerificationIntakeIT extends AbstractPhase4IT {
 
     // ---------------------------------------------------------------- helpers
 
+    /**
+     * Applies the way the product actually requires: a CV is uploaded first and the application
+     * carries its id.
+     *
+     * <p>This fixture predates the per-application CV requirement and posted the application alone,
+     * so every case here failed at the CV validation before reaching the organization-verification
+     * behaviour it was written to prove — including the denial cases, which were passing on the
+     * wrong error. Routing through the shared helper restores what each assertion is actually
+     * testing. No production rule is relaxed.
+     */
     private ResponseEntity<Map> apply(StudentFixture student, UUID opportunityId) {
-        return authorizedPost("/api/v1/opportunities/" + opportunityId + "/applications",
-                student.accessToken(), Map.of("answers", List.of()));
+        return applicationWithCv(applicationsPath(opportunityId), student.accessToken(), Map.of("answers", List.of()));
+    }
+
+    private static String applicationsPath(UUID opportunityId) {
+        return "/api/v1/opportunities/" + opportunityId + "/applications";
     }
 
     private ResponseEntity<Map> nominate(NominationFixture fixture) {

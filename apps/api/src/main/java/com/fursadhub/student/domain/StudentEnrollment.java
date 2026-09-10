@@ -49,6 +49,16 @@ public class StudentEnrollment {
     @Column(name = "verification_status", nullable = false, length = 40)
     private StudentVerificationStatus verificationStatus;
 
+    @Column(name = "draft_evidence_stored_file_id")
+    private UUID draftEvidenceStoredFileId;
+
+    public UUID getDraftEvidenceStoredFileId() { return draftEvidenceStoredFileId; }
+
+    public void attachDraftEvidence(UUID fileId) {
+        draftEvidenceStoredFileId = fileId;
+        updatedAt = Instant.now();
+    }
+
     @Column(name = "created_at", nullable = false)
     private Instant createdAt;
 

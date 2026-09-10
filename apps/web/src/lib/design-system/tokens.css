@@ -161,10 +161,19 @@
   --shadow-md: 0 12px 32px rgb(11 42 91 / 0.09);
   --shadow-lg: 0 24px 64px rgb(11 42 91 / 0.13);
 
-  /* ---------------------------------------------------------------- motion */
+  /* ---------------------------------------------------------------- motion
+     Four durations, and every animation in the product picks one of them. The band each covers is
+     what decides which: FAST is feedback on something the pointer is already touching, NORMAL is a
+     state change the eye follows, PANEL is a surface arriving from off-screen (which needs longer
+     because it travels further), and SLOW is reserved for the one-time confirmation sequence.
+
+     PANEL sits between NORMAL and SLOW on purpose. Before it existed, drawers and dialogs borrowed
+     the dropdown's FAST pop, so a full-height 26rem panel entered with the same 150ms scale as a
+     40px menu — which reads as a flicker rather than as a panel opening. */
   --duration-instant: 80ms;
   --duration-fast: 150ms;
   --duration-normal: 240ms;
+  --duration-panel: 280ms;
   --duration-slow: 450ms;
   --ease-standard: cubic-bezier(0.4, 0, 0.2, 1);
   --ease-enter: cubic-bezier(0, 0, 0.2, 1);
@@ -172,63 +181,111 @@
 }
 
 /*
- * Dark theme. The approved reference set contains no dark-mode mockup, so this is a deliberate
- * extrapolation of the same navy/orange system onto dark ground — reported as such — rather than
- * an approved composition. It exists because the product already ships a per-user theme switch;
- * removing it would delete working functionality.
+ * Dark theme — FursadHub at night.
+ *
+ * The approved reference set contains no dark-mode mockup, so this remains a deliberate
+ * extrapolation of the navy/orange system onto dark ground rather than an approved composition.
+ * The LIGHT palette above is untouched by it.
+ *
+ * WHAT WAS WRONG WITH THE PREVIOUS VALUES. Not legibility — every pair cleared AA. Depth. The five
+ * ground tones sat at L* 6.2 / 10.5 / 14.8 / 17.1 / 19.0, so the top of the ramp collapsed: an
+ * elevated panel was 2.3 lighter than an inset one and a hover state 1.9 lighter again, which is
+ * below the point where a surface reads as a separate plane. Every card, dialog, dropdown and
+ * hovered row therefore looked like the same navy rectangle at slightly different opacities, and
+ * the whole product read flat.
+ *
+ * WHAT THIS IS. One ramp with even, perceptible steps — measured in CIE L*, not eyeballed:
+ *
+ *     rail        #070f1a   L*  4.2      the frame the product sits in
+ *     page        #0a1422   L*  6.2   +2.0
+ *     card        #141f30   L* 11.6   +5.4
+ *     inset/muted #1b2839   L* 15.7   +4.2
+ *     elevated    #233246   L* 20.4   +4.6   dialogs, dropdowns, hover
+ *     control     #2b3c53   L* 24.9   +4.5
+ *
+ * Five levels a person can actually tell apart, so page / panel / card / control / selected are
+ * distinguishable by surface alone — no shadow stack required, which is what keeps it calm.
+ *
+ * The hue is pulled a little off pure navy toward charcoal at the bottom of the ramp: the deepest
+ * tones are the ones that looked like flat blue paint, and the brand stays present through the
+ * headings, the accent and the rail rather than through a saturated ground.
+ *
+ * NOT inverted from light, and not black. The brand anchors (#0B2A5B, #F97316) are unchanged and
+ * the canonical logo colours are untouched; only the supporting neutrals are derived for dark.
  */
 :root[data-theme='dark'] {
   color-scheme: dark;
-  --color-background: #071426;
-  --color-surface: #0c1d33;
-  --color-surface-muted: #112640;
-  --color-surface-raised: #142b47;
-  --color-surface-inverse: #f7faff;
-  --color-border: #263b57;
-  --color-border-strong: #3b526f;
-  --color-overlay: rgb(0 7 20 / 0.72);
-  --color-text-primary: #f7faff;
-  --color-text-secondary: #c8d6e8;
-  --color-text-muted: #97abc4;
-  --color-text-inverse: #06183a;
-  --color-text-link: #7fa9ff;
-  --color-focus-ring: #7fa9ff;
-  --color-control-hover: #172f4d;
-  --color-control-disabled: #22364f;
 
-  /* On dark ground the accent needs to lift, and orange text no longer needs darkening — the
-     `ink` step steps UP instead, so it stays the legible orange in both themes. */
-  --color-brand-accent-soft: #3a2210;
-  --color-brand-accent-ink: #ffa257;
-  --color-brand-navy-soft: #12294a;
-  --color-brand-blue: #4b8dfb;
-  --color-brand-blue-strong: #6da4fc;
-  --color-brand-blue-soft: #14345f;
+  /* ---------------------------------------------------------------- ground ramp */
+  --color-background: #0a1422;
+  --color-surface: #141f30;
+  --color-surface-muted: #1b2839;
+  --color-surface-raised: #233246;
+  --color-surface-inverse: #eef4fc;
 
-  --color-sidebar-background: #05122a;
-  --color-sidebar-text: #b9cbe4;
+  /* Two borders doing two different jobs. The hairline is deliberately quiet — it separates, it
+     does not draw. `strong` carries the visual boundary of INTERACTIVE controls (inputs, outline
+     buttons) and so is held at 3.26:1 against a card and 3.64:1 against the page, clearing the
+     WCAG 1.4.11 floor the previous value (#3b526f, ~2:1) did not. */
+  --color-border: #24334a;
+  --color-border-strong: #5a708c;
+  --color-overlay: rgb(4 9 18 / 0.7);
+
+  /* ---------------------------------------------------------------- text
+     Soft near-white rather than #fff: pure white on a dark ground buzzes at body sizes. Measured
+     on the card: 14.8 / 9.5 / 6.9. The muted step still clears 4.5:1 on the TOP of the ramp
+     (4.67 on #2b3c53), which is the case that actually constrains it. */
+  --color-text-primary: #edf3fb;
+  --color-text-secondary: #b6c6da;
+  --color-text-muted: #97a9bf;
+  --color-text-inverse: #0a1422;
+  --color-text-link: #8cb7ff;
+  --color-focus-ring: #8cb7ff;
+  --color-control-hover: #2b3c53;
+  --color-control-disabled: #1e2a3c;
+
+  /* On dark ground the accent lifts instead of darkening — the `ink` step steps UP, so orange TEXT
+     stays legible in both themes (8.7:1 on a card here). The accent FILL stays the brand orange;
+     it is used for primary actions and the active rail edge, never as a large ground. */
+  --color-brand-accent-soft: #3a2412;
+  --color-brand-accent-ink: #ffa85c;
+  --color-brand-navy-soft: #1a2c49;
+  --color-brand-blue: #5b96fc;
+  --color-brand-blue-strong: #8cb7ff;
+  --color-brand-blue-soft: #16305a;
+
+  /* The rail sits BELOW the page rather than above it, so the content ground reads as floating on
+     the frame. That is what gives the shell its plane order without a shadow. */
+  --color-sidebar-background: #070f1a;
+  --color-sidebar-text: #bccce2;
   --color-sidebar-text-strong: #ffffff;
-  --color-sidebar-active-bg: rgb(249 115 22 / 0.14);
+  --color-sidebar-active-bg: rgb(249 115 22 / 0.16);
   --color-sidebar-active-text: #ffffff;
   --color-sidebar-active-edge: var(--color-brand-accent);
-  --color-sidebar-hover: rgb(255 255 255 / 0.06);
-  --color-sidebar-border: #1b3153;
-  --color-sidebar-heading: #7f93b0;
+  --color-sidebar-hover: rgb(255 255 255 / 0.055);
+  --color-sidebar-border: #1a2740;
+  --color-sidebar-heading: #8496b0;
 
-  --color-chart-series: #4b8dfb;
-  --color-chart-grid: #263b57;
-  --color-success: #6fd8a5;
-  --color-success-bg: #123c2b;
-  --color-warning: #ffc76b;
-  --color-warning-bg: #493515;
-  --color-danger: #ff9189;
-  --color-danger-bg: #4a211f;
-  --color-info: #84b3ff;
-  --color-info-bg: #14345f;
-  --shadow-xs: 0 1px 2px rgb(0 0 0 / 0.24);
-  --shadow-sm: 0 4px 12px rgb(0 0 0 / 0.28);
-  --shadow-md: 0 12px 32px rgb(0 0 0 / 0.34);
-  --shadow-lg: 0 24px 64px rgb(0 0 0 / 0.42);
+  --color-chart-series: #5b96fc;
+  --color-chart-grid: #24334a;
+
+  /* Each status keeps its hue but is re-seated on the new ground: the text step clears 6.4-7.9:1
+     on its own wash, and each wash is separated from the card by lightness as well as hue. */
+  --color-success: #63d3a0;
+  --color-success-bg: #10382a;
+  --color-warning: #ffc46b;
+  --color-warning-bg: #43310f;
+  --color-danger: #ff9c93;
+  --color-danger-bg: #45201e;
+  --color-info: #8cb7ff;
+  --color-info-bg: #16305a;
+
+  /* Softer than before. With a working elevation ramp the shadows no longer have to do the
+     separating, and heavy black drop shadows on dark ground read as grime rather than as height. */
+  --shadow-xs: 0 1px 2px rgb(0 0 0 / 0.3);
+  --shadow-sm: 0 4px 12px rgb(0 0 0 / 0.32);
+  --shadow-md: 0 12px 28px rgb(0 0 0 / 0.38);
+  --shadow-lg: 0 24px 56px rgb(0 0 0 / 0.46);
 }
 
 /*
@@ -249,10 +306,13 @@
   --color-sidebar-active: var(--color-sidebar-active-bg);
 }
 
+/* In dark mode the two rail treatments converge on the same frame tone — a navy rail lit brighter
+   than the dark page would invert the plane order the ramp exists to establish. The university and
+   platform consoles keep their identity through the crest and the orange active edge instead. */
 :root[data-theme='dark'] .sidebar-navy {
-  --color-sidebar-background: #05122a;
-  --color-sidebar-active-bg: #12294a;
-  --color-sidebar-border: #1b3153;
+  --color-sidebar-background: #070f1a;
+  --color-sidebar-active-bg: #1a2c49;
+  --color-sidebar-border: #1a2740;
 }
 
 /*
@@ -276,11 +336,31 @@
   --color-brand-accent-ink: #ffa257;
 }
 
+/*
+ * The same bands, in dark mode.
+ *
+ * They cannot keep the light theme's navy: #061e45 measures L* 11.9, and a dark-mode card measures
+ * L* 11.6 — so the home CTA strip and the footer would land at exactly the lightness of an ordinary
+ * card and read as a slightly bluer rectangle rather than as a band. Lifting them to L* 14.7 puts
+ * them clearly above the card plane, which is what makes them read as deliberate feature bands at
+ * night while keeping the light composition untouched.
+ */
+:root[data-theme='dark'] .surface-dark {
+  --color-background: #102544;
+  --color-surface: #102544;
+  --color-surface-muted: #16305a;
+  --color-surface-raised: #1a3868;
+  --color-text-secondary: #c6d6ec;
+  --color-text-muted: #a3b7d3;
+  --color-brand-accent-ink: #ffa85c;
+}
+
 @media (prefers-reduced-motion: reduce) {
   :root {
     --duration-instant: 1ms;
     --duration-fast: 1ms;
     --duration-normal: 1ms;
+    --duration-panel: 1ms;
     --duration-slow: 1ms;
   }
 }

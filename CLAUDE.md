@@ -510,9 +510,7 @@ but do not create unnecessary billing implementation during the free pilot.
 
 \# 8. Frontend Architecture
 
-Read:
-
-\- \`docs/product/BRAND_AND_UI_GUIDELINES.md\`
+For visual authority see section 57. Do NOT read \`docs/product/BRAND_AND_UI_GUIDELINES.md\` — it is deprecated and non-authoritative.
 
 Use feature-oriented React structure.
 
@@ -1987,7 +1985,7 @@ Direct navigation to an admin URL must still be rejected by the backend.
 
 All new production-visible UI strings MUST use English/Somali translation keys.
 
-Follow Sections 56-58 and `docs/product/BRAND_AND_UI_GUIDELINES.md`.
+Follow Sections 56-58 and the current shared design tokens/primitives (see section 57).
 
 Do not redesign the existing dashboard visual language for this feature.
 
@@ -3084,9 +3082,14 @@ User-generated internship content does not need mandatory translation into both 
 
 \# 57. Brand and Frontend UI
 
-Claude MUST read:
+Canonical presentation authority is, in order:
 
-\- \`docs/product/BRAND_AND_UI_GUIDELINES.md\`
+1. \`design-reference/presentation-refresh-2026\`
+2. the current approved FursadHub implementation
+3. the approved reference screenshots/mockups
+4. the current shared design tokens and primitives (\`apps/web/src/lib/design-system/tokens.css\`, \`apps/web/src/components/ui\`)
+
+\`docs/product/BRAND_AND_UI_GUIDELINES.md\` is DEPRECATED and NON-AUTHORITATIVE. It is stale and conflicts with the approved implementation. Do NOT read it as a source for palette, spacing, typography, component styling, page composition or motion. It is retained only until the documentation cleanup decides its fate.
 
 Claude must not invent FursadHub's permanent visual identity.
 
@@ -3208,7 +3211,7 @@ Prefer transform/opacity animations.
 
 Use one motion language across student, university, organization, and admin areas.
 
-Read the full motion rules in \`docs/product/BRAND_AND_UI_GUIDELINES.md\`.
+The motion rules live in the shared duration/easing tokens and the motion utilities in \`apps/web/src/lib/design-system/tokens.css\` and \`apps/web/src/index.css\`, not in the deprecated brand guide.
 
 \---
 

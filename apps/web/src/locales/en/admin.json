@@ -12,7 +12,8 @@
     "platformRoles": "Platform roles",
     "noAccess": "You do not have platform administration access.",
     "verification": "Verification",
-    "platform": "Platform"
+    "platform": "Platform",
+    "testimonials": "Testimonials"
   },
   "dashboard": {
     "title": "Platform overview",
@@ -512,5 +513,32 @@
   "locales": {
     "en": "English",
     "so": "Somali"
+  },
+  "testimonials": {
+    "title": "Testimonials",
+    "description": "Review testimonials submitted by real FursadHub users. Nothing reaches the public site until it is published here.",
+    "statusFilter": "Status",
+    "allStatuses": "All statuses",
+    "author": "Author",
+    "quote": "Testimonial",
+    "submittedAt": "Submitted",
+    "actions": "Actions",
+    "publish": "Publish",
+    "unpublish": "Unpublish",
+    "reject": "Reject",
+    "empty": "No testimonials match this filter.",
+    "resultCount_one": "{{count}} testimonial",
+    "resultCount_other": "{{count}} testimonials",
+    "noteLabel": {
+      "unpublish": "Reason for unpublishing (optional)",
+      "reject": "Reason for rejecting (required)"
+    },
+    "errors": {
+      "TESTIMONIAL_INVALID_TRANSITION": "That testimonial cannot change state that way.",
+      "TESTIMONIAL_NOT_FOUND": "That testimonial does not exist.",
+      "VALIDATION_FAILED": "A reason is required when rejecting a testimonial.",
+      "ACCESS_DENIED": "You are not authorized to moderate testimonials.",
+      "generic": "That testimonial could not be updated. Try again."
+    }
   }
 }

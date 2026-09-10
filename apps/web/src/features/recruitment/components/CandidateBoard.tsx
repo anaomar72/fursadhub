@@ -59,7 +59,7 @@ export function CandidateBoard({ candidates, opportunityTitle, emptyMessage }: C
                       <li key={candidate.candidacyId}>
                         <Link
                           to={`/organization/candidacies/${candidate.candidacyId}`}
-                          className="block rounded-md border border-border bg-surface p-3 transition-all duration-150 ease-in-out hover:-translate-y-0.5 hover:border-brand-primary hover:shadow-md focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus-ring motion-reduce:transition-none motion-reduce:hover:transform-none"
+                          className="block rounded-md border border-border bg-surface p-3 transition-[border-color,box-shadow] duration-150 ease-in-out hover:border-brand-primary hover:shadow-md focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus-ring motion-reduce:transition-none"
                         >
                           <span className="block truncate text-sm font-semibold text-foreground">
                             {candidate.studentFullName ?? candidate.studentEmail ?? candidate.studentUserId}

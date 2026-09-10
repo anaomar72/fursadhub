@@ -88,11 +88,13 @@ class PrivateFileAccessIT extends AbstractPhase7IT {
 
         requireOk(uploadCv(student.accessToken(), "cv.pdf", "application/pdf", validPdfBytes()), "Upload CV");
 
-        ResponseEntity<Map> application = authorizedPost(
+        ResponseEntity<Map> application = applicationWithCv(
                 "/api/v1/opportunities/" + opportunity.opportunityId() + "/applications",
                 student.accessToken(), Map.of("answers", List.of()));
         requireOk(application, "Apply");
         UUID candidacyId = UUID.fromString((String) application.getBody().get("id"));
+        // Simulate the nullable attachment on historical candidacies; no production backfill.
+        jdbcTemplate.update("UPDATE candidacies SET application_cv_stored_file_id = NULL WHERE id = ?", candidacyId);
 
         ResponseEntity<byte[]> download = downloadDocument(
                 "/api/v1/candidacies/" + candidacyId + "/cv", opportunity.recruiterToken());
@@ -112,11 +114,13 @@ class PrivateFileAccessIT extends AbstractPhase7IT {
         StudentFixture student = createVerifiedStudent("cv-cross", universityId, departmentId);
         requireOk(uploadCv(student.accessToken(), "cv.pdf", "application/pdf", validPdfBytes()), "Upload CV");
 
-        ResponseEntity<Map> application = authorizedPost(
+        ResponseEntity<Map> application = applicationWithCv(
                 "/api/v1/opportunities/" + opportunity.opportunityId() + "/applications",
                 student.accessToken(), Map.of("answers", List.of()));
         requireOk(application, "Apply");
         UUID candidacyId = UUID.fromString((String) application.getBody().get("id"));
+        // Simulate the nullable attachment on historical candidacies; no production backfill.
+        jdbcTemplate.update("UPDATE candidacies SET application_cv_stored_file_id = NULL WHERE id = ?", candidacyId);
 
         ResponseEntity<byte[]> download = downloadDocument(
                 "/api/v1/candidacies/" + candidacyId + "/cv", otherOrganization.recruiterToken());
@@ -159,12 +163,13 @@ class PrivateFileAccessIT extends AbstractPhase7IT {
     void scopedReviewerReadsEvidence() {
         UUID universityId = insertVerifiedUniversity("Evidence University");
         UUID departmentId = insertDepartment(universityId, "Computing", "CS");
-        StudentFixture student = studentWithSubmittedCase("ev-student", universityId, departmentId);
+        StudentFixture student = createStudent("ev-student", universityId, departmentId, "DRAFT");
         Staff coordinator = universityStaff(
                 "ev-coord", universityId, "DEPARTMENT_COORDINATOR", List.of(departmentId));
 
         requireOk(uploadEvidence(student.accessToken(), "card.png", "image/png", validPngBytes()),
                 "Upload evidence");
+        requireOk(authorizedPost("/api/v1/students/me/enrollment/submit-verification", student.accessToken(), null), "Submit evidence");
         UUID caseId = myVerificationCaseId(student.accessToken());
 
         ResponseEntity<byte[]> download = downloadDocument(
@@ -182,12 +187,13 @@ class PrivateFileAccessIT extends AbstractPhase7IT {
         UUID ownDepartment = insertDepartment(universityId, "Computing", "CS");
         UUID otherDepartment = insertDepartment(universityId, "Business", "BUS");
 
-        StudentFixture student = studentWithSubmittedCase("ev-scoped", universityId, ownDepartment);
+        StudentFixture student = createStudent("ev-scoped", universityId, ownDepartment, "DRAFT");
         Staff outsider = universityStaff(
                 "ev-outsider", universityId, "DEPARTMENT_COORDINATOR", List.of(otherDepartment));
 
         requireOk(uploadEvidence(student.accessToken(), "card.png", "image/png", validPngBytes()),
                 "Upload evidence");
+        requireOk(authorizedPost("/api/v1/students/me/enrollment/submit-verification", student.accessToken(), null), "Submit evidence");
         UUID caseId = myVerificationCaseId(student.accessToken());
 
         ResponseEntity<byte[]> download = downloadDocument(
@@ -204,11 +210,12 @@ class PrivateFileAccessIT extends AbstractPhase7IT {
         UUID departmentA = insertDepartment(universityA, "Computing", "CS");
         UUID universityB = insertVerifiedUniversity("Evidence B");
 
-        StudentFixture student = studentWithSubmittedCase("ev-uni-a", universityA, departmentA);
+        StudentFixture student = createStudent("ev-uni-a", universityA, departmentA, "DRAFT");
         Staff intruder = universityStaff("ev-uni-b", universityB, "UNIVERSITY_ADMIN", List.of());
 
         requireOk(uploadEvidence(student.accessToken(), "card.png", "image/png", validPngBytes()),
                 "Upload evidence");
+        requireOk(authorizedPost("/api/v1/students/me/enrollment/submit-verification", student.accessToken(), null), "Submit evidence");
         UUID caseId = myVerificationCaseId(student.accessToken());
 
         // Both the honest path (their own university id) and the tampered one (A's id) must fail.
@@ -227,11 +234,12 @@ class PrivateFileAccessIT extends AbstractPhase7IT {
     void recruiterCannotReachVerificationEvidence() {
         UUID universityId = insertVerifiedUniversity("Recruiter Blocked University");
         UUID departmentId = insertDepartment(universityId, "Computing", "CS");
-        StudentFixture student = studentWithSubmittedCase("ev-vs-recruiter", universityId, departmentId);
+        StudentFixture student = createStudent("ev-vs-recruiter", universityId, departmentId, "DRAFT");
         PublishedOpportunity opportunity = publishPublicOpportunity("ev-recruiter");
 
         requireOk(uploadEvidence(student.accessToken(), "card.png", "image/png", validPngBytes()),
                 "Upload evidence");
+        requireOk(authorizedPost("/api/v1/students/me/enrollment/submit-verification", student.accessToken(), null), "Submit evidence");
         UUID caseId = myVerificationCaseId(student.accessToken());
 
         // A recruiter has NO route to verification evidence, whatever their relationship to the
@@ -254,7 +262,7 @@ class PrivateFileAccessIT extends AbstractPhase7IT {
     void evidenceMimePolicy() {
         UUID universityId = insertVerifiedUniversity("Evidence Mime University");
         UUID departmentId = insertDepartment(universityId, "Computing", "CS");
-        StudentFixture student = studentWithSubmittedCase("ev-mime", universityId, departmentId);
+        StudentFixture student = createStudent("ev-mime", universityId, departmentId, "DRAFT");
 
         requireOk(uploadEvidence(student.accessToken(), "card.pdf", "application/pdf", validPdfBytes()),
                 "PDF evidence");

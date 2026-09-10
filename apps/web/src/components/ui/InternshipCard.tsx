@@ -93,18 +93,33 @@ export function InternshipCard({
 
   return (
     <Card interactive padding="none" className={cn('flex h-full flex-col', className)}>
-      <div className={cn('flex flex-1 flex-col', compact ? 'p-3.5' : 'p-5')}>
+      {/*
+        `compact` is narrower and tighter than `comfortable` — it is not smaller TYPE. The title had
+        been pushed to 12px and every piece of metadata to 11px, which made the product's primary
+        object on its own landing page the least readable thing on that page. Density now comes from
+        padding and gaps; the title sits at 14px against the comfortable variant's 17px.
+      */}
+      <div className={cn('flex flex-1 flex-col', compact ? 'p-4' : 'p-5')}>
         <div className="flex items-center gap-2">
-          {logo && <span className="flex size-7 shrink-0 items-center justify-center overflow-hidden rounded">{logo}</span>}
-          <span className="truncate text-xs font-bold text-brand-navy dark:text-foreground">{organization}</span>
+          {/*
+            The mark is ALWAYS reserved. Organizations that have not uploaded a logo previously
+            rendered no mark at all, so their card's header began at a different x than the cards
+            beside it and the row lost its left alignment — the strongest thing the eye uses to scan
+            a grid. The fallback is the organization's own initial, not a stand-in logo: it invents
+            no brand it does not have.
+          */}
+          <span className="flex size-7 shrink-0 items-center justify-center overflow-hidden rounded bg-brand-blue-soft text-[11px] font-extrabold text-brand-blue">
+            {logo ?? organization.trim().charAt(0).toUpperCase()}
+          </span>
+          <span className="truncate text-[13px] font-bold text-brand-navy dark:text-foreground">{organization}</span>
           {organizationVerified && <VerifiedBadge size="sm" />}
-          {bookmark && <span className="ms-auto -me-1.5 -mt-1.5">{bookmark}</span>}
+          {bookmark && <span className="relative z-10 ms-auto -me-1.5 -mt-1.5">{bookmark}</span>}
         </div>
 
         <h3
           className={cn(
             'line-clamp-2 font-display font-extrabold leading-snug tracking-tight text-brand-navy dark:text-foreground',
-            compact ? 'mt-2 text-[15px]' : 'mt-2.5 text-[17px]',
+            compact ? 'mt-2 text-sm' : 'mt-2.5 text-[17px]',
           )}
         >
           {titleTo ? (
@@ -124,7 +139,7 @@ export function InternshipCard({
         {meta.length > 0 && (
           <ul
             className={cn(
-              'flex flex-wrap items-center gap-x-3 gap-y-1 text-[11px] text-foreground-secondary',
+              'flex flex-wrap items-center gap-x-3 gap-y-1 text-xs text-foreground-secondary',
               compact ? 'mt-2' : 'mt-2.5',
             )}
           >
@@ -158,11 +173,11 @@ export function InternshipCard({
         <div
           className={cn(
             'flex flex-wrap items-center justify-between gap-2 border-t border-border',
-            compact ? 'px-3.5 py-2' : 'px-5 py-3',
+            compact ? 'border-t-0 px-4 pb-4 pt-1' : 'px-5 py-3',
           )}
         >
           {deadline && (
-            <span className="flex items-center gap-1.5 text-[11px] text-foreground-secondary">
+            <span className="flex items-center gap-1.5 text-xs text-foreground-secondary">
               <Icon name="document" className="size-3 shrink-0" />
               {deadline}
             </span>

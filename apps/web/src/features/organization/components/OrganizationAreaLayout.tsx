@@ -40,14 +40,14 @@ export function OrganizationAreaLayout() {
   if (membershipsQuery.isLoading) {
     return (
       <div className="flex min-h-svh items-center justify-center">
-        <LoadingSpinner size="lg" />
+        <LoadingSpinner size="lg" label={t('common:status.loading')} />
       </div>
     )
   }
 
   if (!membership) {
     return (
-      <AppShell
+      <AppShell workspace="organization"
         areaLabel={t('common:nav.organization')}
         sections={[
           {
@@ -65,7 +65,7 @@ export function OrganizationAreaLayout() {
 
   return (
     <OrganizationMembershipContext.Provider value={membership}>
-      <AppShell
+      <AppShell workspace="organization"
         areaLabel={t('common:nav.organization')}
         sections={buildOrganizationNav(t, membership)}
         brand={{

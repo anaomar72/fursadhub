@@ -64,7 +64,11 @@ export function RegisterPage() {
           JSON.stringify(documentsRequiringAcceptance.map((doc) => doc.id)),
         )
       }
-      const params = new URLSearchParams({ email: data.email, role })
+      // `registered` makes the next screen acknowledge what just happened rather than opening cold
+      // on a code field. It is presentation only — it changes one confirmation line and grants
+      // nothing — and the verification page works identically without it, which is what happens
+      // when someone returns to that URL later.
+      const params = new URLSearchParams({ email: data.email, role, registered: '1' })
       navigate(`/verify-email?${params.toString()}`)
     },
   })

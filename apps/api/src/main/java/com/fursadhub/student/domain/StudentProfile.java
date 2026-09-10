@@ -15,6 +15,16 @@ import java.util.UUID;
 @Entity
 @Table(name = "student_profiles")
 public class StudentProfile {
+    @org.hibernate.annotations.JdbcTypeCode(org.hibernate.type.SqlTypes.JSON)
+    @Column(name = "professional_profile", columnDefinition = "jsonb")
+    private StudentProfessionalProfile professional;
+
+    public StudentProfessionalProfile getProfessional() { return professional; }
+
+    public void updateProfessional(StudentProfessionalProfile profile) {
+        professional = profile;
+        updatedAt = Instant.now();
+    }
 
     @Id
     private UUID userId;

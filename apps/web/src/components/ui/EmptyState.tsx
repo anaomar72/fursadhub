@@ -8,6 +8,13 @@ export interface EmptyStateProps {
    * act" (frontend-design guidance): an empty list is a place to start, not a dead end. */
   action?: ReactNode
   icon?: ReactNode
+  /**
+   * `inline` drops the dashed border and the icon and tightens the padding, for an empty list that
+   * sits INSIDE an already-bordered panel. Dashboard panels were each hand-rolling a bare centred
+   * `<p>` for this case — seven of them across the three portals — because the default treatment
+   * draws a second border inside the panel's own. Same component, same copy contract, no box.
+   */
+  variant?: 'block' | 'inline'
   className?: string
 }
 
@@ -30,12 +37,21 @@ function DefaultIcon() {
  * section 4). Kept deliberately quiet — the landing page's doors already spend this product's one
  * bold visual move, so this stays a small muted glyph, never a second signature element.
  */
-export function EmptyState({ title, description, action, icon, className }: EmptyStateProps) {
+export function EmptyState({ title, description, action, icon, variant = 'block', className }: EmptyStateProps) {
+  const inline = variant === 'inline'
   return (
-    <div className={cn('flex flex-col items-center gap-3 rounded-lg border border-dashed border-border px-6 py-12 text-center', className)}>
-      <span className="flex size-12 items-center justify-center rounded-full bg-surface-muted text-foreground-secondary">
-        {icon ?? <DefaultIcon />}
-      </span>
+    <div
+      className={cn(
+        'flex flex-col items-center gap-3 text-center',
+        inline ? 'px-5 py-10' : 'rounded-lg border border-dashed border-border px-6 py-12',
+        className,
+      )}
+    >
+      {!inline && (
+        <span className="flex size-12 items-center justify-center rounded-full bg-surface-muted text-foreground-secondary">
+          {icon ?? <DefaultIcon />}
+        </span>
+      )}
       <div className="space-y-1">
         <p className="text-sm font-semibold text-foreground">{title}</p>
         {description && <p className="max-w-sm text-sm text-foreground-secondary">{description}</p>}

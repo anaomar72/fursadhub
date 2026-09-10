@@ -26,7 +26,9 @@ public record VerificationCaseResponse(
         String academicYear,
         boolean hasEvidence,
         String escalatedAt,
-        String escalationReason) {
+        String escalationReason,
+        String studentFullName,
+        com.fursadhub.student.domain.StudentProfessionalProfile professional) {
 
     public static VerificationCaseResponse from(StudentVerificationCase c) {
         return new VerificationCaseResponse(
@@ -36,7 +38,7 @@ public record VerificationCaseResponse(
                 null, null, null, null, null, null,
                 c.getEvidenceStoredFileId() != null,
                 text(c.getEscalatedAt()),
-                c.getEscalationReason());
+                c.getEscalationReason(), null, null);
     }
 
     public static VerificationCaseResponse from(VerificationQueryService.CaseRow row) {
@@ -53,7 +55,9 @@ public record VerificationCaseResponse(
                 row.enrollment().getAcademicYear(),
                 c.getEvidenceStoredFileId() != null,
                 text(c.getEscalatedAt()),
-                c.getEscalationReason());
+                c.getEscalationReason(),
+                row.profile() == null ? null : row.profile().getFullName(),
+                row.profile() == null ? null : row.profile().getProfessional());
     }
 
     private static String text(java.time.Instant instant) {

@@ -44,7 +44,65 @@
         "organizations": "Organizations need access to capable emerging talent.",
         "universities": "Universities need structured internship oversight.",
         "platform": "FursadHub connects these workflows in one platform."
-      }
+      },
+      "eyebrow": "About FursadHub",
+      "browse": "Browse internships",
+      "countsTitle": "FursadHub today",
+      "countsHint": "Live counts from the public directories. Nothing here is an estimate.",
+      "counts": {
+        "internships": "Published internships",
+        "organizations": "Organizations",
+        "universities": "Universities"
+      },
+      "journeyTitle": "How an internship runs on FursadHub",
+      "journeyHint": "One pipeline from posting to completion. Public applications and university nominations feed the same candidate list.",
+      "journey": {
+        "sourcing": {
+          "title": "Sourcing",
+          "body": "An organization publishes an internship openly, targets specific universities and departments, or does both at once."
+        },
+        "candidacy": {
+          "title": "One candidate pipeline",
+          "body": "A student applies directly, or a department coordinator nominates them with their consent. Either route produces exactly one candidacy per student and internship."
+        },
+        "offer": {
+          "title": "Offer and placement",
+          "body": "Recruitment moves through explicit steps. When a student accepts an offer, the placement is created in the same transaction."
+        },
+        "supervision": {
+          "title": "Supervision",
+          "body": "Weekly logs, attendance, and both university and organization supervisors, according to the policy the university sets."
+        },
+        "completion": {
+          "title": "Evaluation and completion",
+          "body": "Evaluation, final report and defence where the policy requires them, and a completion record that stays tied to the right academic context."
+        }
+      },
+      "audienceTitle": "Who FursadHub is for",
+      "audience": {
+        "students": {
+          "title": "Students",
+          "body": "Browse and apply once your university has verified your enrollment, then run your placement, logs and reports in one place."
+        },
+        "organizations": {
+          "title": "Organizations",
+          "body": "Publish internships, request nominees from partner universities, screen one candidate list, and supervise the interns you take on."
+        },
+        "universities": {
+          "title": "Universities",
+          "body": "Verify your own students, nominate them to targeted internships, set the internship policy, and supervise placements through to completion."
+        }
+      },
+      "trustTitle": "What we do not do",
+      "trustHint": "Stated plainly, because trust is easier to keep than to rebuild.",
+      "trust": {
+        "biometrics": "No facial recognition, biometric identity checks or biometric attendance.",
+        "evidence": "Verification evidence and private documents are never public, and every download is authorized and audited.",
+        "testimonials": "Only testimonials written by real users and published by a moderator appear on this site.",
+        "pilot": "The pilot is free. There is no payment processing anywhere in the product."
+      },
+      "ctaTitle": "Start where you fit",
+      "ctaBody": "Create an account as a student, an organization or a university."
     },
     "organizations": {
       "title": "Discover Organizations",
@@ -78,7 +136,7 @@
       "getStarted": "Get Started",
       "learn": "Learn More",
       "benefits": "Benefits for Universities",
-      "directoryNote": "A public university directory is not currently exposed by the platform API.",
+      "directoryNote": "Explore university profiles in the public directory above.",
       "items": {
         "students": {
           "title": "Student Management",
@@ -237,7 +295,7 @@
     },
     "stats": {
       "label": "FursadHub at a glance",
-      "internships": "Active internships",
+      "internships": "Published internships",
       "organizations": "Partner organizations",
       "universities": "Partner universities"
     },
@@ -310,6 +368,7 @@
     "strapline": "A brighter tomorrow, together."
   },
   "nav": {
+    "publicMarketplace": "Public marketplace",
     "home": "Home",
     "student": "Student",
     "university": "University",
@@ -326,7 +385,10 @@
     "getStarted": "Get Started",
     "publicNavigation": "Public navigation",
     "openMenu": "Open menu",
-    "closeMenu": "Close menu"
+    "closeMenu": "Close menu",
+    "workspace": "Go to my workspace",
+    "accountSettings": "Account settings",
+    "signOut": "Sign out"
   },
   "status": {
     "loading": "Loading",
@@ -357,6 +419,7 @@
     "clear": "Clear"
   },
   "a11y": {
+    "skipToContent": "Skip to content",
     "notifications": "Notifications",
     "dismissNotification": "Dismiss notification",
     "closeDialog": "Close dialog",
@@ -377,5 +440,169 @@
     "duplicate": "That has already been added.",
     "tooLong": "Keep each entry to {{count}} characters or fewer.",
     "limitReached": "You can add at most {{count}}."
+  },
+  "remediation": {
+    "studentActionsOnly": "Student applications only",
+    "support": "Support",
+    "help": "Help & guidance",
+    "how": "How it works",
+    "updates": "Stay updated",
+    "updatesBody": "Explore the latest published internships and find your next opportunity.",
+    "stories": "Stories from across FursadHub",
+    "storiesPending": "Awaiting approved testimonials",
+    "storiesBody": "Verified customer stories will appear here when approved for publication.",
+    "railTitle": "Advance your career",
+    "railBody": "Find internships, prepare your profile, and follow your applications in one place.",
+    "browse": "Browse published opportunities from real organizations",
+    "apply": "Apply through the supported student pathway",
+    "track": "Track your applications and placements",
+    "explore": "Explore opportunities",
+    "bandTitle": "Still looking for the right opportunity?",
+    "bandBody": "Explore published internships and discover organizations working with students.",
+    "basic": "Basic information",
+    "basicHint": "The institutional details that identify your organization.",
+    "publicProfile": "Public profile",
+    "publicHint": "Help students understand your institution and where you work.",
+    "web": "Web presence",
+    "webHint": "Publish official links that help visitors learn more.",
+    "media": "Brand media",
+    "mediaHint": "Upload or replace your official logo and public cover image.",
+    "basics": "Internship basics",
+    "description": "Description",
+    "responsibilities": "Responsibilities & requirements",
+    "arrangement": "Location & working arrangement",
+    "dates": "Dates & openings",
+    "audience": "Audience / publication mode",
+    "share": "Copy link",
+    "copied": "Link copied",
+    "shareFailed": "Copy this address",
+    "overview": "Overview",
+    "about": "About",
+    "contact": "Contact",
+    "culture": "Discover opportunities",
+    "genericCover": "Internship opportunities",
+    "sort": "Publication order",
+    "sortNote": "Order provided by the marketplace",
+    "notProvided": "Not provided by this institution",
+    "partnerTitle": "Connect through internships",
+    "partnerBody": "Explore this organization’s published opportunities and apply through FursadHub.",
+    "opportunityTitle": "Build experience that matters",
+    "opportunityBody": "Find published internships and follow your application through the student portal.",
+    "sections": "Page sections",
+    "quickActions": "Quick actions",
+    "studentIdRequired": "Upload your Student ID before submitting enrollment verification.",
+    "viewPublicProfile": "View public profile",
+    "storiesLead": "Written by real students, recruiters, coordinators and supervisors — each published under the role they actually hold, and only after review.",
+    "storiesEyebrow": "From the FursadHub community"
+  },
+  "photo": {
+    "take": "Take photo",
+    "live": "Live camera preview",
+    "preview": "Captured photo",
+    "unavailable": "Camera unavailable. Close this window and use Upload instead.",
+    "use": "Use photo",
+    "retake": "Retake",
+    "capture": "Capture"
+  },
+  "documentPreview": {
+    "open": "Preview document",
+    "failed": "Unable to preview this document. Try downloading the original.",
+    "image": "Private document preview",
+    "pdf": "Private PDF preview"
+  },
+  "applicationCv": {
+    "title": "CV for this application",
+    "description": "Upload a PDF CV for this internship. This application keeps this version after submission.",
+    "verifyEnrollment": "Verify your enrollment before applying."
+  },
+  "professional": {
+    "about": "About you",
+    "headline": "Professional headline",
+    "city": "City",
+    "countryCode": "Country code",
+    "countryHint": "Use the two-letter country code, for example SO.",
+    "countryError": "Enter a valid two-letter country code.",
+    "summary": "About / summary",
+    "skills": "Skills",
+    "skillsHint": "Add up to 25 skills, with no more than 60 characters each.",
+    "links": "Professional links",
+    "linkedinUrl": "LinkedIn",
+    "githubUrl": "GitHub",
+    "portfolioUrl": "Portfolio",
+    "urlError": "Enter a valid HTTP or HTTPS URL without account credentials.",
+    "university": "University",
+    "department": "Department"
+  },
+  "social": {
+    "linkedin": "LinkedIn",
+    "x": "X",
+    "instagram": "Instagram",
+    "youtube": "YouTube"
+  },
+  "similar": {
+    "title": "Similar internships",
+    "description": "Related public listings based on shared skills, location, work arrangement or organization."
+  },
+  "authPresentation": {
+    "backHome": "Back to Home",
+    "panels": {
+      "login": {
+        "eyebrow": "Welcome back",
+        "title": "Pick up where you left off.",
+        "body": "Your applications, nominations and internship records are waiting in your portal."
+      },
+      "register": {
+        "eyebrow": "Join FursadHub",
+        "title": "Your next opportunity starts here.",
+        "body": "One account connects you to internships, organizations and universities across Somalia."
+      },
+      "verifyEmail": {
+        "eyebrow": "One step left",
+        "title": "Confirm it is really you.",
+        "body": "We sent a short code to your email. Entering it activates your account and keeps it yours."
+      },
+      "forgotPassword": {
+        "eyebrow": "Account recovery",
+        "title": "Locked out? It happens.",
+        "body": "Give us the email on your account and we will send a single-use link to set a new password."
+      },
+      "resetPassword": {
+        "eyebrow": "Account recovery",
+        "title": "Choose a new password.",
+        "body": "This link works once. Set your password, then sign in and your session starts fresh."
+      }
+    },
+    "trust": {
+      "verified": "Universities and organizations are verified before they carry the blue check.",
+      "private": "Your CV and verification documents stay private and are never publicly linked.",
+      "bilingual": "Available in English and Somali."
+    }
+  },
+  "theme": {
+    "useDark": "Use dark theme",
+    "useLight": "Use light theme"
+  },
+  "testimonials": {
+    "audiences": {
+      "STUDENT": "Student",
+      "ORGANIZATION": "Organization",
+      "UNIVERSITY": "University",
+      "PLATFORM": "FursadHub team"
+    },
+    "attribution": {
+      "atInstitution": "{{role}} at {{institution}}",
+      "platform": "{{role}}, FursadHub"
+    }
+  },
+  "roles": {
+    "STUDENT": "Student",
+    "ORGANIZATION_ADMIN": "Organization Admin",
+    "RECRUITER": "Recruiter",
+    "ORGANIZATION_SUPERVISOR": "Organization Supervisor",
+    "UNIVERSITY_ADMIN": "University Admin",
+    "DEPARTMENT_COORDINATOR": "Department Coordinator",
+    "UNIVERSITY_SUPERVISOR": "University Supervisor",
+    "SUPER_ADMIN": "Super Admin",
+    "VERIFICATION_OFFICER": "Verification Officer"
   }
 }

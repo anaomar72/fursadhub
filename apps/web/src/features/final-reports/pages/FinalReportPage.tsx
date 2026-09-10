@@ -2,7 +2,7 @@ import { useRef, useState } from 'react'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { useTranslation } from 'react-i18next'
 import { useParams } from 'react-router-dom'
-import { AnimatedCheck, Button, ErrorState, LoadingState, StatusBadge, Textarea } from '../../../components/ui'
+import { AnimatedCheck, Button, ErrorState, LoadingState, StatusBadge, Textarea, EmptyState } from '../../../components/ui'
 import type { StatusTone } from '../../../components/ui'
 import { apiErrorMessage } from '../../../lib/api/errorMessage'
 import * as finalReportsApi from '../api/finalReportsApi'
@@ -134,9 +134,10 @@ export function FinalReportPage({ audience }: FinalReportPageProps) {
       )}
 
       {!report && audience === 'reviewer' && (
-        <p className="rounded-lg border border-border bg-surface p-6 text-center text-sm text-foreground-secondary">
-          {t('internship:finalReport.notSubmittedYet')}
-        </p>
+        <EmptyState
+          title={t('internship:finalReport.notSubmittedYet')}
+          description={t('internship:finalReport.notSubmittedYetHint')}
+        />
       )}
 
       {report?.reviewComment && (

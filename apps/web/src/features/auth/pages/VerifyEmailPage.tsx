@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useMutation } from '@tanstack/react-query'
@@ -8,11 +8,26 @@ import { emailOnlySchema, type EmailOnlyFormValues } from '../schemas/emailOnlyS
 import * as authApi from '../api/authApi'
 import { authErrorMessage } from '../api/errorMessage'
 import { AuthCard } from '../components/AuthCard'
-import { AnimatedCheck, Button, FormField, Input, OtpCodeInput } from '../../../components/ui'
+import { AuthStatus } from '../components/AuthStatus'
+import { Alert, Button, ButtonLink, FormField, Input, OtpCodeInput } from '../../../components/ui'
 import { ApiError } from '../../../lib/api/client'
 
 const CODE_LENGTH = 4
 const RESEND_COOLDOWN_SECONDS = 60
+
+/**
+ * The success line, chosen from the account kind this registration was started for.
+ *
+ * <p>The value comes from the query string, so it is not authoritative — but nothing here depends
+ * on it being trustworthy. It only selects which NEXT STEP sentence to show; every branch states
+ * exactly the same fact about what was verified, and none of them asserts an approval. A tampered
+ * value changes one sentence of guidance on the tamperer's own screen and nothing else.
+ */
+function nextStepKey(role: string | null): string {
+  if (role === 'organization') return 'auth:verifyEmail.successBodyOrganization'
+  if (role === 'university') return 'auth:verifyEmail.successBodyUniversity'
+  return 'auth:verifyEmail.successBody'
+}
 
 /**
  * FursadHub verification screen (CLAUDE.md section 13 / BRAND_AND_UI_GUIDELINES.md section 14):
@@ -25,10 +40,13 @@ export function VerifyEmailPage() {
   const { t } = useTranslation()
   const [searchParams, setSearchParams] = useSearchParams()
   const role = searchParams.get('role')
+  const justRegistered = searchParams.get('registered') === '1'
   const [email, setEmail] = useState(searchParams.get('email') ?? '')
   const [code, setCode] = useState('')
   const [cooldownEndsAt, setCooldownEndsAt] = useState<number | null>(email ? Date.now() + RESEND_COOLDOWN_SECONDS * 1000 : null)
   const [secondsLeft, setSecondsLeft] = useState(0)
+  // The last code actually sent to the server — see the guard in `submit`.
+  const lastSubmittedCode = useRef<string | null>(null)
 
   const verifyMutation = useMutation({ mutationFn: authApi.verifyEmail })
   const resendMutation = useMutation({ mutationFn: authApi.resendVerification })
@@ -60,6 +78,18 @@ export function VerifyEmailPage() {
     if (verifyMutation.isPending || verifyMutation.isSuccess) {
       return
     }
+    /*
+     * The same code is never sent twice. `OtpCodeInput` calls `onComplete` whenever the field is
+     * full, which includes re-fires that follow a keystroke's later events — so a rejected code
+     * would immediately be sent again, spending another of the server's five attempts on input the
+     * user has not touched since. The in-flight guard above did not catch that, because the second
+     * attempt starts after the first has already failed. Changing any digit clears this, since
+     * `handleCodeChange` resets the mutation and a different string no longer matches.
+     */
+    if (lastSubmittedCode.current === fullCode) {
+      return
+    }
+    lastSubmittedCode.current = fullCode
     verifyMutation.mutate({ email, code: fullCode })
   }
 
@@ -69,6 +99,9 @@ export function VerifyEmailPage() {
         startCooldown()
         setCode('')
         verifyMutation.reset()
+        // A fresh challenge is on its way, so a code that was rejected against the OLD one is
+        // allowed to be tried again — the digits may legitimately repeat.
+        lastSubmittedCode.current = null
       },
     })
   }
@@ -115,26 +148,87 @@ export function VerifyEmailPage() {
     )
   }
 
+  // Verification is a request to the server, not an instant local toggle, so it gets its own
+  // branded waiting state rather than only a spinner inside the button. The code auto-submits on
+  // the fourth digit, which means the form the user was looking at is gone the moment they finish
+  // typing; without this they would be left staring at a disabled field with no explanation.
+  if (verifyMutation.isPending) {
+    return <AuthStatus tone="loading" title={t('auth:verifyEmail.verifyingTitle')} description={t('auth:verifyEmail.verifyingBody')} />
+  }
+
   if (verifyMutation.isSuccess) {
     return (
-      <AuthCard title={t('auth:verifyEmail.successTitle')}>
-        <AnimatedCheck label={t('auth:verifyEmail.successTitle')} />
-        <p className="mt-4 text-center text-sm text-foreground-secondary">{t('auth:verifyEmail.successBody')}</p>
-        <Link
-          to={role ? `/login?role=${role}` : '/login'}
-          className="mt-6 block text-center text-sm font-medium text-link hover:underline"
-        >
-          {t('auth:verifyEmail.continue')}
-        </Link>
-      </AuthCard>
+      <AuthStatus
+        tone="success"
+        title={t('auth:verifyEmail.successTitle')}
+        // Role-aware, and careful about what it claims. It says what has happened (this address is
+        // confirmed) and what to do next for the kind of account being set up. It does NOT say the
+        // organization or university is verified, or that enrollment is verified — those are
+        // separate reviews that have not happened (CLAUDE.md section 13/27).
+        description={t(nextStepKey(role))}
+        actions={
+          <ButtonLink to={role ? `/login?role=${role}` : '/login'} className="w-full">
+            {t('auth:verifyEmail.continue')}
+          </ButtonLink>
+        }
+      />
     )
   }
 
-  const isLocked =
-    verifyMutation.error instanceof ApiError && verifyMutation.error.body.code === 'EMAIL_VERIFICATION_CODE_LOCKED'
+  const errorCode = verifyMutation.error instanceof ApiError ? verifyMutation.error.body.code : null
+  const isLocked = errorCode === 'EMAIL_VERIFICATION_CODE_LOCKED'
+
+  /*
+   * Two failures END the attempt rather than inviting a retype: an expired challenge and a locked
+   * one. Leaving those as a red line under a code field the user can still type into asks them to
+   * keep trying something that cannot now succeed. They get the recoverable state instead — what
+   * happened, the one control that fixes it, and a way out.
+   *
+   * Every OTHER failure stays inline on the form, because retyping IS the fix.
+   *
+   * Note what is deliberately absent: an "already verified" screen. The server has no way to say
+   * that. An account with nothing left to verify has no active challenge, so it comes back as
+   * EMAIL_VERIFICATION_CODE_INVALID — indistinguishable from a typo. Rendering a confident
+   * "you are already verified" on that code would be a guess presented as a fact, so the inline
+   * message names both possibilities instead and the sign-in route is offered below.
+   */
+  if (errorCode === 'EMAIL_VERIFICATION_CODE_EXPIRED' || isLocked) {
+    return (
+      <AuthStatus
+        tone="warning"
+        title={t(isLocked ? 'auth:verifyEmail.lockedTitle' : 'auth:verifyEmail.expiredTitle')}
+        description={t(isLocked ? 'auth:verifyEmail.lockedBody' : 'auth:verifyEmail.expiredBody')}
+        actions={
+          <>
+            <Button onClick={handleResend} loading={resendMutation.isPending} disabled={secondsLeft > 0}>
+              {secondsLeft > 0 ? t('auth:verifyEmail.resendCooldown', { seconds: secondsLeft }) : t('auth:verifyEmail.resend')}
+            </Button>
+            <ButtonLink variant="outline" to={role ? `/login?role=${role}` : '/login'}>
+              {t('auth:verifyEmail.backToLogin')}
+            </ButtonLink>
+          </>
+        }
+      >
+        {resendMutation.isError && (
+          <p className="text-sm text-danger" role="alert">
+            {authErrorMessage(t, 'verifyEmail', resendMutation.error)}
+          </p>
+        )}
+      </AuthStatus>
+    )
+  }
 
   return (
     <AuthCard title={t('auth:verifyEmail.title')} subtitle={t('auth:verifyEmail.subtitle', { email })}>
+      {/* Arriving straight from registration. It confirms the one thing that definitely happened —
+          the account exists — and nothing beyond it: not that the address is valid, not that any
+          institution has been approved. Someone who opens this URL later never sees it. */}
+      {justRegistered && (
+        <Alert tone="success" className="mb-6">
+          {t('auth:verifyEmail.registeredNotice')}
+        </Alert>
+      )}
+
       <OtpCodeInput
         length={CODE_LENGTH}
         value={code}
@@ -174,7 +268,7 @@ export function VerifyEmailPage() {
           </button>
         )}
         {resendMutation.isSuccess && secondsLeft > 0 && (
-          <p className="mt-2 text-success">{t('auth:verifyEmail.resendSuccess')}</p>
+          <p className="mt-2 text-success" role="status">{t('auth:verifyEmail.resendSuccess')}</p>
         )}
         {resendMutation.isError && (
           <p className="mt-2 text-danger" role="alert">
@@ -182,6 +276,16 @@ export function VerifyEmailPage() {
           </p>
         )}
       </div>
+
+      {/* The route out for someone whose address is in fact already verified. The server cannot
+          tell us that (see the comment above the expired/locked branch), so instead of guessing,
+          the page simply keeps the door to sign-in visible from here. */}
+      <p className="mt-6 text-center text-sm text-foreground-secondary">
+        {t('auth:verifyEmail.alreadyVerifiedPrompt')}{' '}
+        <Link to={role ? `/login?role=${role}` : '/login'} className="font-medium text-link hover:underline">
+          {t('auth:verifyEmail.backToLogin')}
+        </Link>
+      </p>
     </AuthCard>
   )
 }

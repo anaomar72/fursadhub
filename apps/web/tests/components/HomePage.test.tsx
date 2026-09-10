@@ -6,6 +6,8 @@ import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import { HomePage } from '../../src/app/pages/HomePage'
 import i18n from '../../src/lib/i18n'
 
+vi.mock('../../src/lib/auth/AuthContext', () => ({ useAuth: () => ({isAuthenticated:false}) }))
+
 const emptyPage = { content: [], page: 0, size: 12, totalElements: 0, totalPages: 0 }
 
 function renderPage(page: ReactNode) {
@@ -18,6 +20,12 @@ function renderPage(page: ReactNode) {
 }
 
 describe('approved public home page', () => {
+  it('does not report an unavailable backend as an empty marketplace', async () => {
+    vi.stubGlobal('fetch', vi.fn(() => Promise.reject(new Error('Network unavailable'))))
+    renderPage(<HomePage />)
+    expect(await screen.findByText('Internship opportunities could not be loaded.')).toBeInTheDocument()
+    expect(screen.queryByText('No published internships yet.')).not.toBeInTheDocument()
+  })
   beforeEach(() => {
     // The home page reads the three public directories. Everything it renders comes from these
     // responses — the page must never fall back to the mockups' illustrative examples.

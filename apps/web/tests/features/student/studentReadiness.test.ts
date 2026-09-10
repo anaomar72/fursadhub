@@ -61,6 +61,10 @@ describe('applyBlocker', () => {
     ).toBe('OPPORTUNITY_NOT_PUBLIC')
     expect(applyBlocker({ ...base, opportunity: { ...OPEN_OPPORTUNITY, mode: 'HYBRID' } })).toBeNull()
   })
+  it('allows an existing university nomination to merge with a first self-application', () => {
+    expect(applyBlocker({ ...base, candidacies: [{ ...candidacy('opp-1'), source: 'UNIVERSITY_NOMINATION' }] })).toBeNull()
+    expect(applyBlocker({ ...base, candidacies: [{ ...candidacy('opp-1'), source: 'BOTH' }] })).toBe('STUDENT_ALREADY_APPLIED')
+  })
 
   it('treats the deadline day itself as still open, like the backend', () => {
     const today = new Date(2026, 8, 2)
@@ -82,8 +86,7 @@ describe('applyBlocker', () => {
 describe('readiness', () => {
   it('counts only real backend facts', () => {
     const steps = readinessSteps({
-      profile: { userId: 'u1', fullName: 'Amina Yusuf', phone: null },
-      hasCv: true,
+      profile: { userId: 'u1', fullName: 'Amina Yusuf', phone: null, professional: { headline: 'Developer', summary: 'Building accessible applications.', skills: ['React'] } },
       enrollment: enrollment('VERIFIED'),
     })
     expect(steps.every((step) => step.done)).toBe(true)
@@ -91,13 +94,13 @@ describe('readiness', () => {
   })
 
   it('marks a claimed but unverified enrollment as one step short', () => {
-    const steps = readinessSteps({ profile: null, hasCv: false, enrollment: enrollment('SUBMITTED') })
+    const steps = readinessSteps({ profile: null, enrollment: enrollment('SUBMITTED') })
     expect(steps.find((step) => step.id === 'enrollment')?.done).toBe(true)
     expect(steps.find((step) => step.id === 'verification')?.done).toBe(false)
     expect(readinessPercent(steps)).toBe(25)
   })
 
   it('is zero for a brand-new account', () => {
-    expect(readinessPercent(readinessSteps({ profile: null, hasCv: false, enrollment: null }))).toBe(0)
+    expect(readinessPercent(readinessSteps({ profile: null, enrollment: null }))).toBe(0)
   })
 })

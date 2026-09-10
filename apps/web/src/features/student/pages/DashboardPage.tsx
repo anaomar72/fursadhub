@@ -2,21 +2,24 @@ import { useQuery } from '@tanstack/react-query'
 import { useTranslation } from 'react-i18next'
 import { Link } from 'react-router-dom'
 import * as studentApi from '../api/studentApi'
-import * as documentsApi from '../api/documentsApi'
 import * as recruitmentApi from '../../recruitment/api/recruitmentApi'
 import * as placementsApi from '../../placements/api/placementsApi'
 import * as publicOpportunityApi from '../../opportunities/api/publicOpportunityApi'
 import { CANDIDACY_STATUS_TONE } from '../../recruitment/components/statusTone'
 import { ACTIVE_CANDIDACY_STATUSES, readinessPercent, readinessSteps } from '../studentReadiness'
 import {
+  Avatar,
   Card,
+  InternshipCard,
+  ErrorState,
   Icon,
   LoadingState,
   ProgressIndicator,
+  PageHeader,
+  SectionHeading,
   StatusBadge,
-  type IconName,
+  StatCard,
 } from '../../../components/ui'
-import { METRIC_TONES } from '../../../components/ui/metricTones'
 import { PageContainer } from '../../../app/layouts/PageContainer'
 import { formatDate } from '../../../lib/utils/formatDate'
 
@@ -41,7 +44,6 @@ export function DashboardPage() {
 
   const profileQuery = useQuery({ queryKey: ['student', 'profile'], queryFn: studentApi.getMyProfile, retry: false })
   const enrollmentQuery = useQuery({ queryKey: ['student', 'enrollment'], queryFn: studentApi.getMyEnrollment, retry: false })
-  const cvQuery = useQuery({ queryKey: ['student', 'cv'], queryFn: documentsApi.getMyCv, retry: false })
   const candidaciesQuery = useQuery({ queryKey: ['student', 'candidacies'], queryFn: recruitmentApi.listMyCandidacies })
   const nominationsQuery = useQuery({ queryKey: ['student', 'nominations'], queryFn: recruitmentApi.listMyNominations })
   const offersQuery = useQuery({ queryKey: ['student', 'offers'], queryFn: recruitmentApi.listMyOffers })
@@ -71,6 +73,15 @@ export function DashboardPage() {
     )
   }
 
+  if (candidaciesQuery.isError || nominationsQuery.isError || offersQuery.isError || placementsQuery.isError) {
+    return <PageContainer><ErrorState onRetry={() => {
+      void candidaciesQuery.refetch()
+      void nominationsQuery.refetch()
+      void offersQuery.refetch()
+      void placementsQuery.refetch()
+    }} /></PageContainer>
+  }
+
   const candidacies = candidaciesQuery.data ?? []
   const nominations = nominationsQuery.data ?? []
   const offers = offersQuery.data ?? []
@@ -84,7 +95,6 @@ export function DashboardPage() {
 
   const steps = readinessSteps({
     profile: profileQuery.data ?? null,
-    hasCv: cvQuery.data?.present ?? false,
     enrollment: enrollmentQuery.data ?? null,
   })
   const percent = readinessPercent(steps)
@@ -96,97 +106,68 @@ export function DashboardPage() {
   const openRoles = openRolesQuery.data?.content ?? []
 
   return (
-    <PageContainer className="flex flex-col gap-6">
-      <header>
-        <h1 className="font-display text-2xl font-bold tracking-tight text-brand-navy dark:text-foreground sm:text-3xl">
-          {/* A student who has not filled in their profile has no name to greet, and
-              "Welcome back, " with a dangling comma is worse than a plain greeting. */}
-          {firstName(profileQuery.data?.fullName)
+    <PageContainer className="grid gap-5 xl:grid-cols-[minmax(0,1fr)_290px]">
+      {/* The same page header every other portal page uses, rather than a hand-rolled h1 that had
+          drifted a size larger than the shared one. A student who has not filled in their profile
+          has no name to greet, and "Welcome back, " with a dangling comma is worse than a plain
+          greeting. */}
+      <PageHeader
+        className="xl:col-start-1"
+        title={
+          firstName(profileQuery.data?.fullName)
             ? t('student:dashboard.greeting', { name: firstName(profileQuery.data?.fullName) })
-            : t('student:dashboard.greetingNoName')}
-        </h1>
-        <p className="mt-1.5 text-sm text-foreground-secondary">{t('student:dashboard.greetingSubtitle')}</p>
-      </header>
+            : t('student:dashboard.greetingNoName')
+        }
+        description={t('student:dashboard.greetingSubtitle')}
+      />
 
-      <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-5">
-        <MetricCard
+      {/*
+        `self-start`: the profile card in column two spans both rows, so without this the metric row
+        is stretched to match its height and every tile ends up mostly empty space under its figure.
+        The tiles should be as tall as their content and no taller.
+      */}
+      <div className="grid gap-3 self-start sm:grid-cols-2 xl:col-start-1 xl:grid-cols-4">
+        <StatCard
           icon="clipboard"
           tone="brand"
           label={t('student:dashboard.applications')}
           value={activeApplications}
           to="/student/applications"
         />
-        <MetricCard
+        <StatCard
           icon="users"
           tone="violet"
           label={t('student:dashboard.interviews')}
           value={interviews}
           to="/student/applications"
         />
-        <MetricCard
+        <StatCard
           icon="bookmark"
           tone="amber"
           label={t('student:dashboard.savedInternships')}
-          value={savedQuery.data?.totalElements ?? 0}
+          value={savedQuery.data?.totalElements ?? '—'}
           to="/student/saved"
         />
-        <MetricCard
+        <StatCard
           icon="userCheck"
           tone="teal"
           label={t('student:dashboard.nominations')}
           value={pendingNominations}
           to="/student/nominations"
         />
-        <MetricCard
-          icon="badgeCheck"
-          tone="violet"
-          label={t('student:dashboard.offers')}
-          value={pendingOffers}
-          to="/student/applications"
-        />
       </div>
 
-      <div className="grid gap-5 xl:grid-cols-[1.15fr_1fr]">
-        <Card padding="none" className="overflow-hidden">
-          <SectionHeading
-            title={t('student:dashboard.openInternships')}
-            action={<Link to="/student/opportunities" className="text-sm font-semibold text-link hover:underline">{t('student:dashboard.viewAll')}</Link>}
-          />
-          {openRolesQuery.isError ? (
-            <p className="px-5 py-8 text-center text-sm text-foreground-secondary">{t('opportunities:public.error')}</p>
-          ) : openRoles.length === 0 ? (
-            <p className="px-5 py-8 text-center text-sm text-foreground-secondary">{t('opportunities:public.empty')}</p>
-          ) : (
-            <ul className="divide-y divide-border">
-              {openRoles.map((opportunity) => (
-                <li key={opportunity.id}>
-                  <Link
-                    to={`/student/opportunities/${opportunity.id}`}
-                    className="flex items-start gap-3 px-5 py-4 transition-colors hover:bg-surface-muted focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-focus-ring motion-reduce:transition-none"
-                  >
-                    <span className="flex size-10 shrink-0 items-center justify-center rounded-lg bg-brand-blue-soft text-brand-blue dark:bg-info-bg dark:text-info">
-                      <Icon name="briefcase" className="size-5" />
-                    </span>
-                    <span className="min-w-0 flex-1">
-                      <span className="block truncate font-semibold text-foreground">{opportunity.title}</span>
-                      <span className="mt-0.5 block truncate text-sm text-foreground-secondary">
-                        {opportunity.organization.name}
-                        {opportunity.location ? ` · ${opportunity.location}` : ''}
-                      </span>
-                    </span>
-                    <span className="shrink-0 text-xs font-medium text-muted">
-                      {t(`opportunities:workModeValues.${opportunity.workMode}`)}
-                    </span>
-                  </Link>
-                </li>
-              ))}
-            </ul>
-          )}
-        </Card>
-
-        <div className="flex flex-col gap-5">
-          <Card padding="none" className="overflow-hidden">
+      <Card padding="lg" className="xl:col-start-2 xl:row-start-1 xl:row-span-2">
+        <div className="flex items-center gap-3"><Avatar name={profileQuery.data?.fullName || '?'} size="lg" /><h2 className="font-display text-base font-bold">{profileQuery.data?.fullName || t('student:profile.title')}</h2></div>
+        {enrollmentQuery.data && <dl className="mt-4 space-y-2 text-xs"><div><dt className="text-muted">{t('student:enrollment.programLabel')}</dt><dd className="font-semibold">{enrollmentQuery.data.program}</dd></div><div><dt className="text-muted">{t('student:enrollment.academicYearLabel')}</dt><dd>{enrollmentQuery.data.academicYear}</dd></div></dl>}
+        <Link to="/student/profile" className="mt-4 flex min-h-9 items-center justify-center rounded-lg border border-border text-xs font-semibold text-link focus-visible:ring-2">{t('student:profile.title')}</Link>
+        <Link to="/student/applications" className="mt-3 flex justify-between gap-3 rounded-lg bg-brand-blue-soft p-3 text-xs font-semibold text-brand-blue focus-visible:ring-2"><span>{t('student:dashboard.offers')}</span><span>{pendingOffers}</span></Link>
+      </Card>
+      <div className="grid items-start gap-5 xl:col-span-2 xl:grid-cols-[minmax(0,1fr)_290px]">
+        <div className="contents">
+          <Card padding="none" className="overflow-hidden xl:col-start-1 xl:row-start-1">
             <SectionHeading
+              panel
               title={t('student:dashboard.recentApplications')}
               action={<Link to="/student/applications" className="text-sm font-semibold text-link hover:underline">{t('student:dashboard.viewAll')}</Link>}
             />
@@ -223,7 +204,7 @@ export function DashboardPage() {
           </Card>
 
           {livePlacement ? (
-            <Card padding="lg">
+            <Card padding="lg" className="xl:col-start-2 xl:row-start-1 xl:row-span-2">
               <h2 className="text-sm font-bold text-foreground">{t('placements:nav.myPlacements')}</h2>
               <p className="mt-2 truncate text-base font-semibold text-brand-navy dark:text-foreground">
                 {livePlacement.opportunityTitle ?? t('placements:detail.untitledOpportunity')}
@@ -239,13 +220,13 @@ export function DashboardPage() {
               </div>
               <Link
                 to={`/student/placements/${livePlacement.id}`}
-                className="mt-4 inline-block text-sm font-semibold text-link hover:underline"
+                className="mt-3 inline-block text-xs font-semibold text-link hover:underline"
               >
                 {t('student:dashboard.openPlacement')}
               </Link>
             </Card>
           ) : (
-            <Card padding="lg">
+            <Card padding="lg" className="xl:col-start-2 xl:row-start-1 xl:row-span-2">
               <h2 className="text-sm font-bold text-foreground">{t('student:dashboard.readinessTitle')}</h2>
               <ProgressIndicator
                 className="mt-3"
@@ -278,54 +259,27 @@ export function DashboardPage() {
             </Card>
           )}
         </div>
+        <Card padding="none" className="overflow-hidden xl:col-start-1 xl:row-start-2">
+          <SectionHeading
+            panel
+            title={t('student:dashboard.openInternships')}
+            action={<Link to="/student/opportunities" className="text-sm font-semibold text-link hover:underline">{t('student:dashboard.viewAll')}</Link>}
+          />
+          {openRolesQuery.isError ? (
+            <p className="px-5 py-8 text-center text-sm text-foreground-secondary">{t('opportunities:public.error')}</p>
+          ) : openRoles.length === 0 ? (
+            <p className="px-5 py-8 text-center text-sm text-foreground-secondary">{t('opportunities:public.empty')}</p>
+          ) : (
+            <ul className="grid gap-3 p-4 md:grid-cols-3">{openRoles.map(opportunity => <li key={opportunity.id} className="relative"><InternshipCard density="compact" title={opportunity.title} titleTo={`/student/opportunities/${opportunity.id}`} organization={opportunity.organization.name} organizationVerified={opportunity.organization.verified} location={opportunity.location ?? undefined} workMode={t(`opportunities:workModeValues.${opportunity.workMode}`)} tags={opportunity.skills?.slice(0, 2)} /></li>)}</ul>
+          )}
+        </Card>
+
       </div>
     </PageContainer>
   )
 }
 
-function SectionHeading({ title, action }: { title: string; action?: React.ReactNode }) {
-  return (
-    <div className="flex items-center justify-between gap-3 border-b border-border px-5 py-4">
-      <h2 className="font-display text-base font-bold text-brand-navy dark:text-foreground">{title}</h2>
-      {action}
-    </div>
-  )
-}
 
-function MetricCard({
-  icon,
-  tone,
-  label,
-  value,
-  to,
-}: {
-  icon: IconName
-  tone: keyof typeof METRIC_TONES
-  label: string
-  value: number
-  to: string
-}) {
-  const { t } = useTranslation()
-  return (
-    <Card padding="lg">
-      <div className="flex items-start gap-3">
-        <span className={`flex size-11 shrink-0 items-center justify-center rounded-xl ${METRIC_TONES[tone]}`}>
-          <Icon name={icon} className="size-5" />
-        </span>
-        <div className="min-w-0">
-          {/* Wraps rather than truncates: at five across, "Saved internships" and its longer Somali
-              counterpart do not fit on one line, and a counter whose label reads "Saved internshi…"
-              has lost the thing the number is about. */}
-          <p className="text-sm font-medium leading-snug text-foreground-secondary">{label}</p>
-          <p className="mt-1 text-3xl font-bold leading-none text-brand-navy dark:text-foreground">{value}</p>
-        </div>
-      </div>
-      <Link to={to} className="mt-4 inline-block text-sm font-semibold text-link hover:underline">
-        {t('student:dashboard.viewAll')}
-      </Link>
-    </Card>
-  )
-}
 
 function firstName(fullName: string | null | undefined): string {
   return fullName?.trim().split(/\s+/)[0] ?? ''

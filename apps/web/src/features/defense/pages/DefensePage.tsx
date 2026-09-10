@@ -2,7 +2,7 @@ import { useState } from 'react'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { useTranslation } from 'react-i18next'
 import { useParams } from 'react-router-dom'
-import { Button, ErrorState, FormField, Input, LoadingState, Select, StatusBadge, Textarea } from '../../../components/ui'
+import { Button, ErrorState, FormField, Input, LoadingState, Select, StatusBadge, Textarea, EmptyState } from '../../../components/ui'
 import type { StatusTone } from '../../../components/ui'
 import { apiErrorMessage } from '../../../lib/api/errorMessage'
 import { formatDateTime } from '../../../lib/utils/formatDate'
@@ -133,9 +133,10 @@ export function DefensePage({ audience }: DefensePageProps) {
       )}
 
       {attempts.length === 0 && !scheduling ? (
-        <p className="rounded-lg border border-border bg-surface p-6 text-center text-sm text-foreground-secondary">
-          {t('internship:defense.empty')}
-        </p>
+        <EmptyState
+          title={t('internship:defense.empty')}
+          description={t('internship:defense.emptyHint')}
+        />
       ) : (
         <ol className="flex flex-col gap-3">
           {attempts.map((attempt) => (

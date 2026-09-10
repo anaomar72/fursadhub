@@ -188,7 +188,8 @@
       "openings": "Openings",
       "start": "Starts",
       "end": "Ends",
-      "deadline": "Application deadline"
+      "deadline": "Application deadline",
+      "posted": "Published"
     },
     "closesIn_one": "Applications close in {{count}} day",
     "closesIn_other": "Applications close in {{count}} days",
@@ -254,7 +255,7 @@
     }
   },
   "enrichment": {
-    "title": "Compensation and requirements",
+    "title": "Compensation and hours",
     "compensationLabel": "Compensation",
     "hoursPerWeekLabel": "Hours per week",
     "hoursPerWeekValue_one": "{{count}} hour",

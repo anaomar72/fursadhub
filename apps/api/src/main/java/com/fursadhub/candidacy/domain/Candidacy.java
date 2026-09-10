@@ -86,6 +86,18 @@ public class Candidacy {
     @Column(nullable = false, length = 30)
     private CandidacyStatus status;
 
+    @Column(name = "application_cv_stored_file_id")
+    private UUID applicationCvStoredFileId;
+
+    public UUID getApplicationCvStoredFileId() { return applicationCvStoredFileId; }
+
+    public void attachApplicationCv(UUID fileId) {
+        if (applicationCvStoredFileId != null) {
+            throw new ApiException("STUDENT_ALREADY_APPLIED", HttpStatus.CONFLICT, "This application already has its CV.");
+        }
+        applicationCvStoredFileId = java.util.Objects.requireNonNull(fileId);
+    }
+
     @Column(name = "created_at", nullable = false)
     private Instant createdAt;
 

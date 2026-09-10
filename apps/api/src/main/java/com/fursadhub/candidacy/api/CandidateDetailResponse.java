@@ -19,7 +19,9 @@ public record CandidateDetailResponse(
         String createdAt,
         List<ScreeningAnswerResponse> answers,
         List<InternshipOfferResponse> offers,
-        List<CandidacyEventResponse> history) {
+        List<CandidacyEventResponse> history,
+        com.fursadhub.student.domain.StudentProfessionalProfile professional,
+        boolean hasApplicationCv) {
 
     public record ScreeningAnswerResponse(String questionId, String answer) {
     }
@@ -41,7 +43,8 @@ public record CandidateDetailResponse(
                 candidacy.getCreatedAt().toString(),
                 detail.answers().stream().map(CandidateDetailResponse::toAnswer).toList(),
                 detail.offers().stream().map(InternshipOfferResponse::from).toList(),
-                detail.history().stream().map(CandidateDetailResponse::toEvent).toList());
+                detail.history().stream().map(CandidateDetailResponse::toEvent).toList(),
+                detail.professional(), candidacy.getApplicationCvStoredFileId() != null);
     }
 
     private static ScreeningAnswerResponse toAnswer(ScreeningAnswer answer) {

@@ -111,9 +111,15 @@ describe('TagInput (Backend Phase B3 skills and perks)', () => {
     it('stops accepting tags at the maximum and says so', async () => {
       render(<Harness initial={['a', 'b']} maxTags={2} />)
 
-      // At capacity the field is disabled rather than silently swallowing the next entry.
-      expect(screen.getByLabelText('Skills')).toBeDisabled()
+      const field = screen.getByLabelText('Skills')
+      expect(field).toBeEnabled()
       expect(screen.getByText('2 of 2')).toBeInTheDocument()
+      await userEvent.type(field, 'c{Enter}')
+      expect(currentValue()).toEqual(['a', 'b'])
+      expect(screen.getByRole('alert')).toBeInTheDocument()
+      await userEvent.clear(field)
+      await userEvent.type(field, '{Backspace}')
+      expect(currentValue()).toEqual(['a'])
     })
 
     it('reports how many of the allowance are used', () => {

@@ -31,7 +31,9 @@ import privacySo from '../../locales/so/privacy.json'
 import adminEn from '../../locales/en/admin.json'
 import adminSo from '../../locales/so/admin.json'
 import accountEn from '../../locales/en/account.json'
+import testimonialsEn from '../../locales/en/testimonials.json'
 import accountSo from '../../locales/so/account.json'
+import testimonialsSo from '../../locales/so/testimonials.json'
 
 export const defaultNamespace = 'common'
 
@@ -56,6 +58,7 @@ void i18n
         privacy: privacyEn,
         admin: adminEn,
         account: accountEn,
+        testimonials: testimonialsEn,
       },
       so: {
         common: commonSo,
@@ -73,6 +76,7 @@ void i18n
         privacy: privacySo,
         admin: adminSo,
         account: accountSo,
+        testimonials: testimonialsSo,
       },
     },
     ns: [

@@ -9,6 +9,7 @@ import { StudentOpportunityCard } from '../components/StudentOpportunityCard'
 import { EmptyState, ErrorState, LoadingState, PageHeader, Pagination } from '../../../components/ui'
 import { PageContainer } from '../../../app/layouts/PageContainer'
 import { formatDate } from '../../../lib/utils/formatDate'
+import { ApiError } from '../../../lib/api/client'
 
 const PAGE_SIZE = 12
 
@@ -45,17 +46,44 @@ export function SavedInternshipsPage() {
 
   const result = savedQuery.data
 
+  /*
+   * A student profile is OPTIONAL: `StudentEnrollmentService` never creates or requires one, so a
+   * student can enrol, reach VERIFIED and browse the marketplace without ever saving profile
+   * details. `SavedOpportunityService` is keyed on the profile, so for those students this endpoint
+   * answers 404 STUDENT_PROFILE_NOT_FOUND.
+   *
+   * That is not a failure, and rendering it as one was a live defect: the page told a perfectly
+   * healthy account "Something went wrong". Nothing went wrong — saving requires a profile, so a
+   * student without one has provably saved nothing, and the truthful rendering is the empty state
+   * with a hint naming the actual prerequisite. Every other error still surfaces as an error.
+   */
+  const noProfileYet =
+    savedQuery.error instanceof ApiError && savedQuery.error.body.code === 'STUDENT_PROFILE_NOT_FOUND'
+
   return (
     <PageContainer className="flex flex-col gap-6">
       <PageHeader title={t('student:saved.title')} description={t('student:saved.subtitle')} />
 
       {savedQuery.isLoading ? (
         <LoadingState label={t('common:status.loading')} />
-      ) : savedQuery.isError ? (
+      ) : savedQuery.isError && !noProfileYet ? (
         <ErrorState
           description={t('student:saved.error')}
           onRetry={() => void savedQuery.refetch()}
           retryLabel={t('common:actions.retry')}
+        />
+      ) : noProfileYet ? (
+        <EmptyState
+          title={t('student:saved.empty')}
+          description={t('student:saved.emptyNeedsProfile')}
+          action={
+            <Link
+              to="/student/profile"
+              className="inline-flex h-10 items-center rounded-lg bg-brand-primary px-4 text-sm font-semibold text-on-brand transition-colors hover:bg-brand-accent-strong focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus-ring motion-reduce:transition-none"
+            >
+              {t('student:saved.completeProfile')}
+            </Link>
+          }
         />
       ) : !result || result.content.length === 0 ? (
         <EmptyState

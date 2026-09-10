@@ -62,7 +62,9 @@
       "ACCESS_DENIED": "Ma haysatid oggolaansho aad taas ku samayso.",
       "VALIDATION_FAILED": "Fadlan hubi foomka oo mar kale isku day.",
       "generic": "Diiwaanka toddobaadka lama kaydin karin. Fadlan mar kale isku day."
-    }
+    },
+    "emptyStudentHint": "Toddobaadkiiba hal qoraal gaaban ka qor waxaad ka shaqaysay. Kormeeraha jaamacaddaadu wuu eegayaa markaad socoto.",
+    "emptyReviewerHint": "Qoraalladu halkan way ka soo muuqanayaan marka ardaygu qoro, kuwa ugu cusub marka hore, diyaar u ah dib-u-eegistaada."
   },
   "attendance": {
     "title": "Xaadirinta",
@@ -103,7 +105,8 @@
       "ACCESS_DENIED": "Ma haysatid oggolaansho aad taas ku samayso.",
       "VALIDATION_FAILED": "Fadlan hubi foomka oo mar kale isku day.",
       "generic": "Diiwaanka xaadirinta lama kaydin karin. Fadlan mar kale isku day."
-    }
+    },
+    "emptyHint": "Xaadirintu halkan way ka soo muuqanaysaa marka kormeeraha shaqada uu bilaabo diiwaangelinta maalmaha."
   },
   "evaluation": {
     "title": "Qiimaynta hay'adda",
@@ -141,7 +144,8 @@
       "ACCESS_DENIED": "Kormeeraha hay'adda ee la magacaabay oo kaliya ayaa qori kara qiimayntan.",
       "VALIDATION_FAILED": "Qiimayntu waa inay u dhaxaysaa 1 iyo 5.",
       "generic": "Qiimaynta lama kaydin karin. Fadlan mar kale isku day."
-    }
+    },
+    "notAvailableHint": "Kormeeraha shaqadu wuxuu dhammaystiraa qiimayntan, waxayna halkan ka soo muuqanaysaa marka uu gudbiyo."
   },
   "finalReport": {
     "title": "Warbixinta ugu dambaysa",
@@ -179,7 +183,8 @@
       "ACCESS_DENIED": "Ma haysatid oggolaansho aad ku furto warbixintan.",
       "VALIDATION_FAILED": "Fadlan hubi foomka oo mar kale isku day.",
       "generic": "Warbixinta lama kaydin karin. Fadlan mar kale isku day."
-    }
+    },
+    "notSubmittedYetHint": "Warbixintu waxay diyaar u noqonaysaa dib-u-eegis marka ardaygu soo geliyo dhammaadka tababarka."
   },
   "defense": {
     "title": "Difaaca",
@@ -218,7 +223,8 @@
       "ACCESS_DENIED": "Ma haysatid oggolaansho aad ku maamusho difaacan.",
       "VALIDATION_FAILED": "Fadlan hubi foomka oo mar kale isku day.",
       "generic": "Difaaca lama cusboonaysiin karin. Fadlan mar kale isku day."
-    }
+    },
+    "emptyHint": "Difaacu halkan wuu ka soo muuqanayaa marka jaamacaddu u qorsheyso tababarkan."
   },
   "completion": {
     "title": "Dhammaystirka tababarka",

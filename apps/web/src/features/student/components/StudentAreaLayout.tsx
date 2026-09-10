@@ -4,5 +4,5 @@ import { buildStudentNav } from './studentNavigation'
 
 export function StudentAreaLayout() {
   const { t } = useTranslation()
-  return <AppShell areaLabel={t('common:nav.student')} sections={buildStudentNav(t)} />
+  return <AppShell workspace="student" areaLabel={t('common:nav.student')} sections={buildStudentNav(t)} />
 }

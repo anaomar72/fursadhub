@@ -24,13 +24,54 @@ class SelfApplicationIT extends AbstractPhase4IT {
         UUID departmentId = insertDepartment(universityId, "Computer Science", "CS");
         StudentFixture student = createVerifiedStudent("student", universityId, departmentId);
 
-        ResponseEntity<Map> response = authorizedPost(
+        ResponseEntity<Map> response = applicationWithCv(
                 "/api/v1/opportunities/" + published.opportunityId() + "/applications", student.accessToken(), Map.of());
 
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.CREATED);
         assertThat(response.getBody().get("source")).isEqualTo("SELF_APPLICATION");
         assertThat(response.getBody().get("status")).isEqualTo("SUBMITTED");
         assertThat(countCandidacies(published.opportunityId(), student.userId())).isEqualTo(1);
+    }
+
+    /**
+     * Regression, found in live QA against real data: the student PROFILE is optional.
+     * {@code StudentEnrollmentService} never creates or requires one, so a student can enrol and
+     * reach VERIFIED without ever filling it in — 4 of the 8 enrolled students in the local
+     * database were in exactly that state.
+     *
+     * <p>{@code StudentMarketplaceAccess} originally proved student-ness from the profile alone, so
+     * such a student was refused with {@code STUDENT_ACTION_REQUIRED} — "Only students can apply for
+     * or save internships" — told to a verified student, blocking the product's primary outcome.
+     *
+     * <p>The rest of the suite could not catch this: {@code createStudent} always calls
+     * {@code PUT /students/me/profile}, so every fixture student has a profile. This test builds the
+     * real-world shape deliberately and must not adopt that helper.
+     */
+    @Test
+    void verifiedStudentWithoutAProfileCanStillApply() {
+        PublishedOpportunity published = publishPublicOpportunity("noprofile-recruiter");
+        UUID universityId = insertVerifiedUniversity("Jamhuriya " + UUID.randomUUID());
+        UUID departmentId = insertDepartment(universityId, "Computer Science", "CS");
+
+        // Deliberately NOT createVerifiedStudent(): no profile is ever created for this account.
+        String email = uniqueEmail("noprofile-student");
+        registerVerifiedUser(email);
+        String accessToken = loginAndExtractAccessToken(email, "Password123");
+        UUID userId = userIdOf(email);
+        jdbcTemplate.update(
+                "INSERT INTO student_enrollments (id, student_user_id, university_id, department_id, student_number, "
+                        + "program, academic_year, verification_status, created_at, updated_at) "
+                        + "VALUES (?, ?, ?, ?, ?, ?, ?, 'VERIFIED', now(), now())",
+                UUID.randomUUID(), userId, universityId, departmentId,
+                "SN-" + UUID.randomUUID().toString().substring(0, 8), "Computer Science", "2026");
+        assertThat(jdbcTemplate.queryForObject(
+                "SELECT count(*) FROM student_profiles WHERE user_id = ?", Integer.class, userId)).isZero();
+
+        ResponseEntity<Map> response = applicationWithCv(
+                "/api/v1/opportunities/" + published.opportunityId() + "/applications", accessToken, Map.of());
+
+        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.CREATED);
+        assertThat(countCandidacies(published.opportunityId(), userId)).isEqualTo(1);
     }
 
     @Test
@@ -57,7 +98,7 @@ class SelfApplicationIT extends AbstractPhase4IT {
                 "/api/v1/opportunities/" + published.opportunityId() + "/applications", token, Map.of());
 
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.FORBIDDEN);
-        assertThat(errorCode(response)).isEqualTo("STUDENT_NOT_VERIFIED");
+        assertThat(errorCode(response)).isEqualTo("STUDENT_ACTION_REQUIRED");
     }
 
     @Test
@@ -109,7 +150,7 @@ class SelfApplicationIT extends AbstractPhase4IT {
         // opportunity whose deadline has already lapsed, so this simulates the passage of time.
         jdbcTemplate.update(
                 "UPDATE internship_opportunities SET application_deadline = ? WHERE id = ?",
-                LocalDate.now().minusDays(1), opportunityId);
+                today().minusDays(1), opportunityId);
 
         UUID universityId = insertVerifiedUniversity("Jamhuriya " + UUID.randomUUID());
         UUID departmentId = insertDepartment(universityId, "Computer Science", "CS");
@@ -130,9 +171,9 @@ class SelfApplicationIT extends AbstractPhase4IT {
         StudentFixture student = createVerifiedStudent("student", universityId, departmentId);
 
         String path = "/api/v1/opportunities/" + published.opportunityId() + "/applications";
-        assertThat(authorizedPost(path, student.accessToken(), Map.of()).getStatusCode()).isEqualTo(HttpStatus.CREATED);
+        assertThat(applicationWithCv(path, student.accessToken(), Map.of()).getStatusCode()).isEqualTo(HttpStatus.CREATED);
 
-        ResponseEntity<Map> second = authorizedPost(path, student.accessToken(), Map.of());
+        ResponseEntity<Map> second = applicationWithCv(path, student.accessToken(), Map.of());
 
         assertThat(second.getStatusCode()).isEqualTo(HttpStatus.CONFLICT);
         assertThat(errorCode(second)).isEqualTo("STUDENT_ALREADY_APPLIED");
@@ -162,7 +203,7 @@ class SelfApplicationIT extends AbstractPhase4IT {
         StudentFixture attacker = createVerifiedStudent("attacker", universityId, departmentId);
         StudentFixture victim = createVerifiedStudent("victim", universityId, departmentId);
 
-        ResponseEntity<Map> response = authorizedPost(
+        ResponseEntity<Map> response = applicationWithCv(
                 "/api/v1/opportunities/" + published.opportunityId() + "/applications",
                 attacker.accessToken(),
                 Map.of("studentId", victim.userId().toString(), "studentUserId", victim.userId().toString()));
@@ -180,7 +221,7 @@ class SelfApplicationIT extends AbstractPhase4IT {
         StudentFixture student = createVerifiedStudent("student", universityId, departmentId);
 
         // Take the student all the way to an accepted offer, which creates a live placement.
-        authorizedPost("/api/v1/opportunities/" + first.opportunityId() + "/applications", student.accessToken(), Map.of());
+        applicationWithCv("/api/v1/opportunities/" + first.opportunityId() + "/applications", student.accessToken(), Map.of());
         UUID candidacyId = onlyCandidacyId(first.opportunityId(), student.userId());
         UUID offerId = sendOffer(first.recruiterToken(), candidacyId);
         authorizedPost("/api/v1/offers/" + offerId + "/accept", student.accessToken(), null);

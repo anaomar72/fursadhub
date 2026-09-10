@@ -1,3 +1,6 @@
+import { Link } from 'react-router-dom'
+import { ProfileFormSection } from '../../../components/ui/Presentation'
+import { SocialIcon } from '../../../components/ui/SocialIcon'
 import { useEffect, useState } from 'react'
 import { Controller, useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
@@ -16,7 +19,7 @@ import { VerificationGateNotice } from '../components/VerificationGateNotice'
 import { apiErrorMessage } from '../../../lib/api/errorMessage'
 import {
   Alert,
-  AnimatedCheck,
+  VerifiedBadge,
   Avatar,
   Badge,
   Button,
@@ -171,11 +174,12 @@ export function ProfilePage() {
       <PageHeader
         title={t('organization:profile.title')}
         description={t('organization:profile.subtitle')}
-        actions={
+        actions={<>
+          {organization.verificationStatus === 'VERIFIED' && <Link to={`/organizations/${organization.id}`} className="inline-flex min-h-10 items-center rounded-lg border border-border px-4 text-sm font-semibold text-link">{t('common:remediation.viewPublicProfile')}</Link>}
           <StatusBadge tone={STATUS_TONE[organization.verificationStatus]}>
             {t(`organization:profile.verificationStatusValues.${organization.verificationStatus}`)}
           </StatusBadge>
-        }
+        </>}
       />
 
       {/* Backend Phase B1.5. Explains, before anything else, why publish/resume are unavailable. */}
@@ -217,12 +221,12 @@ export function ProfilePage() {
             </div>
           </div>
           {organization.verificationStatus === 'VERIFIED' && (
-            <AnimatedCheck label={t('organization:profile.verifiedLabel')} />
+            <VerifiedBadge variant="label" />
           )}
         </div>
 
         {can.canEditProfile && (
-          <div className="mt-5 grid gap-5 border-t border-border pt-5 sm:grid-cols-2">
+          <div className="mt-5 grid gap-5 border-t border-border pt-5 sm:grid-cols-2"><div className="sm:col-span-2"><h2 className="font-display font-bold">{t('common:remediation.media')}</h2><p className="mt-1 text-xs text-muted">{t('common:remediation.mediaHint')}</p></div>
             <div>
               <FileUpload
                 label={t('organization:profile.logo.label')}
@@ -265,33 +269,15 @@ export function ProfilePage() {
 
       {can.canEditProfile ? (
         <form noValidate onSubmit={form.handleSubmit((values) => updateMutation.mutate(values))}>
-          <Card padding="lg" className="flex flex-col gap-4">
-            <div>
-              <h2 className="font-display text-base font-bold text-brand-navy dark:text-foreground">
-                {t('organization:profile.detailsTitle')}
-              </h2>
-              <p className="mt-1 text-sm text-foreground-secondary">{t('organization:profile.detailsHint')}</p>
-            </div>
-
-            <div className="grid gap-4 sm:grid-cols-2">
-              <FormField
-                label={t('organization:setup.nameLabel')}
-                htmlFor="org-profile-name"
-                className="sm:col-span-2"
-                error={form.formState.errors.name && t(form.formState.errors.name.message ?? '')}
-              >
-                <Input id="org-profile-name" {...form.register('name')} />
-              </FormField>
-              <FormField
-                label={t('organization:profile.shortDescriptionLabel')}
-                htmlFor="org-profile-short-description"
-                className="sm:col-span-2"
-                hint={t('organization:profile.shortDescriptionHint')}
-                error={form.formState.errors.shortDescription && t(form.formState.errors.shortDescription.message ?? '')}
-              >
-                <Input id="org-profile-short-description" maxLength={200} {...form.register('shortDescription')} />
-              </FormField>
-
+          <div className="grid gap-5">
+            <ProfileFormSection title={t('common:remediation.basic')} hint={t('common:remediation.basicHint')} icon="building"><FormField
+              label={t('organization:setup.nameLabel')}
+              htmlFor="org-profile-name"
+              className="sm:col-span-2"
+              error={form.formState.errors.name && t(form.formState.errors.name.message ?? '')}
+            >
+              <Input id="org-profile-name" {...form.register('name')} />
+            </FormField>
               <FormField
                 label={t('organization:profile.industryLabel')}
                 htmlFor="org-profile-industry"
@@ -299,7 +285,6 @@ export function ProfilePage() {
               >
                 <Input id="org-profile-industry" {...form.register('industry')} />
               </FormField>
-
               <FormField
                 label={t('organization:profile.companySizeLabel')}
                 htmlFor="org-profile-size"
@@ -314,24 +299,6 @@ export function ProfilePage() {
                   ))}
                 </Select>
               </FormField>
-
-              <FormField
-                label={t('organization:profile.cityLabel')}
-                htmlFor="org-profile-city"
-                error={form.formState.errors.city && t(form.formState.errors.city.message ?? '')}
-              >
-                <Input id="org-profile-city" {...form.register('city')} />
-              </FormField>
-
-              <FormField
-                label={t('organization:profile.countryLabel')}
-                htmlFor="org-profile-country"
-                hint={t('organization:profile.countryHint')}
-                error={form.formState.errors.countryCode && t(form.formState.errors.countryCode.message ?? '')}
-              >
-                <Input id="org-profile-country" maxLength={2} {...form.register('countryCode')} />
-              </FormField>
-
               <FormField
                 label={t('organization:profile.foundedYearLabel')}
                 htmlFor="org-profile-founded"
@@ -343,6 +310,9 @@ export function ProfilePage() {
                   render={({ field }) => (
                     <Input
                       id="org-profile-founded"
+                      ref={field.ref}
+                      aria-invalid={!!form.formState.errors.foundedYear}
+                      aria-describedby={form.formState.errors.foundedYear ? 'org-profile-founded-error' : undefined}
                       type="number"
                       inputMode="numeric"
                       min={1800}
@@ -356,72 +326,90 @@ export function ProfilePage() {
                   )}
                 />
               </FormField>
-
               <FormField label={t('organization:setup.registrationNumberLabel')} htmlFor="org-profile-registration">
                 <Input id="org-profile-registration" {...form.register('registrationNumber')} />
+              </FormField></ProfileFormSection>
+
+            <ProfileFormSection title={t('common:remediation.publicProfile')} hint={t('common:remediation.publicHint')} icon="document"><FormField
+              label={t('organization:profile.shortDescriptionLabel')}
+              htmlFor="org-profile-short-description"
+              className="sm:col-span-2"
+              hint={t('organization:profile.shortDescriptionHint')}
+              error={form.formState.errors.shortDescription && t(form.formState.errors.shortDescription.message ?? '')}
+            >
+              <Input id="org-profile-short-description" maxLength={200} {...form.register('shortDescription')} />
+            </FormField>
+              <FormField
+                label={t('organization:profile.cityLabel')}
+                htmlFor="org-profile-city"
+                error={form.formState.errors.city && t(form.formState.errors.city.message ?? '')}
+              >
+                <Input id="org-profile-city" {...form.register('city')} />
               </FormField>
               <FormField
-                label={t('organization:setup.websiteLabel')}
-                htmlFor="org-profile-website"
-                error={form.formState.errors.website && t(form.formState.errors.website.message ?? '')}
+                label={t('organization:profile.countryLabel')}
+                htmlFor="org-profile-country"
+                hint={t('organization:profile.countryHint')}
+                error={form.formState.errors.countryCode && t(form.formState.errors.countryCode.message ?? '')}
               >
-                <Input id="org-profile-website" type="url" {...form.register('website')} />
+                <Input id="org-profile-country" maxLength={2} {...form.register('countryCode')} />
               </FormField>
-            </div>
+              <FormField label={t('organization:setup.descriptionLabel')} htmlFor="org-profile-description">
+                <Textarea id="org-profile-description" rows={4} {...form.register('description')} />
+              </FormField></ProfileFormSection>
 
-            <FormField label={t('organization:setup.descriptionLabel')} htmlFor="org-profile-description">
-              <Textarea id="org-profile-description" rows={4} {...form.register('description')} />
+            <ProfileFormSection title={t('common:remediation.web')} hint={t('common:remediation.webHint')} icon="globe"><FormField
+              label={t('organization:setup.websiteLabel')}
+              htmlFor="org-profile-website"
+              error={form.formState.errors.website && t(form.formState.errors.website.message ?? '')}
+            >
+              <Input id="org-profile-website" type="url" {...form.register('website')} />
             </FormField>
-
-            {/* Backend Phase B2 social links. Every one is validated against the same http/https
-                rule the backend applies, so a javascript: URL never reaches the public profile. */}
-            <fieldset className="rounded-lg border border-border p-4">
-              <legend className="px-1.5 text-sm font-bold text-brand-navy dark:text-foreground">
-                {t('organization:profile.socialLegend')}
-              </legend>
-              <div className="grid gap-4 sm:grid-cols-2">
-                <FormField
-                  label={t('organization:profile.linkedinLabel')}
-                  htmlFor="org-profile-linkedin"
-                  error={form.formState.errors.linkedinUrl && t(form.formState.errors.linkedinUrl.message ?? '')}
-                >
-                  <Input id="org-profile-linkedin" type="url" {...form.register('linkedinUrl')} />
-                </FormField>
-                <FormField
-                  label={t('organization:profile.xLabel')}
-                  htmlFor="org-profile-x"
-                  error={form.formState.errors.xUrl && t(form.formState.errors.xUrl.message ?? '')}
-                >
-                  <Input id="org-profile-x" type="url" {...form.register('xUrl')} />
-                </FormField>
-                <FormField
-                  label={t('organization:profile.instagramLabel')}
-                  htmlFor="org-profile-instagram"
-                  error={form.formState.errors.instagramUrl && t(form.formState.errors.instagramUrl.message ?? '')}
-                >
-                  <Input id="org-profile-instagram" type="url" {...form.register('instagramUrl')} />
-                </FormField>
-                <FormField
-                  label={t('organization:profile.youtubeLabel')}
-                  htmlFor="org-profile-youtube"
-                  error={form.formState.errors.youtubeUrl && t(form.formState.errors.youtubeUrl.message ?? '')}
-                >
-                  <Input id="org-profile-youtube" type="url" {...form.register('youtubeUrl')} />
-                </FormField>
-              </div>
-            </fieldset>
-
-            {updateMutation.isError && (
+              <FormField
+                label={t('organization:profile.linkedinLabel')}
+                labelIcon={<SocialIcon platform="linkedin" />}
+                htmlFor="org-profile-linkedin"
+                error={form.formState.errors.linkedinUrl && t(form.formState.errors.linkedinUrl.message ?? '')}
+              >
+                <Input id="org-profile-linkedin" type="url" {...form.register('linkedinUrl')} />
+              </FormField>
+              <FormField
+                label={t('organization:profile.xLabel')}
+                labelIcon={<SocialIcon platform="x" />}
+                htmlFor="org-profile-x"
+                error={form.formState.errors.xUrl && t(form.formState.errors.xUrl.message ?? '')}
+              >
+                <Input id="org-profile-x" type="url" {...form.register('xUrl')} />
+              </FormField>
+              <FormField
+                label={t('organization:profile.instagramLabel')}
+                labelIcon={<SocialIcon platform="instagram" />}
+                htmlFor="org-profile-instagram"
+                error={form.formState.errors.instagramUrl && t(form.formState.errors.instagramUrl.message ?? '')}
+              >
+                <Input id="org-profile-instagram" type="url" {...form.register('instagramUrl')} />
+              </FormField>
+              <FormField
+                label={t('organization:profile.youtubeLabel')}
+                labelIcon={<SocialIcon platform="youtube" />}
+                htmlFor="org-profile-youtube"
+                error={form.formState.errors.youtubeUrl && t(form.formState.errors.youtubeUrl.message ?? '')}
+              >
+                <Input id="org-profile-youtube" type="url" {...form.register('youtubeUrl')} />
+              </FormField></ProfileFormSection>
+            <div className="sticky bottom-0 z-20 rounded-xl border border-border bg-surface p-4 shadow-md">{updateMutation.isError && (
               <Alert tone="danger">{apiErrorMessage(t, 'organization', 'profile', updateMutation.error)}</Alert>
             )}
+              {/* A long form that saves silently leaves the author guessing whether it took. The
+                  failure was already reported here; the success was not. */}
+              {updateMutation.isSuccess && <Alert tone="success">{t('organization:profile.saved')}</Alert>}
 
-            <div className="border-t border-border pt-4">
-              <Button type="submit" loading={updateMutation.isPending}>
-                {t('organization:profile.saveChanges')}
-              </Button>
-            </div>
-          </Card>
-        </form>
+              <div className="border-t border-border pt-4">
+                <Button type="submit" loading={updateMutation.isPending}>
+                  {t('organization:profile.saveChanges')}
+                </Button>
+              </div>
+            </div></div></form>
       ) : (
         <Card padding="lg">
           <h2 className="font-display text-base font-bold text-brand-navy dark:text-foreground">

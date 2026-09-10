@@ -31,9 +31,9 @@
     "readinessCta": "Complete the next step",
     "readinessSteps": {
       "profile": "Add your name and contact details",
-      "cv": "Upload your CV",
       "enrollment": "Claim your university enrollment",
-      "verification": "Get your enrollment verified"
+      "verification": "Get your enrollment verified",
+      "professional": "Add your headline, summary and skills"
     },
     "savedInternships": "Saved internships",
     "greetingNoName": "Welcome back"
@@ -99,7 +99,31 @@
       "VERIFICATION_CASE_ALREADY_RESOLVED": "This verification case has already been resolved.",
       "VERIFICATION_CASE_INVALID_TRANSITION": "A verification case is already in progress.",
       "VALIDATION_FAILED": "Please check the details and try again.",
-      "generic": "Something went wrong. Please try again."
+      "generic": "Something went wrong. Please try again.",
+      "STUDENT_ID_EVIDENCE_REQUIRED": "Upload a valid Student ID before submitting for verification."
+    },
+    "verified": {
+      "badge": "Verified",
+      "title": "Your university has verified your enrollment",
+      "body": "You can now apply to internships and be nominated by your department. This confirms your enrollment only — it is separate from your account and from institution verification.",
+      "progressTitle": "Your verification",
+      "steps": {
+        "claim": "You claimed your enrollment details.",
+        "evidence": "You provided your student identification.",
+        "review": "Your university reviewed the claim.",
+        "verified": "Your university confirmed your enrollment."
+      },
+      "facts": {
+        "university": "University",
+        "department": "Department",
+        "program": "Program",
+        "academicYear": "Academic year",
+        "studentNumber": "Student number"
+      },
+      "nextTitle": "What to do next",
+      "nextBody": "Applications are open to you. A complete profile is what organizations read first.",
+      "browse": "Browse internships",
+      "profile": "Complete your profile"
     }
   },
   "documents": {
@@ -118,7 +142,12 @@
       "CV_FILE_INVALID": "That file was not accepted. Upload a PDF.",
       "FILE_TOO_LARGE": "That file is too large. The maximum size is 5 MB.",
       "CV_NOT_FOUND": "No CV has been uploaded yet.",
-      "STUDENT_PROFILE_NOT_FOUND": "Save your profile details first."
+      "STUDENT_PROFILE_NOT_FOUND": "Save your profile details first.",
+      "APPLICATION_CV_REQUIRED": "Upload a PDF CV for this application.",
+      "APPLICATION_CV_NOT_FOUND": "This CV is unavailable for this application. Upload it again.",
+      "APPLICATION_CV_ALREADY_USED": "This CV is already attached to a submitted application.",
+      "STUDENT_ACTION_REQUIRED": "Applications and saved internships are available to Student accounts.",
+      "FILE_NOT_FOUND": "This document is no longer available. Upload it again."
     }
   },
   "evidence": {
@@ -129,7 +158,9 @@
       "EVIDENCE_FILE_INVALID": "That file was not accepted. Upload a PDF, JPEG or PNG.",
       "FILE_TOO_LARGE": "That file is too large. The maximum size is 10 MB.",
       "VERIFICATION_EVIDENCE_MISSING": "No evidence has been uploaded yet.",
-      "VERIFICATION_CASE_NOT_FOUND": "Submit your enrollment for verification first."
+      "VERIFICATION_CASE_NOT_FOUND": "Submit your enrollment for verification first.",
+      "STUDENT_ENROLLMENT_LOCKED": "Evidence can be changed before submission or when your reviewer requests more evidence.",
+      "ENROLLMENT_NOT_FOUND": "Save your enrollment details before uploading Student ID."
     }
   },
   "saved": {
@@ -142,6 +173,8 @@
     "resultCount_other": "{{count}} saved internships",
     "empty": "You have not saved any internships yet",
     "emptyHint": "Use the bookmark on any internship to keep it here for later.",
-    "error": "We could not load your saved internships."
+    "error": "We could not load your saved internships.",
+    "emptyNeedsProfile": "Saving an internship needs your student profile. Add your details once and your bookmarks will be kept here.",
+    "completeProfile": "Complete your profile"
   }
 }

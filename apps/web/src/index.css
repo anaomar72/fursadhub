@@ -107,6 +107,24 @@
   /* Popover open for <Menu /> — quick and small, matching the fast duration used for hover/focus
      feedback rather than the slow one-time entrances above. */
   --animate-menu-in: menu-in var(--duration-fast) var(--ease-enter) both;
+
+  /* Surfaces that arrive from off-screen: <Drawer /> and the mobile navigation rail. They travel
+     the panel's own width, so they take the panel duration and slide from the edge they are
+     anchored to. Using the dropdown's pop here made a full-height panel flicker instead of open. */
+  --animate-panel-in-right: panel-in-right var(--duration-panel) var(--ease-enter) both;
+  --animate-panel-in-left: panel-in-left var(--duration-panel) var(--ease-enter) both;
+
+  /* <Modal /> — centred, so it fades and settles rather than travelling. Deliberately shallower
+     than the dropdown's scale: a dialog that zooms reads as an alert. */
+  --animate-dialog-in: dialog-in var(--duration-panel) var(--ease-enter) both;
+
+  /* The scrim behind a panel or dialog. Fading it in is what makes the page recede instead of
+     being abruptly stamped over. */
+  --animate-backdrop-in: backdrop-in var(--duration-panel) var(--ease-enter) both;
+
+  /* Portal route change — see <RouteTransition />. Opacity plus a 4px lift, and nothing else:
+     enough that content reads as arriving, small enough that it never delays a click. */
+  --animate-route-in: route-in var(--duration-normal) var(--ease-enter) both;
 }
 
 @keyframes verified-circle-in {
@@ -162,6 +180,59 @@
   }
 }
 
+@keyframes panel-in-right {
+  from {
+    opacity: 0;
+    transform: translateX(100%);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+@keyframes panel-in-left {
+  from {
+    opacity: 0;
+    transform: translateX(-100%);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+@keyframes dialog-in {
+  from {
+    opacity: 0;
+    transform: scale(0.985) translateY(6px);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
+}
+
+@keyframes backdrop-in {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes route-in {
+  from {
+    opacity: 0;
+    transform: translateY(4px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
 @keyframes otp-shake {
   0%,
   100% {
@@ -174,6 +245,107 @@
   40%,
   80% {
     transform: translateX(4px);
+  }
+}
+
+/*
+ * WORKSPACE FAMILIES.
+ *
+ * Student, Organization and University are one product wearing three personalities. The brand
+ * anchors, typography, components, accessibility and both colour themes are shared and untouched;
+ * what differs is rhythm, density, surface tone and the colour of a section rule.
+ *
+ * All of it is five custom properties, resolved from `data-workspace` on the shell root. A card, a
+ * page header or a section heading reads them wherever it is rendered — which is why there is no
+ * StudentCard / OrganizationCard / UniversityCard to keep in sync, and no prop threaded through
+ * every page. Adding a family later is one block here.
+ *
+ * The differences are functional, not decorative:
+ *   - a student is reading and deciding, so the page breathes and modules sit further apart;
+ *   - a recruiter is working a queue, so the same page is tighter and the rules are crisper;
+ *   - a university reviews in order, so the composition is squarer and more formal.
+ */
+[data-workspace] {
+  /* Vertical rhythm of the content column, and the gap between modules on a page. */
+  --workspace-page-y: 1.5rem;
+  --workspace-gap: 1.25rem;
+  /* Corner treatment. Softer reads warmer; squarer reads more formal. */
+  --workspace-radius: var(--radius-xl);
+  /* The rule under a page header and beside a section heading. */
+  --workspace-rule: var(--color-border);
+  /* A very low-opacity wash over the page ground — enough to feel, not enough to read as a colour. */
+  --workspace-tint: transparent;
+}
+
+/* Warmer and roomier: a student is reading their own progress, not working a queue. The accent
+   wash and the orange rule carry the "this is helping you move forward" tone without decoration. */
+[data-workspace='student'] {
+  --workspace-page-y: 2rem;
+  --workspace-gap: 1.5rem;
+  --workspace-radius: var(--radius-2xl);
+  --workspace-rule: color-mix(in srgb, var(--color-brand-accent) 32%, var(--color-border));
+  --workspace-tint: color-mix(in srgb, var(--color-brand-accent) 3%, transparent);
+}
+
+/* Tighter and crisper: more of the pipeline on screen, and a neutral rule that does not compete
+   with status colour, which is what a recruiter is actually scanning for. */
+[data-workspace='organization'] {
+  --workspace-page-y: 1.25rem;
+  --workspace-gap: 1rem;
+  --workspace-radius: var(--radius-lg);
+  --workspace-rule: var(--color-border-strong);
+  --workspace-tint: transparent;
+}
+
+/* Squarer, calmer, navy-ruled: an institutional workspace where work arrives in order and is
+   reviewed in order. Between the other two on density. */
+[data-workspace='university'] {
+  --workspace-page-y: 1.75rem;
+  --workspace-gap: 1.25rem;
+  --workspace-radius: var(--radius-lg);
+  --workspace-rule: color-mix(in srgb, var(--color-brand-navy) 30%, var(--color-border));
+  --workspace-tint: color-mix(in srgb, var(--color-brand-navy) 3%, transparent);
+}
+
+/* In dark mode the tints would read as grime over the navy ground — the ramp already carries the
+   plane order, so the families keep their rhythm and rules and drop the wash. */
+:root[data-theme='dark'] [data-workspace='student'],
+:root[data-theme='dark'] [data-workspace='university'] {
+  --workspace-tint: transparent;
+}
+
+/*
+ * Public scroll entrance — see <Reveal />.
+ *
+ * Longer and more expressive than portal motion (500ms against 240ms) because a marketing page is
+ * explored while a workspace is used. Only opacity and transform, both compositor properties, so a
+ * reveal costs no layout and cannot shift the page.
+ *
+ * Under reduced motion the final state is painted outright with no transition at all — content
+ * appears immediately rather than being delayed or hidden.
+ */
+.fh-reveal {
+  opacity: 0;
+  transform: translateY(14px);
+  transition:
+    opacity 500ms var(--ease-enter),
+    transform 500ms var(--ease-enter);
+  will-change: opacity, transform;
+}
+
+.fh-reveal-in {
+  opacity: 1;
+  transform: none;
+  /* Released once the entrance is done — a permanent hint costs memory on every revealed node. */
+  will-change: auto;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .fh-reveal {
+    opacity: 1;
+    transform: none;
+    transition: none;
+    transition-delay: 0ms !important;
   }
 }
 
@@ -220,4 +392,27 @@
     outline: 2px solid var(--color-focus-ring);
     outline-offset: 2px;
   }
+}
+/*
+ * Desktop composition for the public home page and its footer.
+ *
+ * WHAT THIS USED TO DO, AND WHY IT IS GONE. An earlier pass matched reference 01's proportions by
+ * shrinking type: the featured-card metadata, every line of "How FursadHub Works", the testimonial
+ * lead and the entire footer were forced to 10px on a 12-14px line-height, and section headings to
+ * 14px. A mockup rendered at screenshot scale is not a type scale — copying its apparent size gave
+ * the flagship page reading text smaller than any control sitting next to it, which is the opposite
+ * of premium and the opposite of comfortable.
+ *
+ * WHAT REMAINS. The same compositional intent carried by the lever that actually carries it —
+ * vertical rhythm. Sections close up at desktop width and the footer compacts; nothing a person is
+ * expected to READ is shrunk below the size its own component chose.
+ */
+@media (min-width: 1280px) {
+  .home-presentation > section:first-child { padding-top: 24px; padding-bottom: 12px; }
+  .home-presentation > section:first-child h1 { line-height: 1.05; }
+  .home-presentation > section:first-child h1 + p { margin-top: 12px; }
+  .home-presentation [aria-labelledby="organizations-heading"] > ul { margin-top: 12px; }
+  .home-presentation > section:last-child > section:first-child { padding-block: 16px; }
+  .public-site > footer > div { padding-block: 32px; }
+  .public-site > footer img { max-height: 58px; }
 }

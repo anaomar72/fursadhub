@@ -16,6 +16,7 @@ export interface EntityCardProps {
   actions?: ReactNode
   children?: ReactNode
   className?: string
+  density?: 'regular' | 'compact'
 }
 
 /**
@@ -34,15 +35,16 @@ export function EntityCard({
   actions,
   children,
   className,
+  density = 'regular',
 }: EntityCardProps) {
   return (
     <Card interactive padding="none" className={['flex h-full flex-col', className].filter(Boolean).join(' ')}>
-      <div className="flex flex-1 flex-col p-5">
+      <div className={density === 'compact' ? 'flex flex-1 flex-col p-3.5' : 'flex flex-1 flex-col p-5'}>
         <div className="flex min-w-0 items-start gap-3">
           <Avatar name={name} src={imageUrl} size="lg" shape="square" />
           <div className="min-w-0 flex-1">
             <div className="flex min-w-0 items-center gap-1.5">
-              <h3 className="truncate font-display text-base font-extrabold tracking-tight text-brand-navy dark:text-foreground">
+              <h3 className={`font-display font-extrabold tracking-tight text-brand-navy dark:text-foreground ${density === 'compact' ? 'text-sm leading-5 break-words' : 'text-base'}`}>
                 {name}
               </h3>
               {verified && <VerifiedBadge size="sm" />}
@@ -51,13 +53,13 @@ export function EntityCard({
           </div>
         </div>
 
-        {description && <div className="mt-4 line-clamp-3 text-sm leading-6 text-foreground-secondary">{description}</div>}
+        {description && <div className={`mt-4 text-foreground-secondary ${density === 'compact' ? 'line-clamp-4 text-xs leading-5' : 'line-clamp-3 text-sm leading-6'}`}>{description}</div>}
         {children && <div className="mt-4">{children}</div>}
       </div>
 
       {(meta || actions) && (
-        <div className="flex flex-wrap items-center justify-between gap-3 border-t border-border px-5 py-3.5">
-          {meta ?? <span />}
+        <div className={density === 'compact' ? 'flex flex-col gap-3 border-t border-border p-3.5' : 'flex flex-wrap items-center justify-between gap-3 border-t border-border px-5 py-3.5'}>
+          {meta ?? (density === 'regular' ? <span /> : null)}
           {actions}
         </div>
       )}

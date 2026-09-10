@@ -1,3 +1,5 @@
+import { Link } from 'react-router-dom'
+import { ProfileFormSection } from '../../../components/ui/Presentation'
 import { useEffect, useState } from 'react'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
@@ -10,7 +12,7 @@ import { buildUniversityProfilePayload, toUniversityFormValues } from '../univer
 import { apiErrorMessage } from '../../../lib/api/errorMessage'
 import {
   Alert,
-  AnimatedCheck,
+  VerifiedBadge,
   Avatar,
   Button,
   Card,
@@ -152,11 +154,12 @@ export function UniversityProfilePage() {
       <PageHeader
         title={t('university:profile.title')}
         description={t('university:profile.subtitle')}
-        actions={
+        actions={<>
+          {university.status === 'VERIFIED' && <Link to={`/universities/${university.id}`} className="inline-flex min-h-10 items-center rounded-lg border border-border px-4 text-sm font-semibold text-link">{t('common:remediation.viewPublicProfile')}</Link>}
           <StatusBadge tone={STATUS_TONE[university.status]}>
             {t(`university:profile.verificationStatusValues.${university.status}`)}
           </StatusBadge>
-        }
+        </>}
       />
 
       {/* Backend Phase B2 cover. `hasCover` is a flag, never a file id (CLAUDE.md section 47); the
@@ -191,11 +194,11 @@ export function UniversityProfilePage() {
               </p>
             )}
           </div>
-          {university.status === 'VERIFIED' && <AnimatedCheck label={t('university:profile.verifiedLabel')} />}
+          {university.status === 'VERIFIED' && <VerifiedBadge variant="label" />}
         </div>
 
         {isAdmin && (
-          <div className="mt-5 grid gap-5 border-t border-border pt-5 sm:grid-cols-2">
+          <div className="mt-5 grid gap-5 border-t border-border pt-5 sm:grid-cols-2"><div className="sm:col-span-2"><h2 className="font-display font-bold">{t('common:remediation.media')}</h2><p className="mt-1 text-xs text-muted">{t('common:remediation.mediaHint')}</p></div>
             <div>
               <FileUpload
                 label={t('university:profile.logo.label')}
@@ -238,32 +241,26 @@ export function UniversityProfilePage() {
 
       {isAdmin ? (
         <form noValidate onSubmit={form.handleSubmit((values) => updateMutation.mutate(values))}>
-          <Card padding="lg" className="flex flex-col gap-4">
-            <div>
-              <h2 className="font-display text-base font-bold text-brand-navy dark:text-foreground">
-                {t('university:profile.detailsTitle')}
-              </h2>
-              <p className="mt-1 text-sm text-foreground-secondary">{t('university:profile.detailsHint')}</p>
-            </div>
+          <div className="grid gap-5">
+            <ProfileFormSection title={t('common:remediation.basic')} hint={t('common:remediation.basicHint')} icon="bank"><FormField
+              label={t('university:setup.nameLabel')}
+              htmlFor="uni-profile-name"
+              className="sm:col-span-2"
+              error={form.formState.errors.name && t(form.formState.errors.name.message ?? '')}
+            >
+              <Input id="uni-profile-name" {...form.register('name')} />
+            </FormField>
+              <FormField label={t('university:setup.registrationNumberLabel')} htmlFor="uni-profile-registration">
+                <Input id="uni-profile-registration" {...form.register('registrationNumber')} />
+              </FormField></ProfileFormSection>
 
-            <div className="grid gap-4 sm:grid-cols-2">
-              <FormField
-                label={t('university:setup.nameLabel')}
-                htmlFor="uni-profile-name"
-                className="sm:col-span-2"
-                error={form.formState.errors.name && t(form.formState.errors.name.message ?? '')}
-              >
-                <Input id="uni-profile-name" {...form.register('name')} />
-              </FormField>
-
-              <FormField
-                label={t('university:setup.cityLabel')}
-                htmlFor="uni-profile-city"
-                error={form.formState.errors.city && t(form.formState.errors.city.message ?? '')}
-              >
-                <Input id="uni-profile-city" {...form.register('city')} />
-              </FormField>
-
+            <ProfileFormSection title={t('common:remediation.publicProfile')} hint={t('common:remediation.publicHint')} icon="document"><FormField
+              label={t('university:setup.cityLabel')}
+              htmlFor="uni-profile-city"
+              error={form.formState.errors.city && t(form.formState.errors.city.message ?? '')}
+            >
+              <Input id="uni-profile-city" {...form.register('city')} />
+            </FormField>
               <FormField
                 label={t('university:profile.countryLabel')}
                 htmlFor="uni-profile-country"
@@ -272,9 +269,17 @@ export function UniversityProfilePage() {
               >
                 <Input id="uni-profile-country" maxLength={2} {...form.register('countryCode')} />
               </FormField>
+              <FormField label={t('university:setup.descriptionLabel')} htmlFor="uni-profile-description">
+                <Textarea id="uni-profile-description" rows={4} {...form.register('description')} />
+              </FormField></ProfileFormSection>
 
-              {/* Backend Phase B2. An institution-managed address such as careers@ — never a staff
-                  member's login address; nothing derives it from users.email. */}
+            <ProfileFormSection title={t('common:remediation.web')} hint={t('common:remediation.webHint')} icon="globe"><FormField
+              label={t('university:setup.websiteLabel')}
+              htmlFor="uni-profile-website"
+              error={form.formState.errors.website && t(form.formState.errors.website.message ?? '')}
+            >
+              <Input id="uni-profile-website" type="url" {...form.register('website')} />
+            </FormField>
               <FormField
                 label={t('university:profile.publicContactEmailLabel')}
                 htmlFor="uni-profile-contact-email"
@@ -285,36 +290,19 @@ export function UniversityProfilePage() {
                 }
               >
                 <Input id="uni-profile-contact-email" type="email" {...form.register('publicContactEmail')} />
-              </FormField>
-
-              <FormField label={t('university:setup.registrationNumberLabel')} htmlFor="uni-profile-registration">
-                <Input id="uni-profile-registration" {...form.register('registrationNumber')} />
-              </FormField>
-
-              <FormField
-                label={t('university:setup.websiteLabel')}
-                htmlFor="uni-profile-website"
-                error={form.formState.errors.website && t(form.formState.errors.website.message ?? '')}
-              >
-                <Input id="uni-profile-website" type="url" {...form.register('website')} />
-              </FormField>
-            </div>
-
-            <FormField label={t('university:setup.descriptionLabel')} htmlFor="uni-profile-description">
-              <Textarea id="uni-profile-description" rows={4} {...form.register('description')} />
-            </FormField>
-
-            {updateMutation.isError && (
+              </FormField></ProfileFormSection>
+            <div className="sticky bottom-0 z-20 rounded-xl border border-border bg-surface p-4 shadow-md">{updateMutation.isError && (
               <Alert tone="danger">{apiErrorMessage(t, 'university', 'profile', updateMutation.error)}</Alert>
             )}
+              {/* As on the organization profile: the failure was reported, the success was not. */}
+              {updateMutation.isSuccess && <Alert tone="success">{t('university:profile.saved')}</Alert>}
 
-            <div className="border-t border-border pt-4">
-              <Button type="submit" loading={updateMutation.isPending}>
-                {t('university:profile.saveChanges')}
-              </Button>
-            </div>
-          </Card>
-        </form>
+              <div className="border-t border-border pt-4">
+                <Button type="submit" loading={updateMutation.isPending}>
+                  {t('university:profile.saveChanges')}
+                </Button>
+              </div>
+            </div></div></form>
       ) : (
         <Card padding="lg">
           <h2 className="font-display text-base font-bold text-brand-navy dark:text-foreground">

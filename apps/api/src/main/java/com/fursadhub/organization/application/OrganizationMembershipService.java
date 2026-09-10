@@ -126,6 +126,7 @@ public class OrganizationMembershipService {
         authorization.requireMembership(actingUserId, organizationId, OrganizationRole.ORGANIZATION_ADMIN);
         requireAssignableRole(newRole);
         OrganizationMembership membership = requireOwnedMembership(organizationId, membershipId);
+        requireManagedStaffTarget(membership);
 
         membership.changeRole(newRole);
         memberships.save(membership);
@@ -142,6 +143,7 @@ public class OrganizationMembershipService {
     public void suspend(UUID actingUserId, UUID organizationId, UUID membershipId, String ipAddress, String userAgent) {
         authorization.requireMembership(actingUserId, organizationId, OrganizationRole.ORGANIZATION_ADMIN);
         OrganizationMembership membership = requireOwnedMembership(organizationId, membershipId);
+        requireManagedStaffTarget(membership);
         User staffUser = requireUser(membership.getUserId());
 
         if (staffUser.getStatus() == UserStatus.SUSPENDED) {
@@ -164,6 +166,7 @@ public class OrganizationMembershipService {
     public void reactivate(UUID actingUserId, UUID organizationId, UUID membershipId, String ipAddress, String userAgent) {
         authorization.requireMembership(actingUserId, organizationId, OrganizationRole.ORGANIZATION_ADMIN);
         OrganizationMembership membership = requireOwnedMembership(organizationId, membershipId);
+        requireManagedStaffTarget(membership);
         User staffUser = requireUser(membership.getUserId());
 
         if (staffUser.getStatus() == UserStatus.CLOSED) {
@@ -188,6 +191,7 @@ public class OrganizationMembershipService {
             UUID actingUserId, UUID organizationId, UUID membershipId, String ipAddress, String userAgent) {
         authorization.requireMembership(actingUserId, organizationId, OrganizationRole.ORGANIZATION_ADMIN);
         OrganizationMembership membership = requireOwnedMembership(organizationId, membershipId);
+        requireManagedStaffTarget(membership);
         User staffUser = requireUser(membership.getUserId());
 
         String newPassword = temporaryPasswordGenerator.generate();
@@ -205,6 +209,7 @@ public class OrganizationMembershipService {
     public void revoke(UUID actingUserId, UUID organizationId, UUID membershipId, String ipAddress, String userAgent) {
         authorization.requireMembership(actingUserId, organizationId, OrganizationRole.ORGANIZATION_ADMIN);
         OrganizationMembership membership = requireOwnedMembership(organizationId, membershipId);
+        requireManagedStaffTarget(membership);
 
         membership.revoke();
         memberships.save(membership);
@@ -310,6 +315,35 @@ public class OrganizationMembershipService {
         if (!ASSIGNABLE_ROLES.contains(role)) {
             throw new ApiException("STAFF_ROLE_NOT_ASSIGNABLE", HttpStatus.FORBIDDEN,
                     "Organization admins may only assign Recruiter or Organization Supervisor.");
+        }
+    }
+
+    /**
+     * Staff management never manages an ADMIN membership — not another admin's, and not the
+     * caller's own.
+     *
+     * <p><strong>Why.</strong> {@code ORGANIZATION_ADMIN} is created in exactly one place, when the
+     * organization is registered, and {@link #requireAssignableRole} stops an admin minting another.
+     * A tenant therefore has one admin membership and no way to add a second, so an admin who
+     * suspended, revoked or demoted themselves left the organization with NO administrator and no
+     * in-product recovery path — there is no Super Admin route that restores a tenant membership
+     * either. Live QA reproduced all three.
+     *
+     * <p><strong>Why it is keyed on the TARGET's role rather than on "is this me".</strong> A
+     * self-check would be exactly as correct today and would silently stop being enough the moment a
+     * second admin membership becomes reachable. Keying on the role holds either way, and covers the
+     * peer-admin case now as defence in depth.
+     *
+     * <p>Written as "not one of the assignable staff roles" rather than "is admin" so it fails
+     * CLOSED: any future role that is not explicitly managed staff is protected by default.
+     *
+     * <p>This deliberately does NOT touch self-service password recovery. An admin changes their own
+     * password through the normal forgot-password / reset-password flow, which is untouched.
+     */
+    private void requireManagedStaffTarget(OrganizationMembership membership) {
+        if (!ASSIGNABLE_ROLES.contains(membership.getRole())) {
+            throw new ApiException("STAFF_ADMIN_MEMBERSHIP_PROTECTED", HttpStatus.FORBIDDEN,
+                    "Organization administrator accounts cannot be changed from staff management.");
         }
     }
 

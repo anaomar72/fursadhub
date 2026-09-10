@@ -26,15 +26,19 @@ import { OPPORTUNITY_STATUS_TONE } from '../../opportunities/components/statusTo
 import { PLACEMENT_STATUS_TONE } from '../../placements/components/statusTone'
 import {
   Alert,
+  ButtonLink,
   Card,
   DashboardActionCard,
+  EmptyState,
+  ErrorState,
   Icon,
   LoadingState,
   StatusBadge,
   StatusDistribution,
-  type IconName,
+  StatCard,
+  PageHeader,
+  SectionHeading,
 } from '../../../components/ui'
-import { METRIC_TONES } from '../../../components/ui/metricTones'
 import { PageContainer } from '../../../app/layouts/PageContainer'
 import { formatDate } from '../../../lib/utils/formatDate'
 
@@ -119,6 +123,12 @@ function AdminDashboard() {
   }
 
   const candidates = allCandidates(pools.rows)
+  if (opportunitiesQuery.isError || placementsQuery.isError) {
+    return <PageContainer><ErrorState onRetry={() => {
+      void opportunitiesQuery.refetch()
+      void placementsQuery.refetch()
+    }} /></PageContainer>
+  }
   const shortlisted = candidates.filter((candidate) => candidate.status === 'SHORTLISTED').length
   const columns = pipelineColumns(candidates)
   const recent = recentApplications(pools.rows, RECENT_LIMIT)
@@ -134,36 +144,44 @@ function AdminDashboard() {
 
   return (
     <PageContainer className="flex flex-col gap-6">
-      <header>
-        <h1 className="font-display text-2xl font-bold tracking-tight text-brand-navy dark:text-foreground sm:text-3xl">
-          {t('organization:dashboard.title')}
-        </h1>
-        <p className="mt-1.5 text-sm text-foreground-secondary">{t('organization:dashboard.subtitle')}</p>
-      </header>
+      {/* The same page header every other portal page uses, rather than a hand-rolled h1 that had
+          drifted a size larger than the shared one. */}
+      <PageHeader
+        title={t('organization:dashboard.title')}
+        description={t('organization:dashboard.subtitle')}
+        actions={
+          can.canManageOpportunities && (
+            <ButtonLink to="/organization/opportunities/new">
+              <Icon name="plus" className="size-4" />
+              {t('opportunities:list.create')}
+            </ButtonLink>
+          )
+        }
+      />
 
       <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
-        <MetricCard
+        <StatCard
           icon="briefcase"
           tone="brand"
           label={t('organization:dashboard.activeInternships')}
           value={activeOpportunityCount(opportunities)}
           to="/organization/opportunities"
         />
-        <MetricCard
+        <StatCard
           icon="users"
           tone="violet"
           label={t('organization:dashboard.applications')}
           value={pools.isLoading ? '—' : candidates.length}
           to="/organization/candidates"
         />
-        <MetricCard
+        <StatCard
           icon="userCheck"
           tone="teal"
           label={t('organization:dashboard.shortlisted')}
           value={pools.isLoading ? '—' : shortlisted}
           to="/organization/candidates"
         />
-        <MetricCard
+        <StatCard
           icon="badgeCheck"
           tone="amber"
           label={t('organization:dashboard.currentInterns')}
@@ -174,9 +192,16 @@ function AdminDashboard() {
 
       {pools.hasErrors && <Alert tone="warning">{t('organization:dashboard.partialError')}</Alert>}
 
-      {/* The things that are actually somebody's job today. */}
+      {/*
+        The things that are actually somebody's job today. These carry a heading now: when only one
+        of the two applies, an unlabelled card sat alone at half width between the metric row and the
+        panels and read as a layout accident rather than as a priority. Named, a single card is
+        obviously a section with one item in it — which is the honest thing to show.
+      */}
       {(draftCount > 0 || unsupervised.length > 0) && (
-        <div className="grid gap-4 sm:grid-cols-2">
+        <section className="flex flex-col gap-3">
+          <SectionHeading title={t('organization:dashboard.needsAttention')} />
+          <div className="grid gap-4 sm:grid-cols-2">
           {draftCount > 0 && (
             <DashboardActionCard
               label={t('organization:dashboard.draftOpportunities')}
@@ -195,13 +220,15 @@ function AdminDashboard() {
               tone="warning"
             />
           )}
-        </div>
+          </div>
+        </section>
       )}
 
       <div className="grid gap-5 xl:grid-cols-2">
         {can.canManageCandidates && (
           <Card padding="none" className="overflow-hidden">
             <SectionHeading
+              panel
               title={t('organization:dashboard.recentApplications')}
               action={
                 <Link to="/organization/candidates" className="text-sm font-semibold text-link hover:underline">
@@ -210,9 +237,11 @@ function AdminDashboard() {
               }
             />
             {recent.length === 0 ? (
-              <p className="px-5 py-8 text-center text-sm text-foreground-secondary">
-                {t('organization:dashboard.noApplications')}
-              </p>
+              <EmptyState
+                variant="inline"
+                title={t('organization:dashboard.noApplications')}
+                description={t('organization:dashboard.noApplicationsHint')}
+              />
             ) : (
               <ul className="divide-y divide-border">
                 {recent.map(({ candidate, opportunity }) => (
@@ -243,6 +272,7 @@ function AdminDashboard() {
 
         <Card padding="none" className="overflow-hidden">
           <SectionHeading
+            panel
             title={t('organization:dashboard.activePosts')}
             action={
               <Link to="/organization/opportunities" className="text-sm font-semibold text-link hover:underline">
@@ -251,9 +281,11 @@ function AdminDashboard() {
             }
           />
           {activePosts.length === 0 ? (
-            <p className="px-5 py-8 text-center text-sm text-foreground-secondary">
-              {t('organization:dashboard.noActivePosts')}
-            </p>
+            <EmptyState
+                variant="inline"
+                title={t('organization:dashboard.noActivePosts')}
+                description={t('organization:dashboard.noActivePostsHint')}
+              />
           ) : (
             <ul className="divide-y divide-border">
               {activePosts.slice(0, RECENT_LIMIT).map((opportunity) => (
@@ -271,6 +303,7 @@ function AdminDashboard() {
                     <span className="block truncate text-xs text-muted">
                       {t(`opportunities:workModeValues.${opportunity.workMode}`)} ·{' '}
                       {t(`opportunities:modeValues.${opportunity.mode}`)}
+
                       {can.canManageCandidates && !pools.isLoading && (
                         <>
                           {' · '}
@@ -288,56 +321,56 @@ function AdminDashboard() {
         </Card>
       </div>
 
-      {can.canManageCandidates && !pools.isLoading && (
-        <Card padding="lg">
-          <div className="flex flex-wrap items-start justify-between gap-3">
-            <div>
-              <h2 className="font-display text-base font-bold text-brand-navy dark:text-foreground">
-                {t('organization:dashboard.candidatePipeline')}
-              </h2>
-              <p className="mt-1 text-sm text-foreground-secondary">
-                {pools.notScanned > 0
-                  ? t('organization:dashboard.pipelineHintPartial', {
+      <div className="grid gap-5 xl:grid-cols-[minmax(0,1fr)_320px]"><div className="grid gap-5">
+        {can.canManageCandidates && !pools.isLoading && (
+          <Card padding="lg">
+            <div className="flex flex-wrap items-start justify-between gap-3">
+              <div>
+                <h2 className="font-display text-base font-bold text-brand-navy dark:text-foreground">
+                  {t('organization:dashboard.candidatePipeline')}
+                </h2>
+                <p className="mt-1 text-sm text-foreground-secondary">
+                  {pools.notScanned > 0
+                    ? t('organization:dashboard.pipelineHintPartial', {
                       scanned: pools.rows.length,
                       total: pools.totalInScope,
                     })
-                  : t('organization:dashboard.pipelineHint', { count: pools.totalInScope })}
-              </p>
+                    : t('organization:dashboard.pipelineHint', { count: pools.totalInScope })}
+                </p>
+              </div>
+              <Link to="/organization/candidates" className="shrink-0 text-sm font-semibold text-link hover:underline">
+                {t('organization:dashboard.viewAll')}
+              </Link>
             </div>
-            <Link to="/organization/candidates" className="shrink-0 text-sm font-semibold text-link hover:underline">
-              {t('organization:dashboard.viewAll')}
-            </Link>
-          </div>
 
-          {/* Horizontally scrollable rather than wrapping: six columns will not fit a phone, and the
+            {/* Horizontally scrollable rather than wrapping: six columns will not fit a phone, and the
               longer Somali stage names must not push the page wider than the viewport. */}
-          <div className="-mx-5 mt-5 overflow-x-auto px-5">
-            <ul className="flex min-w-max gap-3" aria-label={t('organization:dashboard.candidatePipeline')}>
-              {columns.map((column) => (
-                <li key={column.status} className="w-44 shrink-0 rounded-lg border border-border bg-surface-muted p-4">
-                  <div className="flex items-center gap-2">
-                    <StatusBadge tone={PIPELINE_STAGE_TONE[column.status]}>
-                      {t(`recruitment:candidacyStatusValues.${column.status}`)}
-                    </StatusBadge>
-                  </div>
-                  <p className="mt-3 text-2xl font-bold leading-none text-brand-navy dark:text-foreground">
-                    {column.candidates.length}
-                  </p>
-                  <p className="mt-1 text-xs text-muted">
-                    {t('organization:dashboard.candidateCount', { count: column.candidates.length })}
-                  </p>
-                </li>
-              ))}
-            </ul>
-          </div>
+            <div className="-mx-5 mt-5 overflow-x-auto px-5">
+              <ul className="flex min-w-max gap-3" aria-label={t('organization:dashboard.candidatePipeline')}>
+                {columns.map((column) => (
+                  <li key={column.status} className="w-44 shrink-0 rounded-lg border border-border bg-surface-muted p-4">
+                    <div className="flex items-center gap-2">
+                      <StatusBadge tone={PIPELINE_STAGE_TONE[column.status]}>
+                        {t(`recruitment:candidacyStatusValues.${column.status}`)}
+                      </StatusBadge>
+                    </div>
+                    <p className="mt-3 text-2xl font-bold leading-none text-brand-navy dark:text-foreground">
+                      {column.candidates.length}
+                    </p>
+                    <p className="mt-1 text-xs text-muted">
+                      {t('organization:dashboard.candidateCount', { count: column.candidates.length })}
+                    </p>
+                  </li>
+                ))}
+              </ul>
+            </div>
 
-          <p className="mt-4 border-t border-border pt-4 text-xs text-muted">
-            {t('organization:dashboard.pipelineClosed', { count: closedCount(candidates) })}
-          </p>
-        </Card>
-      )}
+            <p className="mt-4 border-t border-border pt-4 text-xs text-muted">
+              {t('organization:dashboard.pipelineClosed', { count: closedCount(candidates) })}
+            </p>
+          </Card>
+        )}
 
-      <div className="grid gap-5 xl:grid-cols-2">
         <Card padding="lg">
           <h2 className="font-display text-base font-bold text-brand-navy dark:text-foreground">
             {t('organization:dashboard.internshipOverview')}
@@ -356,89 +389,58 @@ function AdminDashboard() {
           />
         </Card>
 
-        <Card padding="none" className="overflow-hidden">
-          <SectionHeading
-            title={t('organization:dashboard.currentInternsTitle')}
-            action={
-              <Link to="/organization/placements" className="text-sm font-semibold text-link hover:underline">
-                {t('organization:dashboard.viewAll')}
-              </Link>
-            }
-          />
-          {placements.length === 0 ? (
-            <p className="px-5 py-8 text-center text-sm text-foreground-secondary">
-              {t('placements:organization.empty')}
-            </p>
-          ) : (
-            <ul className="divide-y divide-border">
-              {placements.slice(0, RECENT_LIMIT).map((placement) => (
-                <li key={placement.id} className="flex items-center gap-3 px-5 py-3.5">
-                  <span className="min-w-0 flex-1">
-                    <Link
-                      to={`/organization/placements/${placement.id}`}
-                      className="block truncate text-sm font-semibold text-foreground hover:underline"
-                    >
-                      {placement.studentFullName ?? placement.studentEmail ?? placement.studentUserId}
-                    </Link>
-                    <span className="block truncate text-xs text-muted">
-                      {placement.universityName ?? ''} ·{' '}
-                      {t('placements:detail.dateRange', {
-                        start: formatDate(placement.startDate),
-                        end: formatDate(placement.endDate),
-                      })}
+      </div><div className="grid gap-5">
+          <Card padding="lg"><h2 className="font-display text-base font-bold text-brand-navy dark:text-foreground">{t('common:remediation.quickActions')}</h2><div className="mt-4 grid gap-3">
+            {can.canManageOpportunities && <ButtonLink to="/organization/opportunities/new" variant="outline"><Icon name="plus" className="size-4" />{t('opportunities:list.create')}</ButtonLink>}
+            {can.canManageCandidates && <ButtonLink to="/organization/candidates" variant="outline"><Icon name="users" className="size-4" />{t('recruitment:nav.candidates')}</ButtonLink>}
+            <ButtonLink to="/opportunities" variant="outline"><Icon name="globe" className="size-4" />{t('common:nav.internships')}</ButtonLink>
+          </div></Card>
+          <Card padding="none" className="overflow-hidden">
+            <SectionHeading
+              panel
+              title={t('organization:dashboard.currentInternsTitle')}
+              action={
+                <Link to="/organization/placements" className="text-sm font-semibold text-link hover:underline">
+                  {t('organization:dashboard.viewAll')}
+                </Link>
+              }
+            />
+            {placements.length === 0 ? (
+              <EmptyState
+                variant="inline"
+                title={t('placements:organization.empty')}
+                description={t('organization:dashboard.noInternsHint')}
+              />
+            ) : (
+              <ul className="divide-y divide-border">
+                {placements.slice(0, RECENT_LIMIT).map((placement) => (
+                  <li key={placement.id} className="flex items-center gap-3 px-5 py-3.5">
+                    <span className="min-w-0 flex-1">
+                      <Link
+                        to={`/organization/placements/${placement.id}`}
+                        className="block truncate text-sm font-semibold text-foreground hover:underline"
+                      >
+                        {placement.studentFullName ?? placement.studentEmail ?? placement.studentUserId}
+                      </Link>
+                      <span className="block truncate text-xs text-muted">
+                        {placement.universityName ?? ''} ·{' '}
+                        {t('placements:detail.dateRange', {
+                          start: formatDate(placement.startDate),
+                          end: formatDate(placement.endDate),
+                        })}
+                      </span>
                     </span>
-                  </span>
-                  <StatusBadge tone={PLACEMENT_STATUS_TONE[placement.status]}>
-                    {t(`placements:statusValues.${placement.status}`)}
-                  </StatusBadge>
-                </li>
-              ))}
-            </ul>
-          )}
-        </Card>
-      </div>
+                    <StatusBadge tone={PLACEMENT_STATUS_TONE[placement.status]}>
+                      {t(`placements:statusValues.${placement.status}`)}
+                    </StatusBadge>
+                  </li>
+                ))}
+              </ul>
+            )}
+          </Card>
+        </div></div>
     </PageContainer>
   )
 }
 
-function SectionHeading({ title, action }: { title: string; action?: React.ReactNode }) {
-  return (
-    <div className="flex items-center justify-between gap-3 border-b border-border px-5 py-4">
-      <h2 className="font-display text-base font-bold text-brand-navy dark:text-foreground">{title}</h2>
-      {action}
-    </div>
-  )
-}
-
 /** The same tile the university dashboards use — one product, one dashboard language. */
-function MetricCard({
-  icon,
-  tone,
-  label,
-  value,
-  to,
-}: {
-  icon: IconName
-  tone: keyof typeof METRIC_TONES
-  label: string
-  value: number | string
-  to: string
-}) {
-  const { t } = useTranslation()
-  return (
-    <Card padding="lg">
-      <div className="flex items-start gap-3">
-        <span className={`flex size-11 shrink-0 items-center justify-center rounded-xl ${METRIC_TONES[tone]}`}>
-          <Icon name={icon} className="size-5" />
-        </span>
-        <div className="min-w-0">
-          <p className="truncate text-sm font-medium text-foreground-secondary">{label}</p>
-          <p className="mt-1 text-3xl font-bold leading-none text-brand-navy dark:text-foreground">{value}</p>
-        </div>
-      </div>
-      <Link to={to} className="mt-4 inline-block text-sm font-semibold text-link hover:underline">
-        {t('organization:dashboard.viewAll')}
-      </Link>
-    </Card>
-  )
-}

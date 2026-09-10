@@ -1,4 +1,4 @@
-import { useRef, useState, type KeyboardEvent } from 'react'
+import { useRef, useState, type KeyboardEvent, type Ref, type AriaAttributes } from 'react'
 import { useTranslation } from 'react-i18next'
 import { Icon } from './Icon'
 import { cn } from '../../lib/utils/cn'
@@ -14,6 +14,9 @@ export interface TagInputProps {
   placeholder?: string
   disabled?: boolean
   'aria-describedby'?: string
+  'aria-invalid'?: AriaAttributes['aria-invalid']
+  ref?: Ref<HTMLInputElement>
+  onBlur?: () => void
   className?: string
 }
 
@@ -40,6 +43,8 @@ export function TagInput({
   placeholder,
   disabled = false,
   className,
+  ref,
+  onBlur,
   ...rest
 }: TagInputProps) {
   const { t } = useTranslation()
@@ -93,7 +98,6 @@ export function TagInput({
           'focus-within:border-brand-primary focus-within:ring-2 focus-within:ring-focus-ring',
           disabled && 'cursor-not-allowed opacity-60',
         )}
-        onClick={() => inputRef.current?.focus()}
       >
         {value.map((tag) => (
           <span
@@ -107,6 +111,7 @@ export function TagInput({
               onClick={() => {
                 onChange(value.filter((existing) => existing !== tag))
                 setNotice(null)
+                inputRef.current?.focus()
               }}
               aria-label={t('common:tagInput.remove', { tag })}
               className="flex size-5 shrink-0 items-center justify-center rounded transition-colors hover:bg-brand-navy/10 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus-ring motion-reduce:transition-none"
@@ -117,11 +122,15 @@ export function TagInput({
         ))}
 
         <input
-          ref={inputRef}
+          ref={(node) => {
+            inputRef.current = node
+            if (typeof ref === 'function') ref(node)
+            else if (ref) ref.current = node
+          }}
           id={id}
           type="text"
           value={draft}
-          disabled={disabled || atCapacity}
+          disabled={disabled}
           placeholder={atCapacity ? undefined : placeholder}
           maxLength={maxLength}
           autoComplete="off"
@@ -131,7 +140,7 @@ export function TagInput({
           }}
           onKeyDown={handleKeyDown}
           // A tag typed but not committed would otherwise be silently discarded on submit.
-          onBlur={() => commit(draft)}
+          onBlur={() => { commit(draft); onBlur?.() }}
           className="h-8 min-w-[8rem] flex-1 bg-transparent px-1.5 text-sm text-foreground outline-none placeholder:text-muted disabled:cursor-not-allowed"
           {...rest}
         />

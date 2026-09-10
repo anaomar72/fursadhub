@@ -137,6 +137,8 @@ export interface StudentRowResponse {
 }
 
 export interface VerificationCaseResponse {
+  studentFullName?: string | null
+  professional?: import('../../student/types').StudentProfessionalProfile | null
   id: string
   enrollmentId: string
   status: string

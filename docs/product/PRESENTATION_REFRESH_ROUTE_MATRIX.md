@@ -241,3 +241,69 @@ entirely line-height and font-size, not layout.
 - backend support: the strip renders whatever the feed returns
 - implemented truthful alternative: a fixed six-column grid, so a short row left-aligns with a
   trailing gap rather than stretching four cards to double the approved width
+
+## Phase C/D convergence follow-up — 2026-09-07
+
+The additional `ChatGPT Image Sep 7, 2026, 12_13_27 AM.png` is a presentation asset sheet.
+Its top-left student photograph now supplies refs 01–02 through a clipped image viewport;
+it does not supply tenant, user or opportunity data. The original brand sheet still governs
+palette and logo treatment. No example record in either sheet is production data.
+
+Ref 06 now uses six compact university cards at desktop width. Ref 07 places recent applications
+above discovery with readiness/current placement alongside. Refs 08–09 have ruled metric footers,
+and the university navy rail gives its real tenant identity greater prominence. Organization
+admins have a dashboard link to the existing internship authoring route.
+
+All portal rails now link to `/opportunities`. The public header offers authenticated users an
+explicit **My portal** action using the existing membership-based console resolver; entering a
+public route does not redirect them. Public and portal mobile menus use native modal focus
+containment, and public pages provide a skip link.
+
+See `docs/PHASE_D_VERIFICATION_NOTES.md` for checks and live-backend verification limits. This
+follow-up does not start Phase E.
+# 2026-09-07 C/D review update
+
+Exact presentation acceptance remains **incomplete**. See [the visual comparison](../presentation-proof/comparison.html) and [current verification notes](../PHASE_D_VERIFICATION_NOTES.md) before relying on earlier status descriptions below.
+
+Public routes now use the approved presentation assets, real save controls, richer real profile/opportunity fields, compact directory layouts and portal/public navigation. Student, organization and university dashboard structures were revised using their existing data sources. Profile and opportunity editors were regrouped without changing backend payload contracts.
+
+Public screenshots are available for refs 01–06, with capture limitations recorded in the manifest. Refs 07–09 and live authenticated form/navigation checks require existing role sessions. Do not begin Phase E based on automated test success alone.
+
+# 2026-09-08 — pre-Phase-E gap closure
+
+Three public surfaces changed shape, and one reference element previously listed as "deliberately
+not built" is now built. Phase E remains not started.
+
+## Matrix corrections
+
+| Route / surface | Reference | Confidence | Change |
+| --- | --- | --- | --- |
+| `/about` | 01 | Shared | Was still the pre-refresh design (blue `brand-primary`, generic SVG illustration). Now the approved public language: navy identity band with the shared skyline asset, live directory counts, the CLAUDE.md section 2 workflow, three audiences, closing band. |
+| `/legal/*` | 01 | Shared | Was a bare text dump. Now navy identity band, version/effective line, and a sibling-document rail. **The document body is unchanged** — still plain text with preserved line breaks, never HTML. |
+| `/` | 01 | Direct | The reference's testimonial row is now real (see below) rather than omitted. |
+| `/account/testimonial` | 07 | Extrapolated | New. Role-neutral account area; takes the light-rail portal language. |
+| `/admin/testimonials` | 10 | Extrapolated | New moderation queue. Inherits the existing admin table/badge language — this is functional plumbing, **not** the Phase E Super Admin presentation redesign, which has not started. |
+
+## Reference element promoted from "not built" to built
+
+**Home page testimonials.** Previously listed under "Reference elements deliberately not built" with
+the reason "no endpoint supplies testimonials". That endpoint now exists
+(`GET /api/v1/public/testimonials`, published rows only), so the row renders real quotes written by
+real users and published by a platform moderator.
+
+The honest pending state is retained and is what shows when nothing has been published — and also
+when the request fails, because an unreachable API is not evidence that anyone said anything. No
+placeholder people are ever rendered.
+
+Every other entry in that list remains unbuilt for its original reason.
+
+## Still not built, unchanged
+
+Footer newsletter subscribe; internships promotional rail; organization culture video, "why students
+love us", employee/founded/follower statistics; universities headline counters for students-reached
+and opportunities-shared; global authenticated search; display name beside the topbar avatar;
+dashboard period-over-period deltas; Super Admin System Health / Flagged Issues / System Alerts.
+
+Footer social links also remain omitted: FursadHub's own social accounts are still recorded nowhere.
+Organizations have social fields and render them as icons; universities have **no social columns in
+the backend**, so no icon row is invented for them.

@@ -142,13 +142,17 @@ public class UniversityStaffService {
         authorization.requireMembership(actingUserId, universityId, UniversityRole.UNIVERSITY_ADMIN);
         requireAssignableRole(newRole);
         UniversityMembership membership = requireOwnedMembership(universityId, membershipId);
+        requireManagedStaffTarget(membership);
 
         membership.changeRole(newRole);
         memberships.save(membership);
+        // Flushed as each row is removed. The partial unique index counts a row as active until its
+        // removed_at actually lands, and Hibernate would otherwise order the re-assignment INSERT
+        // first — making the legitimate "change role, keep the same department" fail as a conflict.
         membershipDepartments.findActiveByMembershipId(membership.getId())
                 .forEach(scope -> {
                     scope.remove();
-                    membershipDepartments.save(scope);
+                    membershipDepartments.saveAndFlush(scope);
                 });
         List<UUID> scopedDepartmentIds = assignDepartmentScope(departmentIds, universityId, membership.getId());
 
@@ -164,6 +168,7 @@ public class UniversityStaffService {
     public void suspend(UUID actingUserId, UUID universityId, UUID membershipId, String ipAddress, String userAgent) {
         authorization.requireMembership(actingUserId, universityId, UniversityRole.UNIVERSITY_ADMIN);
         UniversityMembership membership = requireOwnedMembership(universityId, membershipId);
+        requireManagedStaffTarget(membership);
         User staffUser = requireUser(membership.getUserId());
 
         if (staffUser.getStatus() == UserStatus.SUSPENDED) {
@@ -188,6 +193,7 @@ public class UniversityStaffService {
     public void reactivate(UUID actingUserId, UUID universityId, UUID membershipId, String ipAddress, String userAgent) {
         authorization.requireMembership(actingUserId, universityId, UniversityRole.UNIVERSITY_ADMIN);
         UniversityMembership membership = requireOwnedMembership(universityId, membershipId);
+        requireManagedStaffTarget(membership);
         User staffUser = requireUser(membership.getUserId());
 
         if (staffUser.getStatus() == UserStatus.CLOSED) {
@@ -213,6 +219,7 @@ public class UniversityStaffService {
             UUID actingUserId, UUID universityId, UUID membershipId, String ipAddress, String userAgent) {
         authorization.requireMembership(actingUserId, universityId, UniversityRole.UNIVERSITY_ADMIN);
         UniversityMembership membership = requireOwnedMembership(universityId, membershipId);
+        requireManagedStaffTarget(membership);
         User staffUser = requireUser(membership.getUserId());
 
         String newPassword = temporaryPasswordGenerator.generate();
@@ -230,6 +237,7 @@ public class UniversityStaffService {
     public void revoke(UUID actingUserId, UUID universityId, UUID membershipId, String ipAddress, String userAgent) {
         authorization.requireMembership(actingUserId, universityId, UniversityRole.UNIVERSITY_ADMIN);
         UniversityMembership membership = requireOwnedMembership(universityId, membershipId);
+        requireManagedStaffTarget(membership);
 
         membership.revoke();
         memberships.save(membership);
@@ -360,6 +368,36 @@ public class UniversityStaffService {
         if (!ASSIGNABLE_ROLES.contains(role)) {
             throw new ApiException("STAFF_ROLE_NOT_ASSIGNABLE", HttpStatus.FORBIDDEN,
                     "University admins may only assign Department Coordinator or University Supervisor.");
+        }
+    }
+
+
+    /**
+     * Staff management never manages an ADMIN membership — not another admin's, and not the
+     * caller's own.
+     *
+     * <p><strong>Why.</strong> {@code UNIVERSITY_ADMIN} is created in exactly one place, when the
+     * university is registered, and {@link #requireAssignableRole} stops an admin minting another.
+     * A tenant therefore has one admin membership and no way to add a second, so an admin who
+     * suspended, revoked or demoted themselves left the university with NO administrator and no
+     * in-product recovery path — there is no Super Admin route that restores a tenant membership
+     * either. Live QA reproduced self-revoke leaving zero active admins.
+     *
+     * <p><strong>Why it is keyed on the TARGET's role rather than on "is this me".</strong> A
+     * self-check would be exactly as correct today and would silently stop being enough the moment a
+     * second admin membership becomes reachable. Keying on the role holds either way, and covers the
+     * peer-admin case now as defence in depth.
+     *
+     * <p>Written as "not one of the assignable staff roles" rather than "is admin" so it fails
+     * CLOSED: any future role that is not explicitly managed staff is protected by default.
+     *
+     * <p>This deliberately does NOT touch self-service password recovery. An admin changes their own
+     * password through the normal forgot-password / reset-password flow, which is untouched.
+     */
+    private void requireManagedStaffTarget(UniversityMembership membership) {
+        if (!ASSIGNABLE_ROLES.contains(membership.getRole())) {
+            throw new ApiException("STAFF_ADMIN_MEMBERSHIP_PROTECTED", HttpStatus.FORBIDDEN,
+                    "University administrator accounts cannot be changed from staff management.");
         }
     }
 

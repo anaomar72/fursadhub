@@ -229,6 +229,8 @@ public abstract class AbstractPhase7IT extends AbstractPhase6IT {
      */
     protected StudentFixture studentWithSubmittedCase(String prefix, UUID universityId, UUID departmentId) {
         StudentFixture student = createStudent(prefix, universityId, departmentId, "DRAFT");
+        requireOk(uploadEvidence(student.accessToken(), "student-id.pdf", "application/pdf", validPdfBytes()),
+                "Upload Student ID before submission");
         requireOk(authorizedPost(
                         "/api/v1/students/me/enrollment/submit-verification", student.accessToken(), null),
                 "Submit verification");

@@ -64,7 +64,8 @@ public class StudentEnrollmentService {
     public StudentEnrollment update(
             UUID studentUserId, UUID universityId, UUID departmentId, String studentNumber, String program, String academicYear,
             String ipAddress, String userAgent) {
-        StudentEnrollment enrollment = getMyEnrollment(studentUserId);
+        StudentEnrollment enrollment = enrollments.findByStudentUserIdForUpdate(studentUserId)
+                .orElseThrow(this::notFound);
         if (enrollment.getVerificationStatus() != StudentVerificationStatus.DRAFT
                 && enrollment.getVerificationStatus() != StudentVerificationStatus.NEEDS_MORE_EVIDENCE) {
             throw new ApiException("STUDENT_ENROLLMENT_LOCKED", HttpStatus.CONFLICT, "This enrollment cannot be edited while a verification case is active.");

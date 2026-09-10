@@ -62,7 +62,9 @@
       "ACCESS_DENIED": "You do not have permission to do that.",
       "VALIDATION_FAILED": "Please check the form and try again.",
       "generic": "The weekly log could not be saved. Please try again."
-    }
+    },
+    "emptyStudentHint": "Write one short entry a week describing what you worked on. Your university supervisor reviews them as you go.",
+    "emptyReviewerHint": "Entries appear here as the student writes them, newest first, ready for your review."
   },
   "attendance": {
     "title": "Attendance",
@@ -103,7 +105,8 @@
       "ACCESS_DENIED": "You do not have permission to do that.",
       "VALIDATION_FAILED": "Please check the form and try again.",
       "generic": "The attendance record could not be saved. Please try again."
-    }
+    },
+    "emptyHint": "Attendance appears here once the workplace supervisor starts recording days for this internship."
   },
   "evaluation": {
     "title": "Organization evaluation",
@@ -141,7 +144,8 @@
       "ACCESS_DENIED": "Only the assigned organization supervisor can write this evaluation.",
       "VALIDATION_FAILED": "Ratings must be between 1 and 5.",
       "generic": "The evaluation could not be saved. Please try again."
-    }
+    },
+    "notAvailableHint": "The workplace supervisor completes this evaluation, and it appears here once they submit it."
   },
   "finalReport": {
     "title": "Final report",
@@ -179,7 +183,8 @@
       "ACCESS_DENIED": "You do not have permission to open this report.",
       "VALIDATION_FAILED": "Please check the form and try again.",
       "generic": "The final report could not be saved. Please try again."
-    }
+    },
+    "notSubmittedYetHint": "The report becomes available for review once the student uploads it near the end of the internship."
   },
   "defense": {
     "title": "Defense",
@@ -218,7 +223,8 @@
       "ACCESS_DENIED": "You do not have permission to manage this defense.",
       "VALIDATION_FAILED": "Please check the form and try again.",
       "generic": "The defense could not be updated. Please try again."
-    }
+    },
+    "emptyHint": "A defense appears here once the university schedules one for this internship."
   },
   "completion": {
     "title": "Internship completion",

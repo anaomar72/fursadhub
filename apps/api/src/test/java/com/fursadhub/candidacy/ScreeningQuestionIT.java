@@ -201,7 +201,7 @@ class ScreeningQuestionIT extends AbstractPhase4IT {
         StudentFixture student = createVerifiedStudent("student", published.universityId(), published.departmentId());
         List<Map<String, Object>> questions = publicQuestions(published.draft().opportunityId());
 
-        ResponseEntity<Map> response = authorizedPost(
+        ResponseEntity<Map> response = applicationWithCv(
                 "/api/v1/opportunities/" + published.draft().opportunityId() + "/applications", student.accessToken(),
                 Map.of("answers", List.of(
                         Map.of("questionId", questions.get(0).get("id"), "answer", "I want to learn."),

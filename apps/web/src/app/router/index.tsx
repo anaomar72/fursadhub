@@ -4,6 +4,8 @@ import { HomePage } from '../pages/HomePage'
 import { AboutPage } from '../pages/AboutPage'
 import { NotFoundPage } from '../pages/NotFoundPage'
 import { RequireAuth } from '../../lib/auth/RequireAuth'
+import { RequireOrganizationCapability } from '../../features/organization/components/RequireOrganizationCapability'
+import { RequireUniversityCapability } from '../../features/university/components/RequireUniversityCapability'
 import { RegisterPage } from '../../features/auth/pages/RegisterPage'
 import { LoginPage } from '../../features/auth/pages/LoginPage'
 import { VerifyEmailPage } from '../../features/auth/pages/VerifyEmailPage'
@@ -86,6 +88,8 @@ import { AdminUsersPage } from '../../features/admin/pages/AdminUsersPage'
 import { AdminOpportunitiesPage } from '../../features/admin/pages/AdminOpportunitiesPage'
 import { AdminPrivacyRequestsPage } from '../../features/admin/pages/AdminPrivacyRequestsPage'
 import { AdminLegalDocumentsPage } from '../../features/admin/pages/AdminLegalDocumentsPage'
+import { AdminTestimonialsPage } from '../../features/admin/pages/AdminTestimonialsPage'
+import { MyTestimonialPage } from '../../features/testimonials/pages/MyTestimonialPage'
 import { AdminAuditPage } from '../../features/admin/pages/AdminAuditPage'
 import { AdminPlatformRolesPage } from '../../features/admin/pages/AdminPlatformRolesPage'
 // Phase 14: the Super Admin console's record pages, over admin endpoints that already existed.
@@ -191,23 +195,60 @@ export const router = createBrowserRouter([
         children: [
           { index: true, element: <Navigate to="dashboard" replace /> },
           { path: 'dashboard', element: <UniversityDashboardPage /> },
-          { path: 'students', element: <StudentsPage /> },
-          { path: 'departments', element: <DepartmentsPage /> },
+
+          // Destinations the sidebar hides are unreachable by URL too, gated on the SAME capability
+          // flags universityNavigation.ts uses. Live QA measured the matching backend refusals: a
+          // supervisor's students / verification-cases / staff requests answer 403, and a
+          // coordinator's staff request answers 403.
+          {
+            element: <RequireUniversityCapability capability="hasStudentDirectory" />,
+            children: [{ path: 'students', element: <StudentsPage /> }],
+          },
+          {
+            element: <RequireUniversityCapability capability="canReviewStudents" />,
+            children: [
+              { path: 'verification-cases', element: <VerificationQueuePage /> },
+              { path: 'verification-cases/:caseId', element: <VerificationCaseDetailPage /> },
+            ],
+          },
+          {
+            element: <RequireUniversityCapability capability="canManageDepartments" />,
+            children: [{ path: 'departments', element: <DepartmentsPage /> }],
+          },
+          {
+            element: <RequireUniversityCapability capability="canProvisionStaff" />,
+            children: [{ path: 'staff', element: <StaffPage /> }],
+          },
+          {
+            // Institution-wide read of who hosts this university's students. A supervisor's
+            // placement list is their own few assignments, which is not a partner directory.
+            element: <RequireUniversityCapability capability="scopedToAssignedPlacements" invert />,
+            children: [{ path: 'partners', element: <PartnerOrganizationsPage /> }],
+          },
+          // Deliberately NOT gated: the page renders read-only for a non-admin, and
+          // universityNavigation.ts links every member here so they can see their own tenant.
           { path: 'profile', element: <UniversityProfilePage /> },
-          { path: 'verification-cases', element: <VerificationQueuePage /> },
-          { path: 'verification-cases/:caseId', element: <VerificationCaseDetailPage /> },
-          { path: 'staff', element: <StaffPage /> },
-          { path: 'partners', element: <PartnerOrganizationsPage /> },
           // Phase 10. `my-students` is the supervisor's roster, collapsed from their assigned
           // placements because GET /universities/{id}/students admits only admins and coordinators;
           // `supervision` is the cross-placement review queue, open to all three roles in their own
           // scope. Both are re-authorized per request by the API regardless of who reaches the URL.
-          { path: 'my-students', element: <SupervisedStudentsPage /> },
-          { path: 'supervision', element: <SupervisionQueuePage /> },
-          // Phase 4 nomination workflow.
-          { path: 'opportunity-requests', element: <OpportunityRequestsPage /> },
-          { path: 'opportunity-requests/:targetId', element: <NominateStudentsPage /> },
-          { path: 'nominations', element: <UniversityNominationsPage /> },
+          {
+            element: <RequireUniversityCapability capability="scopedToAssignedPlacements" />,
+            children: [{ path: 'my-students', element: <SupervisedStudentsPage /> }],
+          },
+          {
+            element: <RequireUniversityCapability capability="canReviewAcademicRecords" />,
+            children: [{ path: 'supervision', element: <SupervisionQueuePage /> }],
+          },
+          {
+            // Phase 4 nomination workflow.
+            element: <RequireUniversityCapability capability="canNominate" />,
+            children: [
+              { path: 'opportunity-requests', element: <OpportunityRequestsPage /> },
+              { path: 'opportunity-requests/:targetId', element: <NominateStudentsPage /> },
+              { path: 'nominations', element: <UniversityNominationsPage /> },
+            ],
+          },
           // Phase 5 placements. The university reads placements and owns the university supervisor.
           { path: 'placements', element: <UniversityPlacementsPage /> },
           {
@@ -226,8 +267,11 @@ export const router = createBrowserRouter([
               { path: 'evaluation', element: <EvaluationPage audience="reader" /> },
             ],
           },
-          // Phase 6 internship policy — the five completion requirements, per university/department.
-          { path: 'internship-policy', element: <InternshipPolicyPage /> },
+          {
+            // Phase 6 internship policy — the five completion requirements, per university/department.
+            element: <RequireUniversityCapability capability="canConfigurePolicy" />,
+            children: [{ path: 'internship-policy', element: <InternshipPolicyPage /> }],
+          },
         ],
       },
     ],
@@ -244,19 +288,44 @@ export const router = createBrowserRouter([
         children: [
           { index: true, element: <Navigate to="dashboard" replace /> },
           { path: 'dashboard', element: <OrganizationDashboardPage /> },
-          { path: 'opportunities', element: <OpportunityListPage /> },
-          { path: 'opportunities/new', element: <CreateOpportunityPage /> },
-          { path: 'opportunities/:opportunityId', element: <OpportunityDetailPage /> },
-          // Phase 4 candidate management — ONE unified pool per opportunity.
-          { path: 'opportunities/:opportunityId/candidates', element: <CandidatePoolPage /> },
-          { path: 'candidacies/:candidacyId', element: <CandidateDetailPage /> },
-          // Phase 11. Every candidate across the internships this organization is recruiting for.
-          { path: 'candidates', element: <OrganizationCandidatesPage /> },
-          // Phase 11. Partner universities, derived from the organization's own placement list.
-          { path: 'partners', element: <UniversityPartnersPage /> },
-          // Phase 13. Attendance and evaluations across this supervisor's assigned interns.
-          { path: 'supervision', element: <OrganizationSupervisionQueuePage /> },
-          // Phase 5 placements. The hosting organization drives the lifecycle.
+
+          // Destinations the sidebar hides are unreachable by URL too. Each group is gated on the
+          // SAME capability flag organizationNavigation.ts uses, so nav and routing cannot drift.
+          {
+            element: <RequireOrganizationCapability capability="canManageOpportunities" />,
+            children: [
+              { path: 'opportunities', element: <OpportunityListPage /> },
+              { path: 'opportunities/new', element: <CreateOpportunityPage /> },
+              { path: 'opportunities/:opportunityId', element: <OpportunityDetailPage /> },
+            ],
+          },
+          {
+            // Phase 4 candidate management — ONE unified pool per opportunity.
+            // CandidacyAuthorization.RECRUITING_ROLES excludes ORGANIZATION_SUPERVISOR, which live
+            // QA confirmed: a supervisor's candidate request answers 403.
+            element: <RequireOrganizationCapability capability="canManageCandidates" />,
+            children: [
+              { path: 'opportunities/:opportunityId/candidates', element: <CandidatePoolPage /> },
+              { path: 'candidacies/:candidacyId', element: <CandidateDetailPage /> },
+              // Phase 11. Every candidate across the internships this organization is recruiting for.
+              { path: 'candidates', element: <OrganizationCandidatesPage /> },
+            ],
+          },
+          {
+            // Phase 11. Partner universities, derived from the organization's own placement list.
+            element: <RequireOrganizationCapability capability="canAdministerOrganization" />,
+            children: [
+              { path: 'partners', element: <UniversityPartnersPage /> },
+              { path: 'staff', element: <OrganizationStaffPage /> },
+            ],
+          },
+          {
+            // Phase 13. Attendance and evaluations across this supervisor's assigned interns.
+            element: <RequireOrganizationCapability capability="scopedToAssignedPlacements" />,
+            children: [{ path: 'supervision', element: <OrganizationSupervisionQueuePage /> }],
+          },
+          // Phase 5 placements. Open to every member — the hosting organization drives the
+          // lifecycle, and a supervisor's list is narrowed server-side to their own assignments.
           { path: 'placements', element: <OrganizationPlacementsPage /> },
           {
             path: 'placements/:placementId',
@@ -269,8 +338,9 @@ export const router = createBrowserRouter([
               { path: 'evaluation', element: <EvaluationPage audience="evaluator" /> },
             ],
           },
+          // Deliberately NOT gated: the page already renders read-only for a non-admin, and
+          // organizationNavigation.ts links every member here so they can see their own tenant.
           { path: 'profile', element: <OrganizationProfilePage /> },
-          { path: 'staff', element: <OrganizationStaffPage /> },
         ],
       },
     ],
@@ -305,6 +375,7 @@ export const router = createBrowserRouter([
           { path: 'users/:userId', element: <AdminUserDetailPage /> },
           { path: 'privacy-requests', element: <AdminPrivacyRequestsPage /> },
           { path: 'legal-documents', element: <AdminLegalDocumentsPage /> },
+          { path: 'testimonials', element: <AdminTestimonialsPage /> },
           { path: 'audit', element: <AdminAuditPage /> },
           { path: 'platform-roles', element: <AdminPlatformRolesPage /> },
         ],
@@ -325,6 +396,7 @@ export const router = createBrowserRouter([
       { path: 'profile', element: <AccountProfilePage /> },
       { path: 'notifications', element: <NotificationsPage /> },
       { path: 'privacy', element: <PrivacyPage /> },
+      { path: 'testimonial', element: <MyTestimonialPage /> },
     ],
   },
   { path: '*', element: <NotFoundPage /> },

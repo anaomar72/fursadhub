@@ -28,10 +28,10 @@ export interface ScreeningAnswerInput {
  * Self-application. Note there is no student id in the payload — the backend takes the applicant
  * from the authenticated session (CLAUDE.md section 12), and the UI must never try to supply one.
  */
-export function applyToOpportunity(opportunityId: string, answers: ScreeningAnswerInput[]) {
+export function applyToOpportunity(opportunityId: string, answers: ScreeningAnswerInput[], cvUploadId?: string) {
   return apiFetch<CandidacyResponse>(`/opportunities/${opportunityId}/applications`, {
     method: 'POST',
-    body: { answers },
+    body: { answers, cvUploadId },
   })
 }
 

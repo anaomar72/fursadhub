@@ -22,6 +22,11 @@ class UniversityMembershipDepartmentRepositoryAdapter implements UniversityMembe
     }
 
     @Override
+    public UniversityMembershipDepartment saveAndFlush(UniversityMembershipDepartment scope) {
+        return jpaRepository.saveAndFlush(scope);
+    }
+
+    @Override
     public List<UniversityMembershipDepartment> findActiveByMembershipId(UUID membershipId) {
         return jpaRepository.findByMembershipIdAndRemovedAtIsNull(membershipId);
     }

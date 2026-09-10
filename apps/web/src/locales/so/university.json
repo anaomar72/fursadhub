@@ -37,7 +37,9 @@
     "departments": "Waaxyaha",
     "recentNominations": "Magacaabisyada dhawaan",
     "byDepartment": "Ardayda waax kasta",
-    "viewAll": "Fiiri dhammaan"
+    "viewAll": "Fiiri dhammaan",
+    "noNominationsHint": "Magacaabistu halkan way ka soo muuqanayaan marka iskuduwuhu arday u soo jeediyo tababar loo talagalay.",
+    "noPartnersHint": "Hay’ad halkan way ka soo muuqanaysaa marka ay martigeliso ardaydaada mid ka mid ah."
   },
   "setup": {
     "title": "Diiwaangeli jaamacaddaada",
@@ -118,7 +120,8 @@
       "hint": "JPG ama PNG. Waxa uu ka muuqdaa astaanta profile-kaaga dadweynaha.",
       "emptyHint": "Weli sawir daboolka ah ma jiro. Mid soo geli si profile-kaagu u helo astaan.",
       "replaceHint": "Soo gelinta sawir cusub waxay bedeshaa kan hadda jira."
-    }
+    },
+    "saved": "Bogga waa la kaydiyay."
   },
   "departments": {
     "title": "Qaybaha",
@@ -171,7 +174,12 @@
   "verificationQueue": {
     "title": "Safka xaqiijinta",
     "allStatuses": "Dhammaan xaaladaha",
-    "empty": "Xaalado xaqiijin ah lama helin."
+    "empty": "Xaalado xaqiijin ah lama helin.",
+    "subtitle": "Sheegashooyinka diiwaangelinta ardaydaada, kuwa ugu cusub marka hore. Fur kiis si aad u eegto caddaynta oo aad go’aan u gaadho.",
+    "submittedOn": "La gudbiyay {{date}}",
+    "evidenceAttached": "Caddayn ayaa lifaaqan",
+    "noEvidence": "Caddayn ma jirto",
+    "review": "Dib u eeg"
   },
   "caseDetail": {
     "notesLabel": "Faallooyin",
@@ -257,7 +265,8 @@
       "VALIDATION_FAILED": "Fadlan hubi foomka oo isku day mar kale.",
       "generic": "Wax baa qaldamay. Fadlan isku day mar kale.",
       "USERNAME_ALREADY_EXISTS": "Magaca isticmaalahaas horey ayaa loo qaatay.",
-      "USERNAME_IMMUTABLE": "Akoonkani horey ayuu u leeyahay magac isticmaale, lamana beddeli karo."
+      "USERNAME_IMMUTABLE": "Akoonkani horey ayuu u leeyahay magac isticmaale, lamana beddeli karo.",
+      "STAFF_ADMIN_MEMBERSHIP_PROTECTED": "Xisaabaadka maamulaha jaamacadda lagama beddeli karo maaraynta shaqaalaha. Isticmaal goobaha akoonkaaga si aad u beddesho furahaaga sirta ah."
     },
     "subtitle": "Samee oo maamul akoonnada shaqaalaha gudaha jaamacadda.",
     "createTitle": "Samee akoon shaqaale",

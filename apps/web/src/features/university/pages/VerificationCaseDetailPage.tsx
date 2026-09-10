@@ -23,6 +23,8 @@ import {
 } from '../../../components/ui'
 import type { StatusTone } from '../../../components/ui'
 import { PageContainer } from '../../../app/layouts/PageContainer'
+import { PrivateDocumentPreview } from '../../../components/ui/PrivateDocumentPreview'
+import { ProfessionalProfileSummary } from '../../student/components/ProfessionalProfileSummary'
 import { formatDateTime } from '../../../lib/utils/formatDate'
 
 const STATUS_TONE: Record<string, StatusTone> = {
@@ -167,13 +169,16 @@ export function VerificationCaseDetailPage() {
 
       <PageHeader
         eyebrow={t('university:caseDetail.eyebrow')}
-        title={verificationCase.studentEmail ?? t('university:caseDetail.case')}
+        title={verificationCase.studentFullName ?? verificationCase.studentEmail ?? t('university:caseDetail.case')}
+        description={verificationCase.studentFullName ? verificationCase.studentEmail ?? undefined : undefined}
         actions={
           <StatusBadge tone={STATUS_TONE[status] ?? 'neutral'}>
             {t(`university:students.statusValues.${status}`)}
           </StatusBadge>
         }
       />
+      <ProfessionalProfileSummary profile={verificationCase.professional} />
+
 
       {error && <Alert tone="danger">{error}</Alert>}
 
@@ -218,6 +223,7 @@ export function VerificationCaseDetailPage() {
           <h2 className="font-semibold text-foreground">{t('university:caseDetail.evidenceTitle')}</h2>
           {verificationCase.hasEvidence ? (
             <>
+              <PrivateDocumentPreview load={() => universityApi.downloadCaseEvidence(universityId, caseId!)} />
               <p className="text-sm text-foreground-secondary">
                 {t('university:caseDetail.evidenceBody')}
               </p>

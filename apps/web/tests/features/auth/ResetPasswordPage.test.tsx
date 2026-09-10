@@ -88,7 +88,11 @@ describe('ResetPasswordPage', () => {
     await user.type(screen.getByLabelText(/confirm password/i), 'Password123')
     await user.click(screen.getByRole('button', { name: /reset password/i }))
 
-    expect(await screen.findByRole('alert')).toHaveTextContent(/expired/i)
+    // A dead link cannot be fixed by retyping a password, so the form is replaced by the
+    // recoverable screen rather than annotated with a red line above inputs that cannot succeed.
+    expect(await screen.findByRole('heading', { name: /expired/i })).toBeInTheDocument()
+    expect(screen.getByRole('link', { name: /request a new link/i })).toBeInTheDocument()
+    expect(screen.queryByLabelText(/^new password$/i)).not.toBeInTheDocument()
     expect(screen.queryByRole('heading', { name: /password updated/i })).not.toBeInTheDocument()
   })
 })

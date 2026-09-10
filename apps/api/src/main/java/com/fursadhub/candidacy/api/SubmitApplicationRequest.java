@@ -12,7 +12,8 @@ import java.util.UUID;
  * authenticated caller (CLAUDE.md section 12).
  */
 public record SubmitApplicationRequest(
-        @Size(max = 5) @Valid List<ScreeningAnswerRequest> answers) {
+        @Size(max = 5) @Valid List<ScreeningAnswerRequest> answers,
+        UUID cvUploadId) {
 
     public record ScreeningAnswerRequest(
             @NotNull UUID questionId,

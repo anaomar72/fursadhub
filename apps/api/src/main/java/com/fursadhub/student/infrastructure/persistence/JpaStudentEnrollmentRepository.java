@@ -11,6 +11,10 @@ interface JpaStudentEnrollmentRepository extends JpaRepository<StudentEnrollment
 
     Optional<StudentEnrollment> findByStudentUserId(UUID studentUserId);
 
+    @org.springframework.data.jpa.repository.Lock(jakarta.persistence.LockModeType.PESSIMISTIC_WRITE)
+    @org.springframework.data.jpa.repository.Query("select e from StudentEnrollment e where e.studentUserId = :studentUserId")
+    Optional<StudentEnrollment> findByStudentUserIdForUpdate(UUID studentUserId);
+
     boolean existsByStudentUserId(UUID studentUserId);
 
     boolean existsByUniversityIdAndStudentNumber(UUID universityId, String studentNumber);

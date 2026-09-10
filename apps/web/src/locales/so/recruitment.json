@@ -61,7 +61,12 @@
       "OPPORTUNITY_DEADLINE_PASSED": "Wakhtigii ugu dambeeyay ee codsiga wuu dhacay.",
       "CANDIDACY_ALREADY_CLOSED": "Codsigan horey ayaa loo xiray.",
       "VALIDATION_FAILED": "Fadlan hubi foomka oo isku day mar kale.",
-      "generic": "Wax baa qaldamay. Fadlan isku day mar kale."
+      "generic": "Wax baa qaldamay. Fadlan isku day mar kale.",
+      "APPLICATION_CV_REQUIRED": "Soo geli CV PDF ah oo codsigan loogu talagalay.",
+      "APPLICATION_CV_NOT_FOUND": "CV-gan looma heli karo codsigan. Mar kale soo geli.",
+      "APPLICATION_CV_ALREADY_USED": "CV-gan wuxuu hore ugu xiran yahay codsi la gudbiyey.",
+      "STUDENT_ACTION_REQUIRED": "Codsiyada iyo tababarada la kaydiyey waxaa heli kara akoonnada Ardayga.",
+      "FILE_NOT_FOUND": "Dukumentigan hadda lama heli karo. Mar kale soo geli."
     }
   },
   "applications": {
@@ -205,7 +210,8 @@
     "transition": "laga bilaabay {{from}}",
     "cvTitle": "CV-ga",
     "cvHint": "Wuxuu furayaa CV-ga uu musharraxu soo geliyay, haddii uu mid leeyahay.",
-    "openCv": "Fur CV-ga"
+    "openCv": "Fur CV-ga",
+    "cvApplicationHint": "Wuxuu furayaa CV-ga uu musharraxu ku lifaaqay codsigan."
   },
   "screening": {
     "title": "Su'aalaha kala-sooca",
@@ -257,7 +263,9 @@
       "OPPORTUNITY_NOT_PUBLISHED": "Fursaddan mar dambe ma aqbalayso magacaabis.",
       "ACCESS_DENIED": "Ma haysatid oggolaansho aad ku magacawdo ardaygan.",
       "generic": "Wax baa qaldamay. Fadlan isku day mar kale."
-    }
+    },
+    "viewProfile": "Fiiri bogga xirfadeed",
+    "noProfile": "Ardaygan weli ma qorin bog xirfadeed."
   },
   "universityNominations": {
     "title": "Magacaabisyada",

@@ -22,5 +22,12 @@
       "LEGAL_DOCUMENT_NOT_ACCEPTABLE": "Dukumentigaas ma u baahna aqbalaad.",
       "TERMS_ALREADY_ACCEPTED": "Horey ayaad u aqbashay dukumentigan."
     }
+  },
+  "page": {
+    "eyebrow": "Sharci",
+    "otherDocuments": "Dukumiintiyada sharciga ee kale",
+    "lastUpdated": "Markii ugu dambeysay la cusboonaysiiyay {{date}}",
+    "contents": "Boggan",
+    "backToHome": "Ku noqo bogga hore"
   }
 }

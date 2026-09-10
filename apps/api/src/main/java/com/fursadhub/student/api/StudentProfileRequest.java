@@ -5,5 +5,6 @@ import jakarta.validation.constraints.Size;
 
 public record StudentProfileRequest(
         @NotBlank @Size(max = 255) String fullName,
-        @Size(max = 40) String phone) {
+        @Size(max = 40) String phone,
+        @jakarta.validation.Valid com.fursadhub.student.domain.StudentProfessionalProfile professional) {
 }

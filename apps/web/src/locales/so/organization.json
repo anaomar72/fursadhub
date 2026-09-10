@@ -51,7 +51,11 @@
     "internshipOverviewHint": "Tababar kasta oo aad soo dhigtay, marxaladihiisa oo dhan.",
     "noOpportunities": "Weli tababar ma jiro.",
     "partialError": "Qaar ka mid ah liisaska musharraxiinta lama akhriyi karin, sidaas awgeed tirooyinkani ma buuxsami karaan.",
-    "viewAll": "Fiiri dhammaan"
+    "viewAll": "Fiiri dhammaan",
+    "needsAttention": "Waxay u baahan tahay fiiro gaar ah",
+    "noApplicationsHint": "Codsiyadu halkan ayay ka soo muuqanayaan isla marka arday uu codsado mid ka mid ah tababarradaada la daabacay.",
+    "noActivePostsHint": "Daabac tababar qabyo ah, wuxuuna halkan ka soo muuqan doonaa tiradiisa codsiyada la socoto.",
+    "noInternsHint": "Tababare halkan wuxuu ka soo muuqanayaa marka musharrax aqbalo dalabkaaga oo uu bilaabo shaqada."
   },
   "setup": {
     "title": "Diyaari ururkaaga",
@@ -163,7 +167,8 @@
       "hint": "JPG ama PNG. Waxa uu ka muuqdaa astaanta profile-kaaga dadweynaha.",
       "emptyHint": "Weli sawir daboolka ah ma jiro. Mid soo geli si profile-kaagu u helo astaan.",
       "replaceHint": "Soo gelinta sawir cusub waxay bedeshaa kan hadda jira."
-    }
+    },
+    "saved": "Bogga waa la kaydiyay."
   },
   "staff": {
     "title": "Shaqaalaha",
@@ -203,7 +208,8 @@
       "VALIDATION_FAILED": "Fadlan hubi foomka oo isku day mar kale.",
       "generic": "Wax baa qaldamay. Fadlan isku day mar kale.",
       "USERNAME_ALREADY_EXISTS": "Magaca isticmaalahaas horey ayaa loo qaatay.",
-      "USERNAME_IMMUTABLE": "Akoonkani horey ayuu u leeyahay magac isticmaale, lamana beddeli karo."
+      "USERNAME_IMMUTABLE": "Akoonkani horey ayuu u leeyahay magac isticmaale, lamana beddeli karo.",
+      "STAFF_ADMIN_MEMBERSHIP_PROTECTED": "Xisaabaadka maamulaha hay'adda lagama beddeli karo maaraynta shaqaalaha. Isticmaal goobaha akoonkaaga si aad u beddesho furahaaga sirta ah."
     },
     "subtitle": "Abuur oo maamul akoonnada shaqaalaha gudaha ee ururka.",
     "addStaff": "Ku dar akoon shaqaale",

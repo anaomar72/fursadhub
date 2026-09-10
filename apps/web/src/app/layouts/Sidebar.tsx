@@ -70,6 +70,7 @@ export const Sidebar = forwardRef<HTMLDivElement, SidebarProps>(function Sidebar
   const location = useLocation()
   const isRail = collapsed && variant === 'desktop'
   const isTenantBranded = Boolean(brand?.name)
+  const crestLayout = isTenantBranded && tone === 'navy' && !isRail
   // Plain Links with active state computed here, rather than NavLink. NavLink decides "active"
   // from the pathname alone and sets its own aria-current from that, which would both highlight
   // and announce "Candidates" and "Shortlist" together — they share a path and differ only by
@@ -91,18 +92,18 @@ export const Sidebar = forwardRef<HTMLDivElement, SidebarProps>(function Sidebar
       <div className={cn('shrink-0 border-b border-sidebar-border', isRail ? 'px-2 py-3' : 'px-4 py-4')}>
         <div className={cn('flex items-center gap-3', isRail && 'flex-col gap-2')}>
           <Link
-            to={homePath}
+            to={homePath.startsWith('/admin') ? homePath : '/'}
             onClick={onNavigate}
-            className="flex min-w-0 flex-1 items-center gap-3 rounded-lg focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus-ring"
+            className={cn('flex min-w-0 flex-1 items-center gap-3 rounded-lg focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus-ring', crestLayout && 'flex-col py-3 text-center')}
           >
             {isTenantBranded ? (
-              <TenantMark brand={brand!} />
+              <TenantMark brand={brand!} large={crestLayout} />
             ) : (
               <BrandLogo surface={tone === 'navy' ? 'dark' : 'light'} markOnly size={isRail ? 'md' : 'md'} />
             )}
             {!isRail && (
               <span className="min-w-0">
-                <span className="block truncate font-display text-[15px] font-extrabold leading-tight text-sidebar-strong">
+                <span className={cn('block font-display font-extrabold leading-tight text-sidebar-strong', crestLayout ? 'text-xl' : 'text-[15px]')}>
                   {isTenantBranded ? (
                     brand!.name
                   ) : (
@@ -116,7 +117,7 @@ export const Sidebar = forwardRef<HTMLDivElement, SidebarProps>(function Sidebar
                   // reference 10 sets FursadHub's own console name in plain ink under the wordmark.
                   <span
                     className={cn(
-                      'mt-0.5 block truncate',
+                      'mt-1 block',
                       isTenantBranded
                         ? 'text-[11px] font-bold uppercase tracking-wider text-brand-accent'
                         : 'text-xs font-semibold text-sidebar-foreground',
@@ -128,13 +129,19 @@ export const Sidebar = forwardRef<HTMLDivElement, SidebarProps>(function Sidebar
               </span>
             )}
           </Link>
+          {variant === 'drawer' && <button
+            type="button"
+            onClick={onNavigate}
+            aria-label={t('common:nav.closeMenu')}
+            className="flex size-8 shrink-0 items-center justify-center self-start rounded-lg hover:bg-sidebar-hover focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus-ring"
+          ><Icon name="close" className="size-5" /></button>}
           {variant === 'desktop' && onToggleCollapse && (
             <button
               type="button"
               onClick={onToggleCollapse}
               aria-label={collapsed ? t('common:shell.expandSidebar') : t('common:shell.collapseSidebar')}
               className={cn(
-                'flex size-8 shrink-0 items-center justify-center rounded-lg text-sidebar-foreground',
+                'flex size-8 shrink-0 items-center justify-center self-start rounded-lg text-sidebar-foreground',
                 'transition-colors hover:bg-sidebar-hover hover:text-sidebar-strong focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus-ring motion-reduce:transition-none',
               )}
             >
@@ -210,10 +217,21 @@ export const Sidebar = forwardRef<HTMLDivElement, SidebarProps>(function Sidebar
 
       {/* ------------------------------------------------------------ sign out */}
       <div className="shrink-0 border-t border-sidebar-border p-3">
+        <Link
+          to="/opportunities"
+          onClick={onNavigate}
+          title={t('common:nav.publicMarketplace')}
+          aria-label={t('common:nav.publicMarketplace')}
+          className={cn('mb-1 flex items-center gap-3 rounded-lg border border-sidebar-border px-3 py-2.5 text-sm font-semibold text-sidebar-strong hover:bg-sidebar-hover focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus-ring', isRail && 'justify-center px-0')}
+        >
+          <Icon name="globe" className="size-5 shrink-0" />
+          {!isRail && <span>{t('common:nav.publicMarketplace')}</span>}
+        </Link>
         <button
           type="button"
           onClick={onSignOut}
           title={isRail ? t('auth:session.signOut') : undefined}
+          aria-label={t('auth:session.signOut')}
           className={cn(
             'flex w-full items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-semibold text-sidebar-foreground',
             'transition-colors duration-150 ease-in-out hover:bg-sidebar-hover hover:text-sidebar-strong focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus-ring motion-reduce:transition-none',
@@ -229,20 +247,20 @@ export const Sidebar = forwardRef<HTMLDivElement, SidebarProps>(function Sidebar
 })
 
 /** The tenant's own logo, falling back to its initial when the backend reports none. */
-function TenantMark({ brand }: { brand: SidebarBrand }) {
+function TenantMark({ brand, large = false }: { brand: SidebarBrand; large?: boolean }) {
   if (brand.logoUrl) {
     return (
       <img
         src={brand.logoUrl}
         alt=""
-        className="size-10 shrink-0 rounded-lg border border-sidebar-border bg-white object-contain p-0.5"
+        className={cn('shrink-0 rounded-lg border border-sidebar-border bg-white object-contain p-1', large ? 'size-20' : 'size-10')}
       />
     )
   }
   return (
     <span
       aria-hidden="true"
-      className="flex size-10 shrink-0 items-center justify-center rounded-lg bg-brand-navy-soft font-display text-base font-extrabold text-brand-navy"
+      className={cn('flex shrink-0 items-center justify-center rounded-lg bg-brand-navy-soft font-display font-extrabold text-brand-navy', large ? 'size-20 text-3xl' : 'size-10 text-base')}
     >
       {brand.name?.trim().charAt(0).toUpperCase() ?? '?'}
     </span>

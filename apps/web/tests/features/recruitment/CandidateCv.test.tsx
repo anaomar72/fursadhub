@@ -34,13 +34,13 @@ const CANDIDATE = {
   history: [],
 }
 
-function stubFetch(onCv?: () => Promise<Response>) {
+function stubFetch(onCv?: () => Promise<Response>, candidate: object = CANDIDATE) {
   const fetchMock = vi.fn((input: RequestInfo | URL) => {
     const url = String(input)
     if (url.includes('/candidacies/cand-1/cv')) {
       return onCv ? onCv() : Promise.resolve(new Response(new Blob(['pdf']), { status: 200 }))
     }
-    if (url.includes('/candidacies/cand-1')) return jsonResponse(CANDIDATE)
+    if (url.includes('/candidacies/cand-1')) return jsonResponse(candidate)
     if (url.includes('/screening-questions')) return jsonResponse([])
     if (url.includes('/opportunities/opp-1')) return jsonResponse({ id: 'opp-1', title: 'Backend intern' })
     return jsonResponse({})
@@ -122,5 +122,45 @@ describe('candidate CV', () => {
     renderPage()
 
     expect(await screen.findByRole('button', { name: 'Fur CV-ga' })).toBeInTheDocument()
+  })
+
+  it('offers an in-place preview only when this application bound its own CV', async () => {
+    // hasApplicationCv true means the file is known to exist for THIS candidacy (V48), so it can be
+    // previewed. The download control stays available either way.
+    stubFetch(undefined, { ...CANDIDATE, hasApplicationCv: true })
+    renderPage()
+
+    expect(await screen.findByRole('button', { name: 'Preview document' })).toBeInTheDocument()
+    expect(screen.getByRole('button', { name: 'Open CV' })).toBeInTheDocument()
+  })
+
+  it('offers download only for a historical candidacy whose CV existence is unknown', async () => {
+    // Pre-V48 candidacies fall back to the student's stored CV; the DTO cannot report whether one
+    // exists, so promising a preview would be a promise the page cannot keep.
+    stubFetch(undefined, { ...CANDIDATE, hasApplicationCv: false })
+    renderPage()
+
+    expect(await screen.findByRole('button', { name: 'Open CV' })).toBeInTheDocument()
+    expect(screen.queryByRole('button', { name: 'Preview document' })).not.toBeInTheDocument()
+  })
+
+  it('shows the professional profile the student authored, and no academic identity', async () => {
+    stubFetch(undefined, {
+      ...CANDIDATE,
+      professional: {
+        headline: 'Final-year computer science student',
+        summary: 'I build small web tools.',
+        city: 'Mogadishu',
+        countryCode: 'SO',
+        skills: ['Java', 'React'],
+        linkedinUrl: null,
+        githubUrl: null,
+        portfolioUrl: null,
+      },
+    })
+    renderPage()
+
+    expect(await screen.findByText('Final-year computer science student')).toBeInTheDocument()
+    expect(screen.getByText('Java')).toBeInTheDocument()
   })
 })

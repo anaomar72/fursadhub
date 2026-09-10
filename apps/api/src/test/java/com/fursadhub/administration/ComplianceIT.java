@@ -5,7 +5,6 @@ import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 
-import java.time.LocalDate;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
@@ -27,7 +26,7 @@ class ComplianceIT extends AbstractPhase7IT {
     @DisplayName("Published legal documents are readable without authentication")
     void legalDocumentsArePublic() {
         Staff admin = superAdmin("legal-admin");
-        publishLegalDocument(admin.token(), "TERMS", version("public"), "en", LocalDate.now().minusDays(1));
+        publishLegalDocument(admin.token(), "TERMS", version("public"), "en", today().minusDays(1));
 
         ResponseEntity<Map> response = unauthenticatedGet("/api/v1/public/legal-documents/TERMS?locale=en");
 
@@ -40,7 +39,7 @@ class ComplianceIT extends AbstractPhase7IT {
     @DisplayName("A Somali request falls back to English when no translation is published")
     void somaliFallsBackToEnglish() {
         Staff admin = superAdmin("locale-admin");
-        publishLegalDocument(admin.token(), "COOKIE_POLICY", version("en-only"), "en", LocalDate.now().minusDays(1));
+        publishLegalDocument(admin.token(), "COOKIE_POLICY", version("en-only"), "en", today().minusDays(1));
 
         ResponseEntity<Map> response = unauthenticatedGet("/api/v1/public/legal-documents/COOKIE_POLICY?locale=so");
 
@@ -55,8 +54,8 @@ class ComplianceIT extends AbstractPhase7IT {
     void somaliIsServedWhenPublished() {
         Staff admin = superAdmin("so-admin");
         String sharedVersion = version("bilingual");
-        publishLegalDocument(admin.token(), "PRIVACY_POLICY", sharedVersion, "en", LocalDate.now().minusDays(1));
-        publishLegalDocument(admin.token(), "PRIVACY_POLICY", sharedVersion, "so", LocalDate.now().minusDays(1));
+        publishLegalDocument(admin.token(), "PRIVACY_POLICY", sharedVersion, "en", today().minusDays(1));
+        publishLegalDocument(admin.token(), "PRIVACY_POLICY", sharedVersion, "so", today().minusDays(1));
 
         ResponseEntity<Map> response = unauthenticatedGet("/api/v1/public/legal-documents/PRIVACY_POLICY?locale=so");
 
@@ -68,7 +67,7 @@ class ComplianceIT extends AbstractPhase7IT {
     void versionsAreUnique() {
         Staff admin = superAdmin("dupe-legal");
         String sharedVersion = version("dupe");
-        publishLegalDocument(admin.token(), "TERMS", sharedVersion, "en", LocalDate.now().minusDays(1));
+        publishLegalDocument(admin.token(), "TERMS", sharedVersion, "en", today().minusDays(1));
 
         ResponseEntity<Map> response = authorizedPost("/api/v1/admin/legal-documents", admin.token(), Map.of(
                 "documentType", "TERMS",
@@ -76,7 +75,7 @@ class ComplianceIT extends AbstractPhase7IT {
                 "locale", "en",
                 "title", "Terms",
                 "body", "Rewritten body that must not silently replace the accepted one.",
-                "effectiveFrom", LocalDate.now().toString()));
+                "effectiveFrom", today().toString()));
 
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.CONFLICT);
         assertThat(errorCode(response)).isEqualTo("LEGAL_DOCUMENT_VERSION_EXISTS");
@@ -93,7 +92,7 @@ class ComplianceIT extends AbstractPhase7IT {
                 "locale", "en",
                 "title", "Terms",
                 "body", "Body",
-                "effectiveFrom", LocalDate.now().toString()));
+                "effectiveFrom", today().toString()));
 
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.FORBIDDEN);
     }
@@ -105,7 +104,7 @@ class ComplianceIT extends AbstractPhase7IT {
     void acceptanceClearsTheOutstandingList() {
         Staff admin = superAdmin("terms-admin");
         UUID termsId = publishLegalDocument(
-                admin.token(), "TERMS", version("accept"), "en", LocalDate.now().minusDays(1));
+                admin.token(), "TERMS", version("accept"), "en", today().minusDays(1));
         String user = registerVerifiedAndLogin("terms-user");
 
         ResponseEntity<Map> before = authorizedGet("/api/v1/me/legal-status?locale=en", user);
@@ -123,7 +122,7 @@ class ComplianceIT extends AbstractPhase7IT {
     void acceptanceIsIdempotent() {
         Staff admin = superAdmin("idem-terms");
         UUID termsId = publishLegalDocument(
-                admin.token(), "TERMS", version("idem"), "en", LocalDate.now().minusDays(1));
+                admin.token(), "TERMS", version("idem"), "en", today().minusDays(1));
         String user = registerVerifiedAndLogin("idem-terms-user");
         UUID userId = currentUserId(user);
 
@@ -142,7 +141,7 @@ class ComplianceIT extends AbstractPhase7IT {
     void newVersionRequiresFreshAcceptance() {
         Staff admin = superAdmin("newver-admin");
         UUID firstVersion = publishLegalDocument(
-                admin.token(), "TERMS", version("v1"), "en", LocalDate.now().minusDays(5));
+                admin.token(), "TERMS", version("v1"), "en", today().minusDays(5));
         String user = registerVerifiedAndLogin("newver-user");
 
         requireOk(authorizedPost("/api/v1/me/terms-acceptances", user,
@@ -150,7 +149,7 @@ class ComplianceIT extends AbstractPhase7IT {
         assertThat(outstandingIds(user)).doesNotContain(firstVersion.toString());
 
         // Effective TODAY, so it is unambiguously the current TERMS version.
-        UUID secondVersion = publishLegalDocument(admin.token(), "TERMS", version("v2"), "en", LocalDate.now());
+        UUID secondVersion = publishLegalDocument(admin.token(), "TERMS", version("v2"), "en", today());
 
         // Accepting v1 says nothing about v2 — acceptance points at one exact version.
         assertThat(outstandingIds(user)).contains(secondVersion.toString());
@@ -161,7 +160,7 @@ class ComplianceIT extends AbstractPhase7IT {
     void cookieNoticeIsInformationalOnly() {
         Staff admin = superAdmin("cookie-admin");
         UUID cookieId = publishLegalDocument(
-                admin.token(), "COOKIE_POLICY", version("cookie"), "en", LocalDate.now().minusDays(1));
+                admin.token(), "COOKIE_POLICY", version("cookie"), "en", today().minusDays(1));
         String user = registerVerifiedAndLogin("cookie-user");
 
         // Published and readable, but never something the user is asked to accept.
@@ -196,7 +195,7 @@ class ComplianceIT extends AbstractPhase7IT {
     void termsAcceptanceIsNotConsent() {
         Staff admin = superAdmin("consent-admin");
         UUID termsId = publishLegalDocument(
-                admin.token(), "TERMS", version("consent"), "en", LocalDate.now().minusDays(1));
+                admin.token(), "TERMS", version("consent"), "en", today().minusDays(1));
         String user = registerVerifiedAndLogin("consent-user");
 
         requireOk(authorizedPost("/api/v1/me/terms-acceptances", user,

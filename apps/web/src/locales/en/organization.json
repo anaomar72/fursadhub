@@ -51,7 +51,11 @@
     "internshipOverviewHint": "Every internship you have posted, across its lifecycle.",
     "noOpportunities": "No internships yet.",
     "partialError": "Some candidate lists could not be read, so these totals may be incomplete.",
-    "viewAll": "View all"
+    "viewAll": "View all",
+    "needsAttention": "Needs your attention",
+    "noApplicationsHint": "Applications appear here as soon as a student applies to one of your published internships.",
+    "noActivePostsHint": "Publish a draft internship and it will show here with its application count.",
+    "noInternsHint": "An intern appears here once a candidate accepts your offer and their placement starts."
   },
   "setup": {
     "title": "Set up your organization",
@@ -163,7 +167,8 @@
       "hint": "JPG or PNG. Shown as the banner on your public profile.",
       "emptyHint": "No cover image yet. Upload one to give your public profile a banner.",
       "replaceHint": "Uploading a new image replaces the current cover."
-    }
+    },
+    "saved": "Profile saved."
   },
   "staff": {
     "title": "Staff",
@@ -203,7 +208,8 @@
       "VALIDATION_FAILED": "Please check the form and try again.",
       "generic": "Something went wrong. Please try again.",
       "USERNAME_ALREADY_EXISTS": "That username is already taken.",
-      "USERNAME_IMMUTABLE": "This account already has a username, and it cannot be changed."
+      "USERNAME_IMMUTABLE": "This account already has a username, and it cannot be changed.",
+      "STAFF_ADMIN_MEMBERSHIP_PROTECTED": "Organization administrator accounts cannot be changed from staff management. Use your own account settings to change your password."
     },
     "subtitle": "Create and manage internal organization staff accounts.",
     "addStaff": "Add staff account",

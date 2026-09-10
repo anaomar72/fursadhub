@@ -28,6 +28,8 @@ import {
   Timeline,
 } from '../../../components/ui'
 import { PageContainer } from '../../../app/layouts/PageContainer'
+import { ProfessionalProfileSummary } from '../../student/components/ProfessionalProfileSummary'
+import { PrivateDocumentPreview } from '../../../components/ui/PrivateDocumentPreview'
 import { formatDate, formatDateTime } from '../../../lib/utils/formatDate'
 import type { StatusTone, TimelineItem } from '../../../components/ui'
 
@@ -54,10 +56,12 @@ const TIMELINE_TONE: Record<StatusTone, NonNullable<TimelineItem['tone']>> = {
  * — so this page shows the answers, the offers and the real audit history instead of inventing a
  * profile panel the backend cannot fill.
  *
- * <p>The CV is the exception, and it is not on the DTO either: it has its own endpoint keyed by
- * CANDIDACY rather than by student, so {@code StudentCvService.openForCandidacy} authorizes from the
- * recruiting relationship instead of from a role. Phase 15 wired it up — before that a recruiter
- * could screen an application without being able to read the CV attached to it.
+ * <p>Two exceptions. The candidate's PROFESSIONAL profile is on the DTO and is rendered — it is the
+ * presentation the student authored for exactly this purpose, and carries no enrollment identity,
+ * evidence or academic record. The CV has its own endpoint keyed by CANDIDACY rather than by
+ * student, so {@code StudentCvService.openForCandidacy} authorizes from the recruiting relationship
+ * instead of from a role, and serves the CV bound to THIS application rather than whatever the
+ * student most recently uploaded.
  */
 export function CandidateDetailPage() {
   const { t } = useTranslation()
@@ -183,6 +187,8 @@ export function CandidateDetailPage() {
           </div>
         }
       />
+      <ProfessionalProfileSummary profile={candidate.professional} />
+
 
       {commands.length > 0 && (
         <Card padding="lg">
@@ -349,18 +355,34 @@ export function CandidateDetailPage() {
             <h2 className="font-display text-base font-bold text-brand-navy dark:text-foreground">
               {t('recruitment:candidate.cvTitle')}
             </h2>
-            <p className="mt-1 text-sm text-foreground-secondary">{t('recruitment:candidate.cvHint')}</p>
-            {/* Whether a CV exists is not on CandidateDetailResponse, so the control is always
-                offered and the API answers: CV_NOT_FOUND when the student never uploaded one. */}
-            <Button
-              variant="outline"
-              size="sm"
-              className="mt-4"
-              loading={cvMutation.isPending}
-              onClick={() => cvMutation.mutate()}
-            >
-              {t('recruitment:candidate.openCv')}
-            </Button>
+            <p className="mt-1 text-sm text-foreground-secondary">
+              {candidate.hasApplicationCv
+                ? t('recruitment:candidate.cvApplicationHint')
+                : t('recruitment:candidate.cvHint')}
+            </p>
+            {/*
+              `hasApplicationCv` is true only for candidacies that bound their own CV at submission
+              (V48). For those the file is known to exist, so it can be previewed in place.
+
+              Historical candidacies predate per-application CVs and fall back to the student's
+              stored CV, whose existence the DTO cannot report — so the download control stays
+              unconditionally offered there and the API answers CV_NOT_FOUND if there is none.
+              Either way `openForCandidacy` authorizes from the recruiting relationship and serves
+              only the file belonging to THIS candidacy.
+            */}
+            <div className="mt-4 flex flex-wrap items-center gap-3">
+              {candidate.hasApplicationCv && (
+                <PrivateDocumentPreview load={() => recruitmentApi.downloadCandidateCv(candidacyId!)} />
+              )}
+              <Button
+                variant="outline"
+                size="sm"
+                loading={cvMutation.isPending}
+                onClick={() => cvMutation.mutate()}
+              >
+                {t('recruitment:candidate.openCv')}
+              </Button>
+            </div>
             {cvMutation.isError && (
               <Alert tone="warning" className="mt-4">
                 {apiErrorMessage(t, 'recruitment', 'candidate', cvMutation.error)}

@@ -295,7 +295,7 @@ class PlacementLifecycleIT extends AbstractPhase5IT {
         UUID opportunityId = createDraftOpportunity(recruiterToken, organizationId, "PUBLIC", Map.of());
         publishOpportunity(recruiterToken, opportunityId);
 
-        ResponseEntity<Map> applied = authorizedPost(
+        ResponseEntity<Map> applied = applicationWithCv(
                 "/api/v1/opportunities/" + opportunityId + "/applications", fixture.student().accessToken(), Map.of());
         if (applied.getStatusCode() != HttpStatus.CREATED) {
             throw new IllegalStateException("Second application failed: " + applied.getBody());

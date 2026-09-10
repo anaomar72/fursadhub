@@ -37,13 +37,15 @@ public class SavedOpportunityService {
     private final SavedOpportunityRepository savedOpportunities;
     private final StudentProfileRepository studentProfiles;
     private final PublicOpportunityQueryService publicOpportunities;
+    private final StudentMarketplaceAccess marketplaceAccess;
 
     public SavedOpportunityService(
             SavedOpportunityRepository savedOpportunities, StudentProfileRepository studentProfiles,
-            PublicOpportunityQueryService publicOpportunities) {
+            PublicOpportunityQueryService publicOpportunities, StudentMarketplaceAccess marketplaceAccess) {
         this.savedOpportunities = savedOpportunities;
         this.studentProfiles = studentProfiles;
         this.publicOpportunities = publicOpportunities;
+        this.marketplaceAccess = marketplaceAccess;
     }
 
     /**
@@ -156,15 +158,13 @@ public class SavedOpportunityService {
     /**
      * The caller must actually be a student.
      *
-     * <p>Reuses the existing {@code STUDENT_PROFILE_NOT_FOUND} 404 convention rather than inventing
-     * a role check: a recruiter or university administrator has no student profile, so they receive
-     * the same answer they already get from every other {@code /students/me} route. No RBAC rule was
-     * added or relaxed for B4. Someone who legitimately holds both a staff membership and a student
-     * profile sees their OWN bookmarks, which is correct — that is their private data as a student.
+     * <p>Preserves the missing-profile 404, then checks current memberships and platform grants.
+     * Staff and platform accounts cannot act as marketplace students even if a student profile remains.
      */
     private void requireStudent(UUID studentUserId) {
         if (studentProfiles.findByUserId(studentUserId).isEmpty()) {
             throw new ApiException("STUDENT_PROFILE_NOT_FOUND", HttpStatus.NOT_FOUND, "Student profile not found.");
         }
+        marketplaceAccess.requireStudent(studentUserId);
     }
 }

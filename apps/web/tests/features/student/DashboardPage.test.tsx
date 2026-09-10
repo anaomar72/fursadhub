@@ -16,7 +16,6 @@ interface StubOptions {
   placements?: unknown[]
   enrollmentStatus?: string | null
   opportunities?: unknown[]
-  hasCv?: boolean
 }
 
 function stubApi({
@@ -26,7 +25,6 @@ function stubApi({
   placements = [],
   enrollmentStatus = 'VERIFIED',
   opportunities = [],
-  hasCv = true,
 }: StubOptions = {}) {
   vi.stubGlobal(
     'fetch',
@@ -39,7 +37,6 @@ function stubApi({
           ? jsonResponse({ code: 'NOT_FOUND', message: '', status: 404, path: '', timestamp: '', fieldErrors: [] }, 404)
           : jsonResponse({ id: 'e1', universityId: 'u', departmentId: 'd', studentNumber: 'S1', program: 'CS', academicYear: '4', verificationStatus: enrollmentStatus })
       }
-      if (url.includes('/students/me/cv')) return jsonResponse({ present: hasCv })
       if (url.includes('/students/me/candidacies')) return jsonResponse(candidacies)
       if (url.includes('/students/me/nominations')) return jsonResponse(nominations)
       if (url.includes('/students/me/offers')) return jsonResponse(offers)
@@ -130,11 +127,11 @@ describe('student DashboardPage', () => {
   })
 
   it('shows the readiness checklist derived from real records when there is no placement', async () => {
-    stubApi({ enrollmentStatus: 'SUBMITTED', hasCv: false })
+    stubApi({ enrollmentStatus: 'SUBMITTED' })
     renderDashboard()
 
     expect(await screen.findByText('Get ready to apply')).toBeInTheDocument()
-    expect(screen.getByText('Upload your CV')).toBeInTheDocument()
+    expect(screen.getByText('Add your headline, summary and skills')).toBeInTheDocument()
     // Profile saved + enrollment claimed = 2 of 4.
     expect(screen.getByRole('progressbar', { name: 'Profile completion' })).toHaveAttribute('aria-valuenow', '50')
   })

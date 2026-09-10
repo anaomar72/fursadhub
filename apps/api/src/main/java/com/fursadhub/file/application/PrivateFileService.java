@@ -134,6 +134,22 @@ public class PrivateFileService {
         }
     }
 
+    /** Never remove the old bytes while a replacing pointer can still roll back. */
+    public void deleteAfterCommit(UUID storedFileId) {
+        if (storedFileId == null) return;
+        if (!org.springframework.transaction.support.TransactionSynchronizationManager.isSynchronizationActive()) {
+            throw new IllegalStateException("File replacement requires a transaction");
+        }
+        org.springframework.transaction.support.TransactionSynchronizationManager.registerSynchronization(
+                new org.springframework.transaction.support.TransactionSynchronization() {
+                    @Override public void afterCommit() {
+                        // Retain the immutable metadata row; object removal does not use a completed JPA transaction.
+                        try { storage.delete(metadata(storedFileId).getStorageKey()); }
+                        catch (RuntimeException failure) { log.warn("Could not remove replaced document {}", storedFileId); }
+                    }
+                });
+    }
+
     // ---------------------------------------------------------------- validation
 
     private void requirePresent(MultipartFile upload, FileClassification classification) {

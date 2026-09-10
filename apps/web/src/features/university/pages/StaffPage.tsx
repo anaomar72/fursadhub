@@ -430,30 +430,42 @@ function StaffRow({
         </div>
       )}
 
-      <div className="mt-4 flex flex-wrap items-center gap-2 border-t border-border pt-4">
-        <Button type="button" size="sm" variant="outline" onClick={onToggleEdit}>
-          {t('university:staff.changeRole')}
-        </Button>
-        {member.status === 'SUSPENDED' ? (
-          <Button type="button" size="sm" variant="outline" onClick={onReactivate}>
-            {t('university:staff.reactivate')}
+      {/*
+        Lifecycle commands, managed staff only — matching the identity commands above and the
+        organization portal, which already hid them on its admin row.
+        `UniversityStaffService.requireManagedStaffTarget` now refuses changeRole, suspend,
+        reactivate, resetPassword and revoke on a UNIVERSITY_ADMIN membership with
+        403 STAFF_ADMIN_MEMBERSHIP_PROTECTED, so on a founder's row every one of these buttons could
+        only ever fail. The two portals previously disagreed here because the backend rule had not
+        been settled; it has been, so the divergence is resolved in favour of the server's answer.
+        An admin changes their own password through normal account settings, which is untouched.
+      */}
+      {!isFounderAdmin && (
+        <div className="mt-4 flex flex-wrap items-center gap-2 border-t border-border pt-4">
+          <Button type="button" size="sm" variant="outline" onClick={onToggleEdit}>
+            {t('university:staff.changeRole')}
           </Button>
-        ) : (
-          <Button type="button" size="sm" variant="outline" onClick={onSuspend}>
-            {t('university:staff.suspend')}
+          {member.status === 'SUSPENDED' ? (
+            <Button type="button" size="sm" variant="outline" onClick={onReactivate}>
+              {t('university:staff.reactivate')}
+            </Button>
+          ) : (
+            <Button type="button" size="sm" variant="outline" onClick={onSuspend}>
+              {t('university:staff.suspend')}
+            </Button>
+          )}
+          <Button type="button" size="sm" variant="outline" onClick={onResetPassword} loading={resetPasswordPending}>
+            {t('university:staff.resetPassword')}
           </Button>
-        )}
-        <Button type="button" size="sm" variant="outline" onClick={onResetPassword} loading={resetPasswordPending}>
-          {t('university:staff.resetPassword')}
-        </Button>
-        <button
-          type="button"
-          onClick={onRevoke}
-          className="ml-auto rounded-md px-2 py-1 text-sm font-semibold text-danger transition-colors hover:bg-danger-bg focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus-ring motion-reduce:transition-none"
-        >
-          {t('university:staff.revoke')}
-        </button>
-      </div>
+          <button
+            type="button"
+            onClick={onRevoke}
+            className="ml-auto rounded-md px-2 py-1 text-sm font-semibold text-danger transition-colors hover:bg-danger-bg focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus-ring motion-reduce:transition-none"
+          >
+            {t('university:staff.revoke')}
+          </button>
+        </div>
+      )}
 
       {isEditing && (
         <form

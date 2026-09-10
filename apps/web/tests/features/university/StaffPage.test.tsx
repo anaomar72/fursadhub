@@ -236,4 +236,31 @@ describe('StaffPage (university)', () => {
       })
     })
   })
+  /*
+   * Backend policy, now implemented: `UniversityStaffService.requireManagedStaffTarget` refuses
+   * changeRole / suspend / reactivate / resetPassword / revoke on a UNIVERSITY_ADMIN membership with
+   * 403 STAFF_ADMIN_MEMBERSHIP_PROTECTED. Offering those controls on a founder's row would be four
+   * buttons that can only fail, so the row must not render them — matching the organization portal.
+   */
+  it('offers no lifecycle controls on a University Admin row, which the server refuses', async () => {
+    stubFetch([
+      staffMember({ membershipId: 'admin-1', userId: 'user-admin', email: 'founder@example.test', role: 'UNIVERSITY_ADMIN', departmentIds: [] }),
+    ])
+    renderPage()
+
+    expect(await screen.findByText('founder@example.test')).toBeInTheDocument()
+    for (const label of ['Change role', 'Suspend', 'Reactivate', 'Reset password', 'Revoke']) {
+      expect(screen.queryByRole('button', { name: label })).not.toBeInTheDocument()
+    }
+  })
+
+  it('still offers the full lifecycle on a managed staff row', async () => {
+    stubFetch([staffMember({ email: 'coordinator@example.test', role: 'DEPARTMENT_COORDINATOR' })])
+    renderPage()
+
+    expect(await screen.findByText('coordinator@example.test')).toBeInTheDocument()
+    for (const label of ['Change role', 'Suspend', 'Reset password', 'Revoke']) {
+      expect(screen.getByRole('button', { name: label })).toBeInTheDocument()
+    }
+  })
 })

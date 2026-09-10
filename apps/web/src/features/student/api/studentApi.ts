@@ -13,7 +13,7 @@ export function getMyProfile() {
   return apiFetch<StudentProfileResponse>('/students/me/profile', { method: 'GET' })
 }
 
-export function saveMyProfile(input: { fullName: string; phone?: string }) {
+export function saveMyProfile(input: { fullName: string; phone?: string; professional?: import('../types').StudentProfessionalProfile }) {
   return apiFetch<StudentProfileResponse>('/students/me/profile', { method: 'PUT', body: input })
 }
 

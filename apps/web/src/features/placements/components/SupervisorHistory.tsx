@@ -25,7 +25,7 @@ export function SupervisorHistory({ placementId }: SupervisorHistoryProps) {
   if (historyQuery.isLoading) {
     return (
       <div className="flex justify-center py-6">
-        <LoadingSpinner />
+        <LoadingSpinner label={t('common:status.loading')} />
       </div>
     )
   }

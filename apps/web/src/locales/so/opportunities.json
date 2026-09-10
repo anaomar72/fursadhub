@@ -188,7 +188,8 @@
       "openings": "Booska furan",
       "start": "Bilaabmaya",
       "end": "Dhammaanaya",
-      "deadline": "Xilliga ugu dambeeya ee codsiga"
+      "deadline": "Xilliga ugu dambeeya ee codsiga",
+      "posted": "La daabacay"
     },
     "closesIn_one": "Codsiyadu waxay xidhmayaan {{count}} maalmood gudahood",
     "closesIn_other": "Codsiyadu waxay xidhmayaan {{count}} maalmood gudahood",
@@ -254,7 +255,7 @@
     }
   },
   "enrichment": {
-    "title": "Mushaharka iyo shuruudaha",
+    "title": "Magdhowga iyo saacadaha",
     "compensationLabel": "Mushahar",
     "hoursPerWeekLabel": "Saacadaha toddobaadkii",
     "hoursPerWeekValue_one": "Saacad {{count}} ah",

@@ -1,14 +1,17 @@
+import { PublicBookmarks, PublicBookmark } from '../../features/student/components/PublicBookmarks'
 import { useState, type FormEvent } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import { useQuery } from '@tanstack/react-query'
 import { useTranslation } from 'react-i18next'
 import type { TFunction } from 'i18next'
-import { Avatar, Button, Icon, InternshipCard, Select, VerifiedBadge } from '../../components/ui'
+import { Avatar, Button, ErrorState, Icon, InternshipCard, LoadingState, Reveal, Select } from '../../components/ui'
 import * as publicOpportunityApi from '../../features/opportunities/api/publicOpportunityApi'
 import * as organizationApi from '../../features/organization/api/organizationApi'
 import * as universityApi from '../../features/university/api/universityApi'
 import type { WorkMode } from '../../features/opportunities/types'
 import { HomeHeroIllustration } from './HomeHeroIllustration'
+import { PresentationBand } from '../../components/ui/Presentation'
+import { TestimonialWall } from '../../features/testimonials/components/TestimonialWall'
 
 const WORK_MODES: WorkMode[] = ['ONSITE', 'HYBRID', 'REMOTE']
 const AUDIENCES = ['student', 'organization', 'university'] as const
@@ -22,8 +25,7 @@ const POPULAR_SEARCHES = ['Software Engineering', 'Data Science', 'Marketing', '
  * <p>Everything with a number or a name behind it is REAL: the counts are the `totalElements` of
  * the three public directories, the featured internships are the published opportunity feed, and
  * the organization strip is the public organization directory. The reference's illustrative
- * examples (Google, UNICEF, "2,450+") are never hard-coded, and its testimonial row is omitted
- * entirely because no endpoint supplies testimonials.
+ * examples are never hard-coded. The customer-story footprint contains an honest pending state.
  */
 export function HomePage() {
   const { t, i18n } = useTranslation()
@@ -35,7 +37,7 @@ export function HomePage() {
   })
   const organizations = useQuery({
     queryKey: ['public-organizations', 'home'],
-    queryFn: () => organizationApi.listPublicOrganizations({ page: 0, size: 10, sort: 'recentlyVerified' }),
+    queryFn: () => organizationApi.listMostActivePublicOrganizations(),
   })
   const universities = useQuery({
     queryKey: ['public-universities', 'home'],
@@ -43,7 +45,7 @@ export function HomePage() {
   })
 
   return (
-    <div className="overflow-x-clip bg-background">
+    <PublicBookmarks ids={featured.data?.content.map(item => item.id) ?? []}><div className="home-presentation overflow-x-clip bg-background">
       <Hero
         t={t}
         stats={{
@@ -54,18 +56,23 @@ export function HomePage() {
       />
 
       {/* ------------------------------------------------------------ featured internships */}
-      <section aria-labelledby="featured-heading" className="mx-auto max-w-[1400px] px-4 pb-2 sm:px-6 lg:px-14">
+      <section aria-labelledby="featured-heading" className="mx-auto max-w-[1448px] px-4 pb-2 sm:px-6 lg:px-[54px]">
         <SectionHeading
           id="featured-heading"
           title={t('common:landing.featured.title')}
           action={{ to: '/opportunities', label: t('common:landing.featured.viewAll') }}
         />
-        {featured.data && featured.data.content.length > 0 ? (
-          <ul className="mt-4 grid gap-3 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6">
-            {featured.data.content.map((opportunity) => (
-              <li key={opportunity.id} className="relative">
+        {featured.isError ? (
+          <ErrorState description={t('opportunities:public.error')} onRetry={() => void featured.refetch()} />
+        ) : featured.isLoading ? (
+          <LoadingState label={t('common:status.loading')} />
+        ) : featured.data && featured.data.content.length > 0 ? (
+          <ul className="mt-2 grid gap-3 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6">
+            {featured.data.content.map((opportunity, index) => (
+              <Reveal as="li" key={opportunity.id} index={index} className="relative">
                 <InternshipCard
                   density="compact"
+                  bookmark={<PublicBookmark id={opportunity.id} />}
                   title={opportunity.title}
                   organization={opportunity.organization.name}
                   organizationVerified={opportunity.organization.verified}
@@ -80,6 +87,7 @@ export function HomePage() {
                   }
                   location={opportunity.location ?? undefined}
                   workMode={t(`opportunities:workModeValues.${opportunity.workMode}`)}
+                  tags={(opportunity.skills ?? []).slice(0, 2)}
                   deadline={
                     opportunity.applicationDeadline
                       ? t('opportunities:public.applyBy', {
@@ -98,7 +106,7 @@ export function HomePage() {
                 >
                   <span className="sr-only">{opportunity.title}</span>
                 </Link>
-              </li>
+              </Reveal>
             ))}
           </ul>
         ) : (
@@ -110,18 +118,24 @@ export function HomePage() {
 
       {/* ------------------------------------------------------------ verified organizations */}
       {organizations.data && organizations.data.content.length > 0 && (
-        <section aria-labelledby="organizations-heading" className="mx-auto max-w-[1400px] px-4 pt-9 sm:px-6 lg:px-14">
+        <section aria-labelledby="organizations-heading" className="mx-auto max-w-[1448px] px-4 pt-3 sm:px-6 lg:px-[54px]">
           <SectionHeading
             id="organizations-heading"
             title={t('common:landing.verifiedOrganizations.title')}
             action={{ to: '/organizations', label: t('common:landing.verifiedOrganizations.viewAll') }}
           />
-          <ul className="mt-3 flex flex-wrap items-center gap-x-6 gap-y-3 rounded-xl border border-border bg-surface px-5 py-3 shadow-xs">
+          {/*
+            Centred, not left-packed. The pilot has a handful of verified partners, and a left-aligned
+            row of three small chips in a full-width bar reads as a list that failed to load — the
+            eye sees the empty two thirds, not the partners. Centring makes a short row deliberate,
+            and the same rule still holds when the row is full and wraps.
+          */}
+          <Reveal as="ul" className="mt-3 flex flex-wrap items-center justify-center gap-x-10 gap-y-4 rounded-xl border border-border bg-surface px-6 py-4 shadow-xs">
             {organizations.data.content.map((organization) => (
               <li key={organization.id}>
                 <Link
                   to={`/organizations/${organization.id}`}
-                  className="flex items-center gap-2 rounded-lg focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus-ring"
+                  className="flex items-center gap-2.5 rounded-lg px-1 py-0.5 transition-colors duration-150 hover:text-brand-accent-ink focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus-ring motion-reduce:transition-none"
                 >
                   <Avatar
                     name={organization.name}
@@ -129,85 +143,91 @@ export function HomePage() {
                     size="sm"
                     shape="square"
                   />
-                  <span className="text-xs font-semibold text-brand-navy dark:text-foreground">{organization.name}</span>
-                  {organization.verified && <VerifiedBadge size="sm" />}
+                  <span className="text-sm font-semibold text-brand-navy dark:text-foreground">{organization.name}</span>
                 </Link>
               </li>
             ))}
-          </ul>
+          </Reveal>
         </section>
       )}
 
       {/* ------------------------------------------------------------ how it works */}
-      <section id="how-it-works" className="scroll-mt-24 px-4 py-8 sm:px-6 lg:px-14">
-        <div className="mx-auto max-w-[1400px]">
-          <h2 className="text-center font-display text-2xl font-extrabold tracking-tight text-brand-navy dark:text-foreground">
+      {/*
+        The page's explanatory core, and until now the least readable thing on it: the heading sat at
+        14px and every line of body copy and every bullet at 11px/16px — smaller than any control on
+        the same screen. A mockup's apparent proportions are not a type scale. The composition is
+        unchanged (one centred heading over three parallel audience columns); only the sizes people
+        actually read are restored, and the vertical rhythm carries the density instead.
+      */}
+      <section id="how-it-works" className="scroll-mt-24 px-4 py-10 sm:px-6 lg:px-[54px]">
+        <div className="mx-auto max-w-[1448px]">
+          <h2 className="text-center font-display text-2xl font-extrabold tracking-tight text-brand-navy dark:text-foreground sm:text-[1.75rem]">
             {t('common:landing.ecosystem.title')}
           </h2>
-          <div className="mt-5 grid overflow-hidden rounded-xl border border-border bg-surface shadow-xs lg:grid-cols-3">
+          <div className="mt-8 grid gap-5 lg:grid-cols-3">
             {AUDIENCES.map((audience, index) => (
-              <div
+              <Reveal
                 key={audience}
-                className="flex h-full flex-col border-b border-border p-5 last:border-b-0 lg:border-b-0 lg:border-e lg:last:border-e-0"
+                index={index}
+                className="flex h-full flex-col rounded-xl border border-border bg-surface p-6 shadow-xs transition-[border-color,box-shadow] duration-200 ease-out hover:border-border-strong hover:shadow-sm motion-reduce:transition-none"
               >
-                <div className="flex items-start gap-3">
+                <div className="flex items-start gap-3.5">
                   <AudienceIcon index={index} />
                   <div className="min-w-0">
-                    <h3 className="font-display text-base font-extrabold tracking-tight text-brand-navy dark:text-foreground">
+                    <h3 className="font-display text-lg font-extrabold tracking-tight text-brand-navy dark:text-foreground">
                       {t(`common:landing.ecosystem.${audience}.title`)}
                     </h3>
-                    <p className="mt-1 text-xs leading-5 text-foreground-secondary">
+                    <p className="mt-1.5 text-sm leading-6 text-foreground-secondary">
                       {t(`common:landing.ecosystem.${audience}.body`)}
                     </p>
                   </div>
                 </div>
-                <ul className="mt-3 space-y-1.5">
+                <ul className="mt-4 space-y-2 lg:pl-[3.25rem]">
                   {(t(`common:landing.works.${audience}.points`, { returnObjects: true }) as string[]).map((point) => (
-                    <li key={point} className="flex items-start gap-2 text-xs leading-5 text-foreground-secondary">
-                      <Icon name="check" className="mt-0.5 size-3.5 shrink-0 text-success" />
+                    <li key={point} className="flex items-start gap-2.5 text-sm leading-6 text-foreground-secondary">
+                      <Icon name="check" className="mt-1 size-4 shrink-0 text-success" />
                       <span>{point}</span>
                     </li>
                   ))}
                 </ul>
                 <Link
                   to={AUDIENCE_CTA[audience]}
-                  className="mt-4 inline-flex items-center gap-1.5 self-start rounded text-xs font-bold text-brand-accent-ink transition-colors hover:text-brand-accent focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus-ring motion-reduce:transition-none"
+                  className="mt-5 inline-flex lg:ml-[3.25rem] items-center gap-1.5 self-start rounded text-sm font-bold text-brand-accent-ink transition-colors duration-150 hover:text-brand-accent focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus-ring motion-reduce:transition-none"
                 >
                   {t(`common:landing.works.${audience}.cta`)}
                   <Icon name="chevronRight" className="size-4" />
                 </Link>
-              </div>
+              </Reveal>
             ))}
           </div>
         </div>
       </section>
 
       {/* ------------------------------------------------------------ navy call to action */}
-      <section className="px-4 pb-10 sm:px-6 lg:px-14">
-        <div className="surface-dark relative mx-auto flex max-w-[1400px] flex-col items-start gap-4 overflow-hidden rounded-xl bg-surface px-5 py-4 text-foreground sm:px-8 lg:flex-row lg:items-center lg:justify-between">
-          <div className="relative">
-            <h2 className="font-display text-base font-extrabold tracking-tight sm:text-lg">
-              {t('common:landing.band.title')}
-            </h2>
-            <p className="mt-1 text-xs text-foreground-secondary">{t('common:landing.band.body')}</p>
-          </div>
-          <div className="relative flex flex-wrap gap-3">
-            <Link
-              to="/register?role=organization"
-              className="inline-flex h-9 items-center rounded-lg bg-brand-accent px-4 text-xs font-semibold text-white transition-colors hover:bg-brand-accent-strong focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus-ring motion-reduce:transition-none"
-            >
-              {t('common:landing.band.primary')}
-            </Link>
-            <Link
-              to="/register"
-              className="inline-flex h-9 items-center rounded-lg bg-white px-4 text-xs font-semibold text-brand-navy transition-colors hover:bg-white/90 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus-ring motion-reduce:transition-none"
-            >
-              {t('common:landing.band.secondary')}
-            </Link>
-          </div>
-        </div>
+      <section className="mx-auto max-w-[1448px] px-4 pb-2 sm:px-6 lg:px-[54px]">
+        {/* The page's closing ask arrives as one piece rather than three, so it reads as an
+            invitation rather than as another row of content. */}
+        <Reveal>
+          <PresentationBand title={t('common:landing.band.title')} body={t('common:landing.band.body')}>
+            <div className="relative flex flex-wrap gap-3">
+              <Link
+                to="/register?role=organization"
+                className="inline-flex h-10 items-center rounded-lg bg-brand-accent px-5 text-sm font-semibold text-white transition-colors duration-150 hover:bg-brand-accent-strong focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus-ring focus-visible:ring-offset-2 focus-visible:ring-offset-brand-navy motion-reduce:transition-none"
+              >
+                {t('common:landing.band.primary')}
+              </Link>
+              <Link
+                to="/register"
+                className="inline-flex h-10 items-center rounded-lg bg-white px-5 text-sm font-semibold text-brand-navy transition-colors duration-150 hover:bg-white/90 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus-ring focus-visible:ring-offset-2 focus-visible:ring-offset-brand-navy motion-reduce:transition-none"
+              >
+                {t('common:landing.band.secondary')}
+              </Link>
+            </div>
+          </PresentationBand>
+        </Reveal>
+        <TestimonialWall />
       </section>
-    </div>
+    </div></PublicBookmarks>
   )
 }
 
@@ -252,19 +272,19 @@ function Hero({
   ].filter((entry) => typeof entry.value === 'number')
 
   return (
-    <section className="mx-auto grid w-full max-w-[1400px] gap-8 px-4 pb-6 pt-7 sm:px-6 lg:grid-cols-[1.05fr_1fr] lg:items-start lg:px-14">
+    <section className="mx-auto grid w-full max-w-[1448px] gap-8 px-4 pb-4 pt-5 sm:px-6 lg:grid-cols-[1.1fr_1fr] lg:items-start lg:px-[54px]">
       <div className="animate-hero-fade motion-reduce:animate-none">
-        <h1 className="font-display text-[34px] font-extrabold leading-[1.06] tracking-[-0.035em] text-brand-navy dark:text-foreground sm:text-[40px] lg:text-[44px]">
+        <h1 className="font-display text-[34px] font-extrabold leading-[1.06] tracking-[-0.035em] text-brand-navy dark:text-foreground sm:text-[40px] lg:text-[48px]">
           <span className="block">{t('common:landing.hero2.titleLead')}</span>
           <span className="mt-1.5 block">
             {t('common:landing.hero2.titleBuild')} <span className="text-brand-accent">{t('common:landing.hero2.titleAccent')}</span>
           </span>
         </h1>
-        <p className="mt-3.5 max-w-xl text-sm leading-6 text-foreground-secondary">
+        <p className="mt-3 max-w-md text-sm leading-6 text-foreground-secondary">
           {t('common:landing.hero2.description')}
         </p>
 
-        <form onSubmit={submit} className="mt-5 flex flex-col gap-2 sm:flex-row sm:flex-wrap sm:items-center">
+        <form onSubmit={submit} className="mt-3 flex flex-col gap-2 sm:flex-row sm:flex-wrap sm:items-center">
           <label className="relative min-w-0 flex-1 sm:min-w-[11rem]">
             <span className="sr-only">{t('common:landing.hero2.searchLabel')}</span>
             <Icon
@@ -305,13 +325,16 @@ function Hero({
           </Button>
         </form>
 
-        <div className="mt-3 flex flex-wrap items-center gap-1.5 text-[11px]">
+        {/* These are tappable shortcuts into the marketplace, not a caption. At 10px with 2px of
+            vertical padding they were both the smallest text on the page and a target barely taller
+            than the finger meant to hit them. */}
+        <div className="mt-3 flex flex-wrap items-center gap-1.5 text-xs">
           <span className="font-semibold text-foreground-secondary">{t('common:landing.hero2.popular')}</span>
           {POPULAR_SEARCHES.map((term) => (
             <Link
               key={term}
               to={`/opportunities?query=${encodeURIComponent(term)}`}
-              className="rounded-full border border-border bg-surface px-3 py-1 font-medium text-foreground-secondary transition-colors hover:border-border-strong hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus-ring motion-reduce:transition-none"
+              className="rounded-full border border-border bg-surface px-2.5 py-1 font-medium text-foreground-secondary transition-colors duration-150 hover:border-border-strong hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus-ring motion-reduce:transition-none"
             >
               {term}
             </Link>
@@ -327,7 +350,7 @@ function Hero({
         {statEntries.length > 0 && (
           <ul
             aria-label={t('common:landing.stats.label')}
-            className="mt-5 grid gap-3 sm:grid-cols-3"
+            className="mt-2 grid gap-3 sm:grid-cols-3"
           >
             {statEntries.map((entry) => (
               <li
@@ -369,13 +392,13 @@ function SectionHeading({
 }) {
   return (
     <div className="flex flex-wrap items-center justify-between gap-3">
-      <h2 id={id} className="font-display text-lg font-extrabold tracking-tight text-brand-navy dark:text-foreground">
+      <h2 id={id} className="font-display text-sm font-extrabold tracking-tight text-brand-navy dark:text-foreground">
         {title}
       </h2>
       {action && (
         <Link
           to={action.to}
-          className="inline-flex items-center gap-1.5 rounded text-sm font-bold text-brand-accent-ink transition-colors hover:text-brand-accent focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus-ring motion-reduce:transition-none"
+          className="inline-flex items-center gap-1.5 rounded text-xs font-bold text-brand-accent-ink transition-colors hover:text-brand-accent focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus-ring motion-reduce:transition-none"
         >
           {action.label}
           <Icon name="chevronRight" className="size-4" />

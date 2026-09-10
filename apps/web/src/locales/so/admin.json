@@ -12,7 +12,8 @@
     "platformRoles": "Doorarka madasha",
     "noAccess": "Ma haysatid gelitaan maamulka madasha.",
     "verification": "Xaqiijinta",
-    "platform": "Nidaamka"
+    "platform": "Nidaamka",
+    "testimonials": "Markhaatiyada"
   },
   "dashboard": {
     "title": "Guudmarka madasha",
@@ -512,5 +513,32 @@
   "locales": {
     "en": "Ingiriisi",
     "so": "Soomaali"
+  },
+  "testimonials": {
+    "title": "Markhaatiyada",
+    "description": "Dib u eeg markhaatiyada ay gudbiyeen isticmaalayaasha dhabta ah ee FursadHub. Waxba ma gaaraan bogga dadweynaha ilaa halkan lagu daabaco.",
+    "statusFilter": "Xaalad",
+    "allStatuses": "Dhammaan xaaladaha",
+    "author": "Qoraaga",
+    "quote": "Markhaati",
+    "submittedAt": "La gudbiyay",
+    "actions": "Ficillo",
+    "publish": "Daabac",
+    "unpublish": "Ka qaad daabacaadda",
+    "reject": "Diid",
+    "empty": "Markhaati kuma jiro shaandhaynta.",
+    "resultCount_one": "{{count}} markhaati",
+    "resultCount_other": "{{count}} markhaati",
+    "noteLabel": {
+      "unpublish": "Sababta daabacaadda looga qaadayo (ikhtiyaari)",
+      "reject": "Sababta diidmada (waa loo baahan yahay)"
+    },
+    "errors": {
+      "TESTIMONIAL_INVALID_TRANSITION": "Markhaatigaas si taas ah xaaladdiisa looma beddeli karo.",
+      "TESTIMONIAL_NOT_FOUND": "Markhaatigaas ma jiro.",
+      "VALIDATION_FAILED": "Sabab ayaa loo baahan yahay marka markhaati la diidayo.",
+      "ACCESS_DENIED": "Uma lihid oggolaansho aad markhaatiyada ku maamusho.",
+      "generic": "Markhaatigaas lama cusboonaysiin karin. Isku day mar kale."
+    }
   }
 }

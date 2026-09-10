@@ -69,7 +69,7 @@ class CandidacyMergeConcurrencyIT extends AbstractPhase4IT {
         HybridSetup setup = hybridSetup();
         StudentFixture student = createVerifiedStudent("student", setup.universityId(), setup.departmentId());
 
-        assertThat(authorizedPost("/api/v1/opportunities/" + setup.opportunityId() + "/applications",
+        assertThat(applicationWithCv("/api/v1/opportunities/" + setup.opportunityId() + "/applications",
                 student.accessToken(), Map.of()).getStatusCode()).isEqualTo(HttpStatus.CREATED);
         assertThat(sourceOf(setup.opportunityId(), student.userId())).isEqualTo("SELF_APPLICATION");
 
@@ -91,7 +91,7 @@ class CandidacyMergeConcurrencyIT extends AbstractPhase4IT {
         authorizedPost("/api/v1/nominations/" + nominationId + "/accept", student.accessToken(), null);
         assertThat(sourceOf(setup.opportunityId(), student.userId())).isEqualTo("UNIVERSITY_NOMINATION");
 
-        ResponseEntity<Map> applied = authorizedPost(
+        ResponseEntity<Map> applied = applicationWithCv(
                 "/api/v1/opportunities/" + setup.opportunityId() + "/applications", student.accessToken(), Map.of());
 
         assertThat(applied.getStatusCode()).isEqualTo(HttpStatus.CREATED);
@@ -114,7 +114,7 @@ class CandidacyMergeConcurrencyIT extends AbstractPhase4IT {
         ExecutorService executor = Executors.newFixedThreadPool(2);
         try {
             Future<ResponseEntity<Map>> application = executor.submit(fireTogether(barrier,
-                    () -> authorizedPost("/api/v1/opportunities/" + setup.opportunityId() + "/applications",
+                    () -> applicationWithCv("/api/v1/opportunities/" + setup.opportunityId() + "/applications",
                             student.accessToken(), Map.of())));
             Future<ResponseEntity<Map>> consent = executor.submit(fireTogether(barrier,
                     () -> authorizedPost("/api/v1/nominations/" + nominationId + "/accept",
@@ -150,7 +150,7 @@ class CandidacyMergeConcurrencyIT extends AbstractPhase4IT {
             List<Future<ResponseEntity<Map>>> futures = new java.util.ArrayList<>();
             for (int i = 0; i < attempts; i++) {
                 futures.add(executor.submit(fireTogether(barrier,
-                        () -> authorizedPost("/api/v1/opportunities/" + setup.opportunityId() + "/applications",
+                        () -> applicationWithCv("/api/v1/opportunities/" + setup.opportunityId() + "/applications",
                                 student.accessToken(), Map.of()))));
             }
 
@@ -177,7 +177,7 @@ class CandidacyMergeConcurrencyIT extends AbstractPhase4IT {
         HybridSetup setup = hybridSetup();
         StudentFixture student = createVerifiedStudent("student", setup.universityId(), setup.departmentId());
 
-        authorizedPost("/api/v1/opportunities/" + setup.opportunityId() + "/applications", student.accessToken(), Map.of());
+        applicationWithCv("/api/v1/opportunities/" + setup.opportunityId() + "/applications", student.accessToken(), Map.of());
         UUID candidacyId = jdbcTemplate.queryForObject(
                 "SELECT id FROM candidacies WHERE opportunity_id = ? AND student_user_id = ?",
                 UUID.class, setup.opportunityId(), student.userId());
@@ -198,7 +198,7 @@ class CandidacyMergeConcurrencyIT extends AbstractPhase4IT {
         HybridSetup setup = hybridSetup();
         StudentFixture student = createVerifiedStudent("student", setup.universityId(), setup.departmentId());
 
-        authorizedPost("/api/v1/opportunities/" + setup.opportunityId() + "/applications", student.accessToken(), Map.of());
+        applicationWithCv("/api/v1/opportunities/" + setup.opportunityId() + "/applications", student.accessToken(), Map.of());
         UUID nominationId = nominate(setup, student.userId());
         authorizedPost("/api/v1/nominations/" + nominationId + "/accept", student.accessToken(), null);
 

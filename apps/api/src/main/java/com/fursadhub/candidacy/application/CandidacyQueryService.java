@@ -70,7 +70,8 @@ public class CandidacyQueryService {
     /** Full detail for one candidate, as the organization sees it. */
     public record CandidateDetail(
             Candidacy candidacy, String studentEmail, String studentFullName, List<ScreeningAnswer> answers,
-            List<InternshipOffer> offers, List<CandidacyEvent> history) {
+            List<InternshipOffer> offers, List<CandidacyEvent> history,
+            com.fursadhub.student.domain.StudentProfessionalProfile professional) {
     }
 
     /** One row of a student's own "My applications" list. */
@@ -108,7 +109,8 @@ public class CandidacyQueryService {
                 fullNameOf(candidacy.getStudentUserId()),
                 screeningAnswers.findByCandidacyId(candidacyId),
                 offers.findByCandidacyIdOrderByCreatedAtDesc(candidacyId),
-                events.findByCandidacyIdOrderByOccurredAt(candidacyId));
+                events.findByCandidacyIdOrderByOccurredAt(candidacyId),
+                studentProfiles.findByUserId(candidacy.getStudentUserId()).map(StudentProfile::getProfessional).orElse(null));
     }
 
     /** A student's own candidacies. Always scoped to the authenticated caller. */

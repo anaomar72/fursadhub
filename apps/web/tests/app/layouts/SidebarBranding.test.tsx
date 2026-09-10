@@ -46,6 +46,10 @@ function renderShell(brand?: SidebarBrand, tone: 'light' | 'navy' = 'navy') {
  * must be data-driven, and no tenant from the mockups may ever be hard-coded.
  */
 describe('tenant-branded sidebar', () => {
+  it('offers a public marketplace link without signing out', () => {
+    renderShell({ name: 'Tenant from membership', portalLabel: 'University Portal' })
+    expect(screen.getByRole('link', { name: 'Public marketplace' })).toHaveAttribute('href', '/opportunities')
+  })
   beforeEach(async () => {
     window.localStorage.clear()
     await i18n.changeLanguage('en')

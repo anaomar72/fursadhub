@@ -20,7 +20,19 @@ export interface PageHeaderProps {
  */
 export function PageHeader({ eyebrow, title, description, actions, className }: PageHeaderProps) {
   return (
-    <div className={cn('flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between', className)}>
+    /*
+      The rule under the header is the workspace family's, so the same component opens a student
+      page under a warm orange hairline, an organization page under a crisp neutral one, and a
+      university page under navy. One line of composition, three recognisable workspaces — and
+      nothing about the heading, the type scale or the action slot changes.
+    */
+    <div
+      style={{ borderBottomColor: 'var(--workspace-rule)' }}
+      className={cn(
+        'flex flex-col gap-4 border-b pb-4 sm:flex-row sm:items-end sm:justify-between',
+        className,
+      )}
+    >
       {/* `min-w-0` + `break-words`: titles are often an email address or an institution name, which
           have no break opportunity and would otherwise push the whole page sideways on a phone
           rather than wrapping (BRAND_AND_UI_GUIDELINES.md section 8 — never page-level overflow). */}

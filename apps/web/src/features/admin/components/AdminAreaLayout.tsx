@@ -29,7 +29,7 @@ export function AdminAreaLayout() {
   if (sessionQuery.isLoading) {
     return (
       <div className="flex min-h-svh items-center justify-center">
-        <LoadingSpinner size="lg" />
+        <LoadingSpinner size="lg" label={t('common:status.loading')} />
       </div>
     )
   }
@@ -37,7 +37,7 @@ export function AdminAreaLayout() {
   const session = sessionQuery.data
   if (!session?.platformAdmin) {
     return (
-      <AppShell
+      <AppShell workspace="platform"
         areaLabel={t('common:nav.admin')}
         tone="navy"
         sections={[
@@ -54,7 +54,7 @@ export function AdminAreaLayout() {
 
   return (
     <AdminSessionContext.Provider value={session}>
-      <AppShell
+      <AppShell workspace="platform"
         areaLabel={t('common:nav.admin')}
         tone="navy"
         brand={{ portalLabel: t('common:shell.portals.admin') }}

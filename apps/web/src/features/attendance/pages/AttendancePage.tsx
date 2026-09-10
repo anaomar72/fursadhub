@@ -2,7 +2,7 @@ import { useState } from 'react'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { useTranslation } from 'react-i18next'
 import { useParams } from 'react-router-dom'
-import { Button, ErrorState, FormField, Input, LoadingState, Select, StatusBadge, Textarea } from '../../../components/ui'
+import { Button, ErrorState, FormField, Input, LoadingState, Select, StatusBadge, Textarea, EmptyState } from '../../../components/ui'
 import type { StatusTone } from '../../../components/ui'
 import { apiErrorMessage } from '../../../lib/api/errorMessage'
 import * as attendanceApi from '../api/attendanceApi'
@@ -121,9 +121,10 @@ export function AttendancePage({ audience }: AttendancePageProps) {
       )}
 
       {records.length === 0 ? (
-        <p className="rounded-lg border border-border bg-surface p-6 text-center text-sm text-foreground-secondary">
-          {t('internship:attendance.empty')}
-        </p>
+        <EmptyState
+          title={t('internship:attendance.empty')}
+          description={t('internship:attendance.emptyHint')}
+        />
       ) : (
         // The table scrolls inside its own container so the page body never scrolls sideways on a
         // phone, including with the longer Somali status labels.

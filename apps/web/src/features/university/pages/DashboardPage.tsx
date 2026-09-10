@@ -17,8 +17,7 @@ import {
   studentsByDepartment,
   verifiedStudentCount,
 } from '../universityMetrics'
-import { Card, ErrorState, Icon, type IconName, LoadingState, ProgressIndicator, StatusBadge, StatusDistribution } from '../../../components/ui'
-import { METRIC_TONES } from '../../../components/ui/metricTones'
+import { Card, PageHeader, SectionHeading, EmptyState, ErrorState, Icon, LoadingState, ProgressIndicator, StatusBadge, StatusDistribution, StatCard } from '../../../components/ui'
 import { PageContainer } from '../../../app/layouts/PageContainer'
 import { formatDate } from '../../../lib/utils/formatDate'
 
@@ -132,36 +131,36 @@ function StaffDashboard() {
 
   return (
     <PageContainer className="flex flex-col gap-6">
-      <header>
-        <h1 className="font-display text-2xl font-bold tracking-tight text-brand-navy dark:text-foreground sm:text-3xl">
-          {t('university:dashboard.title')}
-        </h1>
-        <p className="mt-1.5 text-sm text-foreground-secondary">{t('university:dashboard.subtitle')}</p>
-      </header>
+      {/* The same page header every other portal page uses, rather than a hand-rolled h1 that had
+          drifted a size larger than the shared one. */}
+      <PageHeader
+        title={t('university:dashboard.title')}
+        description={t('university:dashboard.subtitle')}
+      />
 
       <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
-        <MetricCard
+        <StatCard
           icon="graduationCap"
           tone="brand"
           label={t('university:dashboard.totalStudents')}
           value={students.length}
           to="/university/students"
         />
-        <MetricCard
+        <StatCard
           icon="badgeCheck"
           tone="teal"
           label={t('university:dashboard.activePlacements')}
           value={livePlacementCount(placements)}
           to="/university/placements"
         />
-        <MetricCard
+        <StatCard
           icon="userCheck"
           tone="violet"
           label={t('university:dashboard.placedStudents')}
           value={placedStudentCount(placements)}
           to="/university/placements"
         />
-        <MetricCard
+        <StatCard
           icon="building"
           tone="amber"
           label={t('university:dashboard.partnerOrganizations')}
@@ -197,95 +196,10 @@ function StaffDashboard() {
         </div>
       )}
 
-      <div className="grid gap-5 xl:grid-cols-[1.3fr_1fr]">
-        <Card padding="lg">
-          <div className="flex flex-wrap items-start justify-between gap-3">
-            <div>
-              <h2 className="font-display text-base font-bold text-brand-navy dark:text-foreground">
-                {t('university:dashboard.placementOverview')}
-              </h2>
-              <p className="mt-1 text-sm text-foreground-secondary">{t('university:dashboard.placementOverviewHint')}</p>
-            </div>
-            <Link to="/university/placements" className="shrink-0 text-sm font-semibold text-link hover:underline">
-              {t('university:dashboard.viewAll')}
-            </Link>
-          </div>
-          <StatusDistribution
-            className="mt-5"
-            label={t('university:dashboard.placementOverview')}
-            emptyLabel={t('university:dashboard.noPlacements')}
-            items={PLACEMENT_STATUS_ORDER.map((status) => ({
-              id: status,
-              label: t(`placements:statusValues.${status}`),
-              value: statusCounts[status],
-              tone: PLACEMENT_STATUS_TONE[status],
-            }))}
-          />
-        </Card>
-
-        <Card padding="lg">
-          <h2 className="font-display text-base font-bold text-brand-navy dark:text-foreground">
-            {t('university:dashboard.verificationProgress')}
-          </h2>
-          <p className="mt-1 text-sm text-foreground-secondary">{t('university:dashboard.verificationProgressHint')}</p>
-          <ProgressIndicator
-            className="mt-5"
-            label={t('university:dashboard.verifiedOf', { verified, total: students.length })}
-            value={students.length === 0 ? 0 : Math.round((verified / students.length) * 100)}
-          />
-          <dl className="mt-5 grid grid-cols-2 gap-4 border-t border-border pt-5">
-            <div>
-              <dt className="text-xs text-foreground-secondary">{t('university:dashboard.verified')}</dt>
-              <dd className="mt-1 text-2xl font-bold text-brand-navy dark:text-foreground">{verified}</dd>
-            </div>
-            <div>
-              <dt className="text-xs text-foreground-secondary">{t('university:dashboard.departments')}</dt>
-              <dd className="mt-1 text-2xl font-bold text-brand-navy dark:text-foreground">{departments.length}</dd>
-            </div>
-          </dl>
-        </Card>
-      </div>
-
-      <div className="grid gap-5 xl:grid-cols-2">
+      <div className="grid gap-5 xl:grid-cols-[1fr_1.2fr]">
         <Card padding="none" className="overflow-hidden">
           <SectionHeading
-            title={t('university:dashboard.partnerOrganizations')}
-            action={
-              <Link to="/university/partners" className="text-sm font-semibold text-link hover:underline">
-                {t('university:dashboard.viewAll')}
-              </Link>
-            }
-          />
-          {partners.length === 0 ? (
-            <p className="px-5 py-8 text-center text-sm text-foreground-secondary">{t('university:partners.empty')}</p>
-          ) : (
-            <ul className="divide-y divide-border">
-              {partners.slice(0, 4).map((partner) => (
-                <li key={partner.id} className="flex items-center gap-3 px-5 py-3.5">
-                  <span className="flex size-10 shrink-0 items-center justify-center rounded-lg bg-brand-blue-soft text-brand-blue dark:bg-info-bg dark:text-info">
-                    <Icon name="building" className="size-5" />
-                  </span>
-                  <span className="min-w-0 flex-1">
-                    <span className="block truncate font-semibold text-foreground">
-                      {partner.name ?? t('university:partners.unnamed')}
-                    </span>
-                    <span className="block text-xs text-muted">
-                      {t('university:partners.placementCount', { count: partner.placementCount })}
-                    </span>
-                  </span>
-                  {partner.livePlacementCount > 0 && (
-                    <StatusBadge tone="success">
-                      {t('university:partners.liveCount', { count: partner.livePlacementCount })}
-                    </StatusBadge>
-                  )}
-                </li>
-              ))}
-            </ul>
-          )}
-        </Card>
-
-        <Card padding="none" className="overflow-hidden">
-          <SectionHeading
+            panel
             title={t('university:dashboard.recentNominations')}
             action={
               <Link to="/university/nominations" className="text-sm font-semibold text-link hover:underline">
@@ -294,7 +208,11 @@ function StaffDashboard() {
             }
           />
           {recentNominations.length === 0 ? (
-            <p className="px-5 py-8 text-center text-sm text-foreground-secondary">{t('recruitment:nominations.emptyUniversity')}</p>
+            <EmptyState
+                variant="inline"
+                title={t('recruitment:nominations.emptyUniversity')}
+                description={t('university:dashboard.noNominationsHint')}
+              />
           ) : (
             <ul className="divide-y divide-border">
               {recentNominations.map((nomination) => (
@@ -315,11 +233,105 @@ function StaffDashboard() {
             </ul>
           )}
         </Card>
+        {/*
+          `padding="none"` + a ruled `panel` heading, exactly like the nominations panel beside it.
+          With `padding="lg"` this panel's heading sat about 8px lower than its neighbour's and had
+          no rule under it, so two modules side by side started at different heights — the one thing
+          a two-column row must not do.
+        */}
+        <div className="grid gap-5"><Card padding="none" className="overflow-hidden">
+          <SectionHeading
+            panel
+            title={t('university:dashboard.placementOverview')}
+            description={t('university:dashboard.placementOverviewHint')}
+            action={
+              <Link to="/university/placements" className="text-sm font-semibold text-link hover:underline">
+                {t('university:dashboard.viewAll')}
+              </Link>
+            }
+          />
+          <StatusDistribution
+            className="px-5 pb-5 pt-5"
+            label={t('university:dashboard.placementOverview')}
+            emptyLabel={t('university:dashboard.noPlacements')}
+            items={PLACEMENT_STATUS_ORDER.map((status) => ({
+              id: status,
+              label: t(`placements:statusValues.${status}`),
+              value: statusCounts[status],
+              tone: PLACEMENT_STATUS_TONE[status],
+            }))}
+          />
+        </Card>
+
+          <Card padding="lg">
+            <SectionHeading
+              title={t('university:dashboard.verificationProgress')}
+              description={t('university:dashboard.verificationProgressHint')}
+            />
+            <ProgressIndicator
+              className="mt-5"
+              label={t('university:dashboard.verifiedOf', { verified, total: students.length })}
+              value={students.length === 0 ? 0 : Math.round((verified / students.length) * 100)}
+            />
+            <dl className="mt-5 grid grid-cols-2 gap-4 border-t border-border pt-5">
+              <div>
+                <dt className="text-xs text-foreground-secondary">{t('university:dashboard.verified')}</dt>
+                <dd className="mt-1 text-2xl font-bold text-brand-navy dark:text-foreground">{verified}</dd>
+              </div>
+              <div>
+                <dt className="text-xs text-foreground-secondary">{t('university:dashboard.departments')}</dt>
+                <dd className="mt-1 text-2xl font-bold text-brand-navy dark:text-foreground">{departments.length}</dd>
+              </div>
+            </dl>
+          </Card></div>
       </div>
+
+      <Card padding="none" className="overflow-hidden">
+        <SectionHeading
+          panel
+          title={t('university:dashboard.partnerOrganizations')}
+          action={
+            <Link to="/university/partners" className="text-sm font-semibold text-link hover:underline">
+              {t('university:dashboard.viewAll')}
+            </Link>
+          }
+        />
+        {partners.length === 0 ? (
+          <EmptyState
+                variant="inline"
+                title={t('university:partners.empty')}
+                description={t('university:dashboard.noPartnersHint')}
+              />
+        ) : (
+          <ul className="grid gap-3 p-4 sm:grid-cols-2 xl:grid-cols-5">
+            {partners.slice(0, 5).map((partner) => (
+              <li key={partner.id} className="flex min-w-0 flex-col items-start gap-3 rounded-lg border border-border p-4">
+                <span className="flex size-10 shrink-0 items-center justify-center rounded-lg bg-brand-blue-soft text-brand-blue dark:bg-info-bg dark:text-info">
+                  <Icon name="building" className="size-5" />
+                </span>
+                <span className="min-w-0 flex-1">
+                  <span className="block truncate font-semibold text-foreground">
+                    {partner.name ?? t('university:partners.unnamed')}
+                  </span>
+                  <span className="block text-xs text-muted">
+                    {t('university:partners.placementCount', { count: partner.placementCount })}
+                  </span>
+                </span>
+                {partner.livePlacementCount > 0 && (
+                  <StatusBadge tone="success">
+                    {t('university:partners.liveCount', { count: partner.livePlacementCount })}
+                  </StatusBadge>
+                )}
+              </li>
+            ))}
+          </ul>
+        )}
+      </Card>
 
       {isAdmin && departmentRows.length > 0 && (
         <Card padding="none" className="overflow-hidden">
           <SectionHeading
+            panel
             title={t('university:dashboard.byDepartment')}
             action={
               <Link to="/university/departments" className="text-sm font-semibold text-link hover:underline">
@@ -345,46 +357,7 @@ function StaffDashboard() {
   )
 }
 
-function SectionHeading({ title, action }: { title: string; action?: React.ReactNode }) {
-  return (
-    <div className="flex items-center justify-between gap-3 border-b border-border px-5 py-4">
-      <h2 className="font-display text-base font-bold text-brand-navy dark:text-foreground">{title}</h2>
-      {action}
-    </div>
-  )
-}
 
-function MetricCard({
-  icon,
-  tone,
-  label,
-  value,
-  to,
-}: {
-  icon: IconName
-  tone: keyof typeof METRIC_TONES
-  label: string
-  value: number
-  to: string
-}) {
-  const { t } = useTranslation()
-  return (
-    <Card padding="lg">
-      <div className="flex items-start gap-3">
-        <span className={`flex size-11 shrink-0 items-center justify-center rounded-xl ${METRIC_TONES[tone]}`}>
-          <Icon name={icon} className="size-5" />
-        </span>
-        <div className="min-w-0">
-          <p className="truncate text-sm font-medium text-foreground-secondary">{label}</p>
-          <p className="mt-1 text-3xl font-bold leading-none text-brand-navy dark:text-foreground">{value}</p>
-        </div>
-      </div>
-      <Link to={to} className="mt-4 inline-block text-sm font-semibold text-link hover:underline">
-        {t('university:dashboard.viewAll')}
-      </Link>
-    </Card>
-  )
-}
 
 function ActionCard({
   label,

@@ -419,7 +419,7 @@ class AdminOpportunityQueryIT extends AbstractPhase7IT {
         UUID universityId = insertVerifiedUniversity("B6 Privacy University " + UUID.randomUUID().toString().substring(0, 8));
         UUID departmentId = insertDepartment(universityId, "Computer Science", "CS" + System.nanoTime() % 100000);
         StudentFixture student = createStudent(prefix + "-student", universityId, departmentId, "VERIFIED");
-        requireOk(authorizedPost(
+        requireOk(applicationWithCv(
                 "/api/v1/opportunities/" + base.publishedId() + "/applications", student.accessToken(), Map.of()),
                 "Apply to opportunity");
         return new Fixture(base.organizationId(), base.recruiterToken(), base.publishedId(), student.email());

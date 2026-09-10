@@ -1,6 +1,6 @@
 package com.fursadhub.verification;
 
-import com.fursadhub.candidacy.AbstractPhase4IT;
+import com.fursadhub.administration.AbstractPhase7IT;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -20,7 +20,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  * only issuable while the case is genuinely under review, and is stored as a hash only
  * (CLAUDE.md section 64 — never persist a raw verification token).
  */
-class VerificationChallengeIT extends AbstractPhase4IT {
+class VerificationChallengeIT extends AbstractPhase7IT {
 
     private record University(UUID universityId, UUID departmentId, String adminToken) {
     }
@@ -35,9 +35,19 @@ class VerificationChallengeIT extends AbstractPhase4IT {
         return new University(universityId, departmentId, loginAndExtractAccessToken(adminEmail, "Password123"));
     }
 
-    /** A student whose enrollment has been submitted for review through the real endpoint. */
+    /**
+     * A student whose enrollment has been submitted for review through the real endpoints.
+     *
+     * <p>Student-ID evidence is uploaded first, because submission requires it
+     * ({@code STUDENT_ID_EVIDENCE_REQUIRED}). This fixture predates that rule and used to submit
+     * without any, which made every test here fail on setup rather than on what it was asserting.
+     * The fix is to walk the product's own path — upload, then submit — never to relax the rule.
+     */
     private StudentFixture submittedStudent(String prefix, University university) {
         StudentFixture student = createStudent(prefix, university.universityId(), university.departmentId(), "DRAFT");
+        requireOk(
+                uploadEvidence(student.accessToken(), "student-id.pdf", "application/pdf", validPdfBytes()),
+                "Evidence upload");
         ResponseEntity<Map> submit = authorizedPost(
                 "/api/v1/students/me/enrollment/submit-verification", student.accessToken(), null);
         if (!submit.getStatusCode().is2xxSuccessful()) {

@@ -61,7 +61,12 @@
       "OPPORTUNITY_DEADLINE_PASSED": "The application deadline for this opportunity has passed.",
       "CANDIDACY_ALREADY_CLOSED": "This application has already been closed.",
       "VALIDATION_FAILED": "Please check the form and try again.",
-      "generic": "Something went wrong. Please try again."
+      "generic": "Something went wrong. Please try again.",
+      "APPLICATION_CV_REQUIRED": "Upload a PDF CV for this application.",
+      "APPLICATION_CV_NOT_FOUND": "This CV is unavailable for this application. Upload it again.",
+      "APPLICATION_CV_ALREADY_USED": "This CV is already attached to a submitted application.",
+      "STUDENT_ACTION_REQUIRED": "Applications and saved internships are available to Student accounts.",
+      "FILE_NOT_FOUND": "This document is no longer available. Upload it again."
     }
   },
   "applications": {
@@ -205,7 +210,8 @@
     "transition": "from {{from}}",
     "cvTitle": "CV",
     "cvHint": "Opens the CV this candidate uploaded, if they have one on file.",
-    "openCv": "Open CV"
+    "openCv": "Open CV",
+    "cvApplicationHint": "Opens the CV this candidate attached to this application."
   },
   "screening": {
     "title": "Screening questions",
@@ -257,7 +263,9 @@
       "ORGANIZATION_NOT_VERIFIED": "This organization is not currently accepting new candidates.",
       "ACCESS_DENIED": "You do not have access to nominate this student.",
       "generic": "Something went wrong. Please try again."
-    }
+    },
+    "viewProfile": "View professional profile",
+    "noProfile": "This student has not written a professional profile yet."
   },
   "universityNominations": {
     "title": "Nominations",

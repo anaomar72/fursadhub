@@ -79,7 +79,7 @@ public class SecurityConfig {
         configuration.setAllowedOrigins(List.copyOf(corsProperties.originList()));
         configuration.setAllowedMethods(List.of("GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"));
         configuration.setAllowedHeaders(List.of("Authorization", "Content-Type", "X-Request-Id"));
-        configuration.setExposedHeaders(List.of("X-Request-Id"));
+        configuration.setExposedHeaders(List.of("X-Request-Id", "Content-Disposition"));
         configuration.setAllowCredentials(true);
 
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();

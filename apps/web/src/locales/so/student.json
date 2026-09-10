@@ -31,9 +31,9 @@
     "readinessCta": "Dhammaystir tallaabada xigta",
     "readinessSteps": {
       "profile": "Ku dar magacaaga iyo xiriirkaaga",
-      "cv": "Soo geli CV-gaaga",
       "enrollment": "Sheeg diiwaangelintaada jaamacadeed",
-      "verification": "Xaqiijiso diiwaangelintaada"
+      "verification": "Xaqiijiso diiwaangelintaada",
+      "professional": "Ku dar cinwaanka xirfadda, soo koobidda iyo xirfadahaaga"
     },
     "savedInternships": "Tababarro la keydiyay",
     "greetingNoName": "Ku soo dhawoow"
@@ -99,7 +99,31 @@
       "VERIFICATION_CASE_ALREADY_RESOLVED": "Xaaladdan xaqiijinta horeba waa la xalliyay.",
       "VERIFICATION_CASE_INVALID_TRANSITION": "Xaalad xaqiijin horeba way socotaa.",
       "VALIDATION_FAILED": "Fadlan hubi faahfaahinta oo isku day mar kale.",
-      "generic": "Wax baa qaldamay. Fadlan isku day mar kale."
+      "generic": "Wax baa qaldamay. Fadlan isku day mar kale.",
+      "STUDENT_ID_EVIDENCE_REQUIRED": "Soo geli aqoonsi arday oo sax ah ka hor intaadan xaqiijinta gudbin."
+    },
+    "verified": {
+      "badge": "La xaqiijiyay",
+      "title": "Jaamacaddaadu waxay xaqiijisay diiwaangelintaada",
+      "body": "Hadda waad codsan kartaa tabobaro, waxaana ku magacaabi kara waaxdaada. Tani waxay xaqiijinaysaa diiwaangelintaada oo keliya — waa ka duwan tahay akoonkaaga iyo xaqiijinta machadka.",
+      "progressTitle": "Xaqiijintaada",
+      "steps": {
+        "claim": "Waxaad sheegtay faahfaahinta diiwaangelintaada.",
+        "evidence": "Waxaad bixisay aqoonsigaaga ardayga.",
+        "review": "Jaamacaddaadu way dib u eegtay sheegashada.",
+        "verified": "Jaamacaddaadu way xaqiijisay diiwaangelintaada."
+      },
+      "facts": {
+        "university": "Jaamacad",
+        "department": "Waax",
+        "program": "Barnaamij",
+        "academicYear": "Sanad dugsiyeed",
+        "studentNumber": "Lambarka ardayga"
+      },
+      "nextTitle": "Waxa xiga",
+      "nextBody": "Codsiyadu waa kuu furan yihiin. Bogga oo dhammaystiran ayaa ah waxa ugu horreeya ee hay,adaha ay akhriyaan.",
+      "browse": "Fiiri tabobarrada",
+      "profile": "Dhammaystir bogga"
     }
   },
   "documents": {
@@ -118,7 +142,12 @@
       "CV_FILE_INVALID": "Faylkaas lama aqbalin. Soo geli PDF.",
       "FILE_TOO_LARGE": "Faylkaas aad buu u weyn yahay. Xadka ugu badan waa 5 MB.",
       "CV_NOT_FOUND": "Weli CV lama soo gelin.",
-      "STUDENT_PROFILE_NOT_FOUND": "Marka hore keydi faahfaahinta profile-kaaga."
+      "STUDENT_PROFILE_NOT_FOUND": "Marka hore keydi faahfaahinta profile-kaaga.",
+      "APPLICATION_CV_REQUIRED": "Soo geli CV PDF ah oo codsigan loogu talagalay.",
+      "APPLICATION_CV_NOT_FOUND": "CV-gan looma heli karo codsigan. Mar kale soo geli.",
+      "APPLICATION_CV_ALREADY_USED": "CV-gan wuxuu hore ugu xiran yahay codsi la gudbiyey.",
+      "STUDENT_ACTION_REQUIRED": "Codsiyada iyo tababarada la kaydiyey waxaa heli kara akoonnada Ardayga.",
+      "FILE_NOT_FOUND": "Dukumentigan hadda lama heli karo. Mar kale soo geli."
     }
   },
   "evidence": {
@@ -129,7 +158,9 @@
       "EVIDENCE_FILE_INVALID": "Faylkaas lama aqbalin. Soo geli PDF, JPEG ama PNG.",
       "FILE_TOO_LARGE": "Faylkaas aad buu u weyn yahay. Xadka ugu badan waa 10 MB.",
       "VERIFICATION_EVIDENCE_MISSING": "Weli caddayn lama soo gelin.",
-      "VERIFICATION_CASE_NOT_FOUND": "Marka hore u gudbi diiwaangelintaada xaqiijin."
+      "VERIFICATION_CASE_NOT_FOUND": "Marka hore u gudbi diiwaangelintaada xaqiijin.",
+      "STUDENT_ENROLLMENT_LOCKED": "Caddaynta waxaa la beddeli karaa ka hor gudbinta ama marka dib-u-eeguhu codsado caddayn dheeraad ah.",
+      "ENROLLMENT_NOT_FOUND": "Kaydi faahfaahinta diiwaangelinta ka hor soo gelinta aqoonsiga ardayga."
     }
   },
   "saved": {
@@ -142,6 +173,8 @@
     "resultCount_other": "{{count}} tababar oo la keydiyay",
     "empty": "Weli ma aad keydin tababar",
     "emptyHint": "Isticmaal calaamadda keydinta ee tababar kasta si aad halkan ugu hayso.",
-    "error": "Ma soo bandhigi karno tababarradaada la keydiyay."
+    "error": "Ma soo bandhigi karno tababarradaada la keydiyay.",
+    "emptyNeedsProfile": "Keydinta tababar wuxuu u baahan yahay astaantaada arday. Hal mar geli faahfaahintaada, kadibna waxaa halkan lagu hayn doonaa keydkaaga.",
+    "completeProfile": "Dhammaystir astaantaada"
   }
 }

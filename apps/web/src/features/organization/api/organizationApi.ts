@@ -236,6 +236,17 @@ export function assignMemberUsername(organizationId: string, membershipId: strin
  * home page's "Top verified organizations" strip render. Previously the frontend approximated
  * this directory by collapsing the opportunity feed; this calls the real endpoint.
  */
+/** Rank the complete public directory by its actual open-opportunity counts. */
+export async function listMostActivePublicOrganizations(limit = 10) {
+  const first = await listPublicOrganizations({ page: 0, size: 100, sort: 'name' })
+  const byId = new Map(first.content.map(organization => [organization.id, organization]))
+  for (let page = 1; page < first.totalPages; page++) {
+    const next = await listPublicOrganizations({ page, size: 100, sort: 'name' })
+    next.content.forEach(organization => byId.set(organization.id, organization))
+  }
+  return { ...first, content: [...byId.values()].sort((a, b) => b.openOpportunityCount - a.openOpportunityCount || a.name.localeCompare(b.name) || a.id.localeCompare(b.id)).slice(0, limit) }
+}
+
 export function listPublicOrganizations(filters: {
   query?: string
   type?: OrganizationType

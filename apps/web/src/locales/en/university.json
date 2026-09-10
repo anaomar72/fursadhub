@@ -37,7 +37,9 @@
     "departments": "Departments",
     "recentNominations": "Recent nominations",
     "byDepartment": "Students by department",
-    "viewAll": "View all"
+    "viewAll": "View all",
+    "noNominationsHint": "Nominations appear here once a coordinator puts a student forward for a targeted internship.",
+    "noPartnersHint": "An organization appears here once it hosts one of your students on a placement."
   },
   "setup": {
     "title": "Register your university",
@@ -118,7 +120,8 @@
       "hint": "JPG or PNG. Shown as the banner on your public profile.",
       "emptyHint": "No cover image yet. Upload one to give your public profile a banner.",
       "replaceHint": "Uploading a new image replaces the current cover."
-    }
+    },
+    "saved": "Profile saved."
   },
   "departments": {
     "title": "Departments",
@@ -171,7 +174,12 @@
   "verificationQueue": {
     "title": "Verification queue",
     "allStatuses": "All statuses",
-    "empty": "No verification cases found."
+    "empty": "No verification cases found.",
+    "subtitle": "Enrollment claims from your students, newest first. Open a case to review its evidence and decide.",
+    "submittedOn": "Submitted {{date}}",
+    "evidenceAttached": "Evidence attached",
+    "noEvidence": "No evidence",
+    "review": "Review"
   },
   "caseDetail": {
     "notesLabel": "Notes",
@@ -257,7 +265,8 @@
       "VALIDATION_FAILED": "Please check the form and try again.",
       "generic": "Something went wrong. Please try again.",
       "USERNAME_ALREADY_EXISTS": "That username is already taken.",
-      "USERNAME_IMMUTABLE": "This account already has a username, and it cannot be changed."
+      "USERNAME_IMMUTABLE": "This account already has a username, and it cannot be changed.",
+      "STAFF_ADMIN_MEMBERSHIP_PROTECTED": "University administrator accounts cannot be changed from staff management. Use your own account settings to change your password."
     },
     "subtitle": "Create and manage internal university staff accounts.",
     "createTitle": "Create a staff account",

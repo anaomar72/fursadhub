@@ -2,10 +2,12 @@ import { useEffect, useRef, useState, type ReactNode } from 'react'
 import { Outlet, useLocation, useNavigate } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import { useAuth } from '../../lib/auth/AuthContext'
+import { RouteTransition } from './RouteTransition'
 import { Sidebar } from './Sidebar'
 import { Topbar } from './Topbar'
 import type { NavSection } from './navigation'
 import type { SidebarBrand } from './Sidebar'
+import { WorkspaceContext, type WorkspaceFamily } from './workspace'
 
 const COLLAPSED_STORAGE_KEY = 'fursadhub-sidebar-collapsed'
 
@@ -21,6 +23,11 @@ export interface AppShellProps {
   tone?: 'light' | 'navy'
   /** Tenant identity for the rail. Always resolved from the caller's own membership — never hard-coded. */
   brand?: SidebarBrand
+  /**
+   * Which workspace personality this area wears. Stamped on the shell root as `data-workspace` and
+   * published on {@link WorkspaceContext}; everything else follows from CSS custom properties.
+   */
+  workspace?: WorkspaceFamily
   /** Defaults to the route `<Outlet />`; areas pass children for a pre-membership setup screen. */
   children?: ReactNode
 }
@@ -42,7 +49,7 @@ function readCollapsed(): boolean {
  * university admin is the `sections` their own area computed from real membership data, not a
  * second copy of this file (CLAUDE.md section 9 — one React application with layouts per area).
  */
-export function AppShell({ areaLabel, sections, tone = 'light', brand, children }: AppShellProps) {
+export function AppShell({ areaLabel, sections, tone = 'light', brand, workspace = 'neutral', children }: AppShellProps) {
   const { t } = useTranslation()
   const { signOut } = useAuth()
   const navigate = useNavigate()
@@ -53,7 +60,7 @@ export function AppShell({ areaLabel, sections, tone = 'light', brand, children 
   const [drawer, setDrawer] = useState({ open: false, path: location.pathname })
   const drawerOpen = drawer.open && drawer.path === location.pathname
   const [collapsed, setCollapsed] = useState(readCollapsed)
-  const drawerRef = useRef<HTMLDivElement>(null)
+  const drawerRef = useRef<HTMLDialogElement>(null)
   const drawerTriggerFocusRef = useRef<HTMLElement | null>(null)
 
   const homePath = sections[0]?.items[0]?.to ?? '/'
@@ -89,6 +96,7 @@ export function AppShell({ areaLabel, sections, tone = 'light', brand, children 
     if (!drawerOpen) return undefined
 
     drawerTriggerFocusRef.current = document.activeElement as HTMLElement | null
+    drawerRef.current?.showModal()
     drawerRef.current?.querySelector<HTMLElement>('a,button')?.focus()
 
     function handleKeyDown(event: KeyboardEvent) {
@@ -104,7 +112,13 @@ export function AppShell({ areaLabel, sections, tone = 'light', brand, children 
   return (
     // A viewport-height frame with the content column scrolling inside it, so the navy rail is
     // always full height (as in the approved references) rather than ending with the page.
-    <div className="flex h-svh overflow-hidden bg-background">
+    //
+    // `data-workspace` is what gives each area its own personality. The custom properties it
+    // resolves (see index.css) are read by PageContainer, PageHeader, Card and SectionHeading, so a
+    // shared primitive picks up its family wherever it is rendered — no prop threaded through it,
+    // and no forked StudentCard/OrganizationCard to keep in sync.
+    <WorkspaceContext.Provider value={workspace}>
+    <div data-workspace={workspace} className="flex h-svh overflow-hidden bg-background">
       <div className="hidden h-full shrink-0 lg:block">
         <Sidebar
           sections={sections}
@@ -118,18 +132,20 @@ export function AppShell({ areaLabel, sections, tone = 'light', brand, children 
       </div>
 
       {drawerOpen && (
-        <div
-          className="fixed inset-0 z-50 bg-overlay lg:hidden"
+        <dialog
+          ref={drawerRef}
+          aria-modal="true"
+          aria-label={t('common:shell.primaryNavigation')}
+          onCancel={(event) => { event.preventDefault(); closeDrawer() }}
+          // The scrim fades in and the rail slides from the edge it lives on, at the panel
+          // duration — a 264px surface travelling its own width, not a dropdown popping open.
+          className="fixed inset-0 m-0 h-dvh max-h-none w-screen max-w-none border-0 bg-overlay p-0 text-foreground backdrop:bg-transparent motion-safe:animate-backdrop-in"
           onMouseDown={(event) => {
             if (event.target === event.currentTarget) closeDrawer()
           }}
         >
           <div
-            ref={drawerRef}
-            role="dialog"
-            aria-modal="true"
-            aria-label={t('common:shell.primaryNavigation')}
-            className="h-full w-64 shadow-lg motion-safe:animate-menu-in"
+            className="h-full w-[264px] shadow-lg motion-safe:animate-panel-in-left"
           >
             <Sidebar
               variant="drawer"
@@ -141,7 +157,7 @@ export function AppShell({ areaLabel, sections, tone = 'light', brand, children 
               onSignOut={handleSignOut}
             />
           </div>
-        </div>
+        </dialog>
       )}
 
       <div className="flex min-w-0 flex-1 flex-col overflow-y-auto">
@@ -151,8 +167,18 @@ export function AppShell({ areaLabel, sections, tone = 'light', brand, children 
           onOpenNavigation={() => openDrawer()}
           onSignOut={handleSignOut}
         />
-        <main className="min-w-0 flex-1">{children ?? <Outlet />}</main>
+        {/* The family's ground wash. A 3% brand mix — enough that the student workspace feels a
+            degree warmer and the university one a degree cooler than the recruiting workspace,
+            far too little to read as a colour of its own. Dropped entirely in dark mode, where
+            the elevation ramp already carries the plane order. */}
+        <main
+          style={{ backgroundColor: 'var(--workspace-tint, transparent)' }}
+          className="min-w-0 flex-1"
+        >
+          <RouteTransition>{children ?? <Outlet />}</RouteTransition>
+        </main>
       </div>
     </div>
+    </WorkspaceContext.Provider>
   )
 }

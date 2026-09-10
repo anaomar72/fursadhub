@@ -3,7 +3,7 @@ import { useQuery } from '@tanstack/react-query'
 import { useTranslation } from 'react-i18next'
 import { Link, useParams } from 'react-router-dom'
 import * as universityApi from '../api/universityApi'
-import { Avatar, Card, Icon, LoadingSpinner, ProfileBanner, VerifiedBadge, type IconName } from '../../../components/ui'
+import { Avatar, Card, Icon, LoadingSpinner, ProfileBanner, Reveal, VerifiedBadge, type IconName } from '../../../components/ui'
 
 /**
  * A university's public profile — no account required, and the exact counterpart of the
@@ -28,7 +28,7 @@ export function PublicUniversityProfilePage() {
   if (universityQuery.isLoading) {
     return (
       <div className="flex justify-center py-16">
-        <LoadingSpinner size="lg" />
+        <LoadingSpinner size="lg" label={t('common:status.loading')} />
       </div>
     )
   }
@@ -122,19 +122,19 @@ export function PublicUniversityProfilePage() {
 
       <div className="mt-6 grid gap-5 lg:grid-cols-[2.3fr_1fr] lg:items-start">
         {university.description && (
-          <Card padding="lg">
+          <Reveal><Card padding="lg">
             <h2 className="font-display text-lg font-extrabold tracking-tight text-brand-navy dark:text-foreground">
               {t('university:publicProfile.about', { name: university.name })}
             </h2>
             <p className="mt-3 whitespace-pre-line text-sm leading-7 text-foreground-secondary">
               {university.description}
             </p>
-          </Card>
+          </Card></Reveal>
         )}
 
         <aside className="grid gap-4">
           {facts.length > 0 && (
-            <Card padding="lg">
+            <Reveal index={1}><Card padding="lg">
               <h2 className="font-display text-lg font-extrabold tracking-tight text-brand-navy dark:text-foreground">
                 {t('university:publicProfile.quickFacts')}
               </h2>
@@ -151,11 +151,11 @@ export function PublicUniversityProfilePage() {
                   </div>
                 ))}
               </dl>
-            </Card>
+            </Card></Reveal>
           )}
 
           {university.verified && (
-            <Card padding="lg" className="border-success/30 bg-success-bg">
+            <Reveal index={2}><Card padding="lg" className="border-success/30 bg-success-bg">
               <div className="flex items-start gap-3">
                 <VerifiedBadge className="mt-0.5" />
                 <div className="min-w-0">
@@ -165,7 +165,7 @@ export function PublicUniversityProfilePage() {
                   </p>
                 </div>
               </div>
-            </Card>
+            </Card></Reveal>
           )}
         </aside>
       </div>

@@ -23,6 +23,7 @@ export function AccountLayout() {
             { to: '/account/profile', label: t('account:nav.profile'), icon: 'user' },
             { to: '/account/notifications', label: t('notifications:title'), icon: 'bell' },
             { to: '/account/privacy', label: t('privacy:nav.privacy'), icon: 'lock' },
+            { to: '/account/testimonial', label: t('testimonials:nav.title'), icon: 'sparkle' },
           ],
         },
       ]}

@@ -13,6 +13,7 @@ import {
   DashboardActionCard,
   Icon,
   LoadingState,
+  SectionHeading,
   StatusBadge,
   type IconName,
 } from '../../../components/ui'
@@ -138,6 +139,7 @@ export function RecruiterDashboardPage() {
       <div className="grid gap-5 xl:grid-cols-2">
         <Card padding="none" className="overflow-hidden">
           <SectionHeading
+            panel
             title={t('organization:recruiterDashboard.needsAttention')}
             action={
               <Link to="/organization/candidates" className="text-sm font-semibold text-link hover:underline">
@@ -183,6 +185,7 @@ export function RecruiterDashboardPage() {
 
         <Card padding="none" className="overflow-hidden">
           <SectionHeading
+            panel
             title={t('organization:recruiterDashboard.liveOffers')}
             action={
               <Link
@@ -258,7 +261,7 @@ export function RecruiterDashboardPage() {
                       is a way into the work rather than a read-only summary of it. */}
                   <Link
                     to={`/organization/candidates?stage=${column.status}`}
-                    className="block w-44 rounded-lg border border-border bg-surface-muted p-4 transition-all duration-150 ease-in-out hover:-translate-y-0.5 hover:border-brand-primary hover:shadow-md focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus-ring motion-reduce:transition-none motion-reduce:hover:transform-none"
+                    className="block w-44 rounded-lg border border-border bg-surface-muted p-4 transition-[border-color,box-shadow] duration-150 ease-in-out hover:border-brand-primary hover:shadow-md focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus-ring motion-reduce:transition-none"
                   >
                     <StatusBadge tone={PIPELINE_STAGE_TONE[column.status]}>
                       {t(`recruitment:candidacyStatusValues.${column.status}`)}
@@ -283,6 +286,7 @@ export function RecruiterDashboardPage() {
 
       <Card padding="none" className="overflow-hidden">
         <SectionHeading
+          panel
           title={t('organization:recruiterDashboard.internshipLoad')}
           action={
             <Link to="/organization/opportunities" className="text-sm font-semibold text-link hover:underline">
@@ -326,14 +330,6 @@ export function RecruiterDashboardPage() {
   )
 }
 
-function SectionHeading({ title, action }: { title: string; action?: React.ReactNode }) {
-  return (
-    <div className="flex items-center justify-between gap-3 border-b border-border px-5 py-4">
-      <h2 className="font-display text-base font-bold text-brand-navy dark:text-foreground">{title}</h2>
-      {action}
-    </div>
-  )
-}
 
 /** The same tile the admin and university dashboards use — one product, one dashboard language. */
 function MetricCard({

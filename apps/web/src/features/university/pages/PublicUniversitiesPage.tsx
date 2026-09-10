@@ -1,3 +1,7 @@
+import * as publicOpportunityApi from '../../opportunities/api/publicOpportunityApi'
+import * as organizationApi from '../../organization/api/organizationApi'
+import { UniversityDirectoryCard } from '../components/UniversityDirectoryCard'
+import { cn } from '../../../lib/utils/cn'
 import { useState, type FormEvent } from 'react'
 import { Link, useSearchParams } from 'react-router-dom'
 import { useQuery } from '@tanstack/react-query'
@@ -7,7 +11,6 @@ import {
   Button,
   Card,
   EmptyState,
-  EntityCard,
   ErrorState,
   Icon,
   LoadingState,
@@ -27,9 +30,8 @@ const PAGE_SIZE = 12
  * calls it. The existing "Benefits for universities" section is preserved beneath the directory,
  * since it is working content the reference does not replace.
  *
- * <p>The reference's headline counter strip ("120+ partner universities / 50K+ students reached /
- * 2,450+ opportunities shared") is not built: only the university count has an endpoint behind it,
- * and students-reached and opportunities-shared do not exist as platform metrics.
+ * The top counters use public directory totals; student reach and university-specific opportunity
+ * totals are not invented. The longer partnership explanation is available in a disclosure.
  */
 export function PublicUniversitiesPage() {
   const { t } = useTranslation()
@@ -69,14 +71,23 @@ export function PublicUniversitiesPage() {
     setParams(next)
   }
 
+  const network = useQuery({
+    queryKey: ['public-network-counts'],
+    queryFn: async () => {
+      const [universities, organizations, opportunities] = await Promise.all([
+        universityApi.listPublicUniversities({ size: 1 }), organizationApi.listPublicOrganizations({ size: 1 }), publicOpportunityApi.listPublicOpportunities({ size: 1 }),
+      ])
+      return [{ key: 'universities', value: universities.totalElements, icon: 'bank' as const }, { key: 'organizations', value: organizations.totalElements, icon: 'building' as const }, { key: 'internships', value: opportunities.totalElements, icon: 'briefcase' as const }]
+    }, retry: false,
+  })
   const total = result.data?.totalElements ?? 0
   const from = total === 0 ? 0 : page * PAGE_SIZE + 1
   const to = Math.min(total, (page + 1) * PAGE_SIZE)
 
   return (
     <div className="overflow-x-clip">
-      <section className="mx-auto w-full max-w-[1400px] px-4 py-8 sm:px-6 lg:px-14">
-        <header className="max-w-3xl">
+      <section className="mx-auto w-full max-w-[1448px] px-4 py-8 sm:px-6 lg:px-[60px]">
+        <div className="grid items-start gap-8 lg:grid-cols-2"><header>
           <h1 className="font-display text-[30px] font-extrabold leading-[1.06] tracking-[-0.035em] text-brand-navy dark:text-foreground sm:text-[36px] lg:text-[40px]">
             <span className="block">{t('common:publicPages.universities.heroLead')}</span>
             <span className="mt-1.5 block">
@@ -87,21 +98,7 @@ export function PublicUniversitiesPage() {
           <p className="mt-3.5 text-sm leading-6 text-foreground-secondary">
             {t('common:publicPages.universities.heroDescription')}
           </p>
-          <div className="mt-6 flex flex-wrap gap-2.5">
-            <Link
-              to="/register?role=university"
-              className="inline-flex h-10 items-center rounded-lg bg-brand-accent px-5 text-sm font-semibold text-white shadow-xs transition-colors hover:bg-brand-accent-strong focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus-ring motion-reduce:transition-none"
-            >
-              {t('common:publicPages.universities.getStarted')}
-            </Link>
-            <a
-              href="#benefits"
-              className="inline-flex h-10 items-center rounded-lg border border-border-strong bg-surface px-5 text-sm font-semibold text-foreground shadow-xs transition-colors hover:bg-control-hover focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus-ring motion-reduce:transition-none"
-            >
-              {t('common:publicPages.universities.learn')}
-            </a>
-          </div>
-        </header>
+        </header>{network.data && <dl className="grid grid-cols-3 rounded-xl border border-border bg-surface px-3 py-6 shadow-xs">{network.data.map(item => <div key={item.key} className="flex flex-col gap-2 border-border px-3 [&+div]:border-l"><Icon name={item.icon} className="size-6 text-brand-blue" /><dt className="text-xs text-foreground-secondary">{t(`common:landing.stats.${item.key}`)}</dt><dd className="font-display text-xl font-extrabold text-brand-navy dark:text-foreground">{item.value.toLocaleString()}</dd></div>)}</dl>}</div>
 
         <form onSubmit={applyFilters} className="mt-7 flex flex-col gap-2 sm:flex-row sm:items-center">
           <label className="relative min-w-0 flex-1 sm:max-w-lg">
@@ -131,8 +128,8 @@ export function PublicUniversitiesPage() {
           </Button>
         </form>
 
-        <div className="mt-8 flex flex-wrap items-baseline justify-between gap-3">
-          <h2 className="font-display text-xl font-extrabold tracking-tight text-brand-navy dark:text-foreground">
+        <div className="mt-5 flex flex-wrap items-baseline justify-between gap-3">
+          <h2 className="sr-only">
             {t('common:publicPages.universities.directoryTitle')}
           </h2>
           {result.data && (
@@ -174,24 +171,25 @@ export function PublicUniversitiesPage() {
           ) : result.data?.content.length === 0 ? (
             <EmptyState title={t('common:publicPages.universities.empty')} />
           ) : (
-            <ul className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+            /*
+              Four columns at the widest, not six, and a short row is centred and capped rather than
+              left-packed. At six columns each institution card was 195px wide — too narrow for a
+              crest, a name, a verified badge, a city and a line of description — and the pilot's two
+              partner universities sat as two small cards against two thirds of empty row, which
+              reads as a directory that failed to load rather than as a directory with two entries.
+              Same rule the testimonial wall already uses: adapt to how many there actually are.
+            */
+            <ul
+              className={cn(
+                'grid gap-5',
+                (result.data?.content.length ?? 0) === 1 && 'mx-auto max-w-sm',
+                (result.data?.content.length ?? 0) === 2 && 'mx-auto max-w-3xl sm:grid-cols-2',
+                (result.data?.content.length ?? 0) >= 3 && 'sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4',
+              )}
+            >
               {result.data?.content.map((university) => (
                 <li key={university.id}>
-                  <EntityCard
-                    name={university.name}
-                    verified={university.verified}
-                    imageUrl={university.hasLogo ? universityApi.universityLogoUrl(university.id) : undefined}
-                    subtitle={university.city ?? undefined}
-                    description={university.description ?? undefined}
-                    actions={
-                      <Link
-                        to={`/universities/${university.id}`}
-                        className="inline-flex h-9 shrink-0 items-center rounded-lg border border-border-strong px-3.5 text-sm font-semibold text-foreground transition-colors hover:bg-control-hover focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus-ring motion-reduce:transition-none"
-                      >
-                        {t('common:publicPages.universities.view')}
-                      </Link>
-                    }
-                  />
+                  <UniversityDirectoryCard id={university.id} name={university.name} verified={university.verified} imageUrl={university.hasLogo ? universityApi.universityLogoUrl(university.id) : undefined} city={university.city} description={university.description} />
                 </li>
               ))}
             </ul>
@@ -209,8 +207,8 @@ export function PublicUniversitiesPage() {
       </section>
 
       <section id="benefits" className="scroll-mt-24 border-t border-border bg-surface-muted">
-        <div className="mx-auto max-w-[1400px] px-4 py-12 sm:px-6 lg:px-14">
-          <h2 className="text-center font-display text-2xl font-extrabold tracking-tight text-brand-navy dark:text-foreground">
+        <details className="mx-auto max-w-[1448px] px-4 py-5 sm:px-6 lg:px-[60px]"><summary className="cursor-pointer rounded text-sm font-bold text-brand-navy focus-visible:ring-2">{t('common:publicPages.universities.benefits')}</summary>
+          <h2 className="sr-only text-center font-display text-2xl font-extrabold tracking-tight text-brand-navy dark:text-foreground">
             {t('common:publicPages.universities.benefits')}
           </h2>
           <div className="mt-7 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
@@ -231,7 +229,8 @@ export function PublicUniversitiesPage() {
           <p className="mt-8 text-center text-sm text-muted">
             {t('common:publicPages.universities.directoryNote')}
           </p>
-        </div>
+          <Link to="/register?role=university" className="mx-auto mt-4 flex min-h-10 w-fit items-center rounded-lg bg-brand-accent px-5 text-sm font-bold text-white focus-visible:ring-2">{t('common:publicPages.universities.getStarted')}</Link>
+        </details>
       </section>
     </div>
   )

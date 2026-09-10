@@ -57,7 +57,7 @@ export function applyBlocker({
 }: ApplyEligibilityInput): ApplyBlocker | null {
   if (enrollment?.verificationStatus !== 'VERIFIED') return 'STUDENT_NOT_VERIFIED'
   if (placements.some((placement) => LIVE_PLACEMENT_STATUSES.has(placement.status))) return 'STUDENT_NOT_AVAILABLE'
-  if (candidacies.some((candidacy) => candidacy.opportunityId === opportunity.id)) return 'STUDENT_ALREADY_APPLIED'
+  if (candidacies.some((candidacy) => candidacy.opportunityId === opportunity.id && candidacy.source !== 'UNIVERSITY_NOMINATION')) return 'STUDENT_ALREADY_APPLIED'
   if (opportunity.mode !== 'PUBLIC' && opportunity.mode !== 'HYBRID') return 'OPPORTUNITY_NOT_PUBLIC'
   if (opportunity.applicationDeadline && isPastDeadline(opportunity.applicationDeadline, today)) {
     return 'OPPORTUNITY_DEADLINE_PASSED'
@@ -73,7 +73,7 @@ function isPastDeadline(deadline: string, today: Date): boolean {
 
 // ---------------------------------------------------------------- readiness checklist
 
-export type ReadinessStepId = 'profile' | 'cv' | 'enrollment' | 'verification'
+export type ReadinessStepId = 'profile' | 'professional' | 'enrollment' | 'verification'
 
 export interface ReadinessStep {
   id: ReadinessStepId
@@ -84,20 +84,19 @@ export interface ReadinessStep {
 
 export interface ReadinessInput {
   profile: StudentProfileResponse | null
-  hasCv: boolean
   enrollment: StudentEnrollmentResponse | null
 }
 
 /**
  * The concrete steps between a new account and being able to take part, each one a real backend
- * fact rather than a score: a saved profile, an uploaded CV, a claimed enrollment, and a university
+ * fact rather than a score: a saved profile, professional details, a claimed enrollment, and a university
  * that has verified it. Nothing here is weighted or invented — the percentage is simply how many of
  * these four are done.
  */
-export function readinessSteps({ profile, hasCv, enrollment }: ReadinessInput): ReadinessStep[] {
+export function readinessSteps({ profile, enrollment }: ReadinessInput): ReadinessStep[] {
   return [
     { id: 'profile', done: !!profile?.fullName, to: '/student/profile' },
-    { id: 'cv', done: hasCv, to: '/student/profile' },
+    { id: 'professional', done: !!(profile?.professional?.headline?.trim() && profile.professional.summary?.trim() && profile.professional.skills.length), to: '/student/profile' },
     { id: 'enrollment', done: !!enrollment, to: '/student/enrollment' },
     { id: 'verification', done: enrollment?.verificationStatus === 'VERIFIED', to: '/student/enrollment' },
   ]

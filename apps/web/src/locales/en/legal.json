@@ -22,5 +22,12 @@
       "LEGAL_DOCUMENT_NOT_ACCEPTABLE": "That document does not require acceptance.",
       "TERMS_ALREADY_ACCEPTED": "You have already accepted this document."
     }
+  },
+  "page": {
+    "eyebrow": "Legal",
+    "otherDocuments": "Other legal documents",
+    "lastUpdated": "Last updated {{date}}",
+    "contents": "On this page",
+    "backToHome": "Back to home"
   }
 }

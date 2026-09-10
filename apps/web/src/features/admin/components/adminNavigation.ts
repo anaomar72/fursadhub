@@ -66,6 +66,7 @@ export function buildAdminNav(t: TFunction, session: AdminSession): NavSection[]
       platform.push(
         { to: '/admin/privacy-requests', label: t('admin:nav.privacyRequests'), icon: 'document' },
         { to: '/admin/legal-documents', label: t('admin:nav.legalDocuments'), icon: 'scale' },
+        { to: '/admin/testimonials', label: t('admin:nav.testimonials'), icon: 'sparkle' },
       )
     }
     if (can.canReadAuditTrail) {

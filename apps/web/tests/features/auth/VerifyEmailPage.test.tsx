@@ -10,7 +10,7 @@ function jsonResponse(body: unknown, status = 200) {
 }
 
 let verifyCallCount = 0
-let verifyBehavior: 'success' | 'wrong-code' | 'locked' = 'success'
+let verifyBehavior: 'success' | 'wrong-code' | 'locked' | 'expired' = 'success'
 
 function renderVerifyEmailPage(initialPath = '/verify-email?email=student%40example.com') {
   return render(
@@ -44,6 +44,19 @@ describe('VerifyEmailPage', () => {
           verifyCallCount++
           if (verifyBehavior === 'success') {
             return jsonResponse({ message: 'Your email address has been verified.' }, 200)
+          }
+          if (verifyBehavior === 'expired') {
+            return jsonResponse(
+              {
+                code: 'EMAIL_VERIFICATION_CODE_EXPIRED',
+                message: '',
+                status: 400,
+                path: '',
+                timestamp: '',
+                fieldErrors: [],
+              },
+              400,
+            )
           }
           if (verifyBehavior === 'locked') {
             return jsonResponse(
@@ -90,7 +103,11 @@ describe('VerifyEmailPage', () => {
     const boxes = screen.getAllByLabelText(/verification code —/i)
     await user.type(boxes[0], '0000')
 
-    expect(await screen.findByRole('alert')).toHaveTextContent(/isn't right/i)
+    // A wrong code stays on the form, because retyping is the fix. The copy names the other thing
+    // this response can mean — an address that is already verified has no active challenge, so the
+    // server answers a correct-looking attempt with exactly this code and the UI must not guess.
+    expect(await screen.findByRole('alert')).toHaveTextContent(/not right, or it has already been used/i)
+    expect(screen.getAllByLabelText(/verification code —/i).length).toBeGreaterThan(0)
     expect(screen.queryByRole('heading', { name: /email verified successfully/i })).not.toBeInTheDocument()
   })
 
@@ -123,11 +140,12 @@ describe('VerifyEmailPage', () => {
     const boxes = screen.getAllByLabelText(/verification code —/i)
     await user.type(boxes[0], '1234')
 
-    // Auto-submit fired and the request is still pending — the button must be disabled so a
-    // second click (whether from the user or a stray auto-submit re-trigger) cannot fire again.
-    const verifyButton = await screen.findByRole('button', { name: /^verify$/i })
-    expect(verifyButton).toBeDisabled()
-    await user.click(verifyButton)
+    // Auto-submit fired. The page is now on its own branded waiting state, which is what removes
+    // the possibility of a second submission: there is no code field and no Verify button to
+    // press while the first request is still in flight.
+    expect(await screen.findByRole('heading', { name: /verifying your email/i })).toBeInTheDocument()
+    expect(screen.queryByRole('button', { name: /^verify$/i })).not.toBeInTheDocument()
+    expect(screen.queryByLabelText(/verification code —/i)).not.toBeInTheDocument()
 
     resolvePendingVerify?.()
     await screen.findByRole('heading', { name: /email verified successfully/i })
@@ -135,7 +153,20 @@ describe('VerifyEmailPage', () => {
     expect(verifyCallCount).toBe(1)
   })
 
-  it('shows the locked message and disables further submission when max attempts are exceeded', async () => {
+  it('never spends a second server attempt on a code the user has not changed', async () => {
+    verifyBehavior = 'wrong-code'
+    const user = userEvent.setup()
+    renderVerifyEmailPage()
+
+    await user.type(screen.getAllByLabelText(/verification code —/i)[0], '0000')
+    await screen.findByRole('alert')
+
+    // The field auto-submits whenever it is full, which used to re-fire after the rejection and
+    // burn a second of the server's five attempts on input nobody retyped.
+    expect(verifyCallCount).toBe(1)
+  })
+
+  it('ends the attempt with a recoverable screen when max attempts are exceeded', async () => {
     verifyBehavior = 'locked'
     const user = userEvent.setup()
     renderVerifyEmailPage()
@@ -143,8 +174,23 @@ describe('VerifyEmailPage', () => {
     const boxes = screen.getAllByLabelText(/verification code —/i)
     await user.type(boxes[0], '0000')
 
-    expect(await screen.findByRole('alert')).toHaveTextContent(/too many incorrect attempts/i)
-    expect(screen.getByRole('button', { name: /^verify$/i })).toBeDisabled()
+    // A locked challenge cannot be retyped into working, so the form is replaced rather than
+    // annotated: the screen says what happened and offers the one control that fixes it.
+    expect(await screen.findByRole('heading', { name: /too many incorrect attempts/i })).toBeInTheDocument()
+    expect(screen.queryByRole('button', { name: /^verify$/i })).not.toBeInTheDocument()
+    expect(screen.queryByLabelText(/verification code —/i)).not.toBeInTheDocument()
+    expect(screen.getByRole('link', { name: /back to sign in/i })).toBeInTheDocument()
+  })
+
+  it('ends the attempt with a recoverable screen when the code has expired', async () => {
+    verifyBehavior = 'expired'
+    const user = userEvent.setup()
+    renderVerifyEmailPage()
+
+    await user.type(screen.getAllByLabelText(/verification code —/i)[0], '0000')
+
+    expect(await screen.findByRole('heading', { name: /this code has expired/i })).toBeInTheDocument()
+    expect(screen.getByRole('link', { name: /back to sign in/i })).toBeInTheDocument()
   })
 
   it('starts the resend cooldown immediately, since a code was just sent on arrival', async () => {

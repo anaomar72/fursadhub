@@ -6,12 +6,13 @@ import { useTranslation } from 'react-i18next'
 import * as studentApi from '../api/studentApi'
 import * as documentsApi from '../api/documentsApi'
 import { PrivateDocumentUpload } from '../components/PrivateDocumentUpload'
+import { VerifiedEnrollment } from '../components/VerifiedEnrollment'
 import * as universityApi from '../../university/api/universityApi'
 import type { StudentEnrollmentResponse } from '../types'
 import { enrollmentSchema, type EnrollmentFormValues } from '../schemas/enrollmentSchema'
 import { apiErrorMessage } from '../../../lib/api/errorMessage'
 import { ApiError } from '../../../lib/api/client'
-import { AnimatedCheck, Button, FormField, Input, LoadingSpinner, PageHeader, Select, StatusBadge } from '../../../components/ui'
+import { Button, FormField, Input, LoadingSpinner, PageHeader, Select, StatusBadge } from '../../../components/ui'
 import type { StatusTone } from '../../../components/ui'
 import { formatTime } from '../../../lib/utils/formatDate'
 
@@ -61,7 +62,7 @@ export function EnrollmentPage() {
   if (enrollmentQuery.isLoading) {
     return (
       <div className="flex justify-center py-16">
-        <LoadingSpinner size="lg" />
+        <LoadingSpinner size="lg" label={t('common:status.loading')} />
       </div>
     )
   }
@@ -84,6 +85,22 @@ export function EnrollmentPage() {
   const enrollment = enrollmentQuery.data
   const tone = STATUS_TONE[enrollment.verificationStatus] ?? 'neutral'
   const canEdit = enrollment.verificationStatus === 'DRAFT' || enrollment.verificationStatus === 'NEEDS_MORE_EVIDENCE'
+
+  /*
+   * A verified enrollment is a finished thing, so it gets a finished screen rather than the
+   * submission layout with a tick bolted on. Returning early is what guarantees none of the
+   * upload/submit/resubmit affordances below can reach a student who has nothing left to do.
+   */
+  if (enrollment.verificationStatus === 'VERIFIED') {
+    return (
+      <div className="mx-auto max-w-2xl px-4 py-10 sm:px-6">
+        <PageHeader title={t('student:enrollment.title')} />
+        <div className="mt-6">
+          <VerifiedEnrollment enrollment={enrollment} />
+        </div>
+      </div>
+    )
+  }
 
   return (
     <div className="mx-auto max-w-lg px-4 py-10 sm:px-6">
@@ -118,15 +135,16 @@ export function EnrollmentPage() {
         readable only by the student, a scoped reviewer at their own university, and a platform
         verification officer — never by any organization user (CLAUDE.md sections 31, 60).
       */}
-      {caseQuery.data && !['VERIFIED', 'REJECTED', 'REVOKED'].includes(enrollment.verificationStatus) && (
+      {canEdit && (
         <div className="mt-6">
           <PrivateDocumentUpload
             title={t('student:evidence.title')}
             description={t('student:evidence.description')}
-            present={caseQuery.data.hasEvidence}
+            present={enrollment.hasDraftEvidence === true || caseQuery.data?.hasEvidence === true}
             accept="application/pdf,image/jpeg,image/png"
+            allowPhoto
             errorPage="evidence"
-            invalidateKeys={[['student', 'verification-case']]}
+            invalidateKeys={[['student', 'verification-case'], ['student', 'enrollment']]}
             onUpload={documentsApi.uploadMyEvidence}
             onDownload={documentsApi.downloadMyEvidence}
             downloadFilename="verification-evidence"
@@ -141,7 +159,8 @@ export function EnrollmentPage() {
               {apiErrorMessage(t, 'student', 'enrollment', submitMutation.error)}
             </p>
           )}
-          <Button loading={submitMutation.isPending} onClick={() => submitMutation.mutate()} className="w-full sm:w-auto">
+          {!enrollment.hasDraftEvidence && <p className="mb-3 text-sm text-foreground-secondary">{t('common:remediation.studentIdRequired')}</p>}
+          <Button disabled={!enrollment.hasDraftEvidence} loading={submitMutation.isPending} onClick={() => submitMutation.mutate()} className="w-full sm:w-auto">
             {t('student:enrollment.submitForVerification')}
           </Button>
         </div>
@@ -154,6 +173,7 @@ export function EnrollmentPage() {
           <Button
             variant="outline"
             loading={submitMutation.isPending}
+            disabled={!caseQuery.data?.hasEvidence}
             onClick={() => submitMutation.mutate()}
             className="mt-4"
           >
@@ -185,12 +205,6 @@ export function EnrollmentPage() {
               {t('student:enrollment.generateCode')}
             </Button>
           )}
-        </div>
-      )}
-
-      {enrollment.verificationStatus === 'VERIFIED' && (
-        <div className="mt-8 flex justify-center">
-          <AnimatedCheck label={t('student:enrollment.verifiedTitle')} />
         </div>
       )}
 

@@ -27,7 +27,16 @@ export async function downloadPrivateDocument(path: string): Promise<Blob> {
     if (errorBody) throw new ApiError(errorBody)
     throw new Error(`Download failed with status ${response.status}`)
   }
-  return response.blob()
+  const blob = await response.blob()
+  const disposition = response.headers.get('Content-Disposition') ?? ''
+  const encoded = /filename\*=UTF-8''([^;]+)/i.exec(disposition)?.[1]
+  const quoted = /filename="([^"]+)"/i.exec(disposition)?.[1]
+  let filename = quoted
+  if (encoded) {
+    try { filename = decodeURIComponent(encoded) } catch { /* Use the plain filename if provided. */ }
+  }
+  const safeName = filename && [...filename].map(char => char === '/' || char === '\\' || char.charCodeAt(0) < 32 || char.charCodeAt(0) === 127 ? '_' : char).join('')
+  return safeName ? new File([blob], safeName, { type: blob.type }) : blob
 }
 
 /**
@@ -40,7 +49,7 @@ export function saveBlob(blob: Blob, filename: string) {
   const objectUrl = URL.createObjectURL(blob)
   const anchor = document.createElement('a')
   anchor.href = objectUrl
-  anchor.download = filename
+  anchor.download = blob instanceof File ? blob.name : filename
   anchor.click()
   URL.revokeObjectURL(objectUrl)
 }

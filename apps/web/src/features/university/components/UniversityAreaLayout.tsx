@@ -33,7 +33,7 @@ export function UniversityAreaLayout() {
   if (membershipQuery.isLoading) {
     return (
       <div className="flex min-h-svh items-center justify-center">
-        <LoadingSpinner size="lg" />
+        <LoadingSpinner size="lg" label={t('common:status.loading')} />
       </div>
     )
   }
@@ -42,7 +42,7 @@ export function UniversityAreaLayout() {
   // so a visitor here can always reach notifications, theme, language and sign-out.
   if (!membershipQuery.data) {
     return (
-      <AppShell
+      <AppShell workspace="university"
         areaLabel={t('common:nav.university')}
         tone="navy"
         sections={[
@@ -61,7 +61,7 @@ export function UniversityAreaLayout() {
 
   return (
     <UniversityMembershipContext.Provider value={membershipQuery.data}>
-      <AppShell
+      <AppShell workspace="university"
         areaLabel={t('common:nav.university')}
         tone="navy"
         sections={buildUniversityNav(t, membershipQuery.data)}

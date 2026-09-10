@@ -237,7 +237,7 @@ export function OpportunityDetailPage() {
 
       {can.canManageOpportunities && isDraft && (
         <form noValidate onSubmit={form.handleSubmit((values) => updateMutation.mutate(values))}>
-          <Card padding="lg" className="flex flex-col gap-4">
+          <div className="flex flex-col gap-4">
             <div>
               <h2 className="font-display text-base font-bold text-brand-navy dark:text-foreground">
                 {t('opportunities:detail.editTitle')}
@@ -256,7 +256,7 @@ export function OpportunityDetailPage() {
                 {t('opportunities:form.saveChanges')}
               </Button>
             </div>
-          </Card>
+          </div>
         </form>
       )}
 

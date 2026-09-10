@@ -54,7 +54,8 @@ class SavedOpportunityRaceTest {
         when(profiles.findByUserId(STUDENT)).thenReturn(Optional.of(mock(StudentProfile.class)));
         when(savedOpportunities.exists(STUDENT, OPPORTUNITY)).thenReturn(false);
 
-        service = new SavedOpportunityService(savedOpportunities, profiles, publicOpportunities);
+        service = new SavedOpportunityService(savedOpportunities, profiles, publicOpportunities,
+                mock(StudentMarketplaceAccess.class));
     }
 
     /** The expected race: another request inserted the same bookmark first. */

@@ -4,6 +4,18 @@ export interface StudentProfileResponse {
   userId: string
   fullName: string
   phone: string | null
+  professional?: StudentProfessionalProfile | null
+}
+
+export interface StudentProfessionalProfile {
+  headline?: string | null
+  summary?: string | null
+  city?: string | null
+  countryCode?: string | null
+  skills: string[]
+  linkedinUrl?: string | null
+  githubUrl?: string | null
+  portfolioUrl?: string | null
 }
 
 export interface StudentEnrollmentResponse {
@@ -14,6 +26,7 @@ export interface StudentEnrollmentResponse {
   program: string
   academicYear: string
   verificationStatus: string
+  hasDraftEvidence?: boolean
 }
 
 export interface ChallengeResponse {

@@ -2,12 +2,14 @@ import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useMutation } from '@tanstack/react-query'
 import { useTranslation } from 'react-i18next'
-import { Link, useSearchParams } from 'react-router-dom'
+import { useSearchParams } from 'react-router-dom'
 import { resetPasswordSchema, type ResetPasswordFormValues } from '../schemas/resetPasswordSchema'
 import * as authApi from '../api/authApi'
 import { authErrorMessage } from '../api/errorMessage'
 import { AuthCard } from '../components/AuthCard'
-import { AnimatedCheck, Button, FormField, PasswordInput } from '../../../components/ui'
+import { AuthStatus } from '../components/AuthStatus'
+import { Button, ButtonLink, FormField, PasswordInput } from '../../../components/ui'
+import { ApiError } from '../../../lib/api/client'
 import { BackToLogin } from './ForgotPasswordPage'
 
 export function ResetPasswordPage() {
@@ -24,25 +26,60 @@ export function ResetPasswordPage() {
     mutationFn: (values: ResetPasswordFormValues) => authApi.resetPassword({ token: token ?? '', newPassword: values.newPassword }),
   })
 
+  // A reset URL with no token cannot be completed here at any point, so it is an error state with
+  // the route that regenerates a valid link — not, as before, an error MESSAGE used as a page
+  // heading with a bare link under it and no explanation of what to do or why.
   if (!token) {
     return (
-      <AuthCard title={t('auth:resetPassword.errors.missingToken')}>
-        <Link to="/forgot-password" className="block text-center text-sm font-medium text-link hover:underline">
-          {t('auth:forgotPassword.title')}
-        </Link>
-      </AuthCard>
+      <AuthStatus
+        tone="error"
+        title={t('auth:resetPassword.errors.missingToken')}
+        description={t('auth:resetPassword.missingTokenBody')}
+        actions={
+          <>
+            <ButtonLink to="/forgot-password">{t('auth:resetPassword.requestNewLink')}</ButtonLink>
+            <ButtonLink variant="outline" to="/login">
+              {t('auth:forgotPassword.backToLoginAction')}
+            </ButtonLink>
+          </>
+        }
+      />
     )
   }
 
   if (mutation.isSuccess) {
     return (
-      <AuthCard title={t('auth:resetPassword.successTitle')}>
-        <AnimatedCheck label={t('auth:resetPassword.successTitle')} />
-        <p className="mt-4 text-center text-sm text-foreground-secondary">{t('auth:resetPassword.successBody')}</p>
-        <Link to="/login" className="mt-6 block text-center text-sm font-medium text-link hover:underline">
-          {t('auth:resetPassword.continue')}
-        </Link>
-      </AuthCard>
+      <AuthStatus
+        tone="success"
+        title={t('auth:resetPassword.successTitle')}
+        description={t('auth:resetPassword.successBody')}
+        actions={<ButtonLink to="/login">{t('auth:resetPassword.continue')}</ButtonLink>}
+      />
+    )
+  }
+
+  /*
+   * An expired or already-used token is only discoverable by submitting, so it arrives as a
+   * mutation error rather than as a state this page can render on load. It is terminal in the same
+   * way the missing token is — no amount of retyping a password fixes a dead link — so it gets the
+   * recoverable screen instead of a red line above a form that cannot succeed.
+   */
+  const errorCode = mutation.error instanceof ApiError ? mutation.error.body.code : null
+  if (errorCode === 'PASSWORD_RESET_TOKEN_EXPIRED' || errorCode === 'PASSWORD_RESET_TOKEN_INVALID') {
+    return (
+      <AuthStatus
+        tone="warning"
+        title={t(`auth:resetPassword.errors.${errorCode}`)}
+        description={t('auth:resetPassword.linkDeadBody')}
+        actions={
+          <>
+            <ButtonLink to="/forgot-password">{t('auth:resetPassword.requestNewLink')}</ButtonLink>
+            <ButtonLink variant="outline" to="/login">
+              {t('auth:forgotPassword.backToLoginAction')}
+            </ButtonLink>
+          </>
+        }
+      />
     )
   }
 

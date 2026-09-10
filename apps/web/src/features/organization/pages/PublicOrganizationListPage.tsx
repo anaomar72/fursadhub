@@ -170,6 +170,7 @@ export function PublicOrganizationListPage() {
             {result.data?.content.map((organization) => (
               <li key={organization.id}>
                 <EntityCard
+                  className="min-h-60 [&_h3]:text-lg [&_img]:size-14"
                   name={organization.name}
                   verified={organization.verified}
                   imageUrl={organization.hasLogo ? organizationApi.organizationLogoUrl(organization.id) : undefined}

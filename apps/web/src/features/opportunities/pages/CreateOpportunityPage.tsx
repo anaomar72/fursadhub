@@ -9,7 +9,7 @@ import { buildOpportunityPayload, emptyOpportunityFormValues } from '../opportun
 import { useOrganizationMembership } from '../../organization/components/OrganizationMembershipContext'
 import { organizationCapabilities } from '../../organization/organizationCapabilities'
 import { apiErrorMessage } from '../../../lib/api/errorMessage'
-import { Alert, Breadcrumbs, Button, ButtonLink, Card, EmptyState, PageHeader } from '../../../components/ui'
+import { Alert, Breadcrumbs, Button, ButtonLink, EmptyState, PageHeader } from '../../../components/ui'
 import { PageContainer } from '../../../app/layouts/PageContainer'
 import { OpportunityFormFields } from '../components/OpportunityFormFields'
 
@@ -83,14 +83,14 @@ export function CreateOpportunityPage() {
       />
 
       <form noValidate onSubmit={form.handleSubmit((values) => createMutation.mutate(values))}>
-        <Card padding="lg" className="flex flex-col gap-4">
+        <div className="flex flex-col gap-4">
           <OpportunityFormFields form={form} />
 
           {createMutation.isError && (
             <Alert tone="danger">{apiErrorMessage(t, 'opportunities', 'form', createMutation.error)}</Alert>
           )}
 
-          <div className="flex flex-wrap gap-2 border-t border-border pt-4">
+          <div className="sticky bottom-0 z-10 flex flex-wrap gap-2 rounded-xl border border-border bg-surface p-4 shadow-sm">
             <Button type="submit" loading={createMutation.isPending}>
               {t('opportunities:form.createSubmit')}
             </Button>
@@ -98,7 +98,7 @@ export function CreateOpportunityPage() {
               {t('common:actions.cancel')}
             </ButtonLink>
           </div>
-        </Card>
+        </div>
       </form>
     </PageContainer>
   )
