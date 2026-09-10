@@ -8,6 +8,13 @@ COPY package.json package-lock.json ./
 RUN npm ci
 
 COPY . .
+
+# Vite inlines env at BUILD time, so this cannot be supplied when the container runs — an image
+# built without it bakes the localhost fallback in src/app/config/env.ts and cannot reach any real
+# API. Declared here so a deployment build can pass --build-arg VITE_API_BASE_URL=https://…/api/v1.
+ARG VITE_API_BASE_URL
+ENV VITE_API_BASE_URL=${VITE_API_BASE_URL}
+
 RUN npm run build
 
 # ---- Runtime stage ------------------------------------------------------------

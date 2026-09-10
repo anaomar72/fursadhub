@@ -1,0 +1,4 @@
+# Runs before the application context exists, so a deployment still carrying local-development
+# configuration is refused before Flyway touches the schema or the datasource is opened.
+org.springframework.boot.env.EnvironmentPostProcessor=\
+  com.fursadhub.common.config.ProductionConfigurationGuard

@@ -1,0 +1,29 @@
+# Line-ending policy.
+#
+# Git already stores mvnw with LF, but on Windows the default core.autocrlf=true checks it out with
+# CRLF. The Docker build then copies that file into a Linux image, where the shebang reads
+# "#!/bin/sh\r", the kernel looks for an interpreter literally named "/bin/sh\r", and the build dies
+# with a bare "exit code: 127". Linux CI never reproduces it, because there the checkout is LF —
+# so the production API image simply could not be built from a Windows checkout.
+#
+# Scoped deliberately: only files whose line endings actually change behaviour are pinned. A blanket
+# "* text=auto" would renormalise the whole repository in one commit and bury real changes.
+
+# Shell scripts and wrappers must stay LF — they are executed by a POSIX shell, including inside
+# the Docker build stages.
+mvnw            text eol=lf
+*.sh            text eol=lf
+gradlew         text eol=lf
+
+# The Windows wrapper is executed by cmd.exe and must stay CRLF.
+mvnw.cmd        text eol=crlf
+*.bat           text eol=crlf
+
+# Binary assets: never touch, and never diff as text.
+*.png           binary
+*.jpg           binary
+*.jpeg          binary
+*.gif           binary
+*.ico           binary
+*.pdf           binary
+*.jar           binary
