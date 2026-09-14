@@ -134,14 +134,39 @@ export function PublicOpportunityDetailPage() {
         {t('opportunities:public.backToList')}
       </Link>
 
+      {/*
+        `min-w-0` on both grid items is what makes this page fit a phone at all.
+
+        <p>A grid item's default `min-width` is `auto`, which means it refuses to shrink below the
+        intrinsic minimum width of its own contents. The section-navigation strip inside the article
+        is a non-wrapping row about 470px wide; with `min-width: auto` that number propagated all
+        the way up and held the whole page open at 529px inside a 360px viewport. The strip's own
+        `overflow-x: auto` could never engage, because nothing above it would let it be narrow.
+
+        <p>Nothing was visibly broken only because the public shell clips horizontal overflow, which
+        also meant `documentElement.scrollWidth` reported no overflow — the page was cut off rather
+        than scrollable, and the automated width checks read that as passing.
+      */}
       <div className="mt-5 grid gap-5 lg:grid-cols-[minmax(0,1fr)_310px] lg:items-start">
-        <article className="rounded-xl border border-border bg-surface p-5 shadow-xs">
+        <article className="min-w-0 rounded-xl border border-border bg-surface p-4 shadow-xs sm:p-5">
           {/* Composition-level, not paragraph-level: identity and key facts arrive as one piece,
               then the body copy follows. The sticky apply rail below is deliberately NOT wrapped —
               a transform on an ancestor breaks `position: sticky`, and the primary action should
               be there the instant the page is. */}
           <Reveal>
-            <div className="flex min-w-0 items-start gap-4">
+            {/*
+              The identity row wraps on a phone instead of holding three columns side by side.
+
+              <p>It was a single non-wrapping row: a 96px logo, the title block, and the share and
+              bookmark buttons pushed to the end. Inside a 360px viewport that left the title roughly
+              40px of usable width — so "Full stack Internship" ran past the edge of the card and was
+              cut off by the shell's clip. The logo shrinks to 56px below `sm` and the actions drop
+              onto their own line, which gives the title the full column width to wrap into.
+
+              <p>`shrink-0` on the logo is deliberate: without it the flex algorithm takes the space
+              back out of the image instead of the text, squashing a square logo into a letterbox.
+            */}
+            <div className="flex min-w-0 flex-wrap items-start gap-3 sm:flex-nowrap sm:gap-4">
               <Avatar
                 name={opportunity.organization.name}
                 src={
@@ -149,9 +174,9 @@ export function PublicOpportunityDetailPage() {
                 }
                 size="lg"
                 shape="square"
-                className="size-24"
+                className="size-14 shrink-0 sm:size-24"
               />
-              <div className="min-w-0">
+              <div className="min-w-0 flex-1 basis-[12rem]">
                 <div className="flex min-w-0 flex-wrap items-center gap-1.5">
                   <Link
                     to={`/organizations/${opportunity.organization.id}`}
@@ -161,7 +186,9 @@ export function PublicOpportunityDetailPage() {
                   </Link>
                   {opportunity.organization.verified && <VerifiedBadge size="sm" />}
                 </div>
-                <h1 className="mt-2 font-display text-2xl font-extrabold tracking-[-0.03em] text-brand-navy dark:text-foreground sm:text-3xl">
+                {/* `break-words` so a single long unbroken word — which job titles do contain —
+                    wraps rather than pushing the column open again. */}
+                <h1 className="mt-2 break-words font-display text-xl font-extrabold tracking-[-0.03em] text-brand-navy dark:text-foreground sm:text-2xl lg:text-3xl">
                   {opportunity.title}
                 </h1>
                 <div className="mt-3 flex flex-wrap gap-2">
@@ -169,7 +196,9 @@ export function PublicOpportunityDetailPage() {
                   {opportunity.location && <Badge>{opportunity.location}</Badge>}
                 </div>
               </div>
-              <div className="ms-auto flex shrink-0 flex-wrap gap-2"><ShareLink /><PublicBookmark id={opportunity.id} /></div>
+              {/* `ms-auto` only once the row is a single line; while it is wrapped, the actions sit
+                  at the start of their own line rather than being pushed to the far edge. */}
+              <div className="flex shrink-0 flex-wrap gap-2 sm:ms-auto"><ShareLink /><PublicBookmark id={opportunity.id} /></div>
             </div>
 
             {/* Framed rather than bare. Organizations upload whatever they have, and a logo on a white
@@ -177,7 +206,17 @@ export function PublicOpportunityDetailPage() {
                  edge at all, which reads as a hole punched in the layout rather than as a cover.
                  The hairline and the muted backing give any image, transparent ones included, a
                  boundary in both themes. */}
-            {organization?.hasCover ? <img src={organizationApi.organizationCoverUrl(organization.id)} alt="" className="mt-5 aspect-[3.7/1] w-full rounded-lg border border-border bg-surface-muted object-cover" /> :<div className="mt-5 flex min-h-52 items-center justify-center gap-5 overflow-hidden rounded-lg bg-brand-blue-soft p-5"><ExplanatoryArtwork kind="opportunity" className="w-52 max-w-[45%]" /><div className="max-w-sm"><p className="font-display text-xl font-extrabold text-brand-navy">{t('common:remediation.opportunityTitle')}</p><p className="mt-2 text-xs leading-5 text-foreground-secondary">{t('common:remediation.opportunityBody')}</p></div></div>}
+            {/*
+              The cover's aspect ratio is responsive, because a fixed one crops by width.
+
+              <p>3.7:1 is the approved desktop banner shape, and it is right there. On a phone the
+              same ratio meant a 360px-wide box only 97px tall: organizations upload roughly square
+              artwork, so `object-fit: cover` threw away about two thirds of its height and what
+              survived was usually the middle of a logo. The ratio now opens up as the viewport
+              narrows — 16:9 on a phone, 2.5:1 on a tablet, the approved 3.7:1 from `lg` — so the
+              image is cropped least exactly where there is least room to crop it.
+            */}
+            {organization?.hasCover ? <img src={organizationApi.organizationCoverUrl(organization.id)} alt="" loading="lazy" decoding="async" className="mt-5 aspect-[16/9] w-full max-w-full rounded-lg border border-border bg-surface-muted object-cover sm:aspect-[2.5/1] lg:aspect-[3.7/1]" /> :<div className="mt-5 flex min-h-40 flex-wrap items-center justify-center gap-4 overflow-hidden rounded-lg bg-brand-blue-soft p-4 sm:min-h-52 sm:flex-nowrap sm:gap-5 sm:p-5"><ExplanatoryArtwork kind="opportunity" className="w-32 max-w-[45%] sm:w-52" /><div className="min-w-0 max-w-sm"><p className="font-display text-lg font-extrabold text-brand-navy sm:text-xl">{t('common:remediation.opportunityTitle')}</p><p className="mt-2 text-xs leading-5 text-foreground-secondary">{t('common:remediation.opportunityBody')}</p></div></div>}
 
             <dl className="mt-5 grid gap-3 rounded-lg border border-border p-3 sm:grid-cols-3 xl:grid-cols-5">
               {facts.map((fact) => (
@@ -213,7 +252,7 @@ export function PublicOpportunityDetailPage() {
           </Reveal>
         </article>
 
-        <aside className="lg:sticky lg:top-24">
+        <aside className="min-w-0 lg:sticky lg:top-24">
           <Card padding="lg">
             <h2 className="font-display text-lg font-extrabold tracking-tight text-brand-navy dark:text-foreground">
               {t('opportunities:public.applyPanelTitle')}

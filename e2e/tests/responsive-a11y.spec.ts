@@ -1,4 +1,5 @@
 import { test, expect, type Page } from '@playwright/test'
+import { trueContentWidth } from './support/qa'
 
 /**
  * Responsive and accessibility floor for the public surfaces.
@@ -24,8 +25,9 @@ test.describe('responsive', () => {
       for (const route of ROUTES) {
         await page.goto(route, { waitUntil: 'networkidle' })
         await page.waitForTimeout(400)
-        const overflow = await page.evaluate(() =>
-          document.documentElement.scrollWidth - document.documentElement.clientWidth)
+        // Measured with clipping disabled: the shell's overflow-x:clip otherwise caps this
+        // value at the viewport and reports every layout as fitting, however wide it really is.
+        const overflow = (await trueContentWidth(page)) - width
         if (overflow > 0) {
           // Name the widest element, so a failure points at the cause rather than the symptom.
           const culprit = await page.evaluate((limit) => {

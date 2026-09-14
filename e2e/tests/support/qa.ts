@@ -141,3 +141,33 @@ export async function inspect(page: Page, route: string): Promise<SurfaceReport>
   page.off('pageerror', onPageError)
   return { url: route, landed: new URL(page.url()).pathname, overflow, brokenImages, consoleErrors, heading }
 }
+
+/**
+ * The page's TRUE content width, measured with horizontal clipping temporarily disabled.
+ *
+ * <p>Both shells clip horizontal overflow — `overflow-x: clip` on the public layout and
+ * `overflow: hidden` on the portal shell. As a last-resort guard that is defensible, but it means
+ * `document.documentElement.scrollWidth` can never exceed the viewport no matter how wide the
+ * layout really is. Every width check built on that value therefore reports clean whether the page
+ * fits or is simply being cut off.
+ *
+ * <p>That is not hypothetical: the opportunity detail page held itself open at 529px inside a 360px
+ * viewport, with the title and the section navigation sliced off, and passed the responsive sweeps
+ * at every width for exactly this reason. Un-clipping first is what makes the measurement honest.
+ * The original inline styles are put back before returning, so the page is left as it was found.
+ */
+export async function trueContentWidth(page: Page): Promise<number> {
+  return page.evaluate(() => {
+    const restore: [HTMLElement, string][] = []
+    for (const el of document.querySelectorAll<HTMLElement>('*')) {
+      const overflowX = getComputedStyle(el).overflowX
+      if (overflowX === 'clip' || overflowX === 'hidden') {
+        restore.push([el, el.style.overflowX])
+        el.style.overflowX = 'visible'
+      }
+    }
+    const width = document.body.scrollWidth
+    for (const [el, previous] of restore) el.style.overflowX = previous
+    return width
+  })
+}

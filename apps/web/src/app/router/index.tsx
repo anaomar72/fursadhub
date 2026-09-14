@@ -1,5 +1,6 @@
 import { lazy } from 'react'
 import { createBrowserRouter, Navigate } from 'react-router-dom'
+import { RootRoute } from './RootRoute'
 import { PublicLayout, AuthLayout, AccountLayout } from '../layouts'
 const accountArea = () => import('./areas/account')
 const adminArea = () => import('./areas/admin')
@@ -122,6 +123,10 @@ import { LegalDocumentPage } from '../../features/legal/pages/LegalDocumentPage'
  * routes for each area are added phase by phase.
  */
 export const router = createBrowserRouter([
+  {
+    // Pathless: it adds no URL segment and matches everything, so no route address changes.
+    element: <RootRoute />,
+    children: [
   {
     path: '/',
     element: <PublicLayout />,
@@ -450,4 +455,6 @@ export const router = createBrowserRouter([
     ],
   },
   { path: '*', element: <NotFoundPage /> },
+  ],
+  },
 ])

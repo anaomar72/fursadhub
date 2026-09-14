@@ -124,7 +124,7 @@ function TestimonialCard({ testimonial }: { testimonial: PublicTestimonial }) {
   const platform = isPlatformRole(testimonial.authorRole)
 
   return (
-    <figure className="group relative flex flex-1 flex-col overflow-hidden rounded-2xl border border-border bg-surface p-7 shadow-xs transition-[color,background-color,border-color,box-shadow] duration-200 ease-out hover:border-border-strong hover:bg-surface-raised hover:shadow-md motion-reduce:transition-none">
+    <figure className="group relative flex flex-1 flex-col overflow-hidden rounded-2xl border border-border bg-surface p-5 shadow-xs sm:p-7 transition-[color,background-color,border-color,box-shadow] duration-200 ease-out hover:border-border-strong hover:bg-surface-raised hover:shadow-md motion-reduce:transition-none">
       {/*
         Decorative quote mark. `aria-hidden` and positioned behind the text — a screen reader gets
         the <blockquote> semantics instead, and it is set low enough in contrast that it reads as

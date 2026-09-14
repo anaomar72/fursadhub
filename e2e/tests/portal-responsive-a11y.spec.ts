@@ -1,5 +1,5 @@
 import { test, expect, type Page } from '@playwright/test'
-import { account, manifestPath, QA_BASE, settle, signIn } from './support/qa'
+import { account, manifestPath, QA_BASE, settle, signIn, trueContentWidth } from './support/qa'
 
 /**
  * Responsive and accessibility floor for the AUTHENTICATED product.
@@ -49,9 +49,9 @@ test.describe('responsive', () => {
         for (const route of area.routes) {
           await page.goto(QA_BASE + route, { waitUntil: 'networkidle' })
           await page.waitForTimeout(300)
-          const overflow = await page.evaluate(
-            () => document.documentElement.scrollWidth - document.documentElement.clientWidth,
-          )
+          // Measured with clipping disabled: the portal shell's overflow-hidden otherwise caps
+          // this at the viewport and reports every layout as fitting, however wide it really is.
+          const overflow = (await trueContentWidth(page)) - width
           if (overflow > 0) {
             const culprit = await page.evaluate((limit) => {
               for (const el of document.querySelectorAll<HTMLElement>('body *')) {
