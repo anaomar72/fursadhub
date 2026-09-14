@@ -14,12 +14,14 @@
   "student": {
     "title": "Tababarkayga",
     "empty": "Weli ma haysatid meelayn tababar. Marka aad aqbasho dalab, halkan ayuu ka soo muuqan doonaa.",
-    "subtitle": "Tababarradaada hadda iyo kuwii hore."
+    "subtitle": "Tababarradaada hadda iyo kuwii hore.",
+    "resultsHeading": "Tababarradaada"
   },
   "university": {
     "title": "Meelaynta ardayda",
     "description": "Tababarada ay ardaydaadu hadda qaadanayaan, gudaha xuduudkaaga.",
-    "empty": "Weli meelayn ma jirto."
+    "empty": "Weli meelayn ma jirto.",
+    "resultsHeading": "Meelaynta ardayda"
   },
   "organization": {
     "title": "Meelaynta",

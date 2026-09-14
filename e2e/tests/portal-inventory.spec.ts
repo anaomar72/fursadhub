@@ -13,6 +13,17 @@ import { account, inspect, manifestPath, signIn, type SurfaceReport } from './su
 const OUT = process.env.FH_QA_REPORT ?? 'C:/Users/hp/AppData/Local/Temp/claude/C--Users-hp-documents-fursadhub/1153747d-a6c3-4723-b7a7-b1b39f1102e1/scratchpad/qa/inventory'
 
 test.skip(!manifestPath(), 'FH_QA_MANIFEST not set — provision the QA environment first')
+
+/*
+ * Opt-in, via FH_QA_INVENTORY=1.
+ *
+ * <p>This suite asserts nothing — it captures a full-page screenshot of every authenticated surface
+ * at two widths and writes a report. That makes it the slowest thing in the repository by a wide
+ * margin and, run alongside the suites that DO assert, slow enough to exhaust its own budget. It is
+ * the tool the audit is driven with, not a gate; the properties it surfaces are pinned by
+ * portal-responsive-a11y and rbac-matrix, which are fast and always run.
+ */
+test.skip(!process.env.FH_QA_INVENTORY, 'diagnostic sweep — set FH_QA_INVENTORY=1 to capture it')
 test.describe.configure({ mode: 'serial' })
 
 /** The static routes of each area. Parameterised detail routes are covered by the workflow suites. */

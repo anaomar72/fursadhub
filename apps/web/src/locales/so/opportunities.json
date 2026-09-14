@@ -219,7 +219,8 @@
       "OPPORTUNITY_DEADLINE_PASSED": "Wakhtigii codsiga tababarkan wuu dhacay."
     },
     "resultCount_one": "{{count}} tababar ayaa la helay",
-    "openings_one": "{{count}} boos"
+    "openings_one": "{{count}} boos",
+    "resultsHeading": "Fursadaha ku habboon"
   },
   "detail": {
     "notFound": "Tababarka lama helin.",

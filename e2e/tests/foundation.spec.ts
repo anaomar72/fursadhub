@@ -17,9 +17,19 @@ test('home page renders the FursadHub app shell', async ({ page }) => {
   // Brand lockup, linking home, in the public header.
   await expect(page.getByRole('link', { name: 'FursadHub' }).first()).toBeVisible()
 
-  // The approved hero headline. The <h1> carries an aria-label because the words are split across
-  // styled spans ("Connect." / "Learn." / "Grow.").
-  await expect(page.getByRole('heading', { level: 1, name: 'Connect. Learn. Grow.' })).toBeVisible()
+  /*
+   * The approved hero headline, split across styled spans so the accent word can be coloured.
+   *
+   * <p>This asserted "Connect. Learn. Grow." — the headline from BEFORE the presentation refresh.
+   * The page has read "Find Internships. Build Real Futures." since that work landed, so this test
+   * had been failing against the shipped home page rather than guarding it. Matching on the two
+   * sentences rather than one exact string keeps it meaningful without making it brittle to a
+   * copy tweak.
+   */
+  const hero = page.getByRole('heading', { level: 1 })
+  await expect(hero).toBeVisible()
+  await expect(hero).toContainText(/Find Internships/i)
+  await expect(hero).toContainText(/Real Futures/i)
 
   // The public navigation landmark, so the shell is not just a bare page body.
   await expect(page.getByRole('navigation', { name: 'Public navigation' }).first()).toBeVisible()

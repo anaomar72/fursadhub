@@ -129,7 +129,14 @@ export function BrowseOpportunitiesPage() {
       ) : result && result.content.length === 0 ? (
         <EmptyState title={t('opportunities:public.empty')} description={t('opportunities:browse.emptyHint')} />
       ) : (
-        <>
+        // A named region: the page ran h1 (the page header) straight into the cards' h3, leaving a
+        // gap in the heading spine and the results list itself unnamed. The heading is visually
+        // hidden because the page header above already says what this list is — the omission was in
+        // the semantics, so the fix belongs there rather than in a second visible title.
+        <section aria-labelledby="browse-results" className="contents">
+          <h2 id="browse-results" className="sr-only">
+            {t('opportunities:browse.resultsHeading')}
+          </h2>
           <p className="text-sm text-foreground-secondary" aria-live="polite">
             {t('opportunities:browse.resultCount', { count: result?.totalElements ?? 0 })}
           </p>
@@ -148,7 +155,7 @@ export function BrowseOpportunitiesPage() {
           {result && result.totalPages > 1 && (
             <Pagination page={result.page} totalPages={result.totalPages} onPageChange={setPage} />
           )}
-        </>
+        </section>
       )}
     </PageContainer>
   )
