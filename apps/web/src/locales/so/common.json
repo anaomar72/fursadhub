@@ -606,5 +606,10 @@
     "UNIVERSITY_SUPERVISOR": "Kormeeraha Jaamacadda",
     "SUPER_ADMIN": "Maamulaha Sare",
     "VERIFICATION_OFFICER": "Sarkaalka Xaqiijinta"
+  },
+  "accessDenied": {
+    "title": "Ma haysatid fasax boggan",
+    "description": "Akoonkaagu ma laha fasaxa lagu furo qaybtan FursadHub. Haddii aad u malaynayso inay tani khalad tahay, weydiiso maamulaha ururkaaga ama jaamacaddaada inuu hubiyo doorkaaga.",
+    "back": "Aad dashboard-kaaga"
   }
 }

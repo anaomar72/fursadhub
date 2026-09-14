@@ -83,7 +83,7 @@ describe('student DashboardPage', () => {
     renderDashboard()
 
     // Applications counts both active candidacies; Interviews counts only the INTERVIEW one.
-    const applications = (await screen.findByText('Applications')).closest('div')?.parentElement
+    const applications = (await screen.findByText('Active applications')).closest('div')?.parentElement
     expect(applications).toHaveTextContent('2')
     expect(screen.getByText('Interviews').closest('div')?.parentElement).toHaveTextContent('1')
     expect(screen.getByText('Nominations').closest('div')?.parentElement).toHaveTextContent('1')
@@ -161,8 +161,33 @@ describe('student DashboardPage', () => {
     stubApi()
     renderDashboard()
 
-    expect(await screen.findByText('Codsiyada')).toBeInTheDocument()
-    expect(screen.queryByText('Applications')).not.toBeInTheDocument()
+    expect(await screen.findByText('Codsiyada firfircoon')).toBeInTheDocument()
+    expect(screen.queryByText('Active applications')).not.toBeInTheDocument()
     await i18n.changeLanguage('en')
+  })
+
+  /**
+   * The counter beside "Recent applications" counts candidacies that are still IN PLAY — it
+   * excludes ACCEPTED, REJECTED and WITHDRAWN — which is the more useful number for a student
+   * deciding what to do next. It was labelled simply "Applications", so a student whose only
+   * application had been accepted read "Applications 0" directly above a list containing that
+   * application: the card and the list on the same screen contradicting each other.
+   *
+   * <p>The metric was right and is unchanged; the label now says what it counts. This pins the two
+   * together so they cannot drift apart again.
+   */
+  it('counts only applications still in play, and says so', async () => {
+    stubApi({
+      candidacies: [
+        { ...CANDIDACY, id: 'c1', opportunityId: 'opp-1', status: 'ACCEPTED' },
+        { ...CANDIDACY, id: 'c2', opportunityId: 'opp-2', status: 'UNDER_REVIEW' },
+        { ...CANDIDACY, id: 'c3', opportunityId: 'opp-3', status: 'REJECTED' },
+      ],
+    })
+    renderDashboard()
+
+    // Exactly one of the three is still in play; the accepted and rejected ones are not counted.
+    const label = await screen.findByText('Active applications')
+    expect(label.closest('div')?.parentElement).toHaveTextContent('1')
   })
 })
