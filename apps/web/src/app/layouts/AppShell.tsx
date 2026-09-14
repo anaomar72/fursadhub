@@ -10,6 +10,9 @@ import type { NavSection } from './navigation'
 import type { SidebarBrand } from './Sidebar'
 import { WorkspaceContext, type WorkspaceFamily } from './workspace'
 
+/** Ties the drawer to the button that opens it, for `aria-controls`. */
+const DRAWER_ID = 'primary-navigation-drawer'
+
 const COLLAPSED_STORAGE_KEY = 'fursadhub-sidebar-collapsed'
 
 export interface AppShellProps {
@@ -135,6 +138,7 @@ export function AppShell({ areaLabel, sections, tone = 'light', brand, workspace
       {drawerOpen && (
         <dialog
           ref={drawerRef}
+          id={DRAWER_ID}
           aria-modal="true"
           aria-label={t('common:shell.primaryNavigation')}
           onCancel={(event) => { event.preventDefault(); closeDrawer() }}
@@ -165,6 +169,8 @@ export function AppShell({ areaLabel, sections, tone = 'light', brand, workspace
         <Topbar
           areaLabel={areaLabel}
           sections={sections}
+          navigationOpen={drawerOpen}
+          navigationId={DRAWER_ID}
           onOpenNavigation={() => openDrawer()}
           onSignOut={handleSignOut}
         />

@@ -11,6 +11,15 @@ export interface TopbarProps {
   /** Translated area name, e.g. "University" — the second line of the page context. */
   areaLabel: string
   sections: NavSection[]
+  /**
+   * Whether the primary navigation drawer is currently open, and the id of the element it is.
+   *
+   * <p>The trigger carried a label but no state: a screen-reader user was told "Open navigation"
+   * whether the drawer was open or shut, with nothing tying the button to the thing it controls.
+   * `aria-expanded` and `aria-controls` state both.
+   */
+  navigationOpen?: boolean
+  navigationId?: string
   onOpenNavigation: () => void
   onSignOut: () => void
 }
@@ -33,7 +42,7 @@ export interface TopbarProps {
  * Both follow the reference README: never fabricate data, and never change the backend just to
  * match a mockup (CLAUDE.md section 75).
  */
-export function Topbar({ areaLabel, sections, onOpenNavigation, onSignOut }: TopbarProps) {
+export function Topbar({ areaLabel, sections, navigationOpen = false, navigationId, onOpenNavigation, onSignOut }: TopbarProps) {
   const { t } = useTranslation()
   const navigate = useNavigate()
   const location = useLocation()
@@ -44,15 +53,27 @@ export function Topbar({ areaLabel, sections, onOpenNavigation, onSignOut }: Top
 
   return (
     <header className="sticky top-0 z-30 flex h-[72px] shrink-0 items-center gap-3 border-b border-border bg-surface px-4 sm:px-6">
-      <IconButton label={t('common:shell.openNavigation')} onClick={onOpenNavigation} className="lg:hidden">
+      <IconButton
+        label={t('common:shell.openNavigation')}
+        aria-expanded={navigationOpen}
+        aria-controls={navigationId}
+        onClick={onOpenNavigation}
+        className="lg:hidden"
+      >
         <Icon name="menu" className="size-5" />
       </IconButton>
 
+      {/*
+        The second line is the AREA the first line sits in, so it is only worth printing when it
+        says something the first line does not. On a route with no matching rail item — the account
+        pages, which are reached from the user menu rather than the sidebar — the title fell back to
+        the area label and the topbar read "Student" over "Student".
+      */}
       <div className="min-w-0">
         <p className="truncate font-display text-lg font-extrabold tracking-tight text-brand-navy dark:text-foreground sm:text-xl">
           {activeItem?.label ?? areaLabel}
         </p>
-        <p className="truncate text-xs text-foreground-secondary">{areaLabel}</p>
+        {activeItem && <p className="truncate text-xs text-foreground-secondary">{areaLabel}</p>}
       </div>
 
       <div className="ml-auto flex shrink-0 items-center gap-1 sm:gap-2">
