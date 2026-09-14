@@ -1,5 +1,5 @@
-import markNavy from '../../assets/brand/fursadhub-mark-navy.png'
-import markWhite from '../../assets/brand/fursadhub-mark-white.png'
+import markNavy from '../../assets/brand/fursadhub-mark-navy.webp'
+import markWhite from '../../assets/brand/fursadhub-mark-white.webp'
 import { cn } from '../../lib/utils/cn'
 
 export interface BrandLogoProps {

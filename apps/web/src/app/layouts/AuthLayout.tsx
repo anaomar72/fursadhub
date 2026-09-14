@@ -1,3 +1,4 @@
+import { RouteSuspense } from '../router/RouteFallback'
 import { Outlet } from 'react-router-dom'
 import { LanguageToggle, ThemeToggle } from '../../components/ui'
 import {
@@ -45,7 +46,7 @@ export function AuthLayout() {
 
         <main className="flex flex-1 flex-col justify-center py-10">
           <div className="mx-auto w-full max-w-[27rem]">
-            <Outlet />
+            <RouteSuspense><Outlet /></RouteSuspense>
           </div>
         </main>
 

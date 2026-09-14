@@ -68,7 +68,7 @@ export function AboutPage() {
           artwork with the same confidence. Text above it stays white-on-navy and is unaffected:
           the art is a bottom-anchored silhouette, not a full-bleed wash.
         */}
-        <SkylineArtwork className="absolute inset-x-0 bottom-0 w-full opacity-40 brightness-0 invert" />
+        <SkylineArtwork className="absolute inset-x-0 bottom-0 w-full opacity-40" />
         <div className="relative mx-auto max-w-[1448px] px-4 py-16 sm:px-6 lg:px-[54px]">
           <p className="text-xs font-bold uppercase tracking-widest text-brand-accent">
             {t('common:publicPages.about.eyebrow')}

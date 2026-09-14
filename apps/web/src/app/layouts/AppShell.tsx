@@ -3,6 +3,7 @@ import { Outlet, useLocation, useNavigate } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import { useAuth } from '../../lib/auth/AuthContext'
 import { RouteTransition } from './RouteTransition'
+import { RouteSuspense } from '../router/RouteFallback'
 import { Sidebar } from './Sidebar'
 import { Topbar } from './Topbar'
 import type { NavSection } from './navigation'
@@ -175,7 +176,7 @@ export function AppShell({ areaLabel, sections, tone = 'light', brand, workspace
           style={{ backgroundColor: 'var(--workspace-tint, transparent)' }}
           className="min-w-0 flex-1"
         >
-          <RouteTransition>{children ?? <Outlet />}</RouteTransition>
+          <RouteTransition><RouteSuspense>{children ?? <Outlet />}</RouteSuspense></RouteTransition>
         </main>
       </div>
     </div>

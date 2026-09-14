@@ -13,7 +13,7 @@ export function PublicFooter() {
         <FooterNav heading={t('common:remediation.support')} links={[['/about', t('common:remediation.help')], ['/#how-it-works', t('common:remediation.how')], ['/account/privacy', t('privacy:nav.privacy')]]} />
         <FooterNav heading={t('common:footer.legalNav')} links={[['/legal/terms', t('legal:documentTypes.TERMS')], ['/legal/privacy-policy', t('legal:documentTypes.PRIVACY_POLICY')], ['/legal/cookie-policy', t('legal:documentTypes.COOKIE_POLICY')]]} />
         <div><h2 className="text-xs font-bold">{t('common:remediation.updates')}</h2><p className="mt-2 text-xs leading-5 text-foreground-secondary">{t('common:remediation.updatesBody')}</p><Link to="/opportunities" className="mt-3 inline-flex min-h-9 items-center rounded bg-brand-accent px-3 text-xs font-bold text-white focus-visible:ring-2">{t('common:remediation.explore')} →</Link></div>
-        <div className="flex flex-col justify-end"><SkylineArtwork className="h-24 w-full brightness-0 invert opacity-40" /><p className="mt-2 text-right text-[11px] text-foreground-secondary">{t('common:footer.strapline')}</p></div>
+        <div className="flex flex-col justify-end"><SkylineArtwork className="h-24 w-full opacity-40" /><p className="mt-2 text-right text-[11px] text-foreground-secondary">{t('common:footer.strapline')}</p></div>
       </div>
       <p className="mt-4 border-t border-white/10 pt-3 text-center text-[11px] text-foreground-secondary">{t('common:footer.copyright', { year: new Date().getFullYear() })}</p>
     </div>

@@ -2,19 +2,36 @@ import { useState, type ReactNode } from 'react'
 import { useTranslation } from 'react-i18next'
 import { Link } from 'react-router-dom'
 import { Icon, type IconName } from './Icon'
-import sheet from '../../assets/brand/presentation-assets.png'
-import skyline from '../../assets/presentation/skyline.png'
-import band from '../../assets/presentation/cta-background.png'
+import skyline from '../../assets/presentation/skyline.webp'
+import band from '../../assets/presentation/cta-background.webp'
+import artOpportunity from '../../assets/presentation/illustration-opportunity.webp'
+import artLearning from '../../assets/presentation/illustration-learning.webp'
+import artGrowth from '../../assets/presentation/illustration-growth.webp'
 
+/**
+ * The skyline silhouette behind the footer strapline and the About band.
+ *
+ * <p>The asset IS what the page draws: white pixels shaped by the original alpha channel. It used
+ * to be full-colour navy line art that both call sites immediately threw away with
+ * `brightness-0 invert`, which cost 579KB to deliver colour no visitor ever saw, plus a
+ * full-width filter pass on every paint. Now it ships at 23KB and needs no filter.
+ */
 export function SkylineArtwork({ className = '' }: { className?: string }) {
-  return <img src={skyline} alt="" className={`pointer-events-none object-contain ${className}`} />
+  return <img src={skyline} alt="" loading="lazy" decoding="async" width={1200} height={400} className={`pointer-events-none object-contain ${className}`} />
 }
 
+const EXPLANATORY_ART = { opportunity: artOpportunity, learning: artLearning, growth: artGrowth } as const
+
+/**
+ * One of the three explanatory illustrations.
+ *
+ * <p>These were previously cropped out of a single 2MB sprite sheet with a 640%-wide absolutely
+ * positioned `<img>`. Three 80px illustrations do not justify two megabytes, and the crop made the
+ * component's geometry depend on undocumented pixel offsets into an artboard. Each tile is now its
+ * own 5KB file, extracted from that sheet at exactly the offsets the CSS was using.
+ */
 export function ExplanatoryArtwork({ kind, className = '' }: { kind: 'opportunity' | 'learning' | 'growth'; className?: string }) {
-  const x = { opportunity: 16, learning: 285, growth: 550 }[kind]
-  return <span aria-hidden="true" className={`relative block aspect-[240/155] overflow-hidden ${className}`}>
-    <img src={sheet} alt="" className="absolute max-w-none" style={{ width: '640%', left: `${-x / 240 * 100}%`, top: `${-635 / 155 * 100}%` }} />
-  </span>
+  return <img src={EXPLANATORY_ART[kind]} alt="" aria-hidden="true" loading="lazy" decoding="async" width={240} height={155} className={`block aspect-[240/155] object-contain ${className}`} />
 }
 
 /**

@@ -1,3 +1,4 @@
+import { RouteSuspense } from '../router/RouteFallback'
 import { Outlet } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import { AppShell } from './AppShell'
@@ -29,7 +30,7 @@ export function AccountLayout() {
       ]}
     >
       <PageContainer width="narrow">
-        <Outlet />
+        <RouteSuspense><Outlet /></RouteSuspense>
       </PageContainer>
     </AppShell>
   )

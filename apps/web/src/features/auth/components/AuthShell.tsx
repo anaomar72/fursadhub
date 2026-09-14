@@ -1,7 +1,8 @@
 import { useTranslation } from 'react-i18next'
 import { Link, useLocation } from 'react-router-dom'
 import { BrandLogo, Icon } from '../../../components/ui'
-import heroPhoto from '../../../assets/presentation/hero-woman.png'
+import heroPhoto from '../../../assets/presentation/hero-woman.webp'
+import heroPhotoSmall from '../../../assets/presentation/hero-woman-800.webp'
 import { panelKeyForPath } from '../authPanels'
 
 /**
@@ -29,7 +30,7 @@ export function AuthBrandPanel() {
         Decorative: `alt=""` keeps the photograph out of the accessibility tree. It is approved
         presentation art, never a FursadHub user.
       */}
-      <img src={heroPhoto} alt="" className="absolute inset-0 size-full object-cover object-center" />
+      <img src={heroPhoto} srcSet={`${heroPhotoSmall} 800w, ${heroPhoto} 1440w`} sizes="50vw" alt="" decoding="async" width={1440} height={810} className="absolute inset-0 size-full object-cover object-center" />
       {/*
         Two overlays, because one cannot do both jobs. The flat veil guarantees a floor of contrast
         everywhere — the lockup at the top must stay legible even where the photograph is bright
@@ -87,7 +88,10 @@ export function AuthMobileBrandStrip() {
 
   return (
     <div className="relative overflow-hidden rounded-xl bg-brand-navy px-5 py-4 lg:hidden">
-      <img src={heroPhoto} alt="" className="absolute inset-0 size-full object-cover object-center opacity-25" />
+      {/* The 800w file unconditionally: this strip is `lg:hidden` and sits at 25% opacity behind a
+          navy gradient, so the 1440w source would be paid for by exactly the devices least able to
+          afford it. */}
+      <img src={heroPhotoSmall} alt="" loading="lazy" decoding="async" width={800} height={450} className="absolute inset-0 size-full object-cover object-center opacity-25" />
       <div className="absolute inset-0 bg-gradient-to-r from-brand-navy via-brand-navy/90 to-brand-navy/60" />
       <div className="relative">
         <BrandLogo surface="dark" size="sm" />

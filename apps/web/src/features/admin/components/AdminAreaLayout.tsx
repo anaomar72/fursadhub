@@ -1,3 +1,4 @@
+import { RouteSuspense } from '../../../app/router/RouteFallback'
 import { Outlet } from 'react-router-dom'
 import { useQuery } from '@tanstack/react-query'
 import { useTranslation } from 'react-i18next'
@@ -62,7 +63,7 @@ export function AdminAreaLayout() {
         sections={buildAdminNav(t, session)}
       >
         <PageContainer>
-          <Outlet />
+          <RouteSuspense><Outlet /></RouteSuspense>
         </PageContainer>
       </AppShell>
     </AdminSessionContext.Provider>
