@@ -89,11 +89,22 @@ describe('buildOrganizationNav', () => {
     expect(manage).toBeUndefined()
   })
 
-  it('gives every role their own account destinations', () => {
+  /**
+   * The account SECTION, not one page of it.
+   *
+   * <p>This used to require `/account/notifications` and `/account/profile` as separate rail items.
+   * Both were wrong for the same reason: they are subsections of the shared settings area, and
+   * listing them in the primary rail named one part as if it were the whole and made the other two
+   * — privacy and the testimonial — look as though they lived somewhere else. The rail now carries
+   * a single entry pointing at the section root, and the four pages are reached from the settings
+   * area's own navigation.
+   */
+  it('gives every role one entry into the shared account section', () => {
     for (const role of ['ORGANIZATION_ADMIN', 'RECRUITER', 'ORGANIZATION_SUPERVISOR'] as OrganizationRole[]) {
       const items = destinations(buildOrganizationNav(i18n.t, membership(role)))
-      expect(items).toContain('/account/notifications')
-      expect(items).toContain('/account/profile')
+      expect(items).toContain('/account')
+      // Exactly one, so a subsection cannot creep back in beside the umbrella and light up with it.
+      expect(items.filter((to) => to === '/account' || to.startsWith('/account/'))).toEqual(['/account'])
     }
   })
 

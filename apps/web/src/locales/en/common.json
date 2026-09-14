@@ -390,7 +390,8 @@
     "closeMenu": "Close menu",
     "workspace": "Go to my workspace",
     "accountSettings": "Account settings",
-    "signOut": "Sign out"
+    "signOut": "Sign out",
+    "settings": "Settings"
   },
   "status": {
     "loading": "Loading",

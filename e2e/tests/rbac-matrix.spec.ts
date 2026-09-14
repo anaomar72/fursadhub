@@ -246,6 +246,13 @@ test.describe('authentication lifecycle', () => {
   })
 
   test('every provisioned role can authenticate and lands somewhere it is allowed', async ({ page }) => {
+    /*
+     * Fourteen full sign-ins, each a real form submission and a redirect. That is a couple of
+     * seconds apiece and had been finishing at 27-30s against Playwright's 30s default — passing or
+     * failing on how busy the machine was, while every assertion inside it passed either way. The
+     * budget now matches the work rather than the default.
+     */
+    test.setTimeout(180_000)
     await page.setViewportSize({ width: 1440, height: 900 })
     for (const who of qaManifest().accounts) {
       await page.context().clearCookies()

@@ -39,7 +39,9 @@ describe('Phase D navigation matrix', () => {
     it('keeps the student menu inside /student and the shared /account area', () => {
       const items = destinations(buildStudentNav(i18n.t))
 
-      expect(items.every((to) => to.startsWith('/student/') || to.startsWith('/account/'))).toBe(true)
+      // '/account' itself counts: the settings entry points at the section root, which is a real
+      // route whose index redirects to /account/profile.
+      expect(items.every((to) => to.startsWith('/student/') || to === '/account' || to.startsWith('/account/'))).toBe(true)
       expect(items.some((to) => to.startsWith('/organization/') || to.startsWith('/university/'))).toBe(false)
     })
 
@@ -156,7 +158,10 @@ describe('Phase D navigation matrix', () => {
      * product rather than as a permission decision.
      */
     it('offers only paths under a known area prefix', () => {
-      const known = ['/student/', '/organization/', '/university/', '/account/']
+      // Each area's ROOT is a destination too — the shared settings entry points at '/account',
+      // whose index route redirects to /account/profile — so an area matches its root or anything
+      // beneath it, not only the latter.
+      const known = ['/student', '/organization', '/university', '/account']
       const everyItem = [
         destinations(buildStudentNav(i18n.t)),
         ...(['ORGANIZATION_ADMIN', 'RECRUITER', 'ORGANIZATION_SUPERVISOR'] as OrganizationRole[]).map(organizationNav),
@@ -166,7 +171,12 @@ describe('Phase D navigation matrix', () => {
       ].flat()
 
       for (const to of everyItem) {
-        expect(known.some((prefix) => to.startsWith(prefix)), `${to} is outside every known area`).toBe(true)
+        // Exactly the root, or genuinely beneath it — a bare `startsWith` would also accept
+        // '/studentfoo', which is not in the student area at all.
+        expect(
+          known.some((area) => to === area || to.startsWith(`${area}/`)),
+          `${to} is outside every known area`,
+        ).toBe(true)
       }
     })
 

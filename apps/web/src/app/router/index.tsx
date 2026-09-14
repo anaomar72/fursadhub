@@ -447,7 +447,7 @@ export const router = createBrowserRouter([
       </RequireAuth>
     ),
     children: [
-      { index: true, element: <Navigate to="notifications" replace /> },
+      { index: true, element: <Navigate to="profile" replace /> },
       { path: 'profile', element: <AccountProfilePage /> },
       { path: 'notifications', element: <NotificationsPage /> },
       { path: 'privacy', element: <PrivacyPage /> },

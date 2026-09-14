@@ -1,5 +1,5 @@
 import type { TFunction } from 'i18next'
-import type { NavItem, NavSection } from '../../../app/layouts/navigation'
+import { accountSettingsNavItem, type NavItem, type NavSection } from '../../../app/layouts/navigation'
 import { adminCapabilities } from '../adminCapabilities'
 import type { AdminSession } from '../types'
 
@@ -75,12 +75,15 @@ export function buildAdminNav(t: TFunction, session: AdminSession): NavSection[]
     sections.push({ label: t('admin:nav.platform'), items: platform })
   }
 
+  /*
+   * One entry, not two. `/account/profile` used to sit here beside the account link, but it is a
+   * subsection of the settings area rather than a peer of it — and listing both meant two primary
+   * items lit up together on `/account/profile`, since the umbrella matches by prefix. It is
+   * reached from the settings area's own navigation instead.
+   */
   sections.push({
     label: t('common:shell.sections.account'),
-    items: [
-      { to: '/account/notifications', label: t('notifications:title'), icon: 'bell' },
-      { to: '/account/profile', label: t('account:nav.profile'), icon: 'user' },
-    ],
+    items: [accountSettingsNavItem(t)],
   })
 
   return sections

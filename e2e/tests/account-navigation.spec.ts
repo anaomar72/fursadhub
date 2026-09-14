@@ -169,3 +169,100 @@ test('signing out still works from an account page', async ({ page }) => {
   await page.waitForTimeout(2000)
   expect(new URL(page.url()).pathname, 'sign out did not leave the authenticated area').toMatch(/^\/(login)?$/)
 })
+
+/**
+ * The primary rail's entry into the account section.
+ *
+ * <p>It used to read "Notifications" and point at `/account/notifications` — one subsection
+ * standing in for the whole section, which left Profile, Privacy and data and Share your story
+ * looking as though they belonged somewhere else. It is now a single "Settings" entry on the
+ * section root, so it stays lit across every page of the section while the local strip says which
+ * page you are on.
+ */
+test.describe('the Settings entry', () => {
+  /** The primary rail's account-section links, whatever they currently are. */
+  async function railAccountLinks(page: Page): Promise<{ href: string; text: string; current: boolean }[]> {
+    return page.evaluate(() => {
+      const navs = [...document.querySelectorAll('nav')]
+      const rail = navs.find((n) =>
+        [...n.querySelectorAll('a')].some((a) => {
+          const h = a.getAttribute('href') ?? ''
+          return h.startsWith('/') && !h.startsWith('/account')
+        }))
+      if (!rail) return []
+      return [...rail.querySelectorAll('a')]
+        .map((a) => ({
+          href: a.getAttribute('href') ?? '',
+          text: a.textContent?.trim() ?? '',
+          current: a.getAttribute('aria-current') === 'page' || a.className.includes('sidebar-active') || !!a.querySelector('[aria-current="page"]'),
+        }))
+        .filter((l) => l.href === '/account' || l.href.startsWith('/account/'))
+    })
+  }
+
+  for (const subject of ROLES) {
+    test(`${subject.label} sees Settings, not Notifications, and it stays active across the section`, async ({ page }) => {
+      test.setTimeout(180_000)
+      await page.setViewportSize({ width: 1440, height: 900 })
+      await signIn(page, account(subject.role, subject.scope))
+
+      const rail = await railAccountLinks(page)
+      expect(rail.map((l) => l.href), `${subject.label} should have one account entry`).toEqual(['/account'])
+      expect(rail[0].text, `${subject.label} still sees the old label`).toMatch(/settings|dejinta/i)
+      expect(rail[0].text).not.toMatch(/^notifications$/i)
+
+      // Following it reaches the section's front page, not its notifications.
+      await page.locator('nav a[href="/account"]').first().click()
+      await page.waitForTimeout(1500)
+      expect(new URL(page.url()).pathname, 'Settings must open the account section').toBe('/account/profile')
+
+      // And it stays the active primary item on every subsection.
+      for (const route of ACCOUNT_ROUTES) {
+        await page.goto(QA_BASE + route, { waitUntil: 'networkidle' })
+        await settle(page)
+        const onPage = await railAccountLinks(page)
+        expect(onPage.map((l) => l.href), `${subject.label} lost the Settings entry on ${route}`).toEqual(['/account'])
+        expect(onPage[0].current, `Settings is not marked active on ${route}`).toBe(true)
+      }
+    })
+  }
+
+  test('the local strip still selects the actual subsection while Settings owns the rail', async ({ page }) => {
+    await page.setViewportSize({ width: 1440, height: 900 })
+    await signIn(page, account('STUDENT'))
+
+    for (const [route, expected] of [
+      ['/account/profile', /profile/i],
+      ['/account/notifications', /notification/i],
+      ['/account/privacy', /privacy/i],
+      ['/account/testimonial', /story|testimonial/i],
+    ] as [string, RegExp][]) {
+      await page.goto(QA_BASE + route, { waitUntil: 'networkidle' })
+      await settle(page)
+
+      // Two levels, each saying something different: the rail names the section, the strip the page.
+      const strip = page.locator('nav[aria-label]').filter({ has: page.locator('a[href^="/account/"]') }).first()
+      const selected = await strip.locator('[aria-current="page"]').first().textContent()
+      expect(selected?.trim(), `the account strip does not mark ${route}`).toMatch(expected)
+
+      // The page heading still describes the page, not the section.
+      const heading = await page.getByRole('heading', { level: 1 }).first().textContent()
+      expect(heading?.trim(), `${route} should not be titled "Settings"`).not.toMatch(/^settings$/i)
+    }
+  })
+
+  test('the mobile drawer shows Settings and marks it active on an account page', async ({ page }) => {
+    await page.setViewportSize({ width: 390, height: 844 })
+    await signIn(page, account('STUDENT'))
+    await page.goto(`${QA_BASE}/account/notifications`, { waitUntil: 'networkidle' })
+    await settle(page)
+
+    await page.locator('header').getByRole('button', { name: /menu|navigation|open/i }).first().click()
+    await page.waitForTimeout(600)
+
+    const drawer = await railAccountLinks(page)
+    expect(drawer.map((l) => l.href), 'the drawer should offer one account entry').toEqual(['/account'])
+    expect(drawer[0].text, 'the drawer still shows the old label').toMatch(/settings|dejinta/i)
+    expect(drawer[0].current, 'Settings is not active in the drawer on an account page').toBe(true)
+  })
+})

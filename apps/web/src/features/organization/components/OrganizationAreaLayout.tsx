@@ -6,6 +6,7 @@ import { OrganizationSetupPage } from '../pages/OrganizationSetupPage'
 import { buildOrganizationNav } from './organizationNavigation'
 import { LoadingSpinner } from '../../../components/ui'
 import { AppShell } from '../../../app/layouts/AppShell'
+import { accountSettingsNavItem } from '../../../app/layouts/navigation'
 
 /**
  * Resolves the caller's organization staff membership, shares it via context and builds the sidebar
@@ -52,7 +53,7 @@ export function OrganizationAreaLayout() {
         sections={[
           {
             label: t('common:shell.sections.account'),
-            items: [{ to: '/account/notifications', label: t('notifications:title'), icon: 'bell' }],
+            items: [accountSettingsNavItem(t)],
           },
         ]}
       >

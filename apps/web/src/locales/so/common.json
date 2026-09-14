@@ -390,7 +390,8 @@
     "closeMenu": "Xir liiska",
     "workspace": "Aad goobtayda shaqada",
     "accountSettings": "Dejinta akoonka",
-    "signOut": "Ka bax"
+    "signOut": "Ka bax",
+    "settings": "Dejinta"
   },
   "status": {
     "loading": "Waa la soo raray",
