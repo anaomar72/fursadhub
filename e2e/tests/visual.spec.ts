@@ -16,7 +16,7 @@ async function settle(page: Page) {
 }
 
 const ROUTES: [string, string][] = [
-  ['home', '/'], ['about', '/about'], ['internships', '/internships'],
+  ['home', '/'], ['about', '/about'], ['opportunities', '/opportunities'],
   ['organizations', '/organizations'], ['universities', '/universities'],
   ['login', '/login'], ['register', '/register'],
 ]

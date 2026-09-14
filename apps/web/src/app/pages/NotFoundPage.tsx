@@ -10,14 +10,19 @@ import { BrandLogo, ButtonLink } from '../../components/ui'
 export function NotFoundPage() {
   const { t } = useTranslation()
   return (
-    <div className="flex min-h-svh flex-col items-center justify-center gap-6 bg-background px-4 py-16 text-center">
+    // A <main> rather than a <div>: this page renders standalone, outside the layouts that supply
+    // the landmark elsewhere, so without it the 404 was the one page in the product with no main
+    // landmark for a screen reader to jump to.
+    <main className="flex min-h-svh flex-col items-center justify-center gap-6 bg-background px-4 py-16 text-center">
       <BrandLogo />
       <div className="space-y-2">
-        <p className="font-display text-6xl font-extrabold tracking-tight text-brand-navy dark:text-foreground">404</p>
+        {/* Decorative: the digits repeat what the heading already says, so they are not announced
+            twice. The <h1> carries the actual message. */}
+        <p aria-hidden="true" className="font-display text-6xl font-extrabold tracking-tight text-brand-navy dark:text-foreground">404</p>
         <h1 className="text-xl font-bold text-foreground">{t('common:notFound.title')}</h1>
         <p className="max-w-sm text-sm text-foreground-secondary">{t('common:notFound.description')}</p>
       </div>
       <ButtonLink to="/">{t('common:notFound.action')}</ButtonLink>
-    </div>
+    </main>
   )
 }

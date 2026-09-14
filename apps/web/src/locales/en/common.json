@@ -129,7 +129,8 @@
       "sortLabel": "Sort by",
       "sortName": "Name (A-Z)",
       "sortNameDesc": "Name (Z-A)",
-      "sortRecentlyVerified": "Recently verified"
+      "sortRecentlyVerified": "Recently verified",
+      "resultsHeading": "Verified organizations"
     },
     "universities": {
       "title": "Transform Internship Management",

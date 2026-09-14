@@ -155,7 +155,17 @@ export function PublicOrganizationListPage() {
         </div>
       )}
 
-      <div className="mt-4">
+      {/*
+        A named region rather than a bare <div>. The page ran h1 (the hero) straight into the cards'
+        h3 with nothing between, which leaves a screen reader navigating by heading with a gap in
+        the spine and the results list itself unnamed. The heading is visually hidden because the
+        hero above already says what this page lists — the omission was in the semantics, not in
+        what a sighted visitor can see, so the fix belongs there too.
+      */}
+      <section className="mt-4" aria-labelledby="organization-results">
+        <h2 id="organization-results" className="sr-only">
+          {t('common:publicPages.organizations.resultsHeading')}
+        </h2>
         {result.isLoading ? (
           <LoadingState label={t('common:publicPages.organizations.loading')} />
         ) : result.isError ? (
@@ -201,7 +211,7 @@ export function PublicOrganizationListPage() {
             ))}
           </ul>
         )}
-      </div>
+      </section>
 
       {result.data && result.data.totalPages > 1 && (
         <Pagination
