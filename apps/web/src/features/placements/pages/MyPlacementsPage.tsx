@@ -33,6 +33,7 @@ export function MyPlacementsPage() {
         <PlacementList
           placements={placementsQuery.data ?? []}
           audience="student"
+          heading={t('placements:student.resultsHeading')}
           detailPath={(placement) => `/student/placements/${placement.id}`}
           emptyMessage={t('placements:student.empty')}
         />

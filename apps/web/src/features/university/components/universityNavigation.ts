@@ -1,5 +1,5 @@
 import type { TFunction } from 'i18next'
-import type { NavItem, NavSection } from '../../../app/layouts/navigation'
+import { accountSettingsNavItem, type NavItem, type NavSection } from '../../../app/layouts/navigation'
 import type { MyMembershipResponse } from '../types'
 import { universityCapabilities } from '../universityCapabilities'
 
@@ -89,7 +89,7 @@ export function buildUniversityNav(t: TFunction, membership: MyMembershipRespons
     manage.push({ to: '/university/profile', label: t('university:nav.profile'), icon: 'bank' })
   }
 
-  const account: NavItem[] = [{ to: '/account/notifications', label: t('notifications:title'), icon: 'bell' }]
+  const account: NavItem[] = [accountSettingsNavItem(t)]
   if (!can.canEditUniversityProfile) {
     account.push({ to: '/university/profile', label: t('university:nav.university'), icon: 'bank' })
   }

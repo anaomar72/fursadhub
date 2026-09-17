@@ -44,6 +44,7 @@ export function UniversityPlacementsPage() {
       <PlacementList
         placements={placementsQuery.data ?? []}
         audience="staff"
+        heading={t('placements:university.resultsHeading')}
         detailPath={(placement) => `/university/placements/${placement.id}`}
         emptyMessage={t('placements:university.empty')}
       />

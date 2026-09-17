@@ -129,7 +129,8 @@
       "sortLabel": "U kala hormari",
       "sortName": "Magaca (A-Z)",
       "sortNameDesc": "Magaca (Z-A)",
-      "sortRecentlyVerified": "Dhawaan la xaqiijiyay"
+      "sortRecentlyVerified": "Dhawaan la xaqiijiyay",
+      "resultsHeading": "Ururrada la xaqiijiyay"
     },
     "universities": {
       "title": "Horumari Maamulka Tababarka",
@@ -389,7 +390,8 @@
     "closeMenu": "Xir liiska",
     "workspace": "Aad goobtayda shaqada",
     "accountSettings": "Dejinta akoonka",
-    "signOut": "Ka bax"
+    "signOut": "Ka bax",
+    "settings": "Dejinta"
   },
   "status": {
     "loading": "Waa la soo raray",
@@ -605,5 +607,10 @@
     "UNIVERSITY_SUPERVISOR": "Kormeeraha Jaamacadda",
     "SUPER_ADMIN": "Maamulaha Sare",
     "VERIFICATION_OFFICER": "Sarkaalka Xaqiijinta"
+  },
+  "accessDenied": {
+    "title": "Ma haysatid fasax boggan",
+    "description": "Akoonkaagu ma laha fasaxa lagu furo qaybtan FursadHub. Haddii aad u malaynayso inay tani khalad tahay, weydiiso maamulaha ururkaaga ama jaamacaddaada inuu hubiyo doorkaaga.",
+    "back": "Aad dashboard-kaaga"
   }
 }

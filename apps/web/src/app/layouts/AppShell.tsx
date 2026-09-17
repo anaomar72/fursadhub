@@ -3,11 +3,15 @@ import { Outlet, useLocation, useNavigate } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import { useAuth } from '../../lib/auth/AuthContext'
 import { RouteTransition } from './RouteTransition'
+import { RouteSuspense } from '../router/RouteFallback'
 import { Sidebar } from './Sidebar'
 import { Topbar } from './Topbar'
 import type { NavSection } from './navigation'
 import type { SidebarBrand } from './Sidebar'
 import { WorkspaceContext, type WorkspaceFamily } from './workspace'
+
+/** Ties the drawer to the button that opens it, for `aria-controls`. */
+const DRAWER_ID = 'primary-navigation-drawer'
 
 const COLLAPSED_STORAGE_KEY = 'fursadhub-sidebar-collapsed'
 
@@ -134,6 +138,7 @@ export function AppShell({ areaLabel, sections, tone = 'light', brand, workspace
       {drawerOpen && (
         <dialog
           ref={drawerRef}
+          id={DRAWER_ID}
           aria-modal="true"
           aria-label={t('common:shell.primaryNavigation')}
           onCancel={(event) => { event.preventDefault(); closeDrawer() }}
@@ -164,6 +169,8 @@ export function AppShell({ areaLabel, sections, tone = 'light', brand, workspace
         <Topbar
           areaLabel={areaLabel}
           sections={sections}
+          navigationOpen={drawerOpen}
+          navigationId={DRAWER_ID}
           onOpenNavigation={() => openDrawer()}
           onSignOut={handleSignOut}
         />
@@ -175,7 +182,7 @@ export function AppShell({ areaLabel, sections, tone = 'light', brand, workspace
           style={{ backgroundColor: 'var(--workspace-tint, transparent)' }}
           className="min-w-0 flex-1"
         >
-          <RouteTransition>{children ?? <Outlet />}</RouteTransition>
+          <RouteTransition><RouteSuspense>{children ?? <Outlet />}</RouteSuspense></RouteTransition>
         </main>
       </div>
     </div>

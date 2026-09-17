@@ -1,5 +1,5 @@
 import type { TFunction } from 'i18next'
-import type { NavItem, NavSection } from '../../../app/layouts/navigation'
+import { accountSettingsNavItem, type NavItem, type NavSection } from '../../../app/layouts/navigation'
 import type { MyOrganizationMembershipResponse } from '../types'
 import { organizationCapabilities } from '../organizationCapabilities'
 
@@ -79,10 +79,13 @@ export function buildOrganizationNav(t: TFunction, membership: MyOrganizationMem
   // Everyone's own account. A recruiter's settings are their account's — the organization record is
   // not theirs to change, so it appears here as a read-only reference rather than under "Manage",
   // which for them would be a heading over nothing they can manage.
-  const account: NavItem[] = [
-    { to: '/account/notifications', label: t('notifications:title'), icon: 'bell' },
-    { to: '/account/profile', label: t('account:nav.profile'), icon: 'user' },
-  ]
+  /*
+   * One entry, not two. `/account/profile` used to sit here beside the account link, but it is a
+   * subsection of the settings area rather than a peer of it — and listing both meant two primary
+   * items lit up together on `/account/profile`, since the umbrella matches by prefix. It is
+   * reached from the settings area's own navigation instead.
+   */
+  const account: NavItem[] = [accountSettingsNavItem(t)]
   if (!can.canAdministerOrganization) {
     account.push({ to: '/organization/profile', label: t('organization:nav.organization'), icon: 'building' })
   }

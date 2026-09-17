@@ -150,8 +150,13 @@ describe('Saved internships (Backend Phase B4)', () => {
     it('does not offer the saved route anywhere outside the student area', () => {
       const items = buildStudentNav(i18n.t.bind(i18n)).flatMap((section) => section.items)
       // Every student destination stays under /student or the role-neutral /account area; nothing
-      // here reaches into another tenant's portal.
-      expect(items.every((item) => item.to.startsWith('/student/') || item.to.startsWith('/account/'))).toBe(true)
+      // here reaches into another tenant's portal. '/account' itself counts — the settings entry
+      // points at the section root, whose index redirects to /account/profile.
+      expect(
+        items.every(
+          (item) => item.to.startsWith('/student/') || item.to === '/account' || item.to.startsWith('/account/'),
+        ),
+      ).toBe(true)
     })
   })
 

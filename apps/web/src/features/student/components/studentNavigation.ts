@@ -1,5 +1,5 @@
 import type { TFunction } from 'i18next'
-import type { NavSection } from '../../../app/layouts/navigation'
+import { accountSettingsNavItem, type NavSection } from '../../../app/layouts/navigation'
 
 /**
  * The student area's sidebar. Every signed-in account may enter this area — StudentAreaLayout
@@ -30,7 +30,7 @@ export function buildStudentNav(t: TFunction): NavSection[] {
       items: [
         { to: '/student/enrollment', label: t('student:nav.enrollment'), icon: 'graduationCap' },
         { to: '/student/profile', label: t('student:nav.profile'), icon: 'user' },
-        { to: '/account/notifications', label: t('notifications:title'), icon: 'bell' },
+        accountSettingsNavItem(t),
       ],
     },
   ]

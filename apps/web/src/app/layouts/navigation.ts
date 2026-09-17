@@ -86,3 +86,32 @@ export function findActiveNavItem(sections: NavSection[], location: NavLocation)
     .filter((item) => isNavItemActive(item, location, items))
     .sort((a, b) => b.to.length - a.to.length)[0]
 }
+
+/**
+ * The primary sidebar's entry into the shared account area — the SAME item for every role.
+ *
+ * <p>It used to be "Notifications", pointing straight at `/account/notifications`. That was
+ * misleading in two ways at once: it named one subsection as if it were the whole section, and it
+ * made the other three — Profile, Privacy and data, Share your story — look like they lived
+ * somewhere else entirely, when all four are siblings inside one settings area.
+ *
+ * <p><strong>It points at `/account`, not at a leaf.</strong> Two reasons. The obvious one is that
+ * an umbrella should not privilege one of the things it covers. The load-bearing one is active
+ * state: matching is prefix-based, so `/account` lights up across the whole section —
+ * `/account/profile`, `/account/notifications`, `/account/privacy`, `/account/testimonial` and
+ * anything added later — whereas a leaf destination would only light up on its own page and leave
+ * the reader with no primary item highlighted anywhere else in the section. The index route then
+ * redirects to `/account/profile`, so following it lands on the section's front page rather than on
+ * its notifications.
+ *
+ * <p>Defined once, here, because there is nothing role-specific about it: every signed-in person
+ * has exactly these four account pages. Nine copies would be nine chances to relabel one and not
+ * the rest.
+ *
+ * <p>Notification functionality is untouched. Unread counts still live in the topbar bell, which is
+ * where an at-a-glance count belongs, and `/account/notifications` is still a real route reachable
+ * from the bell, from the account strip and by typing it.
+ */
+export function accountSettingsNavItem(t: (key: string) => string): NavItem {
+  return { to: '/account', label: t('common:nav.settings'), icon: 'settings' }
+}

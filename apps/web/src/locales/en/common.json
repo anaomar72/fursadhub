@@ -129,7 +129,8 @@
       "sortLabel": "Sort by",
       "sortName": "Name (A-Z)",
       "sortNameDesc": "Name (Z-A)",
-      "sortRecentlyVerified": "Recently verified"
+      "sortRecentlyVerified": "Recently verified",
+      "resultsHeading": "Verified organizations"
     },
     "universities": {
       "title": "Transform Internship Management",
@@ -389,7 +390,8 @@
     "closeMenu": "Close menu",
     "workspace": "Go to my workspace",
     "accountSettings": "Account settings",
-    "signOut": "Sign out"
+    "signOut": "Sign out",
+    "settings": "Settings"
   },
   "status": {
     "loading": "Loading",
@@ -605,5 +607,10 @@
     "UNIVERSITY_SUPERVISOR": "University Supervisor",
     "SUPER_ADMIN": "Super Admin",
     "VERIFICATION_OFFICER": "Verification Officer"
+  },
+  "accessDenied": {
+    "title": "You do not have access to this page",
+    "description": "Your account does not have permission to open this part of FursadHub. If you think that is wrong, ask an administrator of your organization or university to check your role.",
+    "back": "Go to your dashboard"
   }
 }

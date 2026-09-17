@@ -1,20 +1,37 @@
-import { useState, type ReactNode } from 'react'
+import { useEffect, useRef, useState, type ReactNode } from 'react'
 import { useTranslation } from 'react-i18next'
 import { Link } from 'react-router-dom'
 import { Icon, type IconName } from './Icon'
-import sheet from '../../assets/brand/presentation-assets.png'
-import skyline from '../../assets/presentation/skyline.png'
-import band from '../../assets/presentation/cta-background.png'
+import skyline from '../../assets/presentation/skyline.webp'
+import band from '../../assets/presentation/cta-background.webp'
+import artOpportunity from '../../assets/presentation/illustration-opportunity.webp'
+import artLearning from '../../assets/presentation/illustration-learning.webp'
+import artGrowth from '../../assets/presentation/illustration-growth.webp'
 
+/**
+ * The skyline silhouette behind the footer strapline and the About band.
+ *
+ * <p>The asset IS what the page draws: white pixels shaped by the original alpha channel. It used
+ * to be full-colour navy line art that both call sites immediately threw away with
+ * `brightness-0 invert`, which cost 579KB to deliver colour no visitor ever saw, plus a
+ * full-width filter pass on every paint. Now it ships at 23KB and needs no filter.
+ */
 export function SkylineArtwork({ className = '' }: { className?: string }) {
-  return <img src={skyline} alt="" className={`pointer-events-none object-contain ${className}`} />
+  return <img src={skyline} alt="" loading="lazy" decoding="async" width={1200} height={400} className={`pointer-events-none object-contain ${className}`} />
 }
 
+const EXPLANATORY_ART = { opportunity: artOpportunity, learning: artLearning, growth: artGrowth } as const
+
+/**
+ * One of the three explanatory illustrations.
+ *
+ * <p>These were previously cropped out of a single 2MB sprite sheet with a 640%-wide absolutely
+ * positioned `<img>`. Three 80px illustrations do not justify two megabytes, and the crop made the
+ * component's geometry depend on undocumented pixel offsets into an artboard. Each tile is now its
+ * own 5KB file, extracted from that sheet at exactly the offsets the CSS was using.
+ */
 export function ExplanatoryArtwork({ kind, className = '' }: { kind: 'opportunity' | 'learning' | 'growth'; className?: string }) {
-  const x = { opportunity: 16, learning: 285, growth: 550 }[kind]
-  return <span aria-hidden="true" className={`relative block aspect-[240/155] overflow-hidden ${className}`}>
-    <img src={sheet} alt="" className="absolute max-w-none" style={{ width: '640%', left: `${-x / 240 * 100}%`, top: `${-635 / 155 * 100}%` }} />
-  </span>
+  return <img src={EXPLANATORY_ART[kind]} alt="" aria-hidden="true" loading="lazy" decoding="async" width={240} height={155} className={`block aspect-[240/155] object-contain ${className}`} />
 }
 
 /**
@@ -38,12 +55,54 @@ export function PresentationBand({ title, body, children }: { title: string; bod
   </section>
 }
 
+/**
+ * The in-page section jump strip.
+ *
+ * <p><strong>It scrolls, and now it says so.</strong> The strip is a single non-wrapping row —
+ * five or six sections will not fit a phone, and wrapping them turns a navigation bar into a block
+ * of links. It always had `overflow-x: auto`, but two things stopped that working: an ancestor grid
+ * item would not shrink below the strip's intrinsic width, so the strip pushed the whole page wider
+ * instead of scrolling inside it; and even once it did scroll there was nothing to suggest anything
+ * lay past the right edge, so the later sections read as missing rather than as off-screen.
+ *
+ * <p>The fade is measured, not assumed: it appears only when there is actually more to reach, and
+ * each edge fades independently, so a reader who has scrolled to the end is not told there is more.
+ * It is `aria-hidden`, being a hint about geometry rather than content.
+ *
+ * <p>Scrolling with the keyboard needs no special handling — these are real links, so Tab moves
+ * through them and the browser scrolls a focused one into view on its own.
+ */
 export function SectionNavigation({ items }: { items: { id: string; label: string }[] }) {
   const { t } = useTranslation()
   const [active, setActive] = useState(items[0]?.id)
-  return <nav aria-label={t('common:remediation.sections')} className="my-5 flex gap-4 overflow-x-auto rounded-lg border border-border bg-surface px-4 text-xs font-semibold text-brand-navy dark:text-foreground">
-    {items.map(item => <a key={item.id} href={`#${item.id}`} onClick={() => setActive(item.id)} aria-current={active === item.id ? 'location' : undefined} className={`shrink-0 border-b-2 py-3.5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-focus-ring ${active === item.id ? 'border-brand-accent' : 'border-transparent hover:border-brand-accent'}`}>{item.label}</a>)}
-  </nav>
+  const scroller = useRef<HTMLElement>(null)
+  const [edges, setEdges] = useState({ start: false, end: false })
+
+  useEffect(() => {
+    const node = scroller.current
+    if (!node) return undefined
+    const measure = () => {
+      const max = node.scrollWidth - node.clientWidth
+      // 1px of tolerance: sub-pixel layout leaves a fractional remainder at a true edge.
+      setEdges({ start: node.scrollLeft > 1, end: node.scrollLeft < max - 1 })
+    }
+    measure()
+    node.addEventListener('scroll', measure, { passive: true })
+    const observer = new ResizeObserver(measure)
+    observer.observe(node)
+    return () => {
+      node.removeEventListener('scroll', measure)
+      observer.disconnect()
+    }
+  }, [items.length])
+
+  return <div className="relative my-5">
+    <nav ref={scroller} aria-label={t('common:remediation.sections')} className="flex min-w-0 gap-4 overflow-x-auto overscroll-x-contain rounded-lg border border-border bg-surface px-4 text-xs font-semibold text-brand-navy [scrollbar-width:thin] dark:text-foreground">
+      {items.map(item => <a key={item.id} href={`#${item.id}`} onClick={() => setActive(item.id)} aria-current={active === item.id ? 'location' : undefined} className={`shrink-0 border-b-2 py-3.5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-focus-ring ${active === item.id ? 'border-brand-accent' : 'border-transparent hover:border-brand-accent'}`}>{item.label}</a>)}
+    </nav>
+    {edges.start && <span aria-hidden="true" className="pointer-events-none absolute inset-y-px start-px w-8 rounded-s-lg bg-gradient-to-r from-surface to-transparent" />}
+    {edges.end && <span aria-hidden="true" className="pointer-events-none absolute inset-y-px end-px w-8 rounded-e-lg bg-gradient-to-l from-surface to-transparent" />}
+  </div>
 }
 
 export function ProfileFormSection({ title, hint, icon, children }: { title: string; hint?: string; icon: IconName; children: ReactNode }) {

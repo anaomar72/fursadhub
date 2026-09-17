@@ -1,5 +1,6 @@
 import { Navigate, Outlet } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
+import { AccessDeniedState } from '../../../components/ui'
 import { useAdminSession } from './AdminSessionContext'
 import { adminCapabilities, adminLandingPath, type AdminCapabilities } from '../adminCapabilities'
 
@@ -38,11 +39,10 @@ export function RequirePlatformCapability({ capability }: { capability: keyof Ad
 
   const landing = adminLandingPath(session)
   if (!landing) {
-    return (
-      <p className="px-4 py-10 text-center text-sm text-foreground-secondary">
-        {t('admin:nav.noAccess')}
-      </p>
-    )
+    // Everyone who reaches this point has an account and a home somewhere in the product, so the
+    // denial offers the way back rather than leaving them on a dead end. `/account/profile` rather
+    // than a portal dashboard: it is the one authenticated destination every role can open.
+    return <AccessDeniedState description={t('admin:nav.noAccess')} backTo="/account/profile" />;
   }
 
   return <Navigate to={landing} replace />
@@ -62,11 +62,10 @@ export function AdminLandingRedirect() {
   const landing = adminLandingPath(session)
 
   if (!landing) {
-    return (
-      <p className="px-4 py-10 text-center text-sm text-foreground-secondary">
-        {t('admin:nav.noAccess')}
-      </p>
-    )
+    // Everyone who reaches this point has an account and a home somewhere in the product, so the
+    // denial offers the way back rather than leaving them on a dead end. `/account/profile` rather
+    // than a portal dashboard: it is the one authenticated destination every role can open.
+    return <AccessDeniedState description={t('admin:nav.noAccess')} backTo="/account/profile" />;
   }
 
   return <Navigate to={landing} replace />

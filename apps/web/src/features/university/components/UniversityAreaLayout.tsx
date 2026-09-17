@@ -6,6 +6,7 @@ import { UniversitySetupPage } from '../pages/UniversitySetupPage'
 import { buildUniversityNav } from './universityNavigation'
 import { LoadingSpinner } from '../../../components/ui'
 import { AppShell } from '../../../app/layouts/AppShell'
+import { accountSettingsNavItem } from '../../../app/layouts/navigation'
 
 /**
  * Resolves the caller's active university staff membership once, shares it with every university
@@ -48,7 +49,7 @@ export function UniversityAreaLayout() {
         sections={[
           {
             label: t('common:shell.sections.account'),
-            items: [{ to: '/account/notifications', label: t('notifications:title'), icon: 'bell' }],
+            items: [accountSettingsNavItem(t)],
           },
         ]}
       >

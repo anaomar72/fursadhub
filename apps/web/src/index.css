@@ -125,6 +125,10 @@
   /* Portal route change — see <RouteTransition />. Opacity plus a 4px lift, and nothing else:
      enough that content reads as arriving, small enough that it never delays a click. */
   --animate-route-in: route-in var(--duration-normal) var(--ease-enter) both;
+
+  /* Route chunk in flight — see <RouteFallback />. Held at zero opacity for 160ms so a chunk that
+     resolves quickly never flashes a spinner, and only a genuinely slow load announces itself. */
+  --animate-fallback-in: fallback-in var(--duration-normal) var(--ease-enter) 160ms both;
 }
 
 @keyframes verified-circle-in {
@@ -230,6 +234,15 @@
   to {
     opacity: 1;
     transform: translateY(0);
+  }
+}
+
+@keyframes fallback-in {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
   }
 }
 

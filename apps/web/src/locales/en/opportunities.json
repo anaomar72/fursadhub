@@ -219,7 +219,8 @@
       "OPPORTUNITY_DEADLINE_PASSED": "The application deadline for this internship has passed."
     },
     "resultCount_one": "{{count}} internship found",
-    "openings_one": "{{count}} opening"
+    "openings_one": "{{count}} opening",
+    "resultsHeading": "Matching internships"
   },
   "detail": {
     "notFound": "Internship not found.",

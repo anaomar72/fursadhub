@@ -1,3 +1,4 @@
+import { RouteSuspense } from '../../../app/router/RouteFallback'
 import { useQuery } from '@tanstack/react-query'
 import { useTranslation } from 'react-i18next'
 import { Outlet, useParams } from 'react-router-dom'
@@ -68,7 +69,7 @@ export function PlacementWorkspace({ area }: PlacementWorkspaceProps) {
     <PageContainer className="flex flex-col gap-6">
       <PlacementSummary placement={placement} audience={area === 'student' ? 'student' : 'staff'} />
       <InternshipNav area={area} basePath={basePath} />
-      <Outlet context={placement} />
+      <RouteSuspense><Outlet context={placement} /></RouteSuspense>
     </PageContainer>
   )
 }

@@ -1,109 +1,119 @@
+import { lazy } from 'react'
 import { createBrowserRouter, Navigate } from 'react-router-dom'
+import { RootRoute } from './RootRoute'
 import { PublicLayout, AuthLayout, AccountLayout } from '../layouts'
+const accountArea = () => import('./areas/account')
+const adminArea = () => import('./areas/admin')
+const authArea = () => import('./areas/auth')
+const internshipArea = () => import('./areas/internship')
+const organizationArea = () => import('./areas/organization')
+const studentArea = () => import('./areas/student')
+const universityArea = () => import('./areas/university')
+
 import { HomePage } from '../pages/HomePage'
 import { AboutPage } from '../pages/AboutPage'
 import { NotFoundPage } from '../pages/NotFoundPage'
 import { RequireAuth } from '../../lib/auth/RequireAuth'
 import { RequireOrganizationCapability } from '../../features/organization/components/RequireOrganizationCapability'
 import { RequireUniversityCapability } from '../../features/university/components/RequireUniversityCapability'
-import { RegisterPage } from '../../features/auth/pages/RegisterPage'
-import { LoginPage } from '../../features/auth/pages/LoginPage'
-import { VerifyEmailPage } from '../../features/auth/pages/VerifyEmailPage'
-import { ForgotPasswordPage } from '../../features/auth/pages/ForgotPasswordPage'
-import { ResetPasswordPage } from '../../features/auth/pages/ResetPasswordPage'
-import { StudentAreaLayout } from '../../features/student/components/StudentAreaLayout'
-import { DashboardPage as StudentDashboardPage } from '../../features/student/pages/DashboardPage'
-import { StudentProfilePage } from '../../features/student/pages/ProfilePage'
-import { EnrollmentPage } from '../../features/student/pages/EnrollmentPage'
+const RegisterPage = lazy(() => authArea().then((m) => ({ default: m.RegisterPage })))
+const LoginPage = lazy(() => authArea().then((m) => ({ default: m.LoginPage })))
+const VerifyEmailPage = lazy(() => authArea().then((m) => ({ default: m.VerifyEmailPage })))
+const ForgotPasswordPage = lazy(() => authArea().then((m) => ({ default: m.ForgotPasswordPage })))
+const ResetPasswordPage = lazy(() => authArea().then((m) => ({ default: m.ResetPasswordPage })))
+const StudentAreaLayout = lazy(() => studentArea().then((m) => ({ default: m.StudentAreaLayout })))
+const StudentDashboardPage = lazy(() => studentArea().then((m) => ({ default: m.StudentDashboardPage })))
+const StudentProfilePage = lazy(() => studentArea().then((m) => ({ default: m.StudentProfilePage })))
+const EnrollmentPage = lazy(() => studentArea().then((m) => ({ default: m.EnrollmentPage })))
 // Backend Phase B4 frontend enablement: the student's private saved internships.
-import { SavedInternshipsPage } from '../../features/student/pages/SavedInternshipsPage'
-import { UniversityAreaLayout } from '../../features/university/components/UniversityAreaLayout'
-import { DashboardPage as UniversityDashboardPage } from '../../features/university/pages/DashboardPage'
-import { DepartmentsPage } from '../../features/university/pages/DepartmentsPage'
-import { UniversityProfilePage } from '../../features/university/pages/UniversityProfilePage'
-import { StudentsPage } from '../../features/university/pages/StudentsPage'
-import { VerificationQueuePage } from '../../features/university/pages/VerificationQueuePage'
-import { VerificationCaseDetailPage } from '../../features/university/pages/VerificationCaseDetailPage'
-import { StaffPage } from '../../features/university/pages/StaffPage'
+const SavedInternshipsPage = lazy(() => studentArea().then((m) => ({ default: m.SavedInternshipsPage })))
+const UniversityAreaLayout = lazy(() => universityArea().then((m) => ({ default: m.UniversityAreaLayout })))
+const UniversityDashboardPage = lazy(() => universityArea().then((m) => ({ default: m.UniversityDashboardPage })))
+const DepartmentsPage = lazy(() => universityArea().then((m) => ({ default: m.DepartmentsPage })))
+const UniversityProfilePage = lazy(() => universityArea().then((m) => ({ default: m.UniversityProfilePage })))
+const StudentsPage = lazy(() => universityArea().then((m) => ({ default: m.StudentsPage })))
+const VerificationQueuePage = lazy(() => universityArea().then((m) => ({ default: m.VerificationQueuePage })))
+const VerificationCaseDetailPage = lazy(() => universityArea().then((m) => ({ default: m.VerificationCaseDetailPage })))
+const StaffPage = lazy(() => universityArea().then((m) => ({ default: m.StaffPage })))
 // Phase 9: partner organizations, derived from the university's own placement list.
-import { PartnerOrganizationsPage } from '../../features/university/pages/PartnerOrganizationsPage'
+const PartnerOrganizationsPage = lazy(() => universityArea().then((m) => ({ default: m.PartnerOrganizationsPage })))
 // Phase 10: the university staff/supervisor portal. Both routes read the SAME scoped placement
 // list the API already narrowed to the caller's role, so neither widens anyone's reach.
-import { SupervisedStudentsPage } from '../../features/university/pages/SupervisedStudentsPage'
-import { SupervisionQueuePage } from '../../features/university/pages/SupervisionQueuePage'
-import { OrganizationAreaLayout } from '../../features/organization/components/OrganizationAreaLayout'
-import { DashboardPage as OrganizationDashboardPage } from '../../features/organization/pages/DashboardPage'
-import { ProfilePage as OrganizationProfilePage } from '../../features/organization/pages/ProfilePage'
-import { StaffPage as OrganizationStaffPage } from '../../features/organization/pages/StaffPage'
-import { OpportunityListPage } from '../../features/opportunities/pages/OpportunityListPage'
-import { CreateOpportunityPage } from '../../features/opportunities/pages/CreateOpportunityPage'
-import { OpportunityDetailPage } from '../../features/opportunities/pages/OpportunityDetailPage'
+const SupervisedStudentsPage = lazy(() => universityArea().then((m) => ({ default: m.SupervisedStudentsPage })))
+const SupervisionQueuePage = lazy(() => universityArea().then((m) => ({ default: m.SupervisionQueuePage })))
+const OrganizationAreaLayout = lazy(() => organizationArea().then((m) => ({ default: m.OrganizationAreaLayout })))
+const OrganizationDashboardPage = lazy(() => organizationArea().then((m) => ({ default: m.OrganizationDashboardPage })))
+const OrganizationProfilePage = lazy(() => organizationArea().then((m) => ({ default: m.OrganizationProfilePage })))
+const OrganizationStaffPage = lazy(() => organizationArea().then((m) => ({ default: m.OrganizationStaffPage })))
+const OpportunityListPage = lazy(() => organizationArea().then((m) => ({ default: m.OpportunityListPage })))
+const CreateOpportunityPage = lazy(() => organizationArea().then((m) => ({ default: m.CreateOpportunityPage })))
+const OpportunityDetailPage = lazy(() => organizationArea().then((m) => ({ default: m.OpportunityDetailPage })))
 import { PublicOpportunityListPage } from '../../features/opportunities/pages/PublicOpportunityListPage'
 import { PublicOpportunityDetailPage } from '../../features/opportunities/pages/PublicOpportunityDetailPage'
 // Phase 8 student portal: internship discovery inside the authenticated shell.
-import { BrowseOpportunitiesPage } from '../../features/opportunities/pages/BrowseOpportunitiesPage'
-import { StudentOpportunityDetailPage } from '../../features/opportunities/pages/StudentOpportunityDetailPage'
+const BrowseOpportunitiesPage = lazy(() => studentArea().then((m) => ({ default: m.BrowseOpportunitiesPage })))
+const StudentOpportunityDetailPage = lazy(() => studentArea().then((m) => ({ default: m.StudentOpportunityDetailPage })))
 import { PublicOrganizationProfilePage } from '../../features/organization/pages/PublicOrganizationProfilePage'
 import { PublicOrganizationListPage } from '../../features/organization/pages/PublicOrganizationListPage'
 import { PublicUniversityProfilePage } from '../../features/university/pages/PublicUniversityProfilePage'
 import { PublicUniversitiesPage } from '../../features/university/pages/PublicUniversitiesPage'
-import { ApplyPage } from '../../features/recruitment/pages/ApplyPage'
-import { MyApplicationsPage } from '../../features/recruitment/pages/MyApplicationsPage'
-import { CandidacyDetailPage } from '../../features/recruitment/pages/CandidacyDetailPage'
-import { MyNominationsPage } from '../../features/recruitment/pages/MyNominationsPage'
-import { OpportunityRequestsPage } from '../../features/recruitment/pages/OpportunityRequestsPage'
-import { NominateStudentsPage } from '../../features/recruitment/pages/NominateStudentsPage'
-import { UniversityNominationsPage } from '../../features/recruitment/pages/UniversityNominationsPage'
-import { CandidatePoolPage } from '../../features/recruitment/pages/CandidatePoolPage'
+const ApplyPage = lazy(() => internshipArea().then((m) => ({ default: m.ApplyPage })))
+const MyApplicationsPage = lazy(() => internshipArea().then((m) => ({ default: m.MyApplicationsPage })))
+const CandidacyDetailPage = lazy(() => internshipArea().then((m) => ({ default: m.CandidacyDetailPage })))
+const MyNominationsPage = lazy(() => internshipArea().then((m) => ({ default: m.MyNominationsPage })))
+const OpportunityRequestsPage = lazy(() => internshipArea().then((m) => ({ default: m.OpportunityRequestsPage })))
+const NominateStudentsPage = lazy(() => internshipArea().then((m) => ({ default: m.NominateStudentsPage })))
+const UniversityNominationsPage = lazy(() => internshipArea().then((m) => ({ default: m.UniversityNominationsPage })))
+const CandidatePoolPage = lazy(() => internshipArea().then((m) => ({ default: m.CandidatePoolPage })))
 // Phase 11: the organization-wide candidate pipeline, read one pool per recruiting internship
 // because the API addresses candidacies per opportunity.
-import { OrganizationCandidatesPage } from '../../features/recruitment/pages/OrganizationCandidatesPage'
-import { UniversityPartnersPage } from '../../features/organization/pages/UniversityPartnersPage'
+const OrganizationCandidatesPage = lazy(() => internshipArea().then((m) => ({ default: m.OrganizationCandidatesPage })))
+const UniversityPartnersPage = lazy(() => organizationArea().then((m) => ({ default: m.UniversityPartnersPage })))
 // Phase 13: the organization supervisor's cross-placement queue, over the two internship records
 // the role may act on. It reads only the placement list the API already scoped to their assignments.
-import { SupervisionQueuePage as OrganizationSupervisionQueuePage } from '../../features/organization/pages/SupervisionQueuePage'
-import { CandidateDetailPage } from '../../features/recruitment/pages/CandidateDetailPage'
-import { MyPlacementsPage } from '../../features/placements/pages/MyPlacementsPage'
-import { StudentPlacementDetailPage } from '../../features/placements/pages/StudentPlacementDetailPage'
-import { UniversityPlacementsPage } from '../../features/placements/pages/UniversityPlacementsPage'
-import { OrganizationPlacementsPage } from '../../features/placements/pages/OrganizationPlacementsPage'
-import { PlacementDetailPage } from '../../features/placements/pages/PlacementDetailPage'
+const OrganizationSupervisionQueuePage = lazy(() => organizationArea().then((m) => ({ default: m.OrganizationSupervisionQueuePage })))
+const CandidateDetailPage = lazy(() => internshipArea().then((m) => ({ default: m.CandidateDetailPage })))
+const MyPlacementsPage = lazy(() => internshipArea().then((m) => ({ default: m.MyPlacementsPage })))
+const StudentPlacementDetailPage = lazy(() => internshipArea().then((m) => ({ default: m.StudentPlacementDetailPage })))
+const UniversityPlacementsPage = lazy(() => internshipArea().then((m) => ({ default: m.UniversityPlacementsPage })))
+const OrganizationPlacementsPage = lazy(() => internshipArea().then((m) => ({ default: m.OrganizationPlacementsPage })))
+const PlacementDetailPage = lazy(() => internshipArea().then((m) => ({ default: m.PlacementDetailPage })))
 // Phase 6 internship management. One placement is a workspace with sections; which sections exist
 // mirrors the backend's authorization split, and the backend enforces it regardless.
-import { PlacementWorkspace } from '../../features/placements/components/PlacementWorkspace'
-import { WeeklyLogsPage } from '../../features/weekly-logs/pages/WeeklyLogsPage'
-import { AttendancePage } from '../../features/attendance/pages/AttendancePage'
-import { EvaluationPage } from '../../features/evaluations/pages/EvaluationPage'
-import { FinalReportPage } from '../../features/final-reports/pages/FinalReportPage'
-import { DefensePage } from '../../features/defense/pages/DefensePage'
-import { InternshipPolicyPage } from '../../features/university/pages/InternshipPolicyPage'
+const PlacementWorkspace = lazy(() => internshipArea().then((m) => ({ default: m.PlacementWorkspace })))
+const WeeklyLogsPage = lazy(() => internshipArea().then((m) => ({ default: m.WeeklyLogsPage })))
+const AttendancePage = lazy(() => internshipArea().then((m) => ({ default: m.AttendancePage })))
+const EvaluationPage = lazy(() => internshipArea().then((m) => ({ default: m.EvaluationPage })))
+const FinalReportPage = lazy(() => internshipArea().then((m) => ({ default: m.FinalReportPage })))
+const DefensePage = lazy(() => internshipArea().then((m) => ({ default: m.DefensePage })))
+const InternshipPolicyPage = lazy(() => universityArea().then((m) => ({ default: m.InternshipPolicyPage })))
 // Phase 7 platform administration. Which tabs render is driven by the caller's platform roles;
 // every endpoint behind them re-authorizes independently (CLAUDE.md section 24).
-import { AdminAreaLayout } from '../../features/admin/components/AdminAreaLayout'
+const AdminAreaLayout = lazy(() => adminArea().then((m) => ({ default: m.AdminAreaLayout })))
 import {
   AdminLandingRedirect,
   RequirePlatformCapability,
 } from '../../features/admin/components/RequirePlatformCapability'
-import { AdminDashboardPage } from '../../features/admin/pages/AdminDashboardPage'
-import { AdminOrganizationsPage } from '../../features/admin/pages/AdminOrganizationsPage'
-import { AdminUniversitiesPage } from '../../features/admin/pages/AdminUniversitiesPage'
-import { AdminEscalationsPage } from '../../features/admin/pages/AdminEscalationsPage'
-import { AdminUsersPage } from '../../features/admin/pages/AdminUsersPage'
-import { AdminOpportunitiesPage } from '../../features/admin/pages/AdminOpportunitiesPage'
-import { AdminPrivacyRequestsPage } from '../../features/admin/pages/AdminPrivacyRequestsPage'
-import { AdminLegalDocumentsPage } from '../../features/admin/pages/AdminLegalDocumentsPage'
-import { AdminTestimonialsPage } from '../../features/admin/pages/AdminTestimonialsPage'
-import { MyTestimonialPage } from '../../features/testimonials/pages/MyTestimonialPage'
-import { AdminAuditPage } from '../../features/admin/pages/AdminAuditPage'
-import { AdminPlatformRolesPage } from '../../features/admin/pages/AdminPlatformRolesPage'
+const AdminDashboardPage = lazy(() => adminArea().then((m) => ({ default: m.AdminDashboardPage })))
+const AdminOrganizationsPage = lazy(() => adminArea().then((m) => ({ default: m.AdminOrganizationsPage })))
+const AdminUniversitiesPage = lazy(() => adminArea().then((m) => ({ default: m.AdminUniversitiesPage })))
+const AdminEscalationsPage = lazy(() => adminArea().then((m) => ({ default: m.AdminEscalationsPage })))
+const AdminUsersPage = lazy(() => adminArea().then((m) => ({ default: m.AdminUsersPage })))
+const AdminOpportunitiesPage = lazy(() => adminArea().then((m) => ({ default: m.AdminOpportunitiesPage })))
+const AdminPrivacyRequestsPage = lazy(() => adminArea().then((m) => ({ default: m.AdminPrivacyRequestsPage })))
+const AdminLegalDocumentsPage = lazy(() => adminArea().then((m) => ({ default: m.AdminLegalDocumentsPage })))
+const AdminTestimonialsPage = lazy(() => adminArea().then((m) => ({ default: m.AdminTestimonialsPage })))
+const MyTestimonialPage = lazy(() => accountArea().then((m) => ({ default: m.MyTestimonialPage })))
+const AdminAuditPage = lazy(() => adminArea().then((m) => ({ default: m.AdminAuditPage })))
+const AdminPlatformRolesPage = lazy(() => adminArea().then((m) => ({ default: m.AdminPlatformRolesPage })))
 // Phase 14: the Super Admin console's record pages, over admin endpoints that already existed.
-import { AdminUserDetailPage } from '../../features/admin/pages/AdminUserDetailPage'
-import { AdminOrganizationDetailPage } from '../../features/admin/pages/AdminOrganizationDetailPage'
-import { AdminUniversityDetailPage } from '../../features/admin/pages/AdminUniversityDetailPage'
+const AdminUserDetailPage = lazy(() => adminArea().then((m) => ({ default: m.AdminUserDetailPage })))
+const AdminOrganizationDetailPage = lazy(() => adminArea().then((m) => ({ default: m.AdminOrganizationDetailPage })))
+const AdminUniversityDetailPage = lazy(() => adminArea().then((m) => ({ default: m.AdminUniversityDetailPage })))
 // Phase 7 account area and public legal documents.
-import { AccountProfilePage } from '../../features/account/pages/AccountProfilePage'
-import { NotificationsPage } from '../../features/notifications/pages/NotificationsPage'
-import { PrivacyPage } from '../../features/privacy/pages/PrivacyPage'
+const AccountProfilePage = lazy(() => accountArea().then((m) => ({ default: m.AccountProfilePage })))
+const NotificationsPage = lazy(() => accountArea().then((m) => ({ default: m.NotificationsPage })))
+const PrivacyPage = lazy(() => accountArea().then((m) => ({ default: m.PrivacyPage })))
 import { LegalDocumentPage } from '../../features/legal/pages/LegalDocumentPage'
 
 /**
@@ -113,6 +123,10 @@ import { LegalDocumentPage } from '../../features/legal/pages/LegalDocumentPage'
  * routes for each area are added phase by phase.
  */
 export const router = createBrowserRouter([
+  {
+    // Pathless: it adds no URL segment and matches everything, so no route address changes.
+    element: <RootRoute />,
+    children: [
   {
     path: '/',
     element: <PublicLayout />,
@@ -433,7 +447,7 @@ export const router = createBrowserRouter([
       </RequireAuth>
     ),
     children: [
-      { index: true, element: <Navigate to="notifications" replace /> },
+      { index: true, element: <Navigate to="profile" replace /> },
       { path: 'profile', element: <AccountProfilePage /> },
       { path: 'notifications', element: <NotificationsPage /> },
       { path: 'privacy', element: <PrivacyPage /> },
@@ -441,4 +455,6 @@ export const router = createBrowserRouter([
     ],
   },
   { path: '*', element: <NotFoundPage /> },
+  ],
+  },
 ])

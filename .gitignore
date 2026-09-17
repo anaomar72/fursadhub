@@ -36,6 +36,15 @@ e2e/playwright-report/
 e2e/blob-report/
 e2e/.cache/
 
+# E2E credentials and session state. The authenticated suites are pointed at a provisioned QA
+# environment through FH_QA_MANIFEST, and that manifest holds real passwords — it belongs outside
+# the repository entirely. These patterns are a backstop against a storageState or manifest ever
+# being written into the tree by accident.
+e2e/**/*.auth.json
+e2e/**/storage-state*.json
+e2e/**/qa-manifest*.json
+**/.qa-credentials*
+
 # Logs
 logs/
 *.log

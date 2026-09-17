@@ -22,8 +22,14 @@ interface CandidateBoardProps {
  * the server says it did. Stage changes happen on the candidate's own page, where the available
  * commands are the ones the backend will actually accept.
  *
- * <p>Columns scroll horizontally rather than wrapping: six stages will not fit a phone, and the
- * longer Somali stage names must not push the page wider than the viewport.
+ * <p><strong>Columns scroll below xl, and fit above it.</strong> Six stages will never fit a phone,
+ * so the board scrolls horizontally there rather than wrapping — wrapped columns stop reading as a
+ * pipeline. But six 16rem columns need about 1560px, and the content area beside the rail is around
+ * 1110px at 1440px wide, so on an ordinary desktop the last two columns were clipped with no
+ * affordance that anything lay beyond them. The clipped pair ends OFFERED and ACCEPTED: a recruiter
+ * with an accepted candidate saw a board of empty columns and a "1 candidate" count that appeared
+ * to contradict it. From xl up the columns share the width instead, so the whole pipeline is
+ * visible at once and the count always has something to agree with.
  */
 export function CandidateBoard({ candidates, opportunityTitle, emptyMessage }: CandidateBoardProps) {
   const { t } = useTranslation()
@@ -36,10 +42,13 @@ export function CandidateBoard({ candidates, opportunityTitle, emptyMessage }: C
 
   return (
     <div className="flex flex-col gap-3">
-      <div className="-mx-4 overflow-x-auto px-4 sm:mx-0 sm:px-0">
-        <ul className="flex min-w-max items-start gap-3" aria-label={t('recruitment:pool.boardLabel')}>
+      <div className="-mx-4 overflow-x-auto px-4 sm:mx-0 sm:px-0 xl:overflow-x-visible">
+        <ul
+          className="flex min-w-max items-start gap-3 xl:grid xl:min-w-0 xl:grid-cols-6"
+          aria-label={t('recruitment:pool.boardLabel')}
+        >
           {columns.map((column) => (
-            <li key={column.status} className="w-64 shrink-0 rounded-lg border border-border bg-surface-muted p-3">
+            <li key={column.status} className="w-64 shrink-0 rounded-lg border border-border bg-surface-muted p-3 xl:w-auto xl:min-w-0">
               <div className="flex items-center justify-between gap-2">
                 <StatusBadge tone={PIPELINE_STAGE_TONE[column.status]}>
                   {t(`recruitment:candidacyStatusValues.${column.status}`)}

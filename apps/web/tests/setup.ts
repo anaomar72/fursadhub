@@ -23,3 +23,16 @@ if (typeof HTMLDialogElement !== 'undefined' && !HTMLDialogElement.prototype.sho
     this.dispatchEvent(new Event('close'))
   }
 }
+
+/**
+ * Somali is code-split in the application bundle (see `src/lib/i18n/somali.ts`), so it arrives
+ * asynchronously in the browser. Tests that assert Somali strings call `changeLanguage('so')` and
+ * read the DOM synchronously, which is the right shape for them — what they are checking is that
+ * the UI is translated, not how the bundle is delivered.
+ *
+ * <p>Loading it once here restores that synchronous availability for the whole suite, so those
+ * assertions keep testing translation rather than module loading. The lazy-delivery behaviour has
+ * its own coverage in `tests/lib/i18n.test.ts`.
+ */
+const { ensureLanguageLoaded } = await import('../src/lib/i18n')
+await ensureLanguageLoaded('so')

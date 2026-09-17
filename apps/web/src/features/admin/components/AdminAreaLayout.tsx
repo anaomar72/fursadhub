@@ -1,7 +1,8 @@
+import { RouteSuspense } from '../../../app/router/RouteFallback'
 import { Outlet } from 'react-router-dom'
 import { useQuery } from '@tanstack/react-query'
 import { useTranslation } from 'react-i18next'
-import { LoadingSpinner } from '../../../components/ui'
+import { AccessDeniedState, LoadingSpinner } from '../../../components/ui'
 import { AppShell } from '../../../app/layouts/AppShell'
 import { PageContainer } from '../../../app/layouts/PageContainer'
 import * as adminApi from '../api/adminApi'
@@ -37,20 +38,20 @@ export function AdminAreaLayout() {
 
   const session = sessionQuery.data
   if (!session?.platformAdmin) {
-    return (
-      <AppShell workspace="platform"
-        areaLabel={t('common:nav.admin')}
-        tone="navy"
-        sections={[
-          {
-            label: t('common:shell.sections.account'),
-            items: [{ to: '/account/notifications', label: t('notifications:title'), icon: 'bell' }],
-          },
-        ]}
-      >
-        <p className="px-4 py-10 text-center text-sm text-foreground-secondary">{t('admin:nav.noAccess')}</p>
-      </AppShell>
-    )
+    /*
+     * Rendered OUTSIDE the admin shell, deliberately.
+     *
+     * <p>It used to render inside it, which meant a student who followed a link to /admin/users was
+     * shown the navy platform console chrome, an empty admin rail, and the word "Admin" three times
+     * — as the area label, as the page title and as their own role beside their email — while being
+     * told they have no administration access. Dressing someone in a console they cannot use is
+     * confusing at best and, for anyone reading their own role off that chrome, simply wrong.
+     *
+     * <p>Authorization is unchanged: this branch already refused, and the backend refuses every
+     * admin request independently. What changes is that the refusal no longer borrows the identity
+     * of the thing it is refusing.
+     */
+    return <AccessDeniedState description={t('admin:nav.noAccess')} backTo="/account/profile" />
   }
 
   return (
@@ -62,7 +63,7 @@ export function AdminAreaLayout() {
         sections={buildAdminNav(t, session)}
       >
         <PageContainer>
-          <Outlet />
+          <RouteSuspense><Outlet /></RouteSuspense>
         </PageContainer>
       </AppShell>
     </AdminSessionContext.Provider>

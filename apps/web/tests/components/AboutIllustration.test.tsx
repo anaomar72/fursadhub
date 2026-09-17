@@ -7,13 +7,16 @@ import { PublicFooter } from '../../src/app/layouts/PublicFooter'
 import i18n from '../../src/lib/i18n'
 
 /**
- * The About hero illustration was invisible in the running application: the skyline asset is dark
- * navy line art on transparency, and it was placed on the navy identity band at `opacity-20` with
- * no filter — dark on dark. It read as a ghost.
+ * The About hero illustration was once invisible in the running application: the skyline asset was
+ * dark navy line art on transparency, placed on the navy identity band at `opacity-20` with no
+ * filter — dark on dark. It read as a ghost. The fix at the time was a `brightness-0 invert` pair
+ * that repainted the art white before drawing it.
  *
- * The approved footer inverts the same asset to a white silhouette before showing it. These
- * assertions pin the two properties that actually decide visibility — the inversion, and an opacity
- * that is not a wash — so the treatment cannot silently regress to dark-on-dark again.
+ * <p>The asset itself is now the white silhouette (white pixels carrying the original alpha), so
+ * the filter pair has gone: it was re-deriving, on every paint, a result that can simply be stored.
+ * The INVARIANT these tests protect is unchanged and is the thing that actually decides visibility
+ * — light artwork on the navy band, at an opacity that is not a wash. Only the mechanism moved,
+ * from a runtime filter to the asset.
  */
 function renderWithProviders(ui: React.ReactNode) {
   const queryClient = new QueryClient({ defaultOptions: { queries: { retry: false } } })
@@ -36,19 +39,28 @@ describe('About page illustration visibility', () => {
     await i18n.changeLanguage('en')
   })
 
-  it('renders the approved skyline inverted, so it is visible on the navy band', () => {
+  it('draws the approved skyline light, so it is visible on the navy band', () => {
     const { container } = renderWithProviders(<AboutPage />)
-    const skyline = skylineOf(container)
-    const className = skyline.className
+    const className = skylineOf(container).className
 
-    // Inversion is the property that makes dark line art readable on a dark ground.
-    expect(className).toMatch(/\bbrightness-0\b/)
-    expect(className).toMatch(/\binvert\b/)
+    // The asset is already a white silhouette. Re-darkening it here would recreate the original
+    // dark-on-dark defect, so a `brightness-0` without a matching `invert` must never appear.
+    const darkens = /\bbrightness-0\b/.test(className) && !/\binvert\b/.test(className)
+    expect(darkens, 'skyline must not be darkened on the navy band').toBe(false)
 
     // And it must not be washed back out. `opacity-20` was the defect.
     const opacity = className.match(/opacity-(\d+)/)
     expect(opacity, 'skyline should declare an explicit opacity').not.toBeNull()
     expect(Number(opacity![1])).toBeGreaterThanOrEqual(35)
+  })
+
+  it('ships the silhouette as the asset rather than filtering it at paint time', () => {
+    const { container } = renderWithProviders(<AboutPage />)
+    const skyline = skylineOf(container)
+
+    // The full-colour source cost 579KB to deliver colour both call sites immediately discarded.
+    expect(skyline.getAttribute('src')).toMatch(/\.webp$/)
+    expect(skyline.className).not.toMatch(/\bbrightness-0\b/)
   })
 
   it('carries the same confidence as the approved footer treatment', () => {
@@ -60,7 +72,7 @@ describe('About page illustration visibility', () => {
     const footerSkyline = skylineOf(footer.container).className
 
     const treatment = (className: string) => ({
-      inverted: /\bbrightness-0\b/.test(className) && /\binvert\b/.test(className),
+      darkened: /\bbrightness-0\b/.test(className),
       opacity: className.match(/opacity-(\d+)/)?.[1],
     })
 
