@@ -17,9 +17,9 @@ export interface PublicContainerProps extends Omit<ComponentPropsWithoutRef<'div
  * {@link PageContainer} uses inside the portals, so the marketing pages and the application line up
  * on the same grid.
  *
- * <p>Replaces the hand-written `mx-auto max-w-[1448px] px-4 sm:px-6 lg:px-[54px]` that nine public
- * files repeat today. Those pages move onto this in the public-site phase. It is built now so that
- * phase composes from a primitive instead of re-deciding the width page by page.
+ * <p>It replaced the hand-written `mx-auto max-w-[1448px] px-4 sm:px-6 lg:px-[54px]` that nine public
+ * files used to repeat; every public page (and the public header and footer, with the same classes)
+ * now composes from it rather than re-deciding the width page by page.
  */
 export function PublicContainer({ children, as: Tag = 'div', spacing = 'none', className, ...props }: PublicContainerProps) {
   return (

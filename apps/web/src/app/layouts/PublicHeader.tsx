@@ -2,7 +2,7 @@ import { useEffect, useRef, useState, type ReactNode } from 'react'
 import { Link, NavLink } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import type { TFunction } from 'i18next'
-import { BrandLogo, Icon, IconButton, LanguageToggle, ThemeToggle } from '../../components/ui'
+import { BrandLogo, ButtonLink, Icon, IconButton, LanguageToggle, ThemeToggle } from '../../components/ui'
 import { NotificationBell } from '../../features/notifications/components/NotificationBell'
 import { cn } from '../../lib/utils/cn'
 import { useAuth } from '../../lib/auth/AuthContext'
@@ -17,9 +17,12 @@ const links = [
 ] as const
 
 /**
- * The approved public header (design-reference/presentation-refresh-2026, references 01-06):
- * the FursadHub lockup on the left, the destination set CENTRED in the bar, and the account
- * controls on the right. The active destination is marked by an orange underline.
+ * The public header: the FursadHub lockup, the destination set centred in the bar, and the account
+ * controls on the right. The active destination is marked by an orange underline (brand orange is a
+ * non-text mark here, which is what it is for).
+ *
+ * <p>It shares the public content column with every page below it (`PublicContainer` widths and
+ * gutters), so the logo lines up with the page's first line of text at every width.
  */
 export function PublicHeader() {
   const { t } = useTranslation()
@@ -80,8 +83,8 @@ export function PublicHeader() {
           onClick={() => setOpen(false)}
           className={({ isActive }) =>
             cn(
-              'relative rounded-md px-3 py-2 text-sm font-semibold transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus-ring motion-reduce:transition-none lg:px-3.5',
-              isActive ? 'text-brand-navy dark:text-foreground' : 'text-foreground-secondary hover:text-brand-navy dark:hover:text-foreground',
+              'relative rounded-md px-3 py-2 text-body font-semibold transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus-ring motion-reduce:transition-none',
+              isActive ? 'text-foreground' : 'text-foreground-secondary hover:text-foreground',
             )
           }
         >
@@ -90,7 +93,7 @@ export function PublicHeader() {
               {t(`common:nav.${link.key}`)}
               {/* The approved active marker: a short orange rule under the current destination. */}
               {isActive && (
-                <span aria-hidden="true" className="absolute inset-x-3 -bottom-[8px] hidden h-[3px] rounded-full bg-brand-accent lg:block" />
+                <span aria-hidden="true" className="absolute inset-x-3 -bottom-3 hidden h-0.5 rounded-full bg-brand-accent xl:block" />
               )}
             </>
           )}
@@ -111,7 +114,7 @@ export function PublicHeader() {
         scrolled ? 'border-border-strong shadow-sm' : 'border-border',
       )}
     >
-      <div className="mx-auto flex h-[60px] xl:h-[50px] max-w-[1448px] items-center gap-5 px-4 sm:px-6 lg:px-[42px]">
+      <div className="mx-auto flex h-16 w-full max-w-7xl items-center gap-5 px-4 sm:px-6 lg:px-8">
         <Link
           to="/"
           aria-label={t('common:app.name')}
@@ -161,12 +164,12 @@ export function PublicHeader() {
           }}
         >
           <div
-            className="ml-auto flex h-full w-[min(22rem,90vw)] flex-col overflow-y-auto border-l border-border bg-surface p-4 shadow-lg motion-safe:animate-menu-in"
+            className="ms-auto flex h-full w-[min(22rem,90vw)] flex-col overflow-y-auto border-s border-border bg-surface p-4 shadow-lg motion-safe:animate-panel-in-right"
           >
             <IconButton label={t('common:nav.closeMenu')} onClick={() => setOpen(false)} className="mb-4 self-end">
               <Icon name="close" className="size-5" />
             </IconButton>
-            <nav className="flex flex-col" aria-label={t('common:nav.publicNavigation')}>
+            <nav className="flex flex-col gap-1 [&>a]:py-3" aria-label={t('common:nav.publicNavigation')}>
               {navigation}
             </nav>
             <div className="mt-auto grid gap-3 border-t border-border pt-5">
@@ -201,26 +204,12 @@ function LoginLinks({ t, mobile = false, onNavigate }: { t: TFunction; mobile?: 
   }
   return (
     <>
-      <Link
-        to="/login"
-        onClick={onNavigate}
-        className={cn(
-          'inline-flex h-9 items-center rounded-lg border border-border-strong px-4 text-sm font-semibold text-foreground transition-colors hover:bg-control-hover focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus-ring motion-reduce:transition-none',
-          mobile && 'justify-center',
-        )}
-      >
+      <ButtonLink to="/login" onClick={onNavigate} variant="outline" size="sm" className={cn(mobile && 'h-11 w-full')}>
         {t('common:nav.login')}
-      </Link>
-      <Link
-        to="/register"
-        onClick={onNavigate}
-        className={cn(
-          'inline-flex h-9 items-center rounded-lg bg-action-primary px-5 text-sm font-semibold text-on-action shadow-xs transition-colors hover:bg-action-primary-hover focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus-ring motion-reduce:transition-none',
-          mobile && 'justify-center',
-        )}
-      >
+      </ButtonLink>
+      <ButtonLink to="/register" onClick={onNavigate} size="sm" className={cn(mobile && 'h-11 w-full')}>
         {t('common:nav.getStarted')}
-      </Link>
+      </ButtonLink>
     </>
   )
 }

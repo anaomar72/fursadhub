@@ -617,5 +617,47 @@
   },
   "form": {
     "optional": "Ikhtiyaari"
+  },
+  "home": {
+    "trust": {
+      "title": "Lagu dhisay xaqiijin, ma aha liis keliya",
+      "items": {
+        "institutions": {
+          "title": "Hay'ado la xaqiijiyay",
+          "body": "Ururrada iyo jaamacaduhu waxay maraan xaqiijinta FursadHub, oo ururrada la xaqiijiyay oo keliya ayaa daabici kara tababaro."
+        },
+        "enrollment": {
+          "title": "Diiwaangelin la hubiyay",
+          "body": "Jaamacadda ardayga ayaa xaqiijisa diiwaangelintiisa ka hor inta uusan codsan ama la magacaabin."
+        },
+        "pipeline": {
+          "title": "Hal socod musharrax",
+          "body": "Codsiyada guud iyo magacaabista jaamacadaha waxaa wada dib u eega ururka soo dhigay fursadda."
+        },
+        "completion": {
+          "title": "La socod ilaa dhammaystir",
+          "body": "Meelaynta waxaa kormeeri kara jaamacadda iyo ururkaba, iyadoo loo marayo diiwaanka toddobaadka, imaanshaha iyo qiimeynta."
+        }
+      }
+    },
+    "organizations": {
+      "title": "Ururrada la xaqiijiyay ee FursadHub"
+    },
+    "latest": {
+      "title": "Tababarada ugu dambeeyay",
+      "description": "Waxaa dhawaan daabacay ururrada ku jira FursadHub.",
+      "emptyTitle": "Tababaro cusub ayaa soo socda",
+      "emptyBody": "Fursaduhu halkan ayay ka muuqdaan marka ururrada la xaqiijiyay ay daabacaan."
+    },
+    "journey": {
+      "actors": "Cidda ka qayb qaadata"
+    },
+    "roles": {
+      "title": "Hal madal, saddex waddo"
+    },
+    "lifecycle": {
+      "eyebrow": "Dalabka kadib",
+      "finalReport": "Warbixinta ugu dambeysa"
+    }
   }
 }

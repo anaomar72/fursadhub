@@ -104,6 +104,40 @@ export function SkeletonPanel({ rows = 4, label, className }: { rows?: number; l
 }
 
 /**
+ * The responsive card grid public lists use: columns come from the WIDTH available (`auto-fill`,
+ * 17rem minimum), so one, two or twelve results each fill a row naturally instead of leaving holes
+ * in a fixed-column grid.
+ */
+export const CARD_GRID = 'grid gap-4 [grid-template-columns:repeat(auto-fill,minmax(min(100%,17rem),1fr))]'
+
+/** Card-shaped placeholders in {@link CARD_GRID}: a mark, a title, two meta lines and a ruled footer. */
+export function SkeletonCardGrid({ count = 3, label, className }: { count?: number; label?: string; className?: string }) {
+  return (
+    <SkeletonRegion label={label} className={cn(CARD_GRID, className)}>
+      {Array.from({ length: count }, (_, i) => (
+        <div key={i} aria-hidden="true" className="flex h-full flex-col rounded-xl border border-border bg-surface">
+          <div className="flex flex-col gap-3 p-5">
+            <div className="flex items-center gap-3">
+              <Skeleton className="size-10 rounded-md" />
+              <Skeleton className="h-3.5 w-28" />
+            </div>
+            <Skeleton className="mt-1 h-5 w-4/5" />
+            <Skeleton className="h-3.5 w-3/5" />
+            <div className="flex gap-1.5">
+              <Skeleton className="h-6 w-14 rounded-full" />
+              <Skeleton className="h-6 w-16 rounded-full" />
+            </div>
+          </div>
+          <div className="mt-auto border-t border-border px-5 py-3">
+            <Skeleton className="h-3 w-32" />
+          </div>
+        </div>
+      ))}
+    </SkeletonRegion>
+  )
+}
+
+/**
  * Wraps a group of {@link Skeleton} shapes and makes the single "Loading" announcement for all of
  * them. Use it around any placeholder block containing more than one bar.
  */

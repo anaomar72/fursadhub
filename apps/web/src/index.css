@@ -516,26 +516,3 @@
     outline-offset: 2px;
   }
 }
-/*
- * Desktop composition for the public home page and its footer.
- *
- * WHAT THIS USED TO DO, AND WHY IT IS GONE. An earlier pass matched reference 01's proportions by
- * shrinking type: the featured-card metadata, every line of "How FursadHub Works", the testimonial
- * lead and the entire footer were forced to 10px on a 12-14px line-height, and section headings to
- * 14px. A mockup rendered at screenshot scale is not a type scale — copying its apparent size gave
- * the flagship page reading text smaller than any control sitting next to it, which is the opposite
- * of premium and the opposite of comfortable.
- *
- * WHAT REMAINS. The same compositional intent carried by the lever that actually carries it —
- * vertical rhythm. Sections close up at desktop width and the footer compacts; nothing a person is
- * expected to READ is shrunk below the size its own component chose.
- */
-@media (min-width: 1280px) {
-  .home-presentation > section:first-child { padding-top: 24px; padding-bottom: 12px; }
-  .home-presentation > section:first-child h1 { line-height: 1.05; }
-  .home-presentation > section:first-child h1 + p { margin-top: 12px; }
-  .home-presentation [aria-labelledby="organizations-heading"] > ul { margin-top: 12px; }
-  .home-presentation > section:last-child > section:first-child { padding-block: 16px; }
-  .public-site > footer > div { padding-block: 32px; }
-  .public-site > footer img { max-height: 58px; }
-}

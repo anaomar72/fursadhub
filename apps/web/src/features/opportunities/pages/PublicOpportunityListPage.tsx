@@ -1,55 +1,45 @@
 import { useState, type FormEvent } from 'react'
-import { Link, useSearchParams } from 'react-router-dom'
+import { useSearchParams } from 'react-router-dom'
 import { useQuery } from '@tanstack/react-query'
 import { useTranslation } from 'react-i18next'
-import type { TFunction } from 'i18next'
 import * as publicOpportunityApi from '../api/publicOpportunityApi'
-import * as organizationApi from '../../organization/api/organizationApi'
-import type { PublicOpportunityResponse, WorkMode } from '../types'
-import {
-  Button,
-  EmptyState,
-  ErrorState,
-  Icon,
-  InternshipCard,
-  LoadingState,
-  Pagination,
-  Select,
-} from '../../../components/ui'
-import { HomeHeroIllustration } from '../../../app/pages/HomeHeroIllustration'
-import { MarketplaceRail, PresentationBand } from '../../../components/ui/Presentation'
-import { PublicBookmarks, PublicBookmark } from '../../student/components/PublicBookmarks'
-import { formatCompensation } from '../compensation'
+import type { WorkMode } from '../types'
+import { Button, EmptyState, ErrorState, Icon, Input, Pagination, Reveal, SearchInput, Select } from '../../../components/ui'
+import { PublicContainer } from '../../../app/layouts/PublicContainer'
+import { PublicBookmarks } from '../../student/components/PublicBookmarks'
+import { OPPORTUNITY_GRID, OpportunityGridSkeleton, PublicOpportunityCard } from '../components/PublicOpportunityCard'
 
 const WORK_MODES: WorkMode[] = ['ONSITE', 'HYBRID', 'REMOTE']
-const POPULAR_SEARCHES = ['Software Engineering', 'Data Science', 'Marketing', 'Design', 'Business'] as const
 const PAGE_SIZE = 12
 
 /**
- * The approved public internships directory (design-reference/presentation-refresh-2026,
- * reference 02): a search-led hero beside the brand panel, then the paged card grid with a result
- * count and the sort control.
+ * The public internships marketplace.
  *
- * <p>The filters are seeded from the URL, so the landing page's hero search and the "popular"
- * chips both land here with their query already applied and shareable.
+ * <p><strong>Filtering is server-side and URL-driven</strong>, exactly as before: keyword, location
+ * and work mode are sent to `GET /public/opportunities`, and the URL is the source of truth for what
+ * is applied — so the home page's hero search and a shared link both land on the same results. No
+ * filter is offered that the endpoint does not support.
  *
- * <p>The reference's right-hand promotional rail ("Advance your career", "Are you an
- * organization?") is not built: it advertises personalised recommendations and email alerts that
- * this API does not provide, and the reference README forbids fabricating them.
+ * <p>What changed is the composition. The page used to open with a second marketing hero, a stock
+ * photograph and invented "popular" English search terms, then put a promotional rail beside the
+ * results that pointed anonymous visitors at signed-in portal routes. It now opens with the page's
+ * name and a single filter toolbar, and gives the results the full width: the results ARE the page.
+ *
+ * <p>The page header and toolbar never unmount while results load or refetch — only the results
+ * region changes, through card-shaped skeletons — so applying a filter does not blank the page.
  */
 export function PublicOpportunityListPage() {
-  const { t, i18n } = useTranslation()
+  const { t } = useTranslation()
   const [params, setParams] = useSearchParams()
 
   const organization = params.get('organization') ?? undefined
-  const [query, setQuery] = useState(params.get('query') ?? '')
-  const [location, setLocation] = useState(params.get('location') ?? '')
-  const [workMode, setWorkMode] = useState<WorkMode | ''>((params.get('workMode') as WorkMode | null) ?? '')
-  // The URL is the source of truth for the applied filters, so arriving from the landing page's
-  // hero search (or sharing a filtered link) shows the same results the sender saw.
   const appliedQuery = params.get('query') ?? ''
   const appliedLocation = params.get('location') ?? ''
   const appliedWorkMode = (params.get('workMode') as WorkMode | null) ?? ''
+  const [query, setQuery] = useState(appliedQuery)
+  const [location, setLocation] = useState(appliedLocation)
+  const [workMode, setWorkMode] = useState<WorkMode | ''>(appliedWorkMode)
+  const filtered = Boolean(appliedQuery || appliedLocation || appliedWorkMode)
 
   // Paging is scoped to the filters it was chosen under, so changing a filter starts at page 1
   // without an effect that renders once on the stale page first.
@@ -81,185 +71,132 @@ export function PublicOpportunityListPage() {
     setParams(next)
   }
 
+  function clearFilters() {
+    setQuery('')
+    setLocation('')
+    setWorkMode('')
+    const next = new URLSearchParams()
+    if (organization) next.set('organization', organization)
+    setParams(next)
+  }
+
   const total = result.data?.totalElements ?? 0
   const from = total === 0 ? 0 : page * PAGE_SIZE + 1
   const to = Math.min(total, (page + 1) * PAGE_SIZE)
 
   return (
-    <PublicBookmarks ids={result.data?.content.map(item => item.id) ?? []}><div className="bg-background">
-      <section className="mx-auto grid w-full max-w-[1448px] gap-8 px-4 pb-3 pt-6 sm:px-6 lg:grid-cols-[1.05fr_1fr] lg:items-start lg:px-12">
-        <div>
-          <h1 className="font-display text-[30px] font-extrabold leading-[1.06] tracking-[-0.035em] text-brand-navy dark:text-foreground sm:text-[30px] lg:text-[30px]">
-            <span className="block">{t('opportunities:public.heroLead')}</span>
-            <span className="mt-1.5 block">
-              {t('opportunities:public.heroBuild')}{' '}
-              <span className="text-brand-accent">{t('opportunities:public.heroAccent')}</span>
-            </span>
-          </h1>
-          <p className="mt-3 max-w-md text-xs leading-5 text-foreground-secondary">
-            {t('opportunities:public.heroDescription')}
-          </p>
+    <PublicBookmarks ids={result.data?.content.map((item) => item.id) ?? []}>
+      <div className="bg-background">
+        <section className="border-b border-border bg-surface">
+          <PublicContainer className="py-10 lg:py-14">
+            <h1 className="font-display text-display-lg text-foreground">{t('opportunities:public.browseTitle')}</h1>
+            <p className="mt-2 max-w-2xl text-body-lg text-foreground-secondary">{t('opportunities:public.browseDescription')}</p>
 
-          <form onSubmit={applyFilters} className="mt-5 flex flex-col gap-2 sm:flex-row sm:flex-wrap sm:items-center">
-            <label className="relative min-w-0 flex-1 sm:min-w-[11rem]">
-              <span className="sr-only">{t('opportunities:public.searchLabel')}</span>
-              <Icon
-                name="search"
-                className="pointer-events-none absolute start-3.5 top-1/2 size-4 -translate-y-1/2 text-foreground-secondary"
-              />
-              <input
+            <form
+              onSubmit={applyFilters}
+              role="search"
+              aria-label={t('opportunities:public.filtersLabel')}
+              className="mt-8 grid gap-2 rounded-xl border border-border bg-background p-2 shadow-sm sm:grid-cols-2 lg:grid-cols-[minmax(0,1fr)_minmax(0,11rem)_minmax(0,11rem)_auto]"
+            >
+              <SearchInput
+                label={t('opportunities:public.searchLabel')}
                 value={query}
                 onChange={(event) => setQuery(event.target.value)}
                 placeholder={t('opportunities:public.searchPlaceholder')}
-                className="h-10 w-full rounded-lg border border-border bg-surface ps-9 pe-3 text-sm text-foreground shadow-xs placeholder:text-muted focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus-ring"
+                className="h-12"
+                wrapperClassName="sm:col-span-2 lg:col-span-1"
               />
-            </label>
-            <label className="min-w-0 sm:w-36">
-              <span className="sr-only">{t('opportunities:public.locationLabel')}</span>
-              <input
+              <Input
+                aria-label={t('opportunities:public.locationLabel')}
                 value={location}
                 onChange={(event) => setLocation(event.target.value)}
                 placeholder={t('opportunities:public.locationPlaceholder')}
-                className="h-10 w-full rounded-lg border border-border bg-surface px-3 text-sm text-foreground shadow-xs placeholder:text-muted focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus-ring"
+                className="h-12"
               />
-            </label>
-            <Select
-              aria-label={t('opportunities:public.workModeLabel')}
-              value={workMode}
-              onChange={(event) => setWorkMode(event.target.value as WorkMode | '')}
-              className="h-10 sm:w-40"
-            >
-              <option value="">{t('opportunities:public.allWorkModes')}</option>
-              {WORK_MODES.map((mode) => (
-                <option key={mode} value={mode}>
-                  {t(`opportunities:workModeValues.${mode}`)}
-                </option>
-              ))}
-            </Select>
-            <Button type="submit">
-              {t('common:landing.hero2.search')}
-            </Button>
-          </form>
-
-          <div className="mt-3 flex flex-wrap items-center gap-1.5 text-[11px]">
-            <span className="font-semibold text-foreground-secondary">{t('common:landing.hero2.popular')}</span>
-            {POPULAR_SEARCHES.map((term) => (
-              <Link
-                key={term}
-                to={`/opportunities?query=${encodeURIComponent(term)}`}
-                className="rounded-full border border-border bg-surface px-3 py-1 font-medium text-foreground-secondary transition-colors hover:border-border-strong hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus-ring motion-reduce:transition-none"
+              <Select
+                aria-label={t('opportunities:public.workModeLabel')}
+                value={workMode}
+                onChange={(event) => setWorkMode(event.target.value as WorkMode | '')}
+                className="h-12"
               >
-                {term}
-              </Link>
-            ))}
-          </div>
-        </div>
+                <option value="">{t('opportunities:public.allWorkModes')}</option>
+                {WORK_MODES.map((mode) => (
+                  <option key={mode} value={mode}>
+                    {t(`opportunities:workModeValues.${mode}`)}
+                  </option>
+                ))}
+              </Select>
+              <Button type="submit" size="lg" className="sm:col-span-2 lg:col-span-1">
+                <Icon name="search" className="size-4" />
+                {t('common:landing.hero2.search')}
+              </Button>
+            </form>
+          </PublicContainer>
+        </section>
 
-        <div className="hidden lg:block">
-          <HomeHeroIllustration marketplace />
-        </div>
-      </section>
-
-      <section className="mx-auto w-full max-w-[1448px] px-4 pb-5 sm:px-6 lg:px-12">
-        <div className="flex flex-wrap items-baseline justify-between gap-3">
-          <div className="flex flex-wrap items-baseline gap-3">
-            <h2 className="font-display text-lg font-extrabold tracking-tight text-brand-navy dark:text-foreground">
+        <PublicContainer as="section" aria-labelledby="results-heading" className="py-10 lg:py-14">
+          <div className="flex flex-wrap items-baseline justify-between gap-x-6 gap-y-2">
+            <h2 id="results-heading" className="font-display text-title-section text-foreground">
               {t('opportunities:public.allInternships')}
             </h2>
-            {result.data && (
-              <p className="text-sm text-foreground-secondary">
-                {t('opportunities:public.showing', { from, to, total })}
-              </p>
+            <div className="flex flex-wrap items-center gap-x-4 gap-y-1">
+              {result.data && total > 0 && (
+                <p className="text-body text-foreground-secondary" aria-live="polite">
+                  {t('opportunities:public.showing', { from, to, total })}
+                </p>
+              )}
+              {filtered && (
+                <button
+                  type="button"
+                  onClick={clearFilters}
+                  className="rounded-sm text-body font-semibold text-link underline-offset-4 hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus-ring"
+                >
+                  {t('opportunities:public.clearFilters')}
+                </button>
+              )}
+            </div>
+          </div>
+
+          <div className="mt-6">
+            {result.isLoading ? (
+              <OpportunityGridSkeleton count={6} label={t('opportunities:public.loading')} />
+            ) : result.isError ? (
+              <ErrorState description={t('opportunities:public.error')} onRetry={() => void result.refetch()} />
+            ) : result.data?.content.length === 0 ? (
+              filtered ? (
+                <EmptyState
+                  icon="search"
+                  title={t('opportunities:public.noMatchesTitle')}
+                  description={t('opportunities:public.noMatchesHint')}
+                  action={
+                    <Button variant="outline" onClick={clearFilters}>
+                      {t('opportunities:public.clearFilters')}
+                    </Button>
+                  }
+                />
+              ) : (
+                <EmptyState
+                  icon="briefcase"
+                  title={t('opportunities:public.emptyTitle')}
+                  description={t('opportunities:public.emptyHint')}
+                />
+              )
+            ) : (
+              <ul className={OPPORTUNITY_GRID}>
+                {result.data?.content.map((opportunity, index) => (
+                  <Reveal as="li" key={opportunity.id} index={index % 3} className="min-w-0">
+                    <PublicOpportunityCard opportunity={opportunity} />
+                  </Reveal>
+                ))}
+              </ul>
             )}
           </div>
-        </div>
 
-        <div className="mt-4 grid gap-4 xl:grid-cols-[minmax(0,1fr)_256px]"><div>
-          {result.isLoading ? (
-            <LoadingState label={t('opportunities:public.loading')} />
-          ) : result.isError ? (
-            <ErrorState description={t('opportunities:public.error')} onRetry={() => void result.refetch()} />
-          ) : result.data?.content.length === 0 ? (
-            <EmptyState title={t('opportunities:public.empty')} />
-          ) : (
-            <ul className="grid gap-3.5 sm:grid-cols-2 lg:grid-cols-3">
-              {result.data?.content.map((opportunity) => (
-                <li key={opportunity.id}>
-                  <OpportunityCard opportunity={opportunity} locale={i18n.resolvedLanguage ?? 'en'} t={t} />
-                </li>
-              ))}
-            </ul>
+          {result.data && result.data.totalPages > 1 && (
+            <Pagination page={result.data.page} totalPages={result.data.totalPages} onPageChange={setPage} className="mt-10" />
           )}
-        </div>
-        <MarketplaceRail />
-        </div>
-
-        {result.data && result.data.totalPages > 1 && (
-          <Pagination page={result.data.page} totalPages={result.data.totalPages} onPageChange={setPage} className="mt-10" />
-        )}
-      </section>
-      <div className="mx-auto max-w-[1448px] px-4 pb-5 lg:px-12"><PresentationBand title={t('common:remediation.bandTitle')} body={t('common:remediation.bandBody')}><Link to="/organizations" className="rounded bg-action-primary px-5 py-2.5 text-xs font-bold text-on-action">{t('common:nav.organizations')} →</Link></PresentationBand></div>
-    </div>
+        </PublicContainer>
+      </div>
     </PublicBookmarks>
-  )
-}
-
-function OpportunityCard({
-  opportunity,
-  locale,
-  t,
-}: {
-  opportunity: PublicOpportunityResponse
-  locale: string
-  t: TFunction
-}) {
-  const durationMonths = Math.max(
-    1,
-    Math.round(
-      (new Date(opportunity.endDate).getTime() - new Date(opportunity.startDate).getTime()) /
-        (1000 * 60 * 60 * 24 * 30),
-    ),
-  )
-
-  return (
-    <InternshipCard
-      className="public-internship-card"
-      bookmark={<PublicBookmark id={opportunity.id} />}
-      tags={[t('common:nav.internships'), ...(opportunity.skills ?? []).slice(0, 1), t(`opportunities:workModeValues.${opportunity.workMode}`)]}
-      compensation={formatCompensation(opportunity.compensation, t, locale) ?? undefined}
-      hours={opportunity.hoursPerWeek ? t('opportunities:enrichment.hoursPerWeekValue', { count: opportunity.hoursPerWeek }) : undefined}
-      title={opportunity.title}
-      organization={opportunity.organization.name}
-      organizationVerified={opportunity.organization.verified}
-      logo={
-        opportunity.organization.hasLogo ? (
-          <img
-            src={organizationApi.organizationLogoUrl(opportunity.organization.id)}
-            alt=""
-            className="size-full rounded object-contain"
-          />
-        ) : undefined
-      }
-      location={opportunity.location ?? undefined}
-      duration={t('opportunities:public.durationMonths', { count: durationMonths })}
-      workMode={t(`opportunities:workModeValues.${opportunity.workMode}`)}
-      deadline={
-        opportunity.applicationDeadline
-          ? t('opportunities:public.applyBy', {
-              date: new Intl.DateTimeFormat(locale === 'so' ? 'so-SO' : 'en', { dateStyle: 'medium' }).format(
-                new Date(opportunity.applicationDeadline),
-              ),
-            })
-          : undefined
-      }
-      actions={
-        <Link
-          to={`/opportunities/${opportunity.id}`}
-          className="inline-flex h-9 items-center rounded-lg border border-brand-accent/40 px-3.5 text-xs font-semibold text-brand-accent-ink transition-colors hover:bg-control-hover focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus-ring motion-reduce:transition-none"
-        >
-          {t('opportunities:public.viewDetails')}
-        </Link>
-      }
-    />
   )
 }

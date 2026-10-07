@@ -1,11 +1,8 @@
 import { Link } from 'react-router-dom'
-import { useQuery } from '@tanstack/react-query'
 import { useTranslation } from 'react-i18next'
-import { Icon, type IconName } from '../../components/ui'
-import * as publicOpportunityApi from '../../features/opportunities/api/publicOpportunityApi'
-import * as organizationApi from '../../features/organization/api/organizationApi'
-import * as universityApi from '../../features/university/api/universityApi'
-import { PresentationBand, SkylineArtwork } from '../../components/ui/Presentation'
+import { ButtonLink, Icon, Reveal, type IconName } from '../../components/ui'
+import { SkylineArtwork } from '../../components/ui/Presentation'
+import { PublicContainer } from '../layouts/PublicContainer'
 
 const JOURNEY = [
   { key: 'sourcing', icon: 'briefcase' },
@@ -23,224 +20,158 @@ const AUDIENCES = [
 
 const TRUST = ['biometrics', 'evidence', 'testimonials', 'pilot'] as const
 
+const SECTION_TITLE = 'font-display text-display-lg text-foreground'
+
 /**
- * The public About page, in the approved presentation language of reference 01 (navy identity bands,
- * orange for the single primary action, the shared skyline art, the 1448px content column).
+ * The public About page: what FursadHub is for, the real workflow, who it serves, and the
+ * boundaries it keeps.
  *
- * <p>Every claim here describes something the product actually does. The counters are the real
- * `totalElements` of the three public directories and show an em dash rather than a zero while they
- * are unresolved; the workflow section is the pipeline CLAUDE.md section 2 defines; and the "what we
- * do not do" section states the V1 boundaries plainly. There are no invented customers, team
- * biographies, funding claims, awards or growth statistics, because nothing in the product supplies
- * them.
+ * <p>Every claim describes something the product actually does — the workflow is the pipeline
+ * CLAUDE.md section 2 defines, and "what we do not do" states the V1 boundaries plainly. There are no
+ * invented customers, team biographies, funding claims or growth statistics. The live directory
+ * counts that used to sit under the hero are gone for the same reason they left the home page: the
+ * pilot's size is not evidence of anything a visitor needs.
+ *
+ * <p>Composition is sections on the page, not a stack of bordered cards: the content reads as an
+ * article with a rhythm, which is what an explanatory page is.
  */
 export function AboutPage() {
   const { t } = useTranslation()
 
-  const internships = useQuery({
-    queryKey: ['public-opportunities', 'about-count'],
-    queryFn: () => publicOpportunityApi.listPublicOpportunities({ page: 0, size: 1 }),
-  })
-  const organizations = useQuery({
-    queryKey: ['public-organizations', 'about-count'],
-    queryFn: () => organizationApi.listPublicOrganizations({ page: 0, size: 1 }),
-  })
-  const universities = useQuery({
-    queryKey: ['public-universities', 'about-count'],
-    queryFn: () => universityApi.listPublicUniversities({ page: 0, size: 1 }),
-  })
-
-  const counts = [
-    { key: 'internships', value: internships.data?.totalElements },
-    { key: 'organizations', value: organizations.data?.totalElements },
-    { key: 'universities', value: universities.data?.totalElements },
-  ] as const
-
   return (
-    <div className="overflow-x-clip bg-background">
+    <div className="bg-background">
       {/* ------------------------------------------------------------ hero */}
-      <section className="relative overflow-hidden bg-brand-navy text-white">
-        {/*
-          The skyline asset is dark navy line art on transparency. Placed on this navy band it has
-          to be inverted to a white silhouette before it is visible at all — at `opacity-20` with no
-          filter it was dark-on-dark and read as a ghost. This is the same treatment the approved
-          footer uses (`brightness-0 invert opacity-40`), so the two navy surfaces carry the
-          artwork with the same confidence. Text above it stays white-on-navy and is unaffected:
-          the art is a bottom-anchored silhouette, not a full-bleed wash.
-        */}
-        <SkylineArtwork className="absolute inset-x-0 bottom-0 w-full opacity-40" />
-        <div className="relative mx-auto max-w-[1448px] px-4 py-16 sm:px-6 lg:px-[54px]">
-          <p className="text-xs font-bold uppercase tracking-widest text-brand-accent">
-            {t('common:publicPages.about.eyebrow')}
-          </p>
-          <h1 className="mt-4 max-w-3xl font-display text-4xl font-extrabold leading-tight tracking-tight sm:text-5xl">
+      <section className="surface-dark relative overflow-hidden bg-surface text-foreground">
+        {/* Decorative silhouette, bottom-anchored under the copy — the same treatment as the footer. */}
+        <SkylineArtwork className="absolute inset-x-0 bottom-0 h-28 w-full object-cover object-bottom opacity-40 sm:h-36 lg:h-44" />
+        <PublicContainer className="relative pb-36 pt-16 sm:pb-44 lg:pb-52 lg:pt-24">
+          <p className="text-caption font-semibold uppercase tracking-wide text-brand-accent-ink">{t('common:publicPages.about.eyebrow')}</p>
+          <h1 className="mt-4 max-w-3xl font-display text-display-xl text-foreground">
             {t('common:publicPages.about.titleStart')}{' '}
-            <span className="text-brand-accent">{t('common:publicPages.about.titleAccent')}</span>{' '}
+            <span className="text-brand-accent-ink">{t('common:publicPages.about.titleAccent')}</span>{' '}
             {t('common:publicPages.about.titleEnd')}
           </h1>
-          <p className="mt-5 max-w-2xl text-base leading-7 text-white/80">
-            {t('common:publicPages.about.intro')}
-          </p>
-          <div className="mt-8 flex flex-wrap gap-3">
-            <Link
-              to="/register"
-              className="inline-flex h-11 items-center rounded-lg bg-action-primary px-6 text-sm font-semibold text-on-action transition-colors hover:bg-action-primary-hover focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus-ring motion-reduce:transition-none"
-            >
+          <p className="mt-5 max-w-2xl text-body-lg text-foreground-secondary">{t('common:publicPages.about.intro')}</p>
+          <div className="mt-8 flex flex-col gap-3 sm:flex-row sm:items-center">
+            <ButtonLink to="/register" size="lg">
               {t('common:publicPages.about.join')}
-            </Link>
+            </ButtonLink>
             <Link
               to="/opportunities"
-              className="inline-flex h-11 items-center rounded-lg border border-white/30 px-6 text-sm font-semibold text-white transition-colors hover:bg-white/10 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus-ring motion-reduce:transition-none"
+              className="inline-flex h-12 items-center gap-1.5 rounded-md px-1 text-body font-semibold text-foreground underline-offset-4 hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus-ring"
             >
               {t('common:publicPages.about.browse')}
+              <Icon name="arrowRight" className="size-4 rtl:rotate-180" />
             </Link>
           </div>
-        </div>
-      </section>
-
-      {/* ------------------------------------------------------------ live counts */}
-      <section aria-labelledby="about-counts" className="mx-auto max-w-[1448px] px-4 py-12 sm:px-6 lg:px-[54px]">
-        <h2 id="about-counts" className="font-display text-2xl font-extrabold tracking-tight text-brand-navy dark:text-foreground">
-          {t('common:publicPages.about.countsTitle')}
-        </h2>
-        <p className="mt-1.5 text-sm text-foreground-secondary">{t('common:publicPages.about.countsHint')}</p>
-        <dl className="mt-6 grid gap-4 sm:grid-cols-3">
-          {counts.map((count) => (
-            <div key={count.key} className="rounded-xl border border-border bg-surface p-6 shadow-xs">
-              {/* An unresolved or failed request shows an em dash. A zero would be a claim. */}
-              <dd className="font-display text-4xl font-extrabold text-brand-navy dark:text-foreground">
-                {count.value ?? '—'}
-              </dd>
-              <dt className="mt-2 text-sm font-medium text-foreground-secondary">
-                {t(`common:publicPages.about.counts.${count.key}`)}
-              </dt>
-            </div>
-          ))}
-        </dl>
+        </PublicContainer>
       </section>
 
       {/* ------------------------------------------------------------ mission and vision */}
-      <section className="border-y border-border bg-surface-muted">
-        <div className="mx-auto grid max-w-[1448px] gap-5 px-4 py-12 sm:px-6 md:grid-cols-2 lg:px-[54px]">
+      <section className="py-14 lg:py-20">
+        <PublicContainer className="grid gap-12 md:grid-cols-2 md:gap-16">
           {(['mission', 'vision'] as const).map((item, index) => (
-            <div key={item} className="rounded-xl border border-border bg-surface p-7 shadow-xs">
-              <span className="flex size-12 items-center justify-center rounded-full bg-brand-blue-soft text-brand-blue dark:bg-info-bg dark:text-info">
-                <Icon name={index ? 'eye' : 'globe'} className="size-6" />
+            <Reveal key={item} index={index} className="min-w-0">
+              <span className="flex size-11 items-center justify-center rounded-lg bg-brand-navy-soft text-brand-navy dark:text-foreground">
+                <Icon name={index ? 'eye' : 'globe'} className="size-5" />
               </span>
-              <h2 className="mt-5 font-display text-xl font-extrabold text-brand-navy dark:text-foreground">
-                {t(`common:publicPages.about.${item}.title`)}
-              </h2>
-              <p className="mt-3 text-sm leading-7 text-foreground-secondary">
-                {t(`common:publicPages.about.${item}.body`)}
-              </p>
-            </div>
+              <h2 className="mt-5 font-display text-title-section text-foreground">{t(`common:publicPages.about.${item}.title`)}</h2>
+              <p className="mt-3 max-w-prose text-body-lg text-foreground-secondary">{t(`common:publicPages.about.${item}.body`)}</p>
+            </Reveal>
           ))}
-        </div>
+        </PublicContainer>
       </section>
 
       {/* ------------------------------------------------------------ the real workflow */}
-      <section aria-labelledby="about-journey" className="mx-auto max-w-[1448px] px-4 py-14 sm:px-6 lg:px-[54px]">
-        <h2 id="about-journey" className="font-display text-2xl font-extrabold tracking-tight text-brand-navy dark:text-foreground">
-          {t('common:publicPages.about.journeyTitle')}
-        </h2>
-        <p className="mt-1.5 max-w-3xl text-sm text-foreground-secondary">
-          {t('common:publicPages.about.journeyHint')}
-        </p>
-        <ol className="mt-7 grid gap-4 sm:grid-cols-2 lg:grid-cols-5">
-          {JOURNEY.map((step, index) => (
-            <li key={step.key} className="flex flex-col rounded-xl border border-border bg-surface p-5 shadow-xs">
-              <div className="flex items-center gap-3">
-                <span className="flex size-10 shrink-0 items-center justify-center rounded-lg bg-brand-navy text-white">
-                  <Icon name={step.icon} className="size-5" />
-                </span>
-                <span className="text-xs font-bold uppercase tracking-widest text-brand-accent-ink">
-                  {index + 1}
-                </span>
-              </div>
-              <h3 className="mt-4 font-display text-base font-bold text-brand-navy dark:text-foreground">
-                {t(`common:publicPages.about.journey.${step.key}.title`)}
-              </h3>
-              <p className="mt-2 text-sm leading-6 text-foreground-secondary">
-                {t(`common:publicPages.about.journey.${step.key}.body`)}
-              </p>
-            </li>
-          ))}
-        </ol>
+      <section aria-labelledby="about-journey" className="border-y border-border bg-surface py-14 lg:py-20">
+        <PublicContainer>
+          <Reveal className="max-w-3xl">
+            <h2 id="about-journey" className={SECTION_TITLE}>
+              {t('common:publicPages.about.journeyTitle')}
+            </h2>
+            <p className="mt-3 text-body-lg text-foreground-secondary">{t('common:publicPages.about.journeyHint')}</p>
+          </Reveal>
+          <ol className="mt-10 grid gap-8 sm:grid-cols-2 lg:grid-cols-5 lg:gap-6">
+            {JOURNEY.map((step, index) => (
+              <Reveal as="li" key={step.key} index={index} className="min-w-0 border-t-2 border-border pt-5">
+                <div className="flex items-center gap-3">
+                  <span className="font-display text-title-section text-brand-accent-ink">{index + 1}</span>
+                  <Icon name={step.icon} className="size-5 text-muted" />
+                </div>
+                <h3 className="mt-3 font-display text-title-panel text-foreground">{t(`common:publicPages.about.journey.${step.key}.title`)}</h3>
+                <p className="mt-2 text-body text-foreground-secondary">{t(`common:publicPages.about.journey.${step.key}.body`)}</p>
+              </Reveal>
+            ))}
+          </ol>
+        </PublicContainer>
       </section>
 
       {/* ------------------------------------------------------------ audiences */}
-      <section aria-labelledby="about-audience" className="border-y border-border bg-surface-muted">
-        <div className="mx-auto max-w-[1448px] px-4 py-14 sm:px-6 lg:px-[54px]">
-          <h2 id="about-audience" className="font-display text-2xl font-extrabold tracking-tight text-brand-navy dark:text-foreground">
-            {t('common:publicPages.about.audienceTitle')}
-          </h2>
-          <div className="mt-7 grid gap-5 md:grid-cols-3">
-            {AUDIENCES.map((audience) => (
-              <div key={audience.key} className="flex flex-col rounded-xl border border-border bg-surface p-7 shadow-xs">
-                <span className="flex size-12 items-center justify-center rounded-lg bg-brand-blue-soft text-brand-blue dark:bg-info-bg dark:text-info">
-                  <Icon name={audience.icon} className="size-6" />
+      <section aria-labelledby="about-audience" className="py-14 lg:py-20">
+        <PublicContainer>
+          <Reveal>
+            <h2 id="about-audience" className={SECTION_TITLE}>
+              {t('common:publicPages.about.audienceTitle')}
+            </h2>
+          </Reveal>
+          <div className="mt-10 grid gap-10 lg:grid-cols-3 lg:gap-0 lg:divide-x lg:divide-border rtl:lg:divide-x-reverse">
+            {AUDIENCES.map((audience, index) => (
+              <Reveal key={audience.key} index={index} className="flex min-w-0 flex-col lg:px-8 lg:first:ps-0 lg:last:pe-0">
+                <span className="flex size-11 items-center justify-center rounded-lg bg-brand-accent-soft text-brand-accent-ink">
+                  <Icon name={audience.icon} className="size-5" />
                 </span>
-                <h3 className="mt-5 font-display text-lg font-extrabold text-brand-navy dark:text-foreground">
+                <h3 className="mt-4 font-display text-title-section text-foreground">
                   {t(`common:publicPages.about.audience.${audience.key}.title`)}
                 </h3>
-                <p className="mt-3 flex-1 text-sm leading-7 text-foreground-secondary">
-                  {t(`common:publicPages.about.audience.${audience.key}.body`)}
-                </p>
+                <p className="mt-2 flex-1 text-body text-foreground-secondary">{t(`common:publicPages.about.audience.${audience.key}.body`)}</p>
                 <Link
                   to={audience.to}
-                  className="mt-5 inline-flex h-10 items-center justify-center rounded-lg border border-border px-4 text-sm font-semibold text-link transition-colors hover:bg-surface-muted focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus-ring motion-reduce:transition-none"
+                  className="mt-5 inline-flex items-center gap-1.5 self-start rounded-sm text-body font-semibold text-brand-accent-ink underline-offset-4 hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus-ring"
                 >
                   {t('common:publicPages.about.join')}
+                  <Icon name="arrowRight" className="size-4 rtl:rotate-180" />
                 </Link>
-              </div>
+              </Reveal>
             ))}
           </div>
-        </div>
+        </PublicContainer>
       </section>
 
       {/* ------------------------------------------------------------ boundaries */}
-      <section aria-labelledby="about-trust" className="mx-auto max-w-[1448px] px-4 py-14 sm:px-6 lg:px-[54px]">
-        <h2 id="about-trust" className="font-display text-2xl font-extrabold tracking-tight text-brand-navy dark:text-foreground">
-          {t('common:publicPages.about.trustTitle')}
-        </h2>
-        <p className="mt-1.5 max-w-3xl text-sm text-foreground-secondary">
-          {t('common:publicPages.about.trustHint')}
-        </p>
-        <ul className="mt-6 grid gap-3 sm:grid-cols-2">
-          {TRUST.map((item) => (
-            <li key={item} className="flex items-start gap-3 rounded-xl border border-border bg-surface p-5 shadow-xs">
-              <span className="mt-0.5 flex size-6 shrink-0 items-center justify-center rounded-full bg-brand-blue-soft text-brand-blue dark:bg-info-bg dark:text-info">
-                <Icon name="shield" className="size-4" />
-              </span>
-              <span className="text-sm leading-6 text-foreground-secondary">
-                {t(`common:publicPages.about.trust.${item}`)}
-              </span>
-            </li>
-          ))}
-        </ul>
+      <section aria-labelledby="about-trust" className="border-y border-border bg-surface py-14 lg:py-20">
+        <PublicContainer className="grid gap-10 lg:grid-cols-[minmax(0,1fr)_minmax(0,1.4fr)] lg:gap-16">
+          <Reveal className="min-w-0">
+            <h2 id="about-trust" className={SECTION_TITLE}>
+              {t('common:publicPages.about.trustTitle')}
+            </h2>
+            <p className="mt-3 text-body-lg text-foreground-secondary">{t('common:publicPages.about.trustHint')}</p>
+          </Reveal>
+          <ul className="divide-y divide-border border-y border-border">
+            {TRUST.map((item) => (
+              <li key={item} className="flex items-start gap-3 py-4">
+                <Icon name="shield" className="mt-0.5 size-5 shrink-0 text-brand-blue" />
+                <span className="min-w-0 text-body-lg text-foreground">{t(`common:publicPages.about.trust.${item}`)}</span>
+              </li>
+            ))}
+          </ul>
+        </PublicContainer>
       </section>
 
       {/* ------------------------------------------------------------ closing call to action */}
-      <section className="mx-auto max-w-[1448px] px-4 pb-14 sm:px-6 lg:px-[54px]">
-        <PresentationBand
-          title={t('common:publicPages.about.ctaTitle')}
-          body={t('common:publicPages.about.ctaBody')}
-        >
-          <div className="flex flex-wrap gap-3">
-            <Link
-              to="/register"
-              className="inline-flex h-10 items-center rounded-lg bg-action-primary px-5 text-sm font-semibold text-on-action transition-colors hover:bg-action-primary-hover focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus-ring motion-reduce:transition-none"
-            >
-              {t('common:publicPages.about.join')}
-            </Link>
-            <Link
-              to="/opportunities"
-              className="inline-flex h-10 items-center rounded-lg bg-white px-5 text-sm font-semibold text-brand-navy transition-colors hover:bg-white/90 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus-ring motion-reduce:transition-none"
-            >
-              {t('common:publicPages.about.browse')}
-            </Link>
-          </div>
-        </PresentationBand>
+      <section aria-labelledby="about-cta" className="py-16 lg:py-24">
+        <PublicContainer>
+          <Reveal className="mx-auto max-w-2xl text-center">
+            <h2 id="about-cta" className={SECTION_TITLE}>
+              {t('common:publicPages.about.ctaTitle')}
+            </h2>
+            <p className="mt-4 text-body-lg text-foreground-secondary">{t('common:publicPages.about.ctaBody')}</p>
+            <div className="mt-8 flex justify-center">
+              <ButtonLink to="/register" size="lg" className="w-full sm:w-auto">
+                {t('common:publicPages.about.join')}
+              </ButtonLink>
+            </div>
+          </Reveal>
+        </PublicContainer>
       </section>
     </div>
   )

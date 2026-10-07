@@ -196,7 +196,19 @@
     "closesToday": "Codsiyadu maanta ayay xidhmayaan",
     "closed": "Codsiyadii waa xidhmeen",
     "verifiedOpportunity": "Fursad la xaqiijiyay",
-    "verifiedOpportunityBody": "Fursaddan waxaa daabacay hay'ad ay FursadHub xaqiijisay."
+    "verifiedOpportunityBody": "Fursaddan waxaa daabacay hay'ad ay FursadHub xaqiijisay.",
+    "browseTitle": "Tababarada",
+    "browseDescription": "Tababarada ay daabaceen ururrada la xaqiijiyay ee Soomaaliya oo dhan.",
+    "filtersLabel": "Shaandhee tababarada",
+    "noMatchesTitle": "Ma jiro tababar la jaanqaada raadintaada",
+    "noMatchesHint": "Isku day eray ama goob kale, ama nadiifi shaandhaynta si aad u aragto dhammaan tababarada la daabacay.",
+    "clearFilters": "Nadiifi shaandhaynta",
+    "emptyTitle": "Hadda ma jiraan tababaro la daabacay",
+    "emptyHint": "Fursado cusub ayaa halkan ka muuqda marka ururrada la xaqiijiyay ay daabacaan.",
+    "keyDetails": "Faahfaahinta muhiimka ah",
+    "closedBody": "Tababarkani hadda ma aqbalayo codsiyo.",
+    "resultCount_one": "{{count}} tababar",
+    "resultCount_other": "{{count}} tababar"
   },
   "browse": {
     "title": "Raadi tababarro",

@@ -196,7 +196,19 @@
     "closesToday": "Applications close today",
     "closed": "Applications have closed",
     "verifiedOpportunity": "Verified opportunity",
-    "verifiedOpportunityBody": "This opportunity was published by an organization verified by FursadHub."
+    "verifiedOpportunityBody": "This opportunity was published by an organization verified by FursadHub.",
+    "browseTitle": "Internships",
+    "browseDescription": "Published internships from verified organizations across Somalia.",
+    "filtersLabel": "Filter internships",
+    "noMatchesTitle": "No internships match your search",
+    "noMatchesHint": "Try a different keyword or location, or clear the filters to see every published internship.",
+    "clearFilters": "Clear filters",
+    "emptyTitle": "No internships are published right now",
+    "emptyHint": "New opportunities appear here as soon as verified organizations publish them.",
+    "keyDetails": "Key details",
+    "closedBody": "This internship is no longer accepting applications.",
+    "resultCount_one": "{{count}} internship",
+    "resultCount_other": "{{count}} internships"
   },
   "browse": {
     "title": "Explore internships",

@@ -1,37 +1,47 @@
-import { PublicBookmarks, PublicBookmark } from '../../features/student/components/PublicBookmarks'
 import { useState, type FormEvent } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
-import { useQuery } from '@tanstack/react-query'
+import { useQuery, type UseQueryResult } from '@tanstack/react-query'
 import { useTranslation } from 'react-i18next'
-import type { TFunction } from 'i18next'
-import { Avatar, Button, ErrorState, Icon, InternshipCard, LoadingState, Reveal, Select } from '../../components/ui'
+import { Avatar, Button, ButtonLink, EmptyState, ErrorState, Icon, Input, Reveal, SearchInput, Select, VerifiedBadge, type IconName } from '../../components/ui'
 import * as publicOpportunityApi from '../../features/opportunities/api/publicOpportunityApi'
 import * as organizationApi from '../../features/organization/api/organizationApi'
-import * as universityApi from '../../features/university/api/universityApi'
-import type { WorkMode } from '../../features/opportunities/types'
-import { HomeHeroIllustration } from './HomeHeroIllustration'
-import { PresentationBand } from '../../components/ui/Presentation'
+import type { PageResponse, PublicOpportunityResponse, WorkMode } from '../../features/opportunities/types'
+import type { PublicOrganizationSummaryResponse } from '../../features/organization/types'
+import { OPPORTUNITY_GRID, OpportunityGridSkeleton, PublicOpportunityCard } from '../../features/opportunities/components/PublicOpportunityCard'
+import { PublicBookmarks } from '../../features/student/components/PublicBookmarks'
 import { TestimonialWall } from '../../features/testimonials/components/TestimonialWall'
+import { useAuth } from '../../lib/auth/AuthContext'
+import { PublicContainer } from '../layouts/PublicContainer'
+import { HomeHeroIllustration } from './HomeHeroIllustration'
 
 const WORK_MODES: WorkMode[] = ['ONSITE', 'HYBRID', 'REMOTE']
-const AUDIENCES = ['student', 'organization', 'university'] as const
-const POPULAR_SEARCHES = ['Software Engineering', 'Data Science', 'Marketing', 'Design', 'Business'] as const
+
+/** The section title role on the public site — one size for every h2, so the page has one rhythm. */
+const SECTION_TITLE = 'font-display text-display-lg text-foreground'
 
 /**
- * The approved FursadHub landing page (design-reference/presentation-refresh-2026, reference 01):
- * search-led hero with live platform counts, featured internships, the verified organization
- * strip, the three-audience "How FursadHub Works" band, and the navy call to action.
+ * The public home page.
  *
- * <p>Everything with a number or a name behind it is REAL: the counts are the `totalElements` of
- * the three public directories, the featured internships are the published opportunity feed, and
- * the organization strip is the public organization directory. The reference's illustrative
- * examples are never hard-coded. The customer-story footprint contains an honest pending state.
+ * <p>It has to answer five questions in order, and each section answers one:
+ * <ol>
+ *   <li><strong>What is this?</strong> — the hero: one internship pipeline for Somalia's students,
+ *       universities and organizations, with the marketplace search as the primary action.</li>
+ *   <li><strong>Why trust it?</strong> — the verification facts the product actually enforces, and
+ *       the verified organizations that are really on the platform.</li>
+ *   <li><strong>What can I do here now?</strong> — the latest published internships.</li>
+ *   <li><strong>How does it work, and who is it for?</strong> — the journey, then the three roles.</li>
+ *   <li><strong>What happens after the offer?</strong> — the placement lifecycle, which is what makes
+ *       FursadHub more than a job board.</li>
+ * </ol>
+ *
+ * <p><strong>Honest early-stage trust.</strong> Earlier versions led with platform counts ("5
+ * published internships, 3 partner organizations") and a row of "Awaiting approved testimonials"
+ * placeholders. Both are gone: the trust section states what the product guarantees, the
+ * organizations shown are the real verified directory, and community stories appear only once a
+ * moderator has published one. Nothing on this page is illustrative data.
  */
 export function HomePage() {
-  const { t, i18n } = useTranslation()
-  const locale = i18n.resolvedLanguage === 'so' ? 'so-SO' : 'en'
-
-  const featured = useQuery({
+  const latest = useQuery({
     queryKey: ['public-opportunities', 'featured'],
     queryFn: () => publicOpportunityApi.listPublicOpportunities({ page: 0, size: 6 }),
   })
@@ -39,215 +49,33 @@ export function HomePage() {
     queryKey: ['public-organizations', 'home'],
     queryFn: () => organizationApi.listMostActivePublicOrganizations(),
   })
-  const universities = useQuery({
-    queryKey: ['public-universities', 'home'],
-    queryFn: () => universityApi.listPublicUniversities({ page: 0, size: 1 }),
-  })
 
   return (
-    <PublicBookmarks ids={featured.data?.content.map(item => item.id) ?? []}><div className="home-presentation overflow-x-clip bg-background">
-      <Hero
-        t={t}
-        stats={{
-          internships: featured.data?.totalElements,
-          organizations: organizations.data?.totalElements,
-          universities: universities.data?.totalElements,
-        }}
-      />
-
-      {/* ------------------------------------------------------------ featured internships */}
-      <section aria-labelledby="featured-heading" className="mx-auto max-w-[1448px] px-4 pb-2 sm:px-6 lg:px-[54px]">
-        <SectionHeading
-          id="featured-heading"
-          title={t('common:landing.featured.title')}
-          action={{ to: '/opportunities', label: t('common:landing.featured.viewAll') }}
-        />
-        {featured.isError ? (
-          <ErrorState description={t('opportunities:public.error')} onRetry={() => void featured.refetch()} />
-        ) : featured.isLoading ? (
-          <LoadingState label={t('common:status.loading')} />
-        ) : featured.data && featured.data.content.length > 0 ? (
-          <ul className="mt-2 grid gap-3 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6">
-            {featured.data.content.map((opportunity, index) => (
-              <Reveal as="li" key={opportunity.id} index={index} className="relative">
-                <InternshipCard
-                  density="compact"
-                  bookmark={<PublicBookmark id={opportunity.id} />}
-                  title={opportunity.title}
-                  organization={opportunity.organization.name}
-                  organizationVerified={opportunity.organization.verified}
-                  logo={
-                    opportunity.organization.hasLogo ? (
-                      <img
-                        src={organizationApi.organizationLogoUrl(opportunity.organization.id)}
-                        alt=""
-                        className="size-full rounded object-contain"
-                      />
-                    ) : undefined
-                  }
-                  location={opportunity.location ?? undefined}
-                  workMode={t(`opportunities:workModeValues.${opportunity.workMode}`)}
-                  tags={(opportunity.skills ?? []).slice(0, 2)}
-                  deadline={
-                    opportunity.applicationDeadline
-                      ? t('opportunities:public.applyBy', {
-                          date: new Intl.DateTimeFormat(locale, { dateStyle: 'medium' }).format(
-                            new Date(opportunity.applicationDeadline),
-                          ),
-                        })
-                      : undefined
-                  }
-                />
-                {/* The approved featured card is itself the link — one stretched anchor keeps a
-                    single tab stop and one accessible name per card. */}
-                <Link
-                  to={`/opportunities/${opportunity.id}`}
-                  className="absolute inset-0 rounded-xl focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus-ring"
-                >
-                  <span className="sr-only">{opportunity.title}</span>
-                </Link>
-              </Reveal>
-            ))}
-          </ul>
-        ) : (
-          !featured.isLoading && (
-            <p className="mt-5 text-sm text-foreground-secondary">{t('common:landing.featured.empty')}</p>
-          )
-        )}
-      </section>
-
-      {/* ------------------------------------------------------------ verified organizations */}
-      {organizations.data && organizations.data.content.length > 0 && (
-        <section aria-labelledby="organizations-heading" className="mx-auto max-w-[1448px] px-4 pt-3 sm:px-6 lg:px-[54px]">
-          <SectionHeading
-            id="organizations-heading"
-            title={t('common:landing.verifiedOrganizations.title')}
-            action={{ to: '/organizations', label: t('common:landing.verifiedOrganizations.viewAll') }}
-          />
-          {/*
-            Centred, not left-packed. The pilot has a handful of verified partners, and a left-aligned
-            row of three small chips in a full-width bar reads as a list that failed to load — the
-            eye sees the empty two thirds, not the partners. Centring makes a short row deliberate,
-            and the same rule still holds when the row is full and wraps.
-          */}
-          <Reveal as="ul" className="mt-3 flex flex-wrap items-center justify-center gap-x-10 gap-y-4 rounded-xl border border-border bg-surface px-6 py-4 shadow-xs">
-            {organizations.data.content.map((organization) => (
-              <li key={organization.id}>
-                <Link
-                  to={`/organizations/${organization.id}`}
-                  className="flex items-center gap-2.5 rounded-lg px-1 py-0.5 transition-colors duration-150 hover:text-brand-accent-ink focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus-ring motion-reduce:transition-none"
-                >
-                  <Avatar
-                    name={organization.name}
-                    src={organization.hasLogo ? organizationApi.organizationLogoUrl(organization.id) : undefined}
-                    size="sm"
-                    shape="square"
-                  />
-                  <span className="text-sm font-semibold text-brand-navy dark:text-foreground">{organization.name}</span>
-                </Link>
-              </li>
-            ))}
-          </Reveal>
-        </section>
-      )}
-
-      {/* ------------------------------------------------------------ how it works */}
-      {/*
-        The page's explanatory core, and until now the least readable thing on it: the heading sat at
-        14px and every line of body copy and every bullet at 11px/16px — smaller than any control on
-        the same screen. A mockup's apparent proportions are not a type scale. The composition is
-        unchanged (one centred heading over three parallel audience columns); only the sizes people
-        actually read are restored, and the vertical rhythm carries the density instead.
-      */}
-      <section id="how-it-works" className="scroll-mt-24 px-4 py-10 sm:px-6 lg:px-[54px]">
-        <div className="mx-auto max-w-[1448px]">
-          <h2 className="text-center font-display text-2xl font-extrabold tracking-tight text-brand-navy dark:text-foreground sm:text-[1.75rem]">
-            {t('common:landing.ecosystem.title')}
-          </h2>
-          <div className="mt-8 grid gap-5 lg:grid-cols-3">
-            {AUDIENCES.map((audience, index) => (
-              <Reveal
-                key={audience}
-                index={index}
-                className="flex h-full flex-col rounded-xl border border-border bg-surface p-6 shadow-xs transition-[border-color,box-shadow] duration-200 ease-out hover:border-border-strong hover:shadow-sm motion-reduce:transition-none"
-              >
-                <div className="flex items-start gap-3.5">
-                  <AudienceIcon index={index} />
-                  <div className="min-w-0">
-                    <h3 className="font-display text-lg font-extrabold tracking-tight text-brand-navy dark:text-foreground">
-                      {t(`common:landing.ecosystem.${audience}.title`)}
-                    </h3>
-                    <p className="mt-1.5 text-sm leading-6 text-foreground-secondary">
-                      {t(`common:landing.ecosystem.${audience}.body`)}
-                    </p>
-                  </div>
-                </div>
-                <ul className="mt-4 space-y-2 lg:pl-[3.25rem]">
-                  {(t(`common:landing.works.${audience}.points`, { returnObjects: true }) as string[]).map((point) => (
-                    <li key={point} className="flex items-start gap-2.5 text-sm leading-6 text-foreground-secondary">
-                      <Icon name="check" className="mt-1 size-4 shrink-0 text-success" />
-                      <span>{point}</span>
-                    </li>
-                  ))}
-                </ul>
-                <Link
-                  to={AUDIENCE_CTA[audience]}
-                  className="mt-5 inline-flex lg:ml-[3.25rem] items-center gap-1.5 self-start rounded text-sm font-bold text-brand-accent-ink transition-colors duration-150 hover:text-brand-accent focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus-ring motion-reduce:transition-none"
-                >
-                  {t(`common:landing.works.${audience}.cta`)}
-                  <Icon name="chevronRight" className="size-4" />
-                </Link>
-              </Reveal>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* ------------------------------------------------------------ navy call to action */}
-      <section className="mx-auto max-w-[1448px] px-4 pb-2 sm:px-6 lg:px-[54px]">
-        {/* The page's closing ask arrives as one piece rather than three, so it reads as an
-            invitation rather than as another row of content. */}
-        <Reveal>
-          <PresentationBand title={t('common:landing.band.title')} body={t('common:landing.band.body')}>
-            <div className="relative flex flex-wrap gap-3">
-              <Link
-                to="/register?role=organization"
-                className="inline-flex h-10 items-center rounded-lg bg-action-primary px-5 text-sm font-semibold text-on-action transition-colors duration-150 hover:bg-action-primary-hover focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus-ring focus-visible:ring-offset-2 focus-visible:ring-offset-brand-navy motion-reduce:transition-none"
-              >
-                {t('common:landing.band.primary')}
-              </Link>
-              <Link
-                to="/register"
-                className="inline-flex h-10 items-center rounded-lg bg-white px-5 text-sm font-semibold text-brand-navy transition-colors duration-150 hover:bg-white/90 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus-ring focus-visible:ring-offset-2 focus-visible:ring-offset-brand-navy motion-reduce:transition-none"
-              >
-                {t('common:landing.band.secondary')}
-              </Link>
-            </div>
-          </PresentationBand>
-        </Reveal>
-        <TestimonialWall />
-      </section>
-    </div></PublicBookmarks>
+    <PublicBookmarks ids={latest.data?.content.map((item) => item.id) ?? []}>
+      <div className="bg-background">
+        <Hero />
+        <TrustSection organizations={organizations.data?.content ?? []} />
+        <LatestInternships query={latest} />
+        <JourneySection />
+        <RolesSection />
+        <LifecycleSection />
+        <PublicContainer>
+          <TestimonialWall />
+        </PublicContainer>
+        <ClosingCallToAction />
+      </div>
+    </PublicBookmarks>
   )
 }
 
-const AUDIENCE_CTA = {
-  student: '/register?role=student',
-  organization: '/register?role=organization',
-  university: '/register?role=university',
-} as const
+/* ------------------------------------------------------------------------------------------ hero */
 
 /**
- * The approved hero: headline, the search form that actually drives the internships page, the
- * popular-search chips, the live platform counts, and the illustration.
+ * Value proposition, then the one primary action: searching the marketplace. The search form drives
+ * the internships page through its URL, so a search here and a search there are the same search.
  */
-function Hero({
-  t,
-  stats,
-}: {
-  t: TFunction
-  stats: { internships?: number; organizations?: number; universities?: number }
-}) {
+function Hero() {
+  const { t } = useTranslation()
   const navigate = useNavigate()
   const [query, setQuery] = useState('')
   const [location, setLocation] = useState('')
@@ -263,161 +91,391 @@ function Hero({
     navigate(search ? `/opportunities?${search}` : '/opportunities')
   }
 
-  // Only counts the backend actually returned. A directory that has not loaded, or errored, is
-  // simply absent rather than shown as a zero the platform never claimed.
-  const statEntries = [
-    { key: 'internships', icon: 'briefcase' as const, value: stats.internships },
-    { key: 'organizations', icon: 'building' as const, value: stats.organizations },
-    { key: 'universities', icon: 'graduationCap' as const, value: stats.universities },
-  ].filter((entry) => typeof entry.value === 'number')
-
   return (
-    <section className="mx-auto grid w-full max-w-[1448px] gap-8 px-4 pb-4 pt-5 sm:px-6 lg:grid-cols-[1.1fr_1fr] lg:items-start lg:px-[54px]">
-      <div className="animate-hero-fade motion-reduce:animate-none">
-        <h1 className="font-display text-[34px] font-extrabold leading-[1.06] tracking-[-0.035em] text-brand-navy dark:text-foreground sm:text-[40px] lg:text-[48px]">
-          <span className="block">{t('common:landing.hero2.titleLead')}</span>
-          <span className="mt-1.5 block">
-            {t('common:landing.hero2.titleBuild')} <span className="text-brand-accent">{t('common:landing.hero2.titleAccent')}</span>
-          </span>
-        </h1>
-        <p className="mt-3 max-w-md text-sm leading-6 text-foreground-secondary">
-          {t('common:landing.hero2.description')}
-        </p>
+    <section className="border-b border-border bg-surface">
+      <PublicContainer className="grid items-center gap-10 py-10 lg:grid-cols-[minmax(0,1.1fr)_minmax(0,1fr)] lg:gap-14 lg:py-20">
+        <div className="min-w-0 animate-hero-fade motion-reduce:animate-none">
+          <p className="inline-flex items-center gap-2 rounded-full border border-border bg-background px-3 py-1 text-caption font-semibold text-foreground-secondary">
+            <span aria-hidden="true" className="size-1.5 rounded-full bg-brand-accent" />
+            {t('common:landing.eyebrow')}
+          </p>
+          <h1 className="mt-5 font-display text-display-xl text-foreground">
+            <span className="block">{t('common:landing.hero2.titleLead')}</span>
+            <span className="block">
+              {t('common:landing.hero2.titleBuild')} <span className="text-brand-accent-ink">{t('common:landing.hero2.titleAccent')}</span>
+            </span>
+          </h1>
+          <p className="mt-5 max-w-xl text-body-lg text-foreground-secondary">{t('common:landing.subhead')}</p>
 
-        <form onSubmit={submit} className="mt-3 flex flex-col gap-2 sm:flex-row sm:flex-wrap sm:items-center">
-          <label className="relative min-w-0 flex-1 sm:min-w-[11rem]">
-            <span className="sr-only">{t('common:landing.hero2.searchLabel')}</span>
-            <Icon
-              name="search"
-              className="pointer-events-none absolute start-3.5 top-1/2 size-4 -translate-y-1/2 text-foreground-secondary"
-            />
-            <input
+          <form
+            onSubmit={submit}
+            role="search"
+            aria-label={t('common:landing.hero2.searchLabel')}
+            className="mt-8 grid gap-2 rounded-xl border border-border bg-background p-2 shadow-sm sm:grid-cols-2 lg:grid-cols-[minmax(0,1fr)_minmax(0,1fr)_auto]"
+          >
+            <SearchInput
+              label={t('common:landing.hero2.searchLabel')}
               value={query}
               onChange={(event) => setQuery(event.target.value)}
               placeholder={t('common:landing.hero2.searchPlaceholder')}
-              className="h-10 w-full rounded-lg border border-border bg-surface ps-9 pe-3 text-sm text-foreground shadow-xs placeholder:text-muted focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus-ring"
+              className="h-12"
+              // The keyword is the main query, so it always gets a row of its own — a 9rem field
+              // truncated its own placeholder to "Search internsh…".
+              wrapperClassName="sm:col-span-2 lg:col-span-full"
             />
-          </label>
-          <label className="min-w-0 sm:w-36">
-            <span className="sr-only">{t('common:landing.hero2.locationLabel')}</span>
-            <input
+            <Input
+              aria-label={t('common:landing.hero2.locationLabel')}
               value={location}
               onChange={(event) => setLocation(event.target.value)}
               placeholder={t('common:landing.hero2.locationPlaceholder')}
-              className="h-10 w-full rounded-lg border border-border bg-surface px-3 text-sm text-foreground shadow-xs placeholder:text-muted focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus-ring"
+              className="h-12"
             />
-          </label>
-          <Select
-            aria-label={t('common:landing.hero2.workModeLabel')}
-            value={workMode}
-            onChange={(event) => setWorkMode(event.target.value as WorkMode | '')}
-            className="h-10 sm:w-40"
-          >
-            <option value="">{t('common:landing.hero2.allWorkModes')}</option>
-            {WORK_MODES.map((mode) => (
-              <option key={mode} value={mode}>
-                {t(`opportunities:workModeValues.${mode}`)}
-              </option>
-            ))}
-          </Select>
-          <Button type="submit" className="sm:w-auto">
-            {t('common:landing.hero2.search')}
-          </Button>
-        </form>
-
-        {/* These are tappable shortcuts into the marketplace, not a caption. At 10px with 2px of
-            vertical padding they were both the smallest text on the page and a target barely taller
-            than the finger meant to hit them. */}
-        <div className="mt-3 flex flex-wrap items-center gap-1.5 text-xs">
-          <span className="font-semibold text-foreground-secondary">{t('common:landing.hero2.popular')}</span>
-          {POPULAR_SEARCHES.map((term) => (
-            <Link
-              key={term}
-              to={`/opportunities?query=${encodeURIComponent(term)}`}
-              className="rounded-full border border-border bg-surface px-2.5 py-1 font-medium text-foreground-secondary transition-colors duration-150 hover:border-border-strong hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus-ring motion-reduce:transition-none"
+            <Select
+              aria-label={t('common:landing.hero2.workModeLabel')}
+              value={workMode}
+              onChange={(event) => setWorkMode(event.target.value as WorkMode | '')}
+              className="h-12"
             >
-              {term}
-            </Link>
-          ))}
-          <Link
-            to="/opportunities"
-            className="rounded font-bold text-brand-accent-ink transition-colors hover:text-brand-accent focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus-ring motion-reduce:transition-none"
+              <option value="">{t('common:landing.hero2.allWorkModes')}</option>
+              {WORK_MODES.map((mode) => (
+                <option key={mode} value={mode}>
+                  {t(`opportunities:workModeValues.${mode}`)}
+                </option>
+              ))}
+            </Select>
+            <Button type="submit" size="lg" className="sm:col-span-2 lg:col-span-1">
+              <Icon name="search" className="size-4" />
+              {t('common:landing.hero2.search')}
+            </Button>
+          </form>
+
+          <a
+            href="#how-it-works"
+            className="mt-5 inline-flex items-center gap-1.5 rounded-sm text-body font-semibold text-foreground underline-offset-4 hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus-ring"
           >
-            {t('common:landing.hero2.viewAll')}
-          </Link>
+            {t('common:landing.secondaryCta')}
+            <Icon name="arrowRight" className="size-4 rtl:rotate-180" />
+          </a>
         </div>
 
-        {statEntries.length > 0 && (
-          <ul
-            aria-label={t('common:landing.stats.label')}
-            className="mt-2 grid gap-3 sm:grid-cols-3"
-          >
-            {statEntries.map((entry) => (
-              <li
-                key={entry.key}
-                className="flex items-center gap-2.5 rounded-xl border border-border bg-surface px-3.5 py-2.5 shadow-xs"
-              >
-                <span className="flex size-9 shrink-0 items-center justify-center rounded-lg bg-brand-accent-soft text-brand-accent-ink">
-                  <Icon name={entry.icon} className="size-4" />
-                </span>
-                <span className="min-w-0">
-                  <span className="block font-display text-lg font-extrabold leading-none text-brand-navy dark:text-foreground">
-                    {entry.value?.toLocaleString()}
-                  </span>
-                  <span className="mt-0.5 block truncate text-[11px] text-foreground-secondary">
-                    {t(`common:landing.stats.${entry.key}`)}
-                  </span>
-                </span>
-              </li>
-            ))}
-          </ul>
-        )}
-      </div>
-
-      <div className="animate-hero-fade motion-reduce:animate-none">
-        <HomeHeroIllustration />
-      </div>
+        <div className="min-w-0 animate-hero-fade motion-reduce:animate-none">
+          <HomeHeroIllustration />
+        </div>
+      </PublicContainer>
     </section>
   )
 }
 
-function SectionHeading({
-  id,
-  title,
-  action,
-}: {
-  id: string
-  title: string
-  action?: { to: string; label: string }
-}) {
+/* ----------------------------------------------------------------------------------------- trust */
+
+const TRUST_ITEMS: { key: string; icon: IconName }[] = [
+  { key: 'institutions', icon: 'shield' },
+  { key: 'enrollment', icon: 'idCard' },
+  { key: 'pipeline', icon: 'layers' },
+  { key: 'completion', icon: 'badgeCheck' },
+]
+
+/**
+ * Credibility from what the product enforces, not from how big it is. Each statement maps to a rule
+ * in the platform (institution verification, university-confirmed enrollment, the unified candidacy
+ * pipeline, dual supervision). The organization row is the live public directory and is omitted
+ * entirely when there is nothing in it.
+ */
+function TrustSection({ organizations }: { organizations: PublicOrganizationSummaryResponse[] }) {
+  const { t } = useTranslation()
   return (
-    <div className="flex flex-wrap items-center justify-between gap-3">
-      <h2 id={id} className="font-display text-sm font-extrabold tracking-tight text-brand-navy dark:text-foreground">
-        {title}
-      </h2>
-      {action && (
-        <Link
-          to={action.to}
-          className="inline-flex items-center gap-1.5 rounded text-xs font-bold text-brand-accent-ink transition-colors hover:text-brand-accent focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus-ring motion-reduce:transition-none"
-        >
-          {action.label}
-          <Icon name="chevronRight" className="size-4" />
-        </Link>
-      )}
-    </div>
+    <section aria-labelledby="trust-heading" className="py-14 lg:py-20">
+      <PublicContainer>
+        <Reveal>
+          <h2 id="trust-heading" className={`${SECTION_TITLE} max-w-2xl`}>
+            {t('common:home.trust.title')}
+          </h2>
+        </Reveal>
+        <ul className="mt-10 grid gap-x-10 gap-y-8 sm:grid-cols-2 lg:grid-cols-4">
+          {TRUST_ITEMS.map((item, index) => (
+            <Reveal as="li" key={item.key} index={index} className="min-w-0">
+              <span className="flex size-11 items-center justify-center rounded-lg bg-brand-navy-soft text-brand-navy dark:text-foreground">
+                <Icon name={item.icon} className="size-5" />
+              </span>
+              <h3 className="mt-4 font-display text-title-panel text-foreground">{t(`common:home.trust.items.${item.key}.title`)}</h3>
+              <p className="mt-1.5 text-body text-foreground-secondary">{t(`common:home.trust.items.${item.key}.body`)}</p>
+            </Reveal>
+          ))}
+        </ul>
+
+        {organizations.length > 0 && (
+          <div className="mt-12 border-t border-border pt-8">
+            <div className="flex flex-wrap items-baseline justify-between gap-x-6 gap-y-2">
+              <h3 className="text-label text-foreground-secondary">{t('common:home.organizations.title')}</h3>
+              <Link to="/organizations" className="inline-flex items-center gap-1 rounded-sm text-label text-link hover:underline underline-offset-4 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus-ring">
+                {t('common:landing.verifiedOrganizations.viewAll')}
+                <Icon name="arrowRight" className="size-3.5 rtl:rotate-180" />
+              </Link>
+            </div>
+            <ul className="mt-5 flex flex-wrap items-center gap-x-8 gap-y-4">
+              {organizations.slice(0, 8).map((organization) => (
+                <li key={organization.id} className="min-w-0">
+                  <Link
+                    to={`/organizations/${organization.id}`}
+                    className="flex items-center gap-2.5 rounded-md py-1 pe-1 text-foreground transition-colors duration-150 hover:text-brand-accent-ink focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus-ring motion-reduce:transition-none"
+                  >
+                    <Avatar
+                      name={organization.name}
+                      src={organization.hasLogo ? organizationApi.organizationLogoUrl(organization.id) : undefined}
+                      size="sm"
+                      shape="square"
+                    />
+                    <span className="break-words text-body font-semibold">{organization.name}</span>
+                    {organization.verified && <VerifiedBadge size="sm" />}
+                  </Link>
+                </li>
+              ))}
+            </ul>
+          </div>
+        )}
+      </PublicContainer>
+    </section>
   )
 }
 
-function AudienceIcon({ index }: { index: number }) {
-  const names = ['graduationCap', 'building', 'bank'] as const
-  const tones = [
-    'bg-brand-blue-soft text-brand-blue',
-    'bg-brand-accent-soft text-brand-accent-ink',
-    'bg-brand-navy-soft text-brand-navy dark:text-foreground',
-  ] as const
+/* ------------------------------------------------------------------------------------- internships */
+
+function LatestInternships({ query }: { query: UseQueryResult<PageResponse<PublicOpportunityResponse>> }) {
+  const { t } = useTranslation()
+  const items = query.data?.content ?? []
+
   return (
-    <span className={`flex size-9 shrink-0 items-center justify-center rounded-lg ${tones[index]}`}>
-      <Icon name={names[index]} className="size-[18px]" />
-    </span>
+    <section aria-labelledby="latest-heading" className="border-y border-border bg-surface py-14 lg:py-20">
+      <PublicContainer>
+        <div className="flex flex-wrap items-end justify-between gap-x-6 gap-y-3">
+          <div className="min-w-0">
+            <h2 id="latest-heading" className={SECTION_TITLE}>
+              {t('common:home.latest.title')}
+            </h2>
+            <p className="mt-2 text-body-lg text-foreground-secondary">{t('common:home.latest.description')}</p>
+          </div>
+          {items.length > 0 && (
+            <ButtonLink to="/opportunities" variant="outline">
+              {t('common:landing.featured.viewAll')}
+              <Icon name="arrowRight" className="size-4 rtl:rotate-180" />
+            </ButtonLink>
+          )}
+        </div>
+
+        <div className="mt-8">
+          {query.isError ? (
+            // A secondary section failing is a quiet line, not a red box in the middle of the page.
+            <ErrorState
+              variant="inline"
+              title={t('opportunities:public.error')}
+              onRetry={() => void query.refetch()}
+            />
+          ) : query.isLoading ? (
+            <OpportunityGridSkeleton count={3} />
+          ) : items.length > 0 ? (
+            <ul className={OPPORTUNITY_GRID}>
+              {items.map((opportunity, index) => (
+                <Reveal as="li" key={opportunity.id} index={index} className="min-w-0">
+                  <PublicOpportunityCard opportunity={opportunity} />
+                </Reveal>
+              ))}
+            </ul>
+          ) : (
+            <EmptyState
+              icon="briefcase"
+              title={t('common:home.latest.emptyTitle')}
+              description={t('common:home.latest.emptyBody')}
+            />
+          )}
+        </div>
+      </PublicContainer>
+    </section>
+  )
+}
+
+/* ---------------------------------------------------------------------------------------- journey */
+
+const JOURNEY_STEPS = ['sourcing', 'recruitment', 'placement'] as const
+const JOURNEY_ICONS: Record<(typeof JOURNEY_STEPS)[number], IconName> = {
+  sourcing: 'briefcase',
+  recruitment: 'users',
+  placement: 'badgeCheck',
+}
+
+/**
+ * The end-to-end journey in three numbered steps, drawn as one connected sequence rather than three
+ * unrelated boxes: discover or be nominated, one shared candidate pipeline, then placement through
+ * to completion.
+ */
+function JourneySection() {
+  const { t } = useTranslation()
+  return (
+    <section id="how-it-works" aria-labelledby="journey-heading" className="scroll-mt-20 py-14 lg:py-20">
+      <PublicContainer>
+        <Reveal className="max-w-2xl">
+          <h2 id="journey-heading" className={SECTION_TITLE}>
+            {t('common:landing.ecosystem.title')}
+          </h2>
+          <p className="mt-3 text-body-lg text-foreground-secondary">{t('common:landing.ecosystem.subtitle')}</p>
+        </Reveal>
+
+        <ol className="relative mt-12 grid gap-10 lg:grid-cols-3 lg:gap-8">
+          {/* The connecting rule: vertical beside the steps on a phone, horizontal through the
+              numbers from `lg`. Decorative. */}
+          <span aria-hidden="true" className="absolute inset-y-6 start-6 w-px bg-border lg:inset-x-6 lg:inset-y-auto lg:top-6 lg:h-px lg:w-auto" />
+          {JOURNEY_STEPS.map((step, index) => (
+            <Reveal as="li" key={step} index={index} className="relative flex gap-5 lg:block">
+              <span className="relative flex size-12 shrink-0 items-center justify-center rounded-full border border-border bg-background font-display text-title-section text-brand-accent-ink">
+                {index + 1}
+              </span>
+              <div className="min-w-0 lg:mt-6">
+                <h3 className="flex items-center gap-2 font-display text-title-section text-foreground">
+                  <Icon name={JOURNEY_ICONS[step]} className="size-5 shrink-0 text-muted" />
+                  {t(`common:landing.howItWorks.steps.${step}.title`)}
+                </h3>
+                <p className="mt-2 text-body-lg text-foreground-secondary">{t(`common:landing.howItWorks.steps.${step}.body`)}</p>
+              </div>
+            </Reveal>
+          ))}
+        </ol>
+      </PublicContainer>
+    </section>
+  )
+}
+
+/* ------------------------------------------------------------------------------------------ roles */
+
+const ROLES = [
+  { key: 'student', icon: 'graduationCap', to: '/opportunities', cta: 'common:landing.doors.student.cta' },
+  { key: 'organization', icon: 'building', to: '/register?role=organization', cta: 'common:landing.works.organization.cta' },
+  { key: 'university', icon: 'bank', to: '/register?role=university', cta: 'common:landing.works.university.cta' },
+] as const
+
+/**
+ * Why each role would use FursadHub, as three parallel columns separated by rules rather than three
+ * boxed cards. Each benefit is a feature that exists today. The student path leads into the
+ * marketplace — browsing internships is the student-facing action; organizations and universities
+ * are invited to register their institution.
+ */
+function RolesSection() {
+  const { t } = useTranslation()
+  return (
+    <section aria-labelledby="roles-heading" className="border-y border-border bg-surface py-14 lg:py-20">
+      <PublicContainer>
+        <Reveal>
+          <h2 id="roles-heading" className={SECTION_TITLE}>
+            {t('common:home.roles.title')}
+          </h2>
+        </Reveal>
+        <div className="mt-10 grid gap-10 lg:grid-cols-3 lg:gap-0 lg:divide-x lg:divide-border rtl:lg:divide-x-reverse">
+          {ROLES.map((role, index) => (
+            <Reveal key={role.key} index={index} className="flex min-w-0 flex-col lg:px-8 lg:first:ps-0 lg:last:pe-0">
+              <span className="flex size-11 items-center justify-center rounded-lg bg-brand-accent-soft text-brand-accent-ink">
+                <Icon name={role.icon} className="size-5" />
+              </span>
+              <h3 className="mt-4 font-display text-title-section text-foreground">{t(`common:landing.doors.${role.key}.title`)}</h3>
+              <p className="mt-2 text-body text-foreground-secondary">{t(`common:landing.doors.${role.key}.body`)}</p>
+              <ul className="mt-5 space-y-2.5">
+                {(t(`common:landing.works.${role.key}.points`, { returnObjects: true }) as string[]).map((point) => (
+                  <li key={point} className="flex items-start gap-2.5 text-body text-foreground">
+                    <Icon name="check" className="mt-0.5 size-4 shrink-0 text-success" />
+                    <span className="min-w-0">{point}</span>
+                  </li>
+                ))}
+              </ul>
+              <Link
+                to={role.to}
+                className="mt-6 inline-flex items-center gap-1.5 self-start rounded-sm text-body font-semibold text-brand-accent-ink underline-offset-4 hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus-ring"
+              >
+                {t(role.cta)}
+                <Icon name="arrowRight" className="size-4 rtl:rotate-180" />
+              </Link>
+            </Reveal>
+          ))}
+        </div>
+      </PublicContainer>
+    </section>
+  )
+}
+
+/* -------------------------------------------------------------------------------------- lifecycle */
+
+const LIFECYCLE: { key: string; label: string; icon: IconName }[] = [
+  { key: 'logs', label: 'common:landing.lifecycle.items.logs', icon: 'clipboard' },
+  { key: 'attendance', label: 'common:landing.lifecycle.items.attendance', icon: 'calendar' },
+  { key: 'supervision', label: 'common:landing.lifecycle.items.supervision', icon: 'users' },
+  { key: 'evaluation', label: 'common:landing.lifecycle.items.evaluation', icon: 'badgeCheck' },
+  { key: 'finalReport', label: 'common:home.lifecycle.finalReport', icon: 'document' },
+  { key: 'defense', label: 'common:landing.lifecycle.items.defense', icon: 'graduationCap' },
+]
+
+/**
+ * What the platform does AFTER the offer — the strategic differentiator. Every stage listed is a
+ * module that exists: weekly logs, attendance, supervision, evaluation, final report and defense.
+ */
+function LifecycleSection() {
+  const { t } = useTranslation()
+  return (
+    <section aria-labelledby="lifecycle-heading" className="surface-dark bg-surface py-14 text-foreground lg:py-20">
+      <PublicContainer className="grid gap-10 lg:grid-cols-[minmax(0,1fr)_minmax(0,1.1fr)] lg:items-center lg:gap-16">
+        <Reveal className="min-w-0">
+          <p className="text-caption font-semibold uppercase tracking-wide text-brand-accent-ink">{t('common:home.lifecycle.eyebrow')}</p>
+          <h2 id="lifecycle-heading" className={`${SECTION_TITLE} mt-3`}>
+            {t('common:landing.lifecycle.title')}
+          </h2>
+          <p className="mt-4 text-body-lg text-foreground-secondary">{t('common:landing.lifecycle.body')}</p>
+        </Reveal>
+        <ol className="grid gap-3 sm:grid-cols-2">
+          {LIFECYCLE.map((stage, index) => (
+            <Reveal
+              as="li"
+              key={stage.key}
+              index={index}
+              className="flex min-w-0 items-center gap-3 rounded-lg border border-border bg-surface-muted px-4 py-3.5"
+            >
+              <span className="flex size-9 shrink-0 items-center justify-center rounded-md bg-surface-raised text-brand-accent-ink">
+                <Icon name={stage.icon} className="size-4" />
+              </span>
+              <span className="min-w-0 break-words text-body font-semibold">{t(stage.label)}</span>
+            </Reveal>
+          ))}
+        </ol>
+      </PublicContainer>
+    </section>
+  )
+}
+
+/* ---------------------------------------------------------------------------------------- closing */
+
+/**
+ * One closing ask, with a single primary action. Hidden from a signed-in visitor, who already has an
+ * account and gets their account menu in the header instead.
+ */
+function ClosingCallToAction() {
+  const { t } = useTranslation()
+  const { isAuthenticated } = useAuth()
+  if (isAuthenticated) return null
+  return (
+    <section aria-labelledby="closing-heading" className="py-16 lg:py-24">
+      <PublicContainer>
+        <Reveal className="mx-auto max-w-2xl text-center">
+          <h2 id="closing-heading" className={SECTION_TITLE}>
+            {t('common:landing.cta.title')}
+          </h2>
+          <p className="mt-4 text-body-lg text-foreground-secondary">{t('common:landing.cta.body')}</p>
+          <div className="mt-8 flex flex-col items-center justify-center gap-3 sm:flex-row">
+            <ButtonLink to="/register" size="lg" className="w-full sm:w-auto">
+              {t('common:landing.cta.primary')}
+            </ButtonLink>
+            <Link
+              to="/login"
+              className="inline-flex h-12 items-center rounded-md px-4 text-body font-semibold text-foreground underline-offset-4 hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus-ring"
+            >
+              {t('common:landing.cta.secondary')}
+            </Link>
+          </div>
+        </Reveal>
+      </PublicContainer>
+    </section>
   )
 }

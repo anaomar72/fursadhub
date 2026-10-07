@@ -617,5 +617,47 @@
   },
   "form": {
     "optional": "Optional"
+  },
+  "home": {
+    "trust": {
+      "title": "Built on verification, not just listings",
+      "items": {
+        "institutions": {
+          "title": "Verified institutions",
+          "body": "Organizations and universities go through FursadHub verification, and only verified organizations can publish internships."
+        },
+        "enrollment": {
+          "title": "Confirmed enrollment",
+          "body": "A student’s own university confirms their enrollment before they can apply or be nominated."
+        },
+        "pipeline": {
+          "title": "One candidate pipeline",
+          "body": "Public applications and university nominations are reviewed together by the organization that posted the role."
+        },
+        "completion": {
+          "title": "Followed to completion",
+          "body": "Placements can be supervised from both the university and the organization, through weekly logs, attendance and evaluation."
+        }
+      }
+    },
+    "organizations": {
+      "title": "Verified organizations on FursadHub"
+    },
+    "latest": {
+      "title": "Latest internships",
+      "description": "Recently published by organizations on FursadHub.",
+      "emptyTitle": "New internships are on their way",
+      "emptyBody": "Opportunities appear here as soon as verified organizations publish them."
+    },
+    "journey": {
+      "actors": "Who takes part"
+    },
+    "roles": {
+      "title": "One platform, three ways in"
+    },
+    "lifecycle": {
+      "eyebrow": "After the offer",
+      "finalReport": "Final report"
+    }
   }
 }
