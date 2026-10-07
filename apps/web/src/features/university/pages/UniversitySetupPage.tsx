@@ -44,7 +44,12 @@ export function UniversitySetupPage() {
           <Input id="uni-city" {...form.register('city')} />
         </FormField>
 
-        <FormField label={t('university:setup.registrationNumberLabel')} htmlFor="uni-registration">
+        {/* Optional server-side (CreateUniversityRequest has no @NotBlank) and never public. */}
+        <FormField
+          label={t('university:setup.registrationNumberLabel')}
+          htmlFor="uni-registration"
+          hint={t('university:setup.registrationNumberHint')}
+        >
           <Input id="uni-registration" {...form.register('registrationNumber')} />
         </FormField>
 

@@ -1,4 +1,5 @@
 import { apiFetch } from '../../../lib/api/client'
+import { waitForPendingLogout } from '../../../lib/auth/refreshCoordinator'
 import type { LoginResponse, MeResponse, MessageResponse, RegisterResponse } from '../types'
 
 /**
@@ -23,7 +24,9 @@ export function resendVerification(email: string) {
  * Signs in with EITHER email or username, never both (Backend Phase B5.5). Build the payload with
  * `toLoginPayload` so exactly one identifier is sent — the API rejects both together.
  */
-export function login(input: { email?: string; username?: string; password: string }) {
+export async function login(input: { email?: string; username?: string; password: string }) {
+  // A sign-out's logout response clears the refresh cookie; it must not land after this login's.
+  await waitForPendingLogout()
   return apiFetch<LoginResponse>('/auth/login', { method: 'POST', body: input })
 }
 

@@ -46,14 +46,15 @@
     "body": "Diiwaan geli jaamacaddaada si aad u bilowdo maamulka xaqiijinta ardayda iyo meel dhigidda tababarka. Waxaad casumi kartaa asxaabtaada marka la abuuro.",
     "nameLabel": "Magaca jaamacadda",
     "cityLabel": "Magaalada",
-    "registrationNumberLabel": "Lambarka diiwaangelinta/aqoonsiga",
+    "registrationNumberLabel": "Lambarka diiwaangelinta ama aqoonsiga (ikhtiyaari)",
     "websiteLabel": "Websaydka",
     "descriptionLabel": "Ku saabsan jaamacadda",
     "submit": "Diiwaangeli jaamacadda",
     "errors": {
       "VALIDATION_FAILED": "Fadlan hubi foomka oo isku day mar kale.",
-      "generic": "Wax baa qaldamay. Fadlan isku day mar kale."
-    }
+      "generic": "Hadda lama diiwaan gelin karin jaamacaddaada. Hubi xiriirkaaga oo isku day mar kale."
+    },
+    "registrationNumberHint": "Lambarka rasmiga ah ee diiwaangelinta ama aqoonsiga ee ku qoran dukumeentiga diiwaangelinta jaamacaddaada. Weligii laguma muujiyo profile-kaaga dadweynaha."
   },
   "publicProfile": {
     "notFound": "Jaamacaddan lama helin.",
@@ -89,10 +90,11 @@
     "submitForVerificationBody": "Jaamacaddaadu waa in la xaqiijiyaa ka hor inta ay fursado tababar ku bareeri karaan.",
     "evidence": {
       "label": "Shatiga diiwaangelinta ama aqoonsiga",
-      "hint": "Soo geli PDF ka mid ah dukumeentiga diiwaangelinta ama aqoonsiga jaamacaddaada.",
+      "hint": "PDF oo keliya, ilaa 10 MB. Soo gelinta fayl cusub waxay beddeshaa kan hadda kaydsan.",
       "attached": "Dukumeenti shati ah ayaa la diiwaangeliyay.",
-      "uploading": "Waa la soo geli karaa…",
-      "required": "Ku lifaaq dukumeentigaaga shatiga ka hor inta aadan u gudbin xaqiijinta."
+      "uploading": "Waa la soo gelinayaa…",
+      "required": "Ku lifaaq dukumeentigaaga shatiga ka hor inta aadan u gudbin xaqiijinta.",
+      "privacy": "Waa sir — kaliya shaqaalaha jaamacaddaada iyo kooxda xaqiijinta FursadHub ayaa furi kara."
     },
     "errors": {
       "ACCESS_DENIED": "Ma lihid ogolaanshaha jaamacaddan.",
@@ -102,7 +104,7 @@
       "UNIVERSITY_LOGO_FILE_INVALID": "Faylkaasi lama aqbalo — soo geli JPEG ama PNG ka yar 3MB.",
       "FILE_TOO_LARGE": "Faylku wuu ka weyn yahay xadka ugu badan ee la ogol yahay.",
       "VALIDATION_FAILED": "Fadlan hubi foomka oo isku day mar kale.",
-      "generic": "Wax baa qaldamay. Fadlan isku day mar kale.",
+      "generic": "Taasi ma dhammaystirmin. Hubi xiriirkaaga oo isku day mar kale — boggani wuxuu muujinayaa waxa hadda kaydsan.",
       "invalidUrl": "Geli cinwaan buuxa oo ku bilaabma http:// ama https://",
       "invalidCountry": "Isticmaal laba xaraf oo dal ah.",
       "invalidEmail": "Geli cinwaan email sax ah."
@@ -121,7 +123,13 @@
       "emptyHint": "Weli sawir daboolka ah ma jiro. Mid soo geli si profile-kaagu u helo astaan.",
       "replaceHint": "Soo gelinta sawir cusub waxay bedeshaa kan hadda jira."
     },
-    "saved": "Bogga waa la kaydiyay."
+    "saved": "Bogga waa la kaydiyay.",
+    "verificationNext": {
+      "title": "Maxaa xiga",
+      "attach": "Ku lifaaq dukumeentigaaga, kadibna dooro \"U gudbi xaqiijinta\".",
+      "review": "Kooxda xaqiijinta FursadHub ayaa dib u eegaysa dukumeentigaaga iyo faahfaahinta jaamacaddaada.",
+      "notify": "Waa lagu wargelin doonaa marka jaamacaddaada la xaqiijiyo, ama haddii kooxdu codsato isbeddello."
+    }
   },
   "departments": {
     "title": "Qaybaha",
@@ -199,7 +207,7 @@
       "VERIFICATION_CASE_ALREADY_RESOLVED": "Xaaladdan horeba waa la xalliyay.",
       "VERIFICATION_CASE_INVALID_TRANSITION": "Ficilkan lama heli karo xaaladda hadda ee kiiskan.",
       "ACCESS_DENIED": "Ma lihid ogolaanshaha kiiskan.",
-      "generic": "Wax baa qaldamay. Fadlan isku day mar kale.",
+      "generic": "Go’aankaas lama diiwaangelin. Hubi xiriirkaaga oo isku day mar kale — kiisku wuxuu muujinayaa xaaladdiisa hadda.",
       "VERIFICATION_CASE_ALREADY_ESCALATED": "Kiiskan horey ayaa loo gudbiyay.",
       "VERIFICATION_EVIDENCE_MISSING": "Kiiskan dukumenti caddayn ah looma hayo."
     },
@@ -263,7 +271,7 @@
       "USER_CLOSED": "Akoon la xiray lama hakin karo ama dib looma firfircoonayn karo.",
       "DEPARTMENT_NOT_IN_UNIVERSITY": "Hal ama in ka badan oo qaybo ah kama tirsana jaamacaddan.",
       "VALIDATION_FAILED": "Fadlan hubi foomka oo isku day mar kale.",
-      "generic": "Wax baa qaldamay. Fadlan isku day mar kale.",
+      "generic": "Codsigu ma dhammaystirmin. Hubi xiriirkaaga oo isku day mar kale — liiska shaqaaluhu wuxuu muujinayaa xaaladda hadda ee qof kasta.",
       "USERNAME_ALREADY_EXISTS": "Magaca isticmaalahaas horey ayaa loo qaatay.",
       "USERNAME_IMMUTABLE": "Akoonkani horey ayuu u leeyahay magac isticmaale, lamana beddeli karo.",
       "STAFF_ADMIN_MEMBERSHIP_PROTECTED": "Xisaabaadka maamulaha jaamacadda lagama beddeli karo maaraynta shaqaalaha. Isticmaal goobaha akoonkaaga si aad u beddesho furahaaga sirta ah."
@@ -290,7 +298,24 @@
     "assignUsernameSubmit": "U qoondee si joogto ah",
     "changeDisplayName": "Beddel magaca",
     "changeDisplayNameTitle": "Beddel magaca muuqda",
-    "saveDisplayName": "Kaydi magaca"
+    "saveDisplayName": "Kaydi magaca",
+    "confirm": {
+      "suspendTitle": "Ma hakinaysaa {{name}}?",
+      "suspendBody": "Waa laga saarayaa qalab kasta, mana soo geli karaan ilaa aad dib u howlgeliso.",
+      "resetPasswordTitle": "Ma dib u dejinaysaa furaha sirta ah ee {{name}}?",
+      "resetPasswordBody": "Furaha sirta ah ee hadda jira wuu joogsanayaa, waxaana laga saarayaa meel kasta. Hal mar ayaad arki doontaa furaha sirta ah ee ku meel gaarka ah — si ammaan ah ugu gudbi.",
+      "revokeBody": "Isla markiiba waxay waayayaan gelitaanka goobtan shaqada. Tan dib looma celin karo.",
+      "revokeTitle": "Ma ka saaraysaa {{name}} jaamacaddaada?"
+    },
+    "feedback": {
+      "suspendDone": "{{name}} waa la hakiyay, waxaana laga saaray meel kasta.",
+      "suspendFailed": "Lama hakin karin {{name}}.",
+      "reactivateDone": "{{name}} mar kale ayuu soo geli karaa.",
+      "reactivateFailed": "Dib looma howlgelin karin {{name}}.",
+      "revokeDone": "{{name}} hadda ma laha gelitaanka goobta shaqada jaamacaddan.",
+      "revokeFailed": "Lama saari karin {{name}}.",
+      "resetPasswordFailed": "Dib looma dejin karin furaha sirta ah ee {{name}}."
+    }
   },
   "partners": {
     "title": "Ururrada iskaashiga",

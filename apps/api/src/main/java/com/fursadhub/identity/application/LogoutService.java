@@ -22,18 +22,38 @@ public class LogoutService {
         this.audit = audit;
     }
 
-    /** Idempotent — a missing/already-revoked cookie is not an error, logout always "succeeds". */
+    /**
+     * Ends the login session the presented cookie belongs to — its whole token family, not only the
+     * presented token. Idempotent: a missing, unknown or already-ended cookie is not an error.
+     *
+     * <p>Revoking only the presented token left a race open. Another tab of the same browser can be
+     * refreshing at the moment of logout: if the refresh is processed first it rotates the presented
+     * token into a successor, the logout then finds the presented token already revoked and did
+     * nothing, and the successor — possibly re-set in the browser by the refresh response arriving
+     * after the logout's cookie clear — stayed valid for its full lifetime. The family is exactly one
+     * login session (rotation continues it, CLAUDE.md section 18), so ending all of it is precisely
+     * what "log out of this session" means, and leaves every other session of the user untouched.
+     */
     @Transactional
     public void logout(String rawRefreshToken, String ip, String userAgent) {
         if (rawRefreshToken == null || rawRefreshToken.isBlank()) {
             return;
         }
         String hash = tokenGenerator.hash(rawRefreshToken);
-        refreshTokens.findByTokenHashForUpdate(hash).ifPresent(token -> {
-            if (!token.isRevoked()) {
-                token.revoke();
-                refreshTokens.save(token);
-                audit.record("LOGOUT", token.getUserId(), ip, userAgent, null);
+        refreshTokens.findByTokenHashForUpdate(hash).ifPresent(presented -> {
+            boolean revokedAny = false;
+            if (!presented.isRevoked()) {
+                presented.revoke();
+                refreshTokens.save(presented);
+                revokedAny = true;
+            }
+            for (RefreshToken successor : refreshTokens.findActiveByFamilyId(presented.getFamilyId())) {
+                successor.revoke();
+                refreshTokens.save(successor);
+                revokedAny = true;
+            }
+            if (revokedAny) {
+                audit.record("LOGOUT", presented.getUserId(), ip, userAgent, null);
             }
         });
     }

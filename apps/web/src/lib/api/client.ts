@@ -64,7 +64,11 @@ async function execute<T>(path: string, options: RequestOptions, isRetry: boolea
       if (refreshedToken) {
         return execute<T>(path, options, true)
       }
-      setAccessToken(null)
+      // Only if nothing has replaced the token this request was sent with: a late 401 from a
+      // previous session must not sign out the account that has signed in since.
+      if (getAccessToken() === accessToken) {
+        setAccessToken(null)
+      }
     }
 
     if (errorBody) {

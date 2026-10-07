@@ -8,13 +8,21 @@ import * as placementsApi from '../../placements/api/placementsApi'
 import { useOrganizationMembership } from '../components/OrganizationMembershipContext'
 import { ASSIGNABLE_ORGANIZATION_ROLES, organizationCapabilities } from '../organizationCapabilities'
 import { createMemberSchema, type CreateMemberFormValues } from '../schemas/createMemberSchema'
-import { StaffIdentity, StaffIdentityControls } from '../../../components/staff'
+import {
+  StaffActionFeedbackAlert,
+  StaffIdentity,
+  StaffIdentityControls,
+  staffName,
+  useStaffActionFeedback,
+  type ConfirmedStaffCommand,
+} from '../../../components/staff'
 import { changeMemberRoleSchema, type ChangeMemberRoleFormValues } from '../schemas/changeMemberRoleSchema'
 import { apiErrorMessage } from '../../../lib/api/errorMessage'
 import {
   Alert,
   Button,
   Card,
+  ConfirmationDialog,
   EmptyState,
   FilterBar,
   FormField,
@@ -123,22 +131,48 @@ export function StaffPage() {
     },
   })
 
+  // Every lifecycle command reports its outcome; none of them may fail silently.
+  const actionFeedback = useStaffActionFeedback('organization')
   const revokeMutation = useMutation({
-    mutationFn: (membershipId: string) => organizationApi.revokeMember(organizationId, membershipId),
-    onSuccess: invalidateMembers,
+    mutationFn: (member: OrganizationMemberResponse) => organizationApi.revokeMember(organizationId, member.membershipId),
+    onMutate: actionFeedback.clear,
+    onSuccess: (_result, member) => {
+      actionFeedback.succeeded('revoke', member)
+      return invalidateMembers()
+    },
+    onError: (error, member) => actionFeedback.failed('revoke', member, error),
   })
   const suspendMutation = useMutation({
-    mutationFn: (membershipId: string) => organizationApi.suspendMember(organizationId, membershipId),
-    onSuccess: invalidateMembers,
+    mutationFn: (member: OrganizationMemberResponse) => organizationApi.suspendMember(organizationId, member.membershipId),
+    onMutate: actionFeedback.clear,
+    onSuccess: (_result, member) => {
+      actionFeedback.succeeded('suspend', member)
+      return invalidateMembers()
+    },
+    onError: (error, member) => actionFeedback.failed('suspend', member, error),
   })
   const reactivateMutation = useMutation({
-    mutationFn: (membershipId: string) => organizationApi.reactivateMember(organizationId, membershipId),
-    onSuccess: invalidateMembers,
+    mutationFn: (member: OrganizationMemberResponse) => organizationApi.reactivateMember(organizationId, member.membershipId),
+    onMutate: actionFeedback.clear,
+    onSuccess: (_result, member) => {
+      actionFeedback.succeeded('reactivate', member)
+      return invalidateMembers()
+    },
+    onError: (error, member) => actionFeedback.failed('reactivate', member, error),
   })
   const resetPasswordMutation = useMutation({
-    mutationFn: (membershipId: string) => organizationApi.resetMemberPassword(organizationId, membershipId),
+    mutationFn: (member: OrganizationMemberResponse) => organizationApi.resetMemberPassword(organizationId, member.membershipId),
+    onMutate: actionFeedback.clear,
+    // The one-time credential panel is the success message.
     onSuccess: (result) => setCredential(result),
+    onError: (error, member) => actionFeedback.failed('resetPassword', member, error),
   })
+
+  // Suspend, reset and revoke each lock a real person out (sessions revoked, password invalidated,
+  // or access removed for good), so each is confirmed with what it will do before it runs.
+  const [confirming, setConfirming] = useState<{ command: ConfirmedStaffCommand; member: OrganizationMemberResponse } | null>(null)
+  const confirmedCommands = { suspend: suspendMutation, resetPassword: resetPasswordMutation, revoke: revokeMutation }
+  const confirmingMutation = confirming ? confirmedCommands[confirming.command] : null
 
   const members = (membersQuery.data ?? []).filter((member) => !roleFilter || member.role === roleFilter)
 
@@ -262,6 +296,8 @@ export function StaffPage() {
       )}
 
       {/* Shown exactly once, then discarded — the API never returns it again. */}
+      <StaffActionFeedbackAlert feedback={actionFeedback.feedback} onDismiss={actionFeedback.clear} />
+
       {credential && (
         <Alert tone="warning" title={t('organization:staff.resetPasswordOnceWarning')}>
           <div className="mt-2 flex flex-col gap-3">
@@ -329,16 +365,37 @@ export function StaffPage() {
                   setEditingMembershipId(null)
                   void invalidateMembers()
                 }}
-                onRevoke={() => revokeMutation.mutate(member.membershipId)}
-                onSuspend={() => suspendMutation.mutate(member.membershipId)}
-                onReactivate={() => reactivateMutation.mutate(member.membershipId)}
-                onResetPassword={() => resetPasswordMutation.mutate(member.membershipId)}
+                onRevoke={() => setConfirming({ command: 'revoke', member })}
+                onSuspend={() => setConfirming({ command: 'suspend', member })}
+                onReactivate={() => reactivateMutation.mutate(member)}
+                onResetPassword={() => setConfirming({ command: 'resetPassword', member })}
                 resetPasswordPending={resetPasswordMutation.isPending}
               />
             </li>
           ))}
         </ul>
       )}
+
+      <ConfirmationDialog
+        open={confirming !== null}
+        onClose={() => setConfirming(null)}
+        onConfirm={() => {
+          if (!confirming) return
+          confirmedCommands[confirming.command].mutate(confirming.member, {
+            onSettled: () => setConfirming(null),
+          })
+        }}
+        closeLabel={t('common:actions.close')}
+        title={
+          confirming
+            ? t(`organization:staff.confirm.${confirming.command}Title`, { name: staffName(confirming.member) })
+            : ''
+        }
+        description={confirming ? t(`organization:staff.confirm.${confirming.command}Body`) : ''}
+        confirmLabel={confirming ? t(`organization:staff.${confirming.command}`) : undefined}
+        destructive
+        loading={confirmingMutation?.isPending ?? false}
+      />
     </PageContainer>
   )
 }

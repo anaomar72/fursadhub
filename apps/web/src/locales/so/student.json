@@ -73,7 +73,7 @@
     "submitForVerification": "U gudbi xaqiijin",
     "needsMoreEvidenceTitle": "Jaamacaddaadu waxay u baahan tahay caddayn dheeraad ah",
     "resubmit": "Dib u gudbi xaqiijinta",
-    "pendingReviewBody": "Jaamacaddaadu waxay eegaysaa diiwaangelintaada. Tani waxay qaadan kartaa dhowr maalmood.",
+    "pendingReviewBody": "Jaamacaddaadu waxay dib u eegaysaa diiwaangelintaada. Waa lagu wargelin doonaa marka dib-u-eegistu dhammaato ama haddii caddayn dheeraad ah loo baahdo.",
     "challengeTitle": "Xaqiiji aqoonsigaaga si toos ah",
     "challengeBody": "Samee koodh mar-hal-ah oo tus shaqaalaha jaamacadda marka ay si toos ah kuu xaqiijinayaan.",
     "challengeExpires": "Wuxuu dhacayaa {{time}}",
@@ -99,7 +99,7 @@
       "VERIFICATION_CASE_ALREADY_RESOLVED": "Xaaladdan xaqiijinta horeba waa la xalliyay.",
       "VERIFICATION_CASE_INVALID_TRANSITION": "Xaalad xaqiijin horeba way socotaa.",
       "VALIDATION_FAILED": "Fadlan hubi faahfaahinta oo isku day mar kale.",
-      "generic": "Wax baa qaldamay. Fadlan isku day mar kale.",
+      "generic": "Hadda lama kaydin karin. Hubi xiriirkaaga oo isku day mar kale.",
       "STUDENT_ID_EVIDENCE_REQUIRED": "Soo geli aqoonsi arday oo sax ah ka hor intaadan xaqiijinta gudbin."
     },
     "verified": {
@@ -124,7 +124,8 @@
       "nextBody": "Codsiyadu waa kuu furan yihiin. Bogga oo dhammaystiran ayaa ah waxa ugu horreeya ee hay,adaha ay akhriyaan.",
       "browse": "Fiiri tabobarrada",
       "profile": "Dhammaystir bogga"
-    }
+    },
+    "studentNumberHint": "Lambarka ardayga ee jaamacaddaadu ku siisay. Shaqaalaha jaamacaddu waxay ku hubiyaan diiwaannadooda."
   },
   "documents": {
     "onFile": "Waa la keydiyay",

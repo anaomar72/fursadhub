@@ -51,7 +51,12 @@ export function OrganizationSetupPage() {
           </Select>
         </FormField>
 
-        <FormField label={t('organization:setup.registrationNumberLabel')} htmlFor="org-registration">
+        {/* Optional server-side (CreateOrganizationRequest has no @NotBlank) and never public. */}
+        <FormField
+          label={t('organization:setup.registrationNumberLabel')}
+          htmlFor="org-registration"
+          hint={t('organization:setup.registrationNumberHint')}
+        >
           <Input id="org-registration" {...form.register('registrationNumber')} />
         </FormField>
 

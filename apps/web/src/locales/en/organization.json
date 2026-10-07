@@ -59,17 +59,18 @@
   },
   "setup": {
     "title": "Set up your organization",
-    "body": "Register your organization to start publishing internship opportunities. You can invite colleagues once it's created.",
+    "body": "Create your organization's workspace — you can add colleagues once it exists. To publish internships, FursadHub must first verify your organization: you'll upload its registration document and submit it for review from the organization profile.",
     "nameLabel": "Organization name",
     "typeLabel": "Organization type",
-    "registrationNumberLabel": "Registration number",
+    "registrationNumberLabel": "Organization registration number (optional)",
     "websiteLabel": "Website",
     "descriptionLabel": "About the organization",
     "submit": "Create organization",
     "errors": {
       "VALIDATION_FAILED": "Please check the form and try again.",
-      "generic": "Something went wrong. Please try again."
-    }
+      "generic": "We couldn't create your organization right now. Check your connection and try again."
+    },
+    "registrationNumberHint": "The official registration or license number shown on your organization's registration document. It is never shown on your public profile."
   },
   "publicProfile": {
     "notFound": "This organization could not be found.",
@@ -115,10 +116,11 @@
     "submitForVerificationBody": "Your organization must be verified before you can publish opportunities.",
     "evidence": {
       "label": "Business or registration license",
-      "hint": "Upload a PDF of your organization's business or registration license.",
+      "hint": "PDF only, up to 10 MB. Uploading a new file replaces the one on file.",
       "attached": "A license document is on file.",
       "uploading": "Uploading…",
-      "required": "Attach your license document before submitting for verification."
+      "required": "Attach your license document before submitting for verification.",
+      "privacy": "Kept private — only your organization's staff and FursadHub's verification team can open it."
     },
     "errors": {
       "ACCESS_DENIED": "You do not have access to this organization.",
@@ -128,7 +130,7 @@
       "ORGANIZATION_LOGO_FILE_INVALID": "That file isn't accepted — upload a JPEG or PNG under 3MB.",
       "FILE_TOO_LARGE": "That file is larger than the maximum allowed size.",
       "VALIDATION_FAILED": "Please check the form and try again.",
-      "generic": "Something went wrong. Please try again.",
+      "generic": "That didn't go through. Check your connection and try again — this page shows what is currently saved.",
       "invalidUrl": "Enter a full web address starting with http:// or https://",
       "invalidCountry": "Use a two-letter country code.",
       "invalidYear": "Enter a founding year between 1800 and today."
@@ -168,7 +170,14 @@
       "emptyHint": "No cover image yet. Upload one to give your public profile a banner.",
       "replaceHint": "Uploading a new image replaces the current cover."
     },
-    "saved": "Profile saved."
+    "saved": "Profile saved.",
+    "verificationRestrictions": "Until you are verified you can still create draft internships, choose target universities and add staff — only publishing and resuming internships wait for verification.",
+    "verificationNext": {
+      "title": "What happens next",
+      "attach": "Attach your document, then select \"Submit for verification\".",
+      "review": "FursadHub's verification team reviews your document and organization details.",
+      "notify": "You'll get a notification when your organization is verified, or if the team asks for changes."
+    }
   },
   "staff": {
     "title": "Staff",
@@ -206,7 +215,7 @@
       "USER_CLOSED": "A closed account cannot be suspended or reactivated.",
       "ACCESS_DENIED": "Only an organization admin can manage staff.",
       "VALIDATION_FAILED": "Please check the form and try again.",
-      "generic": "Something went wrong. Please try again.",
+      "generic": "The request didn't go through. Check your connection and try again — the staff list shows each person's current status.",
       "USERNAME_ALREADY_EXISTS": "That username is already taken.",
       "USERNAME_IMMUTABLE": "This account already has a username, and it cannot be changed.",
       "STAFF_ADMIN_MEMBERSHIP_PROTECTED": "Organization administrator accounts cannot be changed from staff management. Use your own account settings to change your password."
@@ -234,7 +243,24 @@
     "changeDisplayNameTitle": "Change display name",
     "saveDisplayName": "Save name",
     "clearDisplayName": "Clear name",
-    "noDisplayName": "No name set"
+    "noDisplayName": "No name set",
+    "confirm": {
+      "suspendTitle": "Suspend {{name}}?",
+      "suspendBody": "They'll be signed out on every device and can't sign in until you reactivate them.",
+      "resetPasswordTitle": "Reset {{name}}'s password?",
+      "resetPasswordBody": "Their current password stops working and they're signed out everywhere. You'll see a new temporary password once — pass it to them securely.",
+      "revokeBody": "They lose access to this workspace immediately. This cannot be undone.",
+      "revokeTitle": "Remove {{name}} from your organization?"
+    },
+    "feedback": {
+      "suspendDone": "{{name}} has been suspended and signed out everywhere.",
+      "suspendFailed": "Couldn't suspend {{name}}.",
+      "reactivateDone": "{{name}} can sign in again.",
+      "reactivateFailed": "Couldn't reactivate {{name}}.",
+      "revokeDone": "{{name}} no longer has access to this organization's workspace.",
+      "revokeFailed": "Couldn't remove {{name}}.",
+      "resetPasswordFailed": "Couldn't reset {{name}}'s password."
+    }
   },
   "partners": {
     "title": "University partners",
