@@ -46,14 +46,15 @@
     "body": "Register your university to start managing student verification and internship placements. You can invite colleagues once it's created.",
     "nameLabel": "University name",
     "cityLabel": "City",
-    "registrationNumberLabel": "Registration/accreditation number",
+    "registrationNumberLabel": "Registration or accreditation number (optional)",
     "websiteLabel": "Website",
     "descriptionLabel": "About the university",
     "submit": "Register university",
     "errors": {
       "VALIDATION_FAILED": "Please check the form and try again.",
-      "generic": "Something went wrong. Please try again."
-    }
+      "generic": "We couldn't register your university right now. Check your connection and try again."
+    },
+    "registrationNumberHint": "The official registration or accreditation number shown on your university's registration document. It is never shown on your public profile."
   },
   "publicProfile": {
     "notFound": "This university could not be found.",
@@ -89,10 +90,11 @@
     "submitForVerificationBody": "Your university must be verified before it can be targeted by internship opportunities.",
     "evidence": {
       "label": "Registration or accreditation license",
-      "hint": "Upload a PDF of your university's registration or accreditation document.",
+      "hint": "PDF only, up to 10 MB. Uploading a new file replaces the one on file.",
       "attached": "A license document is on file.",
       "uploading": "Uploading…",
-      "required": "Attach your license document before submitting for verification."
+      "required": "Attach your license document before submitting for verification.",
+      "privacy": "Kept private — only your university's staff and FursadHub's verification team can open it."
     },
     "errors": {
       "ACCESS_DENIED": "You do not have access to this university.",
@@ -102,7 +104,7 @@
       "UNIVERSITY_LOGO_FILE_INVALID": "That file isn't accepted — upload a JPEG or PNG under 3MB.",
       "FILE_TOO_LARGE": "That file is larger than the maximum allowed size.",
       "VALIDATION_FAILED": "Please check the form and try again.",
-      "generic": "Something went wrong. Please try again.",
+      "generic": "That didn't go through. Check your connection and try again — this page shows what is currently saved.",
       "invalidUrl": "Enter a full web address starting with http:// or https://",
       "invalidCountry": "Use a two-letter country code.",
       "invalidEmail": "Enter a valid email address."
@@ -121,7 +123,13 @@
       "emptyHint": "No cover image yet. Upload one to give your public profile a banner.",
       "replaceHint": "Uploading a new image replaces the current cover."
     },
-    "saved": "Profile saved."
+    "saved": "Profile saved.",
+    "verificationNext": {
+      "title": "What happens next",
+      "attach": "Attach your document, then select \"Submit for verification\".",
+      "review": "FursadHub's verification team reviews your document and university details.",
+      "notify": "You'll get a notification when your university is verified, or if the team asks for changes."
+    }
   },
   "departments": {
     "title": "Departments",
@@ -199,7 +207,7 @@
       "VERIFICATION_CASE_ALREADY_RESOLVED": "This case has already been resolved.",
       "VERIFICATION_CASE_INVALID_TRANSITION": "This action isn't available for the case's current state.",
       "ACCESS_DENIED": "You do not have access to this case.",
-      "generic": "Something went wrong. Please try again.",
+      "generic": "That decision wasn't recorded. Check your connection and try again — the case shows its current status.",
       "VERIFICATION_CASE_ALREADY_ESCALATED": "This case has already been escalated.",
       "VERIFICATION_EVIDENCE_MISSING": "No evidence document is on file for this case."
     },
@@ -263,7 +271,7 @@
       "USER_CLOSED": "A closed account cannot be suspended or reactivated.",
       "DEPARTMENT_NOT_IN_UNIVERSITY": "One or more departments do not belong to this university.",
       "VALIDATION_FAILED": "Please check the form and try again.",
-      "generic": "Something went wrong. Please try again.",
+      "generic": "The request didn't go through. Check your connection and try again — the staff list shows each person's current status.",
       "USERNAME_ALREADY_EXISTS": "That username is already taken.",
       "USERNAME_IMMUTABLE": "This account already has a username, and it cannot be changed.",
       "STAFF_ADMIN_MEMBERSHIP_PROTECTED": "University administrator accounts cannot be changed from staff management. Use your own account settings to change your password."
@@ -290,7 +298,24 @@
     "assignUsernameSubmit": "Assign permanently",
     "changeDisplayName": "Change name",
     "changeDisplayNameTitle": "Change display name",
-    "saveDisplayName": "Save name"
+    "saveDisplayName": "Save name",
+    "confirm": {
+      "suspendTitle": "Suspend {{name}}?",
+      "suspendBody": "They'll be signed out on every device and can't sign in until you reactivate them.",
+      "resetPasswordTitle": "Reset {{name}}'s password?",
+      "resetPasswordBody": "Their current password stops working and they're signed out everywhere. You'll see a new temporary password once — pass it to them securely.",
+      "revokeBody": "They lose access to this workspace immediately. This cannot be undone.",
+      "revokeTitle": "Remove {{name}} from your university?"
+    },
+    "feedback": {
+      "suspendDone": "{{name}} has been suspended and signed out everywhere.",
+      "suspendFailed": "Couldn't suspend {{name}}.",
+      "reactivateDone": "{{name}} can sign in again.",
+      "reactivateFailed": "Couldn't reactivate {{name}}.",
+      "revokeDone": "{{name}} no longer has access to this university's workspace.",
+      "revokeFailed": "Couldn't remove {{name}}.",
+      "resetPasswordFailed": "Couldn't reset {{name}}'s password."
+    }
   },
   "partners": {
     "title": "Partner organizations",

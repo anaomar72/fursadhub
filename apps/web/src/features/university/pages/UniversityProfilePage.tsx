@@ -28,6 +28,7 @@ import {
 import { PageContainer } from '../../../app/layouts/PageContainer'
 import type { StatusTone } from '../../../components/ui'
 import type { InstitutionVerificationStatus } from '../types'
+import { VerificationNextSteps } from '../../../components/verification/VerificationNextSteps'
 
 const STATUS_TONE: Record<InstitutionVerificationStatus, StatusTone> = {
   DRAFT: 'neutral',
@@ -250,7 +251,11 @@ export function UniversityProfilePage() {
             >
               <Input id="uni-profile-name" {...form.register('name')} />
             </FormField>
-              <FormField label={t('university:setup.registrationNumberLabel')} htmlFor="uni-profile-registration">
+              <FormField
+                label={t('university:setup.registrationNumberLabel')}
+                htmlFor="uni-profile-registration"
+                hint={t('university:setup.registrationNumberHint')}
+              >
                 <Input id="uni-profile-registration" {...form.register('registrationNumber')} />
               </FormField></ProfileFormSection>
 
@@ -339,6 +344,7 @@ export function UniversityProfilePage() {
           <p className="mt-1 text-sm text-foreground-secondary">{t('university:profile.submitForVerificationBody')}</p>
 
           <div className="mt-5">
+            {/* PDF, 10MB: FileClassification.UNIVERSITY_VERIFICATION_EVIDENCE. One file; a new upload replaces it. */}
             <FileUpload
               label={t('university:profile.evidence.label')}
               hint={t('university:profile.evidence.hint')}
@@ -347,6 +353,7 @@ export function UniversityProfilePage() {
               invalid={!!evidenceError}
               onFiles={(files) => files[0] && evidenceMutation.mutate(files[0])}
             />
+            <p className="mt-2 text-xs text-foreground-secondary">{t('university:profile.evidence.privacy')}</p>
             {evidenceMutation.isPending && (
               <p className="mt-2 text-xs text-foreground-secondary">{t('university:profile.evidence.uploading')}</p>
             )}
@@ -367,6 +374,7 @@ export function UniversityProfilePage() {
           )}
 
           <div className="mt-5 border-t border-border pt-5">
+            <VerificationNextSteps namespace="university" />
             <Button
               type="button"
               variant="outline"

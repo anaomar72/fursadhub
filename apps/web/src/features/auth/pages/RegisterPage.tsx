@@ -104,6 +104,8 @@ export function RegisterPage() {
         <FormField
           label={t('auth:register.passwordLabel')}
           htmlFor="password"
+          // Stated before typing, not only after a failed submit. Mirrors PasswordPolicy.REGEX.
+          hint={t('auth:register.passwordHint')}
           error={form.formState.errors.password && t(form.formState.errors.password.message ?? '')}
         >
           <PasswordInput

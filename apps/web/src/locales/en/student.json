@@ -73,7 +73,7 @@
     "submitForVerification": "Submit for verification",
     "needsMoreEvidenceTitle": "Your university needs more evidence",
     "resubmit": "Resubmit for verification",
-    "pendingReviewBody": "Your university is reviewing your enrollment. This can take a few days.",
+    "pendingReviewBody": "Your university is reviewing your enrollment. You'll be notified when the review is complete or if more evidence is needed.",
     "challengeTitle": "Confirm your identity in person",
     "challengeBody": "Generate a one-time code and show it to university staff when they verify you in person.",
     "challengeExpires": "Expires at {{time}}",
@@ -99,7 +99,7 @@
       "VERIFICATION_CASE_ALREADY_RESOLVED": "This verification case has already been resolved.",
       "VERIFICATION_CASE_INVALID_TRANSITION": "A verification case is already in progress.",
       "VALIDATION_FAILED": "Please check the details and try again.",
-      "generic": "Something went wrong. Please try again.",
+      "generic": "We couldn't save that right now. Check your connection and try again.",
       "STUDENT_ID_EVIDENCE_REQUIRED": "Upload a valid Student ID before submitting for verification."
     },
     "verified": {
@@ -124,7 +124,8 @@
       "nextBody": "Applications are open to you. A complete profile is what organizations read first.",
       "browse": "Browse internships",
       "profile": "Complete your profile"
-    }
+    },
+    "studentNumberHint": "The student number your university issued you. University staff check it against their records."
   },
   "documents": {
     "onFile": "On file",

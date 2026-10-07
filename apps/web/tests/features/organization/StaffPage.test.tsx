@@ -1,4 +1,4 @@
-import { render, screen, waitFor } from '@testing-library/react'
+import { render, screen, waitFor, within } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 import { MemoryRouter } from 'react-router-dom'
@@ -156,9 +156,70 @@ describe('StaffPage (organization)', () => {
 
     await userEvent.click(await screen.findByRole('button', { name: 'Suspend' }))
 
+    // Nothing is sent until the dialog, which says what suspension does, is confirmed.
+    const dialog = screen.getByRole('dialog')
+    expect(within(dialog).getByText(/signed out on every device/i)).toBeInTheDocument()
+    expect(fetchMock.mock.calls.some(([url]) => String(url).includes('/member-1/suspend'))).toBe(false)
+    await userEvent.click(within(dialog).getByRole('button', { name: 'Suspend' }))
+
     await waitFor(() => {
       expect(fetchMock.mock.calls.some(([url]) => String(url).includes('/member-1/suspend'))).toBe(true)
     })
+  })
+
+  it('a refused suspension says what failed and why, instead of failing silently', async () => {
+    stubFetch([member({ status: 'ACTIVE' })], (url) =>
+      url.includes('/suspend')
+        ? jsonResponse(
+            { code: 'USER_CLOSED', message: 'raw server text', status: 409, path: url, timestamp: '', fieldErrors: [] },
+            409,
+          )
+        : jsonResponse({ message: 'ok' }),
+    )
+    renderPage()
+
+    await userEvent.click(await screen.findByRole('button', { name: 'Suspend' }))
+    await userEvent.click(within(screen.getByRole('dialog')).getByRole('button', { name: 'Suspend' }))
+
+    const alert = await screen.findByRole('alert')
+    expect(alert).toHaveTextContent("Couldn't suspend recruiter@example.test.")
+    expect(alert).toHaveTextContent('A closed account cannot be suspended or reactivated.')
+    expect(alert).not.toHaveTextContent('raw server text')
+  })
+
+  it('a network failure on revoke is reported with what to do next', async () => {
+    stubFetch([member({ status: 'ACTIVE' })], (url) =>
+      url.includes('/revoke') ? Promise.reject(new TypeError('Failed to fetch')) : jsonResponse({ message: 'ok' }),
+    )
+    renderPage()
+
+    await userEvent.click(await screen.findByRole('button', { name: 'Revoke' }))
+    await userEvent.click(within(screen.getByRole('dialog')).getByRole('button', { name: 'Revoke' }))
+
+    const alert = await screen.findByRole('alert')
+    expect(alert).toHaveTextContent("Couldn't remove recruiter@example.test.")
+    expect(alert).toHaveTextContent(/check your connection and try again/i)
+  })
+
+  it('a successful reactivation is confirmed by name', async () => {
+    stubFetch([member({ status: 'SUSPENDED' })])
+    renderPage()
+
+    await userEvent.click(await screen.findByRole('button', { name: 'Reactivate' }))
+
+    expect(await screen.findByText('recruiter@example.test can sign in again.')).toBeInTheDocument()
+  })
+
+  it('cancelling a revoke confirmation sends nothing', async () => {
+    const fetchMock = stubFetch([member({ status: 'ACTIVE' })])
+    renderPage()
+
+    await userEvent.click(await screen.findByRole('button', { name: 'Revoke' }))
+    const dialog = screen.getByRole('dialog')
+    expect(within(dialog).getByText(/cannot be undone/i)).toBeInTheDocument()
+    await userEvent.click(within(dialog).getByRole('button', { name: 'Cancel' }))
+
+    expect(fetchMock.mock.calls.some(([url]) => String(url).includes('/member-1/revoke'))).toBe(false)
   })
 
   it('offers reactivation for a suspended member instead of suspend', async () => {
@@ -179,6 +240,7 @@ describe('StaffPage (organization)', () => {
     renderPage()
 
     await userEvent.click(await screen.findByRole('button', { name: 'Reset password' }))
+    await userEvent.click(within(screen.getByRole('dialog')).getByRole('button', { name: 'Reset password' }))
 
     expect(await screen.findByText('TempPass123')).toBeInTheDocument()
     expect(fetchMock.mock.calls.some(([url]) => String(url).includes('/member-1/reset-password'))).toBe(true)

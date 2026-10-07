@@ -1,4 +1,4 @@
-import { render, screen, waitFor } from '@testing-library/react'
+import { render, screen, waitFor, within } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 import { MemoryRouter } from 'react-router-dom'
@@ -172,11 +172,33 @@ describe('StaffPage (university)', () => {
     expect(await screen.findByText('Awaiting email verification')).toBeInTheDocument()
   })
 
+  it('a failed password reset is reported instead of failing silently', async () => {
+    stubFetch([staffMember({ status: 'ACTIVE' })], [department()], (url) =>
+      url.includes('/reset-password')
+        ? jsonResponse(
+            { code: 'STAFF_MEMBERSHIP_NOT_FOUND', message: 'raw', status: 404, path: url, timestamp: '', fieldErrors: [] },
+            404,
+          )
+        : jsonResponse({ message: 'ok' }),
+    )
+    renderPage()
+
+    await userEvent.click(await screen.findByRole('button', { name: 'Reset password' }))
+    await userEvent.click(within(screen.getByRole('dialog')).getByRole('button', { name: 'Reset password' }))
+
+    const alert = await screen.findByRole('alert')
+    expect(alert).toHaveTextContent(/Couldn't reset .*'s password\./)
+    expect(alert).toHaveTextContent('Staff membership not found.')
+  })
+
   it('suspends an active member and offers reactivation once suspended', async () => {
     const fetchMock = stubFetch([staffMember({ status: 'ACTIVE' })])
     renderPage()
 
     await userEvent.click(await screen.findByRole('button', { name: 'Suspend' }))
+    const dialog = screen.getByRole('dialog')
+    expect(fetchMock.mock.calls.some(([url]) => String(url).includes('/member-1/suspend'))).toBe(false)
+    await userEvent.click(within(dialog).getByRole('button', { name: 'Suspend' }))
 
     await waitFor(() => {
       expect(fetchMock.mock.calls.some(([url]) => String(url).includes('/member-1/suspend'))).toBe(true)
@@ -201,6 +223,7 @@ describe('StaffPage (university)', () => {
     renderPage()
 
     await userEvent.click(await screen.findByRole('button', { name: 'Reset password' }))
+    await userEvent.click(within(screen.getByRole('dialog')).getByRole('button', { name: 'Reset password' }))
 
     expect(await screen.findByText('TempPass123')).toBeInTheDocument()
     expect(fetchMock.mock.calls.some(([url]) => String(url).includes('/member-1/reset-password'))).toBe(true)

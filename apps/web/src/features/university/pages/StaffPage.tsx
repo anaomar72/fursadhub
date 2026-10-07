@@ -6,7 +6,14 @@ import { useTranslation } from 'react-i18next'
 import * as universityApi from '../api/universityApi'
 import { useUniversityMembership } from '../components/UniversityMembershipContext'
 import { createStaffSchema, type CreateStaffFormValues } from '../schemas/createStaffSchema'
-import { StaffIdentity, StaffIdentityControls } from '../../../components/staff'
+import {
+  StaffActionFeedbackAlert,
+  StaffIdentity,
+  StaffIdentityControls,
+  staffName,
+  useStaffActionFeedback,
+  type ConfirmedStaffCommand,
+} from '../../../components/staff'
 import { changeStaffRoleSchema, type ChangeStaffRoleFormValues } from '../schemas/changeStaffRoleSchema'
 import { apiErrorMessage } from '../../../lib/api/errorMessage'
 import {
@@ -14,6 +21,7 @@ import {
   Button,
   Card,
   Checkbox,
+  ConfirmationDialog,
   EmptyState,
   FormField,
   Icon,
@@ -84,22 +92,48 @@ export function StaffPage() {
     },
   })
 
+  // Every lifecycle command reports its outcome; none of them may fail silently.
+  const actionFeedback = useStaffActionFeedback('university')
   const revokeMutation = useMutation({
-    mutationFn: (membershipId: string) => universityApi.revokeStaff(universityId, membershipId),
-    onSuccess: invalidateStaff,
+    mutationFn: (member: StaffMemberResponse) => universityApi.revokeStaff(universityId, member.membershipId),
+    onMutate: actionFeedback.clear,
+    onSuccess: (_result, member) => {
+      actionFeedback.succeeded('revoke', member)
+      return invalidateStaff()
+    },
+    onError: (error, member) => actionFeedback.failed('revoke', member, error),
   })
   const suspendMutation = useMutation({
-    mutationFn: (membershipId: string) => universityApi.suspendStaff(universityId, membershipId),
-    onSuccess: invalidateStaff,
+    mutationFn: (member: StaffMemberResponse) => universityApi.suspendStaff(universityId, member.membershipId),
+    onMutate: actionFeedback.clear,
+    onSuccess: (_result, member) => {
+      actionFeedback.succeeded('suspend', member)
+      return invalidateStaff()
+    },
+    onError: (error, member) => actionFeedback.failed('suspend', member, error),
   })
   const reactivateMutation = useMutation({
-    mutationFn: (membershipId: string) => universityApi.reactivateStaff(universityId, membershipId),
-    onSuccess: invalidateStaff,
+    mutationFn: (member: StaffMemberResponse) => universityApi.reactivateStaff(universityId, member.membershipId),
+    onMutate: actionFeedback.clear,
+    onSuccess: (_result, member) => {
+      actionFeedback.succeeded('reactivate', member)
+      return invalidateStaff()
+    },
+    onError: (error, member) => actionFeedback.failed('reactivate', member, error),
   })
   const resetPasswordMutation = useMutation({
-    mutationFn: (membershipId: string) => universityApi.resetStaffPassword(universityId, membershipId),
+    mutationFn: (member: StaffMemberResponse) => universityApi.resetStaffPassword(universityId, member.membershipId),
+    onMutate: actionFeedback.clear,
+    // The one-time credential panel is the success message.
     onSuccess: (result) => setCredential(result),
+    onError: (error, member) => actionFeedback.failed('resetPassword', member, error),
   })
+
+  // Suspend, reset and revoke each lock a real person out (sessions revoked, password invalidated,
+  // or access removed for good), so each is confirmed with what it will do before it runs.
+  const [confirming, setConfirming] = useState<{ command: ConfirmedStaffCommand; member: StaffMemberResponse } | null>(null)
+  const confirmedCommands = { suspend: suspendMutation, resetPassword: resetPasswordMutation, revoke: revokeMutation }
+  const confirmingMutation = confirming ? confirmedCommands[confirming.command] : null
 
   const departments = departmentsQuery.data ?? []
   const staff = staffQuery.data ?? []
@@ -233,6 +267,8 @@ export function StaffPage() {
       )}
 
       {/* Shown exactly once, then discarded — the API never returns it again. */}
+      <StaffActionFeedbackAlert feedback={actionFeedback.feedback} onDismiss={actionFeedback.clear} />
+
       {credential && (
         <Alert tone="warning" title={t('university:staff.resetPasswordOnceWarning')}>
           <div className="mt-2 flex flex-col gap-3">
@@ -277,16 +313,37 @@ export function StaffPage() {
                   setEditingMembershipId(null)
                   invalidateStaff()
                 }}
-                onRevoke={() => revokeMutation.mutate(member.membershipId)}
-                onSuspend={() => suspendMutation.mutate(member.membershipId)}
-                onReactivate={() => reactivateMutation.mutate(member.membershipId)}
-                onResetPassword={() => resetPasswordMutation.mutate(member.membershipId)}
+                onRevoke={() => setConfirming({ command: 'revoke', member })}
+                onSuspend={() => setConfirming({ command: 'suspend', member })}
+                onReactivate={() => reactivateMutation.mutate(member)}
+                onResetPassword={() => setConfirming({ command: 'resetPassword', member })}
                 resetPasswordPending={resetPasswordMutation.isPending}
               />
             </li>
           ))}
         </ul>
       )}
+
+      <ConfirmationDialog
+        open={confirming !== null}
+        onClose={() => setConfirming(null)}
+        onConfirm={() => {
+          if (!confirming) return
+          confirmedCommands[confirming.command].mutate(confirming.member, {
+            onSettled: () => setConfirming(null),
+          })
+        }}
+        closeLabel={t('common:actions.close')}
+        title={
+          confirming
+            ? t(`university:staff.confirm.${confirming.command}Title`, { name: staffName(confirming.member) })
+            : ''
+        }
+        description={confirming ? t(`university:staff.confirm.${confirming.command}Body`) : ''}
+        confirmLabel={confirming ? t(`university:staff.${confirming.command}`) : undefined}
+        destructive
+        loading={confirmingMutation?.isPending ?? false}
+      />
     </PageContainer>
   )
 }

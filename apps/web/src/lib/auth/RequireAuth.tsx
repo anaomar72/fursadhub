@@ -12,7 +12,7 @@ import { TermsAcceptanceGate } from '../../features/legal/components/TermsAccept
  */
 export function RequireAuth({ children }: { children: ReactNode }) {
   const { t } = useTranslation()
-  const { isAuthenticated, isInitializing } = useAuth()
+  const { isAuthenticated, isInitializing, signedOut } = useAuth()
   const location = useLocation()
 
   if (isInitializing) {
@@ -24,7 +24,10 @@ export function RequireAuth({ children }: { children: ReactNode }) {
   }
 
   if (!isAuthenticated) {
-    return <Navigate to="/login" replace state={{ from: location }} />
+    // After an explicit sign-out the protected page belonged to the account that left. Remembering
+    // it would send the next person to sign in on this tab to the previous account's deep link —
+    // so `from` is kept only for a visitor who has not just signed out (a deep link, an expiry).
+    return <Navigate to="/login" replace state={signedOut ? undefined : { from: location }} />
   }
 
   // Phase 7. Prompts for any legal-document version the user has not yet accepted

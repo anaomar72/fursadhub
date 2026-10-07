@@ -8,3 +8,6 @@
  */
 export { StaffIdentity, type StaffIdentityProps } from './StaffIdentity'
 export { StaffIdentityControls, type StaffIdentityControlsProps } from './StaffIdentityControls'
+export { staffName, type ConfirmedStaffCommand } from './staffCommands'
+export { useStaffActionFeedback, type StaffActionFeedback, type StaffLifecycleCommand } from './useStaffActionFeedback'
+export { StaffActionFeedbackAlert } from './StaffActionFeedbackAlert'

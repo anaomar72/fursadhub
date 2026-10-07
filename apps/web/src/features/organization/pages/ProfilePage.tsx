@@ -16,6 +16,7 @@ import {
 } from '../schemas/organizationProfileSchema'
 import { buildOrganizationProfilePayload, toOrganizationFormValues } from '../organizationProfilePayload'
 import { VerificationGateNotice } from '../components/VerificationGateNotice'
+import { VerificationNextSteps } from '../../../components/verification/VerificationNextSteps'
 import { apiErrorMessage } from '../../../lib/api/errorMessage'
 import {
   Alert,
@@ -326,7 +327,11 @@ export function ProfilePage() {
                   )}
                 />
               </FormField>
-              <FormField label={t('organization:setup.registrationNumberLabel')} htmlFor="org-profile-registration">
+              <FormField
+                label={t('organization:setup.registrationNumberLabel')}
+                htmlFor="org-profile-registration"
+                hint={t('organization:setup.registrationNumberHint')}
+              >
                 <Input id="org-profile-registration" {...form.register('registrationNumber')} />
               </FormField></ProfileFormSection>
 
@@ -450,8 +455,11 @@ export function ProfilePage() {
           <p className="mt-1 text-sm text-foreground-secondary">
             {t('organization:profile.submitForVerificationBody')}
           </p>
+          {/* Exactly the actions OrganizationVerificationGuard gates — see organizationVerificationGating.ts. */}
+          <p className="mt-1 text-sm text-foreground-secondary">{t('organization:profile.verificationRestrictions')}</p>
 
           <div className="mt-5">
+            {/* PDF, 10MB: FileClassification.ORGANIZATION_VERIFICATION_EVIDENCE. One file; a new upload replaces it. */}
             <FileUpload
               label={t('organization:profile.evidence.label')}
               hint={t('organization:profile.evidence.hint')}
@@ -460,6 +468,7 @@ export function ProfilePage() {
               invalid={!!evidenceError}
               onFiles={(files) => files[0] && evidenceMutation.mutate(files[0])}
             />
+            <p className="mt-2 text-xs text-foreground-secondary">{t('organization:profile.evidence.privacy')}</p>
             {evidenceMutation.isPending && (
               <p className="mt-2 text-xs text-foreground-secondary">{t('organization:profile.evidence.uploading')}</p>
             )}
@@ -480,6 +489,7 @@ export function ProfilePage() {
           )}
 
           <div className="mt-5 border-t border-border pt-5">
+            <VerificationNextSteps namespace="organization" />
             <Button
               type="button"
               variant="outline"

@@ -261,6 +261,7 @@ describe('Managed staff identity (Backend Phase B5 / B5.5)', () => {
       renderPage()
 
       await userEvent.click(await screen.findByRole('button', { name: 'Reset password' }))
+      await userEvent.click(within(screen.getByRole('dialog')).getByRole('button', { name: 'Reset password' }))
 
       const panel = await screen.findByRole('status')
       expect(within(panel).getByText('aisha.noor')).toBeInTheDocument()
@@ -281,6 +282,7 @@ describe('Managed staff identity (Backend Phase B5 / B5.5)', () => {
       renderPage()
 
       await userEvent.click(await screen.findByRole('button', { name: 'Reset password' }))
+      await userEvent.click(within(screen.getByRole('dialog')).getByRole('button', { name: 'Reset password' }))
 
       const panel = await screen.findByRole('status')
       expect(within(panel).getByText('legacy@example.test')).toBeInTheDocument()

@@ -59,17 +59,18 @@
   },
   "setup": {
     "title": "Diyaari ururkaaga",
-    "body": "Diiwaan geli ururkaaga si aad u bilowdo daabacaadda fursadaha tababarka. Waxaad casumi kartaa asxaabtaada marka la abuuro.",
+    "body": "Abuur goobta shaqada ururkaaga — waxaad ku dari kartaa asxaabtaada marka la abuuro. Si aad u daabacdo tababarro, FursadHub waa inuu marka hore xaqiijiyaa ururkaaga: waxaad ka soo gelin doontaa dukumeentiga diiwaangelinta ururka profile-ka ururka, kadibna u gudbin doontaa dib-u-eegis.",
     "nameLabel": "Magaca ururka",
     "typeLabel": "Nooca ururka",
-    "registrationNumberLabel": "Lambarka diiwaangelinta",
+    "registrationNumberLabel": "Lambarka diiwaangelinta ururka (ikhtiyaari)",
     "websiteLabel": "Websaydka",
     "descriptionLabel": "Ku saabsan ururka",
     "submit": "Abuur urur",
     "errors": {
       "VALIDATION_FAILED": "Fadlan hubi foomka oo isku day mar kale.",
-      "generic": "Wax baa qaldamay. Fadlan isku day mar kale."
-    }
+      "generic": "Hadda lama abuuri karin ururkaaga. Hubi xiriirkaaga oo isku day mar kale."
+    },
+    "registrationNumberHint": "Lambarka rasmiga ah ee diiwaangelinta ama shatiga ee ku qoran dukumeentiga diiwaangelinta ururkaaga. Weligii laguma muujiyo profile-kaaga dadweynaha."
   },
   "publicProfile": {
     "notFound": "Ururkan lama helin.",
@@ -115,10 +116,11 @@
     "submitForVerificationBody": "Ururkaaga waa in la xaqiijiyaa ka hor inta aadan daabicin fursadaha.",
     "evidence": {
       "label": "Shatiga ganacsiga ama diiwaangelinta",
-      "hint": "Soo geli PDF ka mid ah shatiga ganacsiga ama diiwaangelinta ururkaaga.",
+      "hint": "PDF oo keliya, ilaa 10 MB. Soo gelinta fayl cusub waxay beddeshaa kan hadda kaydsan.",
       "attached": "Dukumeenti shati ah ayaa la diiwaangeliyay.",
-      "uploading": "Waa la soo geli karaa…",
-      "required": "Ku lifaaq dukumeentigaaga shatiga ka hor inta aadan u gudbin xaqiijinta."
+      "uploading": "Waa la soo gelinayaa…",
+      "required": "Ku lifaaq dukumeentigaaga shatiga ka hor inta aadan u gudbin xaqiijinta.",
+      "privacy": "Waa sir — kaliya shaqaalaha ururkaaga iyo kooxda xaqiijinta FursadHub ayaa furi kara."
     },
     "errors": {
       "ACCESS_DENIED": "Ma lihid ogolaanshaha ururkan.",
@@ -128,7 +130,7 @@
       "ORGANIZATION_LOGO_FILE_INVALID": "Faylkaasi lama aqbalo — soo geli JPEG ama PNG ka yar 3MB.",
       "FILE_TOO_LARGE": "Faylku wuu ka weyn yahay xadka ugu badan ee la ogol yahay.",
       "VALIDATION_FAILED": "Fadlan hubi foomka oo isku day mar kale.",
-      "generic": "Wax baa qaldamay. Fadlan isku day mar kale.",
+      "generic": "Taasi ma dhammaystirmin. Hubi xiriirkaaga oo isku day mar kale — boggani wuxuu muujinayaa waxa hadda kaydsan.",
       "invalidUrl": "Geli cinwaan buuxa oo ku bilaabma http:// ama https://",
       "invalidCountry": "Isticmaal laba xaraf oo dal ah.",
       "invalidYear": "Geli sannad aasaas oo u dhexeeya 1800 iyo maanta."
@@ -168,7 +170,14 @@
       "emptyHint": "Weli sawir daboolka ah ma jiro. Mid soo geli si profile-kaagu u helo astaan.",
       "replaceHint": "Soo gelinta sawir cusub waxay bedeshaa kan hadda jira."
     },
-    "saved": "Bogga waa la kaydiyay."
+    "saved": "Bogga waa la kaydiyay.",
+    "verificationRestrictions": "Inta aan lagu xaqiijin, weli waxaad samayn kartaa tababarro qabyo ah, dooran kartaa jaamacadaha la beegsanayo, kuna dari kartaa shaqaale — kaliya daabacaadda iyo dib-u-bilaabidda tababarrada ayaa sugaya xaqiijinta.",
+    "verificationNext": {
+      "title": "Maxaa xiga",
+      "attach": "Ku lifaaq dukumeentigaaga, kadibna dooro \"U gudbi xaqiijinta\".",
+      "review": "Kooxda xaqiijinta FursadHub ayaa dib u eegaysa dukumeentigaaga iyo faahfaahinta ururkaaga.",
+      "notify": "Waa lagu wargelin doonaa marka ururkaaga la xaqiijiyo, ama haddii kooxdu codsato isbeddello."
+    }
   },
   "staff": {
     "title": "Shaqaalaha",
@@ -206,7 +215,7 @@
       "USER_CLOSED": "Akoon la xiray lama hakin karo ama dib looma firfircoonayn karo.",
       "ACCESS_DENIED": "Kaliya maamulaha ururka ayaa maamuli kara shaqaalaha.",
       "VALIDATION_FAILED": "Fadlan hubi foomka oo isku day mar kale.",
-      "generic": "Wax baa qaldamay. Fadlan isku day mar kale.",
+      "generic": "Codsigu ma dhammaystirmin. Hubi xiriirkaaga oo isku day mar kale — liiska shaqaaluhu wuxuu muujinayaa xaaladda hadda ee qof kasta.",
       "USERNAME_ALREADY_EXISTS": "Magaca isticmaalahaas horey ayaa loo qaatay.",
       "USERNAME_IMMUTABLE": "Akoonkani horey ayuu u leeyahay magac isticmaale, lamana beddeli karo.",
       "STAFF_ADMIN_MEMBERSHIP_PROTECTED": "Xisaabaadka maamulaha hay'adda lagama beddeli karo maaraynta shaqaalaha. Isticmaal goobaha akoonkaaga si aad u beddesho furahaaga sirta ah."
@@ -234,7 +243,24 @@
     "changeDisplayNameTitle": "Beddel magaca muuqda",
     "saveDisplayName": "Kaydi magaca",
     "clearDisplayName": "Tirtir magaca",
-    "noDisplayName": "Magac lama dejin"
+    "noDisplayName": "Magac lama dejin",
+    "confirm": {
+      "suspendTitle": "Ma hakinaysaa {{name}}?",
+      "suspendBody": "Waa laga saarayaa qalab kasta, mana soo geli karaan ilaa aad dib u howlgeliso.",
+      "resetPasswordTitle": "Ma dib u dejinaysaa furaha sirta ah ee {{name}}?",
+      "resetPasswordBody": "Furaha sirta ah ee hadda jira wuu joogsanayaa, waxaana laga saarayaa meel kasta. Hal mar ayaad arki doontaa furaha sirta ah ee ku meel gaarka ah — si ammaan ah ugu gudbi.",
+      "revokeBody": "Isla markiiba waxay waayayaan gelitaanka goobtan shaqada. Tan dib looma celin karo.",
+      "revokeTitle": "Ma ka saaraysaa {{name}} ururkaaga?"
+    },
+    "feedback": {
+      "suspendDone": "{{name}} waa la hakiyay, waxaana laga saaray meel kasta.",
+      "suspendFailed": "Lama hakin karin {{name}}.",
+      "reactivateDone": "{{name}} mar kale ayuu soo geli karaa.",
+      "reactivateFailed": "Dib looma howlgelin karin {{name}}.",
+      "revokeDone": "{{name}} hadda ma laha gelitaanka goobta shaqada ururkan.",
+      "revokeFailed": "Lama saari karin {{name}}.",
+      "resetPasswordFailed": "Dib looma dejin karin furaha sirta ah ee {{name}}."
+    }
   },
   "partners": {
     "title": "Jaamacadaha iskaashiga",

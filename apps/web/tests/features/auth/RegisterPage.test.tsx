@@ -85,12 +85,16 @@ describe('RegisterPage', () => {
     const user = userEvent.setup()
     renderRegisterPage()
 
+    // The policy is stated before anything is typed, and tied to the field for screen readers.
+    const hint = screen.getByText(/at least 8 characters, including a letter and a number/i)
+    expect(screen.getByLabelText(/^password$/i)).toHaveAttribute('aria-describedby', expect.stringContaining(hint.id))
+
     await user.type(screen.getByLabelText(/^email$/i), 'student@example.com')
     await user.type(screen.getByLabelText(/^password$/i), 'short')
     await user.type(screen.getByLabelText(/confirm password/i), 'short')
     await user.click(screen.getByRole('button', { name: /^register$/i }))
 
-    expect(await screen.findByText(/at least 8 characters/i)).toBeInTheDocument()
+    expect(await screen.findByText(/password must be at least 8 characters/i)).toHaveAttribute('role', 'alert')
   })
 
   it('only offers the backend-supported self-registration account types, defaulting to student', async () => {

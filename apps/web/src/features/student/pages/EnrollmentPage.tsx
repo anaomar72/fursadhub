@@ -302,7 +302,11 @@ function ClaimForm({
           </Select>
         </FormField>
 
-        <FormField label={t('student:enrollment.studentNumberLabel')} htmlFor="studentNumber">
+        <FormField
+          label={t('student:enrollment.studentNumberLabel')}
+          htmlFor="studentNumber"
+          hint={t('student:enrollment.studentNumberHint')}
+        >
           <Input id="studentNumber" {...form.register('studentNumber')} />
         </FormField>
 
