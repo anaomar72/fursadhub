@@ -73,15 +73,21 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   }, [queryClient])
 
   useEffect(() => {
+    // Declared before attemptRefresh so its async branches can see the up-to-date value after an
+    // await, not a captured `false` from the moment the closure was created.
+    let cancelled = false
+
     const attemptRefresh = async (): Promise<string | null> => {
       // A sign-in or sign-out while this request is out makes its answer belong to a session that
       // no longer exists — it must not overwrite the token, nor end the session that replaced it.
+      // This effect's own teardown is the same kind of staleness: once it has run, there is no
+      // "this tab" left to act for, so a response that arrives afterward is discarded the same way.
       const epoch = getSessionEpoch()
       const previousToken = getAccessToken()
       const hadSession = previousToken !== null
       try {
         const result = await authApi.refresh()
-        if (epoch !== getSessionEpoch()) return null
+        if (cancelled || epoch !== getSessionEpoch()) return null
 
         const record = readSessionRecord()
         if (record?.status === 'signed-out') {
@@ -106,7 +112,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         setAccessTokenState(result.accessToken)
         return result.accessToken
       } catch {
-        if (epoch !== getSessionEpoch()) return null
+        if (cancelled || epoch !== getSessionEpoch()) return null
         if (hadSession) {
           // The session expired or was revoked elsewhere: its cached data goes with it.
           endSession(queryClient)
@@ -122,7 +128,6 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     // Shared with lib/api/client.ts, which calls this on any 401 from a non-auth endpoint.
     registerRefreshFn(attemptRefresh)
 
-    let cancelled = false
     const finishInitializing = () => {
       if (!cancelled) setIsInitializing(false)
     }
