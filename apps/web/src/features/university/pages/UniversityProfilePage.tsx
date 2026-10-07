@@ -26,20 +26,8 @@ import {
   Textarea,
 } from '../../../components/ui'
 import { PageContainer } from '../../../app/layouts/PageContainer'
-import type { StatusTone } from '../../../components/ui'
-import type { InstitutionVerificationStatus } from '../types'
 import { VerificationNextSteps } from '../../../components/verification/VerificationNextSteps'
-
-const STATUS_TONE: Record<InstitutionVerificationStatus, StatusTone> = {
-  DRAFT: 'neutral',
-  SUBMITTED: 'info',
-  UNDER_REVIEW: 'info',
-  NEEDS_CHANGES: 'warning',
-  VERIFIED: 'success',
-  REJECTED: 'danger',
-  SUSPENDED: 'danger',
-  REVOKED: 'danger',
-}
+import { INSTITUTION_VERIFICATION_TONE } from '../../../lib/status/statusTones'
 
 /**
  * The university's own record and its institution-verification state (CLAUDE.md section 31) — the
@@ -157,7 +145,7 @@ export function UniversityProfilePage() {
         description={t('university:profile.subtitle')}
         actions={<>
           {university.status === 'VERIFIED' && <Link to={`/universities/${university.id}`} className="inline-flex min-h-10 items-center rounded-lg border border-border px-4 text-sm font-semibold text-link">{t('common:remediation.viewPublicProfile')}</Link>}
-          <StatusBadge tone={STATUS_TONE[university.status]}>
+          <StatusBadge tone={INSTITUTION_VERIFICATION_TONE[university.status]}>
             {t(`university:profile.verificationStatusValues.${university.status}`)}
           </StatusBadge>
         </>}

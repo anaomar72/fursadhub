@@ -176,7 +176,7 @@ export function DashboardPage() {
                 <p className="text-sm text-foreground-secondary">{t('recruitment:applications.empty')}</p>
                 <Link
                   to="/student/opportunities"
-                  className="mt-3 inline-flex h-9 items-center rounded-md bg-brand-primary px-4 text-sm font-semibold text-on-brand transition-colors hover:bg-brand-blue-strong motion-reduce:transition-none"
+                  className="mt-3 inline-flex h-9 items-center rounded-md bg-action-primary px-4 text-sm font-semibold text-on-action transition-colors hover:bg-action-primary-hover motion-reduce:transition-none"
                 >
                   {t('student:nav.exploreInternships')}
                 </Link>

@@ -35,20 +35,12 @@ import {
   StatusBadge,
 } from '../../../components/ui'
 import { PageContainer } from '../../../app/layouts/PageContainer'
-import type { StatusTone } from '../../../components/ui'
 import type {
   OrganizationMemberResponse,
   OrganizationRole,
   TemporaryCredentialResponse,
-  UserAccountStatus,
 } from '../types'
-
-const STATUS_TONE: Record<UserAccountStatus, StatusTone> = {
-  PENDING_CONTACT_VERIFICATION: 'warning',
-  ACTIVE: 'success',
-  SUSPENDED: 'danger',
-  CLOSED: 'neutral',
-}
+import { ACCOUNT_STATUS_TONE } from '../../../lib/status/statusTones'
 
 const ROLE_FILTERS: (OrganizationRole | '')[] = ['', 'ORGANIZATION_ADMIN', 'RECRUITER', 'ORGANIZATION_SUPERVISOR']
 
@@ -472,7 +464,7 @@ function MemberRow({
           </StaffIdentity>
         </div>
         {member.status && (
-          <StatusBadge tone={STATUS_TONE[member.status]}>
+          <StatusBadge tone={ACCOUNT_STATUS_TONE[member.status]}>
             {t(`organization:staff.statusValues.${member.status}`)}
           </StatusBadge>
         )}

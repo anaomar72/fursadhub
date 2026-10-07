@@ -126,7 +126,7 @@ export function MarketplaceRail() {
     <h2 className="font-display text-sm font-extrabold text-brand-navy dark:text-foreground">{t('common:remediation.railTitle')}</h2>
     <p className="text-xs leading-4 text-foreground-secondary">{t('common:remediation.railBody')}</p>
     <ul className="space-y-3 text-xs leading-4 text-foreground-secondary">{['browse', 'apply', 'track'].map(key => <li key={key} className="flex gap-2"><Icon name="check" className="mt-0.5 size-4 shrink-0 text-brand-accent" />{t(`common:remediation.${key}`)}</li>)}</ul>
-    <Link to="/student/opportunities" className="mt-auto rounded-lg bg-brand-accent px-3 py-2.5 text-center text-xs font-bold text-white">{t('common:remediation.explore')}</Link>
+    <Link to="/student/opportunities" className="mt-auto rounded-lg bg-action-primary px-3 py-2.5 text-center text-xs font-bold text-on-action hover:bg-action-primary-hover">{t('common:remediation.explore')}</Link>
     <div className="rounded-lg border border-border bg-background p-3"><h3 className="text-xs font-bold">{t('common:landing.ecosystem.organization.title')}</h3><p className="my-2 text-xs leading-4 text-foreground-secondary">{t('common:landing.ecosystem.organization.body')}</p><Link to="/organization/opportunities" className="text-xs font-bold text-link">{t('common:landing.works.organization.cta')} →</Link></div>
   </aside>
 }

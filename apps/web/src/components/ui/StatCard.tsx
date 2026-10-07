@@ -53,11 +53,11 @@ export function StatCard({ label, value, icon, tone = 'brand', trend, to, footer
         {/* Wraps rather than truncates: at four or five across, "Saved internships" and its longer
             Somali counterpart do not fit on one line, and a counter whose label reads
             "Saved internshi…" has lost the thing the number is about. */}
-        <p className="text-sm font-medium leading-snug text-foreground-secondary">{label}</p>
-        <p className="mt-1 font-display text-3xl font-extrabold leading-none text-brand-navy dark:text-foreground">
-          {value}
-        </p>
-        {trend && <div className="mt-2 text-xs leading-4 text-foreground-secondary">{trend}</div>}
+        <p className="break-words text-body font-medium text-foreground-secondary">{label}</p>
+        {/* The metric role (28px, tabular figures) shared with <Metric />, so a boxed tile and an
+            in-panel figure read as the same kind of number. */}
+        <p className="mt-1 font-display text-metric tabular-nums text-foreground">{value}</p>
+        {trend && <div className="mt-1.5 text-caption text-foreground-secondary">{trend}</div>}
       </div>
     </div>
   )

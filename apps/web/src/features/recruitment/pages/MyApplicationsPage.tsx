@@ -68,7 +68,7 @@ export function MyApplicationsPage() {
         actions={
           <Link
             to="/student/opportunities"
-            className="inline-flex h-10 items-center rounded-md bg-brand-primary px-4 text-sm font-semibold text-on-brand shadow-sm transition-colors hover:bg-brand-blue-strong focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus-ring motion-reduce:transition-none"
+            className="inline-flex h-10 items-center rounded-md bg-action-primary px-4 text-sm font-semibold text-on-action shadow-sm transition-colors hover:bg-action-primary-hover focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus-ring motion-reduce:transition-none"
           >
             {t('student:nav.exploreInternships')}
           </Link>
@@ -90,7 +90,7 @@ export function MyApplicationsPage() {
           action={
             <Link
               to="/student/opportunities"
-              className="inline-flex h-10 items-center rounded-md bg-brand-primary px-4 text-sm font-semibold text-on-brand transition-colors hover:bg-brand-blue-strong motion-reduce:transition-none"
+              className="inline-flex h-10 items-center rounded-md bg-action-primary px-4 text-sm font-semibold text-on-action transition-colors hover:bg-action-primary-hover motion-reduce:transition-none"
             >
               {t('student:nav.exploreInternships')}
             </Link>

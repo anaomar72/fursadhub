@@ -2,6 +2,7 @@ import { type ReactNode, useEffect, useState } from 'react'
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { AuthProvider } from '../../lib/auth/AuthContext'
 import { ThemeProvider } from '../../lib/theme/ThemeProvider'
+import { ToastProvider } from '../../components/ui/Toast'
 import i18n from '../../lib/i18n'
 
 /** Keeps `<html lang>` in sync with the active UI language — screen readers and browser
@@ -37,7 +38,9 @@ export function AppProviders({ children }: { children: ReactNode }) {
   return (
     <ThemeProvider>
       <QueryClientProvider client={queryClient}>
-        <AuthProvider>{children}</AuthProvider>
+        <AuthProvider>
+          <ToastProvider>{children}</ToastProvider>
+        </AuthProvider>
       </QueryClientProvider>
     </ThemeProvider>
   )

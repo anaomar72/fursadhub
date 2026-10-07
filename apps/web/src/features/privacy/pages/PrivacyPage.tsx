@@ -2,11 +2,11 @@ import { useState } from 'react'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { useTranslation } from 'react-i18next'
 import { Button, EmptyState, ErrorState, FormField, LoadingState, PageHeader, Select, StatusBadge, Textarea } from '../../../components/ui'
-import type { StatusTone } from '../../../components/ui'
 import { apiErrorMessage } from '../../../lib/api/errorMessage'
 import { formatDate } from '../../../lib/utils/formatDate'
 import * as privacyApi from '../api/privacyApi'
-import type { ConsentType, PrivacyRequestState, PrivacyRequestType } from '../types'
+import type { ConsentType, PrivacyRequestType } from '../types'
+import { PRIVACY_REQUEST_TONE } from '../../../lib/status/statusTones'
 
 const REQUEST_TYPES: PrivacyRequestType[] = [
   'ACCESS',
@@ -16,13 +16,6 @@ const REQUEST_TYPES: PrivacyRequestType[] = [
   'PORTABILITY',
   'OBJECTION',
 ]
-
-const STATE_TONE: Record<PrivacyRequestState, StatusTone> = {
-  SUBMITTED: 'info',
-  IN_REVIEW: 'warning',
-  COMPLETED: 'success',
-  REJECTED: 'danger',
-}
 
 /**
  * The user's own privacy surface: consents and data-subject requests
@@ -189,7 +182,7 @@ export function PrivacyPage() {
                   <h3 className="text-sm font-medium text-foreground">
                     {t(`privacy:requestTypes.${request.requestType}`)}
                   </h3>
-                  <StatusBadge tone={STATE_TONE[request.state]}>
+                  <StatusBadge tone={PRIVACY_REQUEST_TONE[request.state]}>
                     {t(`privacy:requestStates.${request.state}`)}
                   </StatusBadge>
                 </div>

@@ -181,7 +181,7 @@ export function StudentOpportunityDetailPage() {
             ) : (
               <Link
                 to={`/student/opportunities/${opportunity.id}/apply`}
-                className="inline-flex h-11 w-full items-center justify-center rounded-md bg-brand-primary px-5 text-sm font-semibold text-on-brand shadow-sm transition-colors hover:bg-brand-blue-strong focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus-ring motion-reduce:transition-none"
+                className="inline-flex h-11 w-full items-center justify-center rounded-md bg-action-primary px-5 text-sm font-semibold text-on-action shadow-sm transition-colors hover:bg-action-primary-hover focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus-ring motion-reduce:transition-none"
               >
                 {t('opportunities:public.apply')}
               </Link>

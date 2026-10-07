@@ -1,5 +1,5 @@
 import { forwardRef, type InputHTMLAttributes } from 'react'
-import { cn } from '../../lib/utils/cn'
+import { CONTROL_HEIGHT, controlClasses } from './controlStyles'
 
 export interface InputProps extends InputHTMLAttributes<HTMLInputElement> {
   invalid?: boolean
@@ -9,13 +9,7 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(({ className, inva
   return (
     <input
       ref={ref}
-      className={cn(
-        'h-10 w-full rounded-md border bg-surface px-3 text-sm text-foreground placeholder:text-muted',
-        'transition-[border-color,box-shadow] duration-150 ease-in-out disabled:cursor-not-allowed disabled:bg-control-disabled disabled:opacity-70 motion-reduce:transition-none',
-        'focus:outline-none focus-visible:ring-2 focus-visible:ring-focus-ring focus-visible:ring-offset-1',
-        invalid ? 'border-danger' : 'border-border',
-        className,
-      )}
+      className={controlClasses(invalid, CONTROL_HEIGHT, 'px-3', className)}
       aria-invalid={invalid || undefined}
       {...props}
     />

@@ -2,10 +2,9 @@ import { forwardRef, type HTMLAttributes } from 'react'
 import { cn } from '../../lib/utils/cn'
 
 export interface CardProps extends HTMLAttributes<HTMLDivElement> {
-  /** Lifts and gains a brand-colored border on hover — for a card that is itself a control (wraps a
-   * `<Link>`/`<button>`, or is clickable via its own `onClick`). Static content cards should not set
-   * this — motion should only ever promise something is interactive (BRAND_AND_UI_GUIDELINES.md
-   * section 12). */
+  /** Gains a resting shadow, and a brand border plus a deeper shadow on hover — for a card that is
+   * itself a control (wraps a `<Link>`/`<button>`, or is clickable via its own `onClick`). Static
+   * content cards should not set this: elevation and hover should only ever promise interactivity. */
   interactive?: boolean
   padding?: 'sm' | 'md' | 'lg' | 'none'
 }
@@ -18,10 +17,20 @@ const PADDING_CLASSES = {
 } as const
 
 /**
- * The one bordered-surface container for FursadHub (BRAND_AND_UI_GUIDELINES.md section 4). Lists,
- * detail summaries and dashboard tiles all share this shape rather than each feature reaching for
- * its own `rounded-lg border ...` string — see `DashboardActionCard`/the landing page's door cards,
- * which this generalizes.
+ * The bordered-surface container for a repeated ITEM — one of many in a grid or list.
+ *
+ * <p>Roles, and the component each one uses:
+ * <ul>
+ *   <li><strong>interactive</strong> — a tile the whole of which is a control: `<Card interactive>`.</li>
+ *   <li><strong>metric</strong> — a KPI tile: `StatCard` (boxed) or `Metric` (inside a panel).</li>
+ *   <li><strong>entity</strong> — an organization/university/person summary: `EntityCard`.</li>
+ *   <li><strong>opportunity</strong> — an internship: `InternshipCard`.</li>
+ * </ul>
+ * A titled module of a page (header + body) is a {@link Panel}, not a Card. Never put a Card inside
+ * a Card or a Panel — group with spacing or an inset region instead.
+ *
+ * <p>Elevation follows the surface rules in `design-system/README.md`: a static card is border only;
+ * only an interactive card rests on `shadow-xs` and rises to `shadow-md` on hover.
  */
 export const Card = forwardRef<HTMLDivElement, CardProps>(
   ({ className, interactive = false, padding = 'md', ...props }, ref) => {
@@ -29,19 +38,17 @@ export const Card = forwardRef<HTMLDivElement, CardProps>(
       <div
         ref={ref}
         // The corner comes from the workspace family: softer in the student workspace, squarer in
-        // the organization and university ones. The fallback is exactly what `rounded-xl` gives, so
-        // outside a workspace — the public site, auth — this card is unchanged.
-        style={{ borderRadius: 'var(--workspace-radius, var(--radius-xl))' }}
+        // the organization and university ones. Outside a workspace — the public site, auth — it is
+        // the 16px surface radius.
+        style={{ borderRadius: 'var(--workspace-radius, var(--radius-surface))' }}
         className={cn(
-          'min-w-0 rounded-xl border border-border bg-surface shadow-xs',
+          'min-w-0 rounded-xl border border-border bg-surface',
           PADDING_CLASSES[padding],
           // Emphasis without geometry. The card used to lift on hover, which moves whatever sits
-          // under the pointer — a link the user was about to click shifts half a step away, and in
-          // a grid the neighbouring cards stay put so the row visibly breaks alignment. Border and
-          // shadow carry the same "this is interactive" signal while the layout holds still.
+          // under the pointer. Border and shadow carry the same signal while the layout holds still.
           interactive &&
             cn(
-              'transition-[border-color,box-shadow] duration-150 ease-in-out motion-reduce:transition-none',
+              'shadow-xs transition-[border-color,box-shadow] duration-150 ease-in-out motion-reduce:transition-none',
               'hover:border-brand-accent hover:shadow-md',
             ),
           className,

@@ -5,18 +5,9 @@ import { Link } from 'react-router-dom'
 import * as universityApi from '../api/universityApi'
 import { useUniversityMembership } from '../components/UniversityMembershipContext'
 import { EmptyState, ErrorState, Icon, LoadingState, PageHeader, Select, StatusBadge } from '../../../components/ui'
-import type { StatusTone } from '../../../components/ui'
 import { PageContainer } from '../../../app/layouts/PageContainer'
 import { formatDate } from '../../../lib/utils/formatDate'
-
-const STATUS_TONE: Record<string, StatusTone> = {
-  SUBMITTED: 'info',
-  UNDER_REVIEW: 'info',
-  NEEDS_MORE_EVIDENCE: 'warning',
-  VERIFIED: 'success',
-  REJECTED: 'danger',
-  REVOKED: 'danger',
-}
+import { ENROLLMENT_VERIFICATION_TONE, toneOf } from '../../../lib/status/statusTones'
 
 export function VerificationQueuePage() {
   const { t } = useTranslation()
@@ -109,7 +100,7 @@ export function VerificationQueuePage() {
                   </p>
                 </div>
                 <div className="flex shrink-0 items-center gap-3">
-                  <StatusBadge tone={STATUS_TONE[row.status] ?? 'neutral'}>
+                  <StatusBadge tone={toneOf(ENROLLMENT_VERIFICATION_TONE, row.status)}>
                     {t(`university:students.statusValues.${row.status}`)}
                   </StatusBadge>
                   <span className="hidden items-center gap-1 text-xs font-semibold text-link sm:inline-flex">

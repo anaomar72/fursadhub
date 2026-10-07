@@ -198,7 +198,7 @@ export function PublicOpportunityListPage() {
           <Pagination page={result.data.page} totalPages={result.data.totalPages} onPageChange={setPage} className="mt-10" />
         )}
       </section>
-      <div className="mx-auto max-w-[1448px] px-4 pb-5 lg:px-12"><PresentationBand title={t('common:remediation.bandTitle')} body={t('common:remediation.bandBody')}><Link to="/organizations" className="rounded bg-brand-accent px-5 py-2.5 text-xs font-bold text-white">{t('common:nav.organizations')} →</Link></PresentationBand></div>
+      <div className="mx-auto max-w-[1448px] px-4 pb-5 lg:px-12"><PresentationBand title={t('common:remediation.bandTitle')} body={t('common:remediation.bandBody')}><Link to="/organizations" className="rounded bg-action-primary px-5 py-2.5 text-xs font-bold text-on-action">{t('common:nav.organizations')} →</Link></PresentationBand></div>
     </div>
     </PublicBookmarks>
   )

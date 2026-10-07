@@ -14,20 +14,10 @@ import {
   Select,
   StatusBadge,
   type DataTableColumn,
-  type StatusTone,
 } from '../../../components/ui'
 import { PageContainer } from '../../../app/layouts/PageContainer'
 import type { StudentRowResponse } from '../types'
-
-const STATUS_TONE: Record<string, StatusTone> = {
-  DRAFT: 'neutral',
-  SUBMITTED: 'info',
-  UNDER_REVIEW: 'info',
-  NEEDS_MORE_EVIDENCE: 'warning',
-  VERIFIED: 'success',
-  REJECTED: 'danger',
-  REVOKED: 'danger',
-}
+import { ENROLLMENT_VERIFICATION_TONE, toneOf } from '../../../lib/status/statusTones'
 
 /**
  * The university's student directory.
@@ -106,7 +96,7 @@ export function StudentsPage() {
       key: 'status',
       header: t('university:students.status'),
       render: (student) => (
-        <StatusBadge tone={STATUS_TONE[student.verificationStatus] ?? 'neutral'}>
+        <StatusBadge tone={toneOf(ENROLLMENT_VERIFICATION_TONE, student.verificationStatus)}>
           {t(`university:students.statusValues.${student.verificationStatus}`)}
         </StatusBadge>
       ),
@@ -147,7 +137,7 @@ export function StudentsPage() {
           onChange={(event) => setStatus(event.target.value)}
         >
           <option value="">{t('university:students.allStatuses')}</option>
-          {Object.keys(STATUS_TONE).map((value) => (
+          {Object.keys(ENROLLMENT_VERIFICATION_TONE).map((value) => (
             <option key={value} value={value}>
               {t(`university:students.statusValues.${value}`)}
             </option>

@@ -51,7 +51,7 @@ function EmptyPlacements() {
       </h2>
       <Link
         to="/student/opportunities"
-        className="mt-4 inline-flex h-10 items-center rounded-md bg-brand-primary px-4 text-sm font-semibold text-on-brand transition-colors hover:bg-brand-blue-strong motion-reduce:transition-none"
+        className="mt-4 inline-flex h-10 items-center rounded-md bg-action-primary px-4 text-sm font-semibold text-on-action transition-colors hover:bg-action-primary-hover motion-reduce:transition-none"
       >
         {t('student:nav.exploreInternships')}
       </Link>

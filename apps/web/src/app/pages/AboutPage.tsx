@@ -84,7 +84,7 @@ export function AboutPage() {
           <div className="mt-8 flex flex-wrap gap-3">
             <Link
               to="/register"
-              className="inline-flex h-11 items-center rounded-lg bg-brand-accent px-6 text-sm font-semibold text-white transition-colors hover:bg-brand-accent-strong focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus-ring motion-reduce:transition-none"
+              className="inline-flex h-11 items-center rounded-lg bg-action-primary px-6 text-sm font-semibold text-on-action transition-colors hover:bg-action-primary-hover focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus-ring motion-reduce:transition-none"
             >
               {t('common:publicPages.about.join')}
             </Link>
@@ -229,7 +229,7 @@ export function AboutPage() {
           <div className="flex flex-wrap gap-3">
             <Link
               to="/register"
-              className="inline-flex h-10 items-center rounded-lg bg-brand-accent px-5 text-sm font-semibold text-white transition-colors hover:bg-brand-accent-strong focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus-ring motion-reduce:transition-none"
+              className="inline-flex h-10 items-center rounded-lg bg-action-primary px-5 text-sm font-semibold text-on-action transition-colors hover:bg-action-primary-hover focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus-ring motion-reduce:transition-none"
             >
               {t('common:publicPages.about.join')}
             </Link>

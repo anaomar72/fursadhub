@@ -212,7 +212,7 @@ export function HomePage() {
             <div className="relative flex flex-wrap gap-3">
               <Link
                 to="/register?role=organization"
-                className="inline-flex h-10 items-center rounded-lg bg-brand-accent px-5 text-sm font-semibold text-white transition-colors duration-150 hover:bg-brand-accent-strong focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus-ring focus-visible:ring-offset-2 focus-visible:ring-offset-brand-navy motion-reduce:transition-none"
+                className="inline-flex h-10 items-center rounded-lg bg-action-primary px-5 text-sm font-semibold text-on-action transition-colors duration-150 hover:bg-action-primary-hover focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus-ring focus-visible:ring-offset-2 focus-visible:ring-offset-brand-navy motion-reduce:transition-none"
               >
                 {t('common:landing.band.primary')}
               </Link>

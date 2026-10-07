@@ -79,7 +79,7 @@ export function SavedInternshipsPage() {
           action={
             <Link
               to="/student/profile"
-              className="inline-flex h-10 items-center rounded-lg bg-brand-primary px-4 text-sm font-semibold text-on-brand transition-colors hover:bg-brand-accent-strong focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus-ring motion-reduce:transition-none"
+              className="inline-flex h-10 items-center rounded-lg bg-action-primary px-4 text-sm font-semibold text-on-action transition-colors hover:bg-action-primary-hover focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus-ring motion-reduce:transition-none"
             >
               {t('student:saved.completeProfile')}
             </Link>
@@ -92,7 +92,7 @@ export function SavedInternshipsPage() {
           action={
             <Link
               to="/student/opportunities"
-              className="inline-flex h-10 items-center rounded-lg bg-brand-primary px-4 text-sm font-semibold text-on-brand transition-colors hover:bg-brand-accent-strong focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus-ring motion-reduce:transition-none"
+              className="inline-flex h-10 items-center rounded-lg bg-action-primary px-4 text-sm font-semibold text-on-action transition-colors hover:bg-action-primary-hover focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus-ring motion-reduce:transition-none"
             >
               {t('student:nav.exploreInternships')}
             </Link>

@@ -401,7 +401,8 @@
     "actionRequired": "Tallaabo ayaa loo baahan yahay",
     "rejected": "La diiday",
     "notProvided": "Lama bixin",
-    "error": "Wax qaldan ayaa dhacay"
+    "error": "Wax qaldan ayaa dhacay",
+    "sectionError": "Qaybtan lama soo bandhigi karin."
   },
   "language": {
     "en": "Ingiriisi",
@@ -419,7 +420,8 @@
     "confirm": "Xaqiiji",
     "close": "Xir",
     "apply": "Codso",
-    "clear": "Nadiifi"
+    "clear": "Nadiifi",
+    "back": "Dib u noqo"
   },
   "a11y": {
     "skipToContent": "U gudub nuxurka",
@@ -612,5 +614,8 @@
     "title": "Ma haysatid fasax boggan",
     "description": "Akoonkaagu ma laha fasaxa lagu furo qaybtan FursadHub. Haddii aad u malaynayso inay tani khalad tahay, weydiiso maamulaha ururkaaga ama jaamacaddaada inuu hubiyo doorkaaga.",
     "back": "Aad dashboard-kaaga"
+  },
+  "form": {
+    "optional": "Ikhtiyaari"
   }
 }

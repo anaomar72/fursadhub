@@ -21,20 +21,11 @@ import {
   StatusBadge,
   Textarea,
 } from '../../../components/ui'
-import type { StatusTone } from '../../../components/ui'
 import { PageContainer } from '../../../app/layouts/PageContainer'
 import { PrivateDocumentPreview } from '../../../components/ui/PrivateDocumentPreview'
 import { ProfessionalProfileSummary } from '../../student/components/ProfessionalProfileSummary'
 import { formatDateTime } from '../../../lib/utils/formatDate'
-
-const STATUS_TONE: Record<string, StatusTone> = {
-  SUBMITTED: 'info',
-  UNDER_REVIEW: 'info',
-  NEEDS_MORE_EVIDENCE: 'warning',
-  VERIFIED: 'success',
-  REJECTED: 'danger',
-  REVOKED: 'danger',
-}
+import { ENROLLMENT_VERIFICATION_TONE, toneOf } from '../../../lib/status/statusTones'
 
 /**
  * One student verification case, as its university reviews it (CLAUDE.md sections 29-30).
@@ -172,7 +163,7 @@ export function VerificationCaseDetailPage() {
         title={verificationCase.studentFullName ?? verificationCase.studentEmail ?? t('university:caseDetail.case')}
         description={verificationCase.studentFullName ? verificationCase.studentEmail ?? undefined : undefined}
         actions={
-          <StatusBadge tone={STATUS_TONE[status] ?? 'neutral'}>
+          <StatusBadge tone={toneOf(ENROLLMENT_VERIFICATION_TONE, status)}>
             {t(`university:students.statusValues.${status}`)}
           </StatusBadge>
         }

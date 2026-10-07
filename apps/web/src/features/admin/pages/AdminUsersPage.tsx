@@ -1,7 +1,6 @@
 import { useState } from 'react'
 import { useQuery } from '@tanstack/react-query'
 import { useTranslation } from 'react-i18next'
-import { Link } from 'react-router-dom'
 import {
   Alert,
   DataTable,
@@ -59,14 +58,10 @@ export function AdminUsersPage() {
     {
       key: 'email',
       header: t('admin:users.email'),
-      render: (user) => (
-        <Link
-          to={`/admin/users/${user.id}`}
-          className="rounded font-medium text-foreground hover:text-link hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus-ring"
-        >
-          {user.email}
-        </Link>
-      ),
+      // The identifying column: DataTable renders it as the row header and wraps it in the row's
+      // link (rowHref below), so the link is the keyboard route and the rest of the row follows it.
+      primary: true,
+      render: (user) => user.email,
     },
     {
       key: 'status',
@@ -172,6 +167,23 @@ export function AdminUsersPage() {
             columns={columns}
             rows={data?.content ?? []}
             rowKey={(user) => user.id}
+            rowHref={(user) => `/admin/users/${user.id}`}
+            density="dense"
+            // Server-paginated, so no column is sortable: sorting one page of results would present
+            // a partial order as the whole one (see DataTable).
+            renderMobileRow={(user) => (
+              <div className="flex flex-col gap-1.5">
+                <span className="break-all font-semibold text-foreground">{user.email}</span>
+                <span className="flex flex-wrap items-center gap-x-3 gap-y-1 text-caption text-foreground-secondary">
+                  <StatusBadge tone={USER_STATUS_TONE[user.status]}>
+                    {t(`admin:statusLabels.${user.status}`)}
+                  </StatusBadge>
+                  <span>
+                    {t('admin:users.registered')}: {formatDate(user.createdAt)}
+                  </span>
+                </span>
+              </div>
+            )}
             empty={
               <EmptyState
                 title={t('admin:users.empty')}

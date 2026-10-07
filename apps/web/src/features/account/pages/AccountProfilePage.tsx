@@ -111,7 +111,7 @@ export function AccountProfilePage() {
                 type="file"
                 accept="image/jpeg,image/png"
                 aria-label={t('account:profile.changePicture')}
-                className="text-sm text-foreground-secondary file:mr-3 file:rounded-md file:border-0 file:bg-brand-primary file:px-3 file:py-1.5 file:text-sm file:font-medium file:text-on-brand"
+                className="text-sm text-foreground-secondary file:mr-3 file:rounded-md file:border-0 file:bg-action-primary file:px-3 file:py-1.5 file:text-sm file:font-medium file:text-on-action"
                 onChange={(event) => {
                   const file = event.target.files?.[0]
                   if (file) uploadMutation.mutate(file)

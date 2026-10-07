@@ -353,7 +353,7 @@ function ApplyCallToAction({ opportunityId }: { opportunityId: string }) {
     return (
       <Link
         to="/login"
-        className="mt-4 inline-flex h-12 w-full items-center justify-center rounded-lg bg-brand-accent px-5 text-sm font-semibold text-white shadow-xs transition-colors hover:bg-brand-accent-strong focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus-ring motion-reduce:transition-none"
+        className="mt-4 inline-flex h-12 w-full items-center justify-center rounded-lg bg-action-primary px-5 text-sm font-semibold text-on-action shadow-xs transition-colors hover:bg-action-primary-hover focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus-ring motion-reduce:transition-none"
       >
         {t('opportunities:public.signInToApply')}
       </Link>
@@ -363,7 +363,7 @@ function ApplyCallToAction({ opportunityId }: { opportunityId: string }) {
   return (
     <Link
       to={`/student/opportunities/${opportunityId}/apply`}
-      className="mt-4 inline-flex h-12 w-full items-center justify-center rounded-lg bg-brand-accent px-5 text-sm font-semibold text-white shadow-xs transition-colors hover:bg-brand-accent-strong focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus-ring motion-reduce:transition-none"
+      className="mt-4 inline-flex h-12 w-full items-center justify-center rounded-lg bg-action-primary px-5 text-sm font-semibold text-on-action shadow-xs transition-colors hover:bg-action-primary-hover focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus-ring motion-reduce:transition-none"
     >
       {t('opportunities:public.apply')}
     </Link>

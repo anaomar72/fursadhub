@@ -229,7 +229,7 @@ export function PublicUniversitiesPage() {
           <p className="mt-8 text-center text-sm text-muted">
             {t('common:publicPages.universities.directoryNote')}
           </p>
-          <Link to="/register?role=university" className="mx-auto mt-4 flex min-h-10 w-fit items-center rounded-lg bg-brand-accent px-5 text-sm font-bold text-white focus-visible:ring-2">{t('common:publicPages.universities.getStarted')}</Link>
+          <Link to="/register?role=university" className="mx-auto mt-4 flex min-h-10 w-fit items-center rounded-lg bg-action-primary px-5 text-sm font-bold text-on-action focus-visible:ring-2">{t('common:publicPages.universities.getStarted')}</Link>
         </details>
       </section>
     </div>

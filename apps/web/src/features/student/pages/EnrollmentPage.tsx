@@ -13,18 +13,8 @@ import { enrollmentSchema, type EnrollmentFormValues } from '../schemas/enrollme
 import { apiErrorMessage } from '../../../lib/api/errorMessage'
 import { ApiError } from '../../../lib/api/client'
 import { Button, FormField, Input, LoadingSpinner, PageHeader, Select, StatusBadge } from '../../../components/ui'
-import type { StatusTone } from '../../../components/ui'
 import { formatTime } from '../../../lib/utils/formatDate'
-
-const STATUS_TONE: Record<string, StatusTone> = {
-  DRAFT: 'neutral',
-  SUBMITTED: 'info',
-  UNDER_REVIEW: 'info',
-  NEEDS_MORE_EVIDENCE: 'warning',
-  VERIFIED: 'success',
-  REJECTED: 'danger',
-  REVOKED: 'danger',
-}
+import { ENROLLMENT_VERIFICATION_TONE, toneOf } from '../../../lib/status/statusTones'
 
 export function EnrollmentPage() {
   const { t } = useTranslation()
@@ -83,7 +73,7 @@ export function EnrollmentPage() {
   }
 
   const enrollment = enrollmentQuery.data
-  const tone = STATUS_TONE[enrollment.verificationStatus] ?? 'neutral'
+  const tone = toneOf(ENROLLMENT_VERIFICATION_TONE, enrollment.verificationStatus)
   const canEdit = enrollment.verificationStatus === 'DRAFT' || enrollment.verificationStatus === 'NEEDS_MORE_EVIDENCE'
 
   /*

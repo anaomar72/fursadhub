@@ -36,20 +36,8 @@ import {
   Textarea,
 } from '../../../components/ui'
 import { PageContainer } from '../../../app/layouts/PageContainer'
-import type { StatusTone } from '../../../components/ui'
-import type { InstitutionVerificationStatus } from '../types'
 import { formatDate } from '../../../lib/utils/formatDate'
-
-const STATUS_TONE: Record<InstitutionVerificationStatus, StatusTone> = {
-  DRAFT: 'neutral',
-  SUBMITTED: 'info',
-  UNDER_REVIEW: 'info',
-  NEEDS_CHANGES: 'warning',
-  VERIFIED: 'success',
-  REJECTED: 'danger',
-  SUSPENDED: 'danger',
-  REVOKED: 'danger',
-}
+import { INSTITUTION_VERIFICATION_TONE } from '../../../lib/status/statusTones'
 
 /**
  * The organization's own record, and its institution-verification state (CLAUDE.md section 31).
@@ -177,7 +165,7 @@ export function ProfilePage() {
         description={t('organization:profile.subtitle')}
         actions={<>
           {organization.verificationStatus === 'VERIFIED' && <Link to={`/organizations/${organization.id}`} className="inline-flex min-h-10 items-center rounded-lg border border-border px-4 text-sm font-semibold text-link">{t('common:remediation.viewPublicProfile')}</Link>}
-          <StatusBadge tone={STATUS_TONE[organization.verificationStatus]}>
+          <StatusBadge tone={INSTITUTION_VERIFICATION_TONE[organization.verificationStatus]}>
             {t(`organization:profile.verificationStatusValues.${organization.verificationStatus}`)}
           </StatusBadge>
         </>}

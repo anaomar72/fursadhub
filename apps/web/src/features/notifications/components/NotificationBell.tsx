@@ -100,7 +100,7 @@ export function NotificationBell() {
           <path d="M8 15.5a2 2 0 0 0 4 0" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
         </svg>
         {unreadCount > 0 && (
-          <span className="absolute -right-0.5 -top-0.5 min-w-4 rounded-full bg-brand-primary px-1 text-[10px] font-semibold leading-4 text-on-brand">
+          <span className="absolute -right-0.5 -top-0.5 min-w-4 rounded-full bg-action-primary px-1 text-caption font-semibold leading-4 text-on-action">
             {unreadCount > 99 ? '99+' : unreadCount}
           </span>
         )}

@@ -52,10 +52,26 @@
   --color-brand-blue-strong: #1d4ed8;
   --color-brand-blue-soft: #e8f0fe;
 
-  /* Semantic aliases. `primary` is the action colour (orange), `secondary` the identity colour
-     (navy) — this is what `bg-brand-primary` / `text-brand-primary` resolve to product-wide. */
+  /* Semantic aliases. `primary` is the brand orange, `secondary` the identity colour (navy). */
   --color-brand-primary: var(--color-brand-accent);
   --color-brand-secondary: var(--color-brand-navy);
+
+  /* ---------------------------------------------------------------- action
+     BRAND ORANGE IS NOT THE ACTION FILL. White on #F97316 measures 2.80:1 — below the WCAG 2.2 AA
+     4.5:1 floor for normal text — so any control that carries WHITE TEXT on orange uses these
+     instead. Measured (WCAG relative luminance):
+         white on #C2410C  5.18:1   (AA normal text)
+         white on #9A3412  7.31:1   (hover/pressed — darker, so hover never loses contrast)
+         white on #B42318  6.50:1   (destructive)
+     The same values hold in both themes: the fill carries its own white label, and #C2410C still
+     measures 3.20:1 against the dark card, clearing the 3:1 non-text boundary floor (WCAG 1.4.11).
+     #F97316 stays the BRAND colour — logo, illustration accents, the active-navigation edge and
+     other large or non-text emphasis. Approved in the Phase 2 brief; see design-system/README.md. */
+  --color-action-primary: #c2410c;
+  --color-action-primary-hover: #9a3412;
+  --color-action-danger: #b42318;
+  --color-action-danger-hover: #912018;
+  --color-on-action: #ffffff;
 
   /* ---------------------------------------------------------------- surfaces */
   --color-background: #f7f9fc;
@@ -143,19 +159,40 @@
   --space-20: 5rem;
 
   /* ---------------------------------------------------------------- shape
-     The references use a softer corner than the previous system: cards and inputs read at ~12px,
-     pills stay fully round. */
+     A restrained scale. Each step has ONE job (role aliases below), and nothing ordinary in the
+     application goes above 16px: a 20px+ corner on every panel is what makes a UI read as a toy.
+       sm   6px  checkbox, small chip, inline tag
+       md  10px  controls — buttons, inputs, selects, menu items
+       lg  12px  panels, tables, dialogs, popovers
+       xl  16px  the largest corner: an expressive surface (public feature band, hero media)
+       full      pills and avatars
+     `2xl` is retained only so existing public compositions keep resolving; it now equals `xl`. */
   --radius-xs: 0.25rem;
-  --radius-sm: 0.5rem;
+  --radius-sm: 0.375rem;
   --radius-md: 0.625rem;
   --radius-lg: 0.75rem;
   --radius-xl: 1rem;
-  --radius-2xl: 1.25rem;
+  --radius-2xl: 1rem;
   --radius-full: 9999px;
+  --radius-control: var(--radius-md);
+  --radius-panel: var(--radius-lg);
+  --radius-surface: var(--radius-xl);
   --border-width: 1px;
 
+  /* ---------------------------------------------------------------- layout
+     Page gutters 16 / 24 / 32px (mobile / sm / lg) live in PageContainer and PublicContainer as
+     Tailwind classes; these are the widths and rhythms those primitives share. */
+  --content-max: 80rem; /* 1280px — app content and public sections */
+  --form-max: 48rem; /* 768px — single-column forms and settings */
+  --public-section-y: 2.5rem; /* 40px mobile */
+  --public-section-y-lg: 4rem; /* 64px desktop */
+
   /* Shadows are tinted with the brand navy, and stay shallow — the references lean on hairline
-     borders over drop shadows. */
+     borders over drop shadows. Roles:
+       xs  a RESTING interactive surface (a clickable card, a button) — never a static panel
+       md  menus, popovers, toasts, and the hover state of an interactive card
+       lg  dialogs and drawers
+     A static content panel has a border and no shadow: it is part of the page, not above it. */
   --shadow-xs: 0 1px 2px rgb(11 42 91 / 0.05);
   --shadow-sm: 0 4px 12px rgb(11 42 91 / 0.06);
   --shadow-md: 0 12px 32px rgb(11 42 91 / 0.09);

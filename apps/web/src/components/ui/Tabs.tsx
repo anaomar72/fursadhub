@@ -87,7 +87,7 @@ export function Tabs({ items, value, onValueChange, label, className }: TabsProp
             'shrink-0 border-b-2 px-3 py-2 text-sm font-semibold',
             'transition-[color,border-color] duration-150 ease-in-out focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus-ring disabled:opacity-50 motion-reduce:transition-none',
             value === item.id
-              ? 'border-brand-primary text-brand-accent-ink dark:border-info dark:text-info'
+              ? 'border-brand-accent text-brand-accent-ink'
               : 'border-transparent text-muted hover:text-foreground',
           )}
         >

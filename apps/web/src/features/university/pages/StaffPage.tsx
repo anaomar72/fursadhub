@@ -33,18 +33,11 @@ import {
   StatusBadge,
 } from '../../../components/ui'
 import { PageContainer } from '../../../app/layouts/PageContainer'
-import type { StatusTone } from '../../../components/ui'
-import type { DepartmentResponse, StaffMemberResponse, TemporaryCredentialResponse, UserAccountStatus } from '../types'
+import type { DepartmentResponse, StaffMemberResponse, TemporaryCredentialResponse } from '../types'
+import { ACCOUNT_STATUS_TONE } from '../../../lib/status/statusTones'
 
 /** Exactly the two roles a University Admin may assign (CLAUDE.md section 26A; UniversityStaffService). */
 const ROLES: CreateStaffFormValues['role'][] = ['DEPARTMENT_COORDINATOR', 'UNIVERSITY_SUPERVISOR']
-
-const STATUS_TONE: Record<UserAccountStatus, StatusTone> = {
-  PENDING_CONTACT_VERIFICATION: 'warning',
-  ACTIVE: 'success',
-  SUSPENDED: 'danger',
-  CLOSED: 'neutral',
-}
 
 /**
  * Managed staff provisioning for a university (CLAUDE.md section 26A).
@@ -459,7 +452,7 @@ function StaffRow({
           </StaffIdentity>
         </div>
         {member.status && (
-          <StatusBadge tone={STATUS_TONE[member.status]}>
+          <StatusBadge tone={ACCOUNT_STATUS_TONE[member.status]}>
             {t(`university:staff.statusValues.${member.status}`)}
           </StatusBadge>
         )}
