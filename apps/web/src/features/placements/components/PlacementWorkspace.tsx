@@ -2,7 +2,7 @@ import { RouteSuspense } from '../../../app/router/RouteFallback'
 import { useQuery } from '@tanstack/react-query'
 import { useTranslation } from 'react-i18next'
 import { Outlet, useParams } from 'react-router-dom'
-import { EmptyState, LoadingState } from '../../../components/ui'
+import { EmptyState, Skeleton, SkeletonList, SkeletonRegion } from '../../../components/ui'
 import { PageContainer } from '../../../app/layouts/PageContainer'
 import * as placementsApi from '../api/placementsApi'
 import { InternshipNav, type InternshipArea } from './InternshipNav'
@@ -41,7 +41,12 @@ export function PlacementWorkspace({ area }: PlacementWorkspaceProps) {
   if (placementQuery.isLoading) {
     return (
       <PageContainer>
-        <LoadingState label={t('common:status.loading')} />
+        <SkeletonRegion className="flex flex-col gap-6">
+          <Skeleton className="h-8 w-72 max-w-full" />
+          <Skeleton className="h-4 w-56 max-w-full" />
+          <Skeleton className="h-10 w-full" />
+          <SkeletonList rows={3} />
+        </SkeletonRegion>
       </PageContainer>
     )
   }

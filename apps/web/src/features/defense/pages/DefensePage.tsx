@@ -2,7 +2,7 @@ import { useState } from 'react'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { useTranslation } from 'react-i18next'
 import { useParams } from 'react-router-dom'
-import { Button, ErrorState, FormField, Input, LoadingState, Select, StatusBadge, Textarea, EmptyState } from '../../../components/ui'
+import { Button, ErrorState, FormField, Icon, Input, SkeletonList, Select, StatusBadge, Textarea, EmptyState } from '../../../components/ui'
 import type { StatusTone } from '../../../components/ui'
 import { apiErrorMessage } from '../../../lib/api/errorMessage'
 import { formatDateTime } from '../../../lib/utils/formatDate'
@@ -85,7 +85,7 @@ export function DefensePage({ audience }: DefensePageProps) {
   })
 
   if (attemptsQuery.isLoading) {
-    return <LoadingState label={t('common:status.loading')} />
+    return <SkeletonList rows={3} />
   }
 
   if (attemptsQuery.isError) {
@@ -99,7 +99,8 @@ export function DefensePage({ audience }: DefensePageProps) {
   }
 
   const attempts = attemptsQuery.data ?? []
-  const hasOpenAttempt = attempts.some((attempt) => attempt.state === 'SCHEDULED')
+  const upcoming = attempts.find((attempt) => attempt.state === 'SCHEDULED') ?? null
+  const hasOpenAttempt = upcoming !== null
   const busy = scheduleMutation.isPending || cancelMutation.isPending || resultMutation.isPending
 
   return (
@@ -117,6 +118,21 @@ export function DefensePage({ audience }: DefensePageProps) {
           </Button>
         )}
       </div>
+
+      {audience === 'student' && upcoming && (
+        // Phase 5: the one thing a student needs from this page first — when and where.
+        <p className="flex items-start gap-3 rounded-lg bg-info-bg p-4 text-body text-foreground">
+          <Icon name="info" className="mt-0.5 size-5 shrink-0 text-info" />
+          <span className="min-w-0">
+            <span className="block font-semibold">{t('student:journey.attention.items.defenseScheduled.title')}</span>
+            <span className="mt-0.5 block break-words text-foreground-secondary">
+              {upcoming.locationDetails
+                ? t('student:journey.attention.items.defenseScheduled.metaWithLocation', { date: formatDateTime(upcoming.scheduledAt), location: upcoming.locationDetails })
+                : t('student:journey.attention.items.defenseScheduled.meta', { date: formatDateTime(upcoming.scheduledAt) })}
+            </span>
+          </span>
+        </p>
+      )}
 
       {scheduling && (
         <ScheduleForm

@@ -59,7 +59,6 @@ export function ApplyPage() {
         selectedCv?.id,
       ),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['recruitment', 'my-candidacies'] })
       queryClient.invalidateQueries({ queryKey: ['student', 'candidacies'] })
     },
   })

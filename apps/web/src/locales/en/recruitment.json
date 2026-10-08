@@ -84,7 +84,21 @@
       "active": "In progress",
       "offers": "Offers",
       "closed": "Closed"
-    }
+    },
+    "statusGuidance": {
+      "SUBMITTED": "The organization has your application.",
+      "UNDER_REVIEW": "The organization is reviewing your application.",
+      "SHORTLISTED": "You're on the shortlist.",
+      "INTERVIEW": "You're at the interview stage. The organization will contact you.",
+      "OFFERED": "You have an offer.",
+      "OFFER_DECLINED": "You declined the offer.",
+      "OFFER_EXPIRED": "The offer expired before a response.",
+      "ACCEPTED": "You accepted. Your internship is set up.",
+      "REJECTED": "Not selected this time.",
+      "WITHDRAWN": "You withdrew this application."
+    },
+    "reviewOffer": "Review offer",
+    "viewInternship": "View internship"
   },
   "detail": {
     "notFound": "This application is no longer available.",
@@ -128,7 +142,19 @@
       "OPPORTUNITY_NOT_PUBLISHED": "This opportunity is no longer accepting candidates.",
       "generic": "Something went wrong. Please try again."
     },
-    "emptyUniversity": "No nominations yet."
+    "emptyUniversity": "No nominations yet.",
+    "subtitle": "Nominations from your university for internships it was asked to fill.",
+    "emptyHint": "When your university nominates you for an internship, it appears here for your consent. You do not need one to apply directly.",
+    "nominatedBy": "Nominated by your university",
+    "nominatedOn": "Nominated {{date}}",
+    "respondedOn": "Responded {{date}}",
+    "noteLabel": "Note from your university",
+    "statusGuidance": {
+      "ACCEPTED": "You agreed to be considered. It now appears in your applications.",
+      "DECLINED": "You declined. The organization was not shown your details.",
+      "WITHDRAWN": "Your university withdrew this nomination."
+    },
+    "viewApplications": "View applications"
   },
   "pool": {
     "title": "Candidates",

@@ -15,7 +15,8 @@
     "title": "Tababarkayga",
     "empty": "Weli ma haysatid meelayn tababar. Marka aad aqbasho dalab, halkan ayuu ka soo muuqan doonaa.",
     "subtitle": "Tababarradaada hadda iyo kuwii hore.",
-    "resultsHeading": "Tababarradaada"
+    "resultsHeading": "Tababarradaada",
+    "emptyHint": "Marka aad aqbasho dalab tababar, tababarkaagu halkan ayuu ka muuqan doonaa oo ay la socdaan wax kasta oo aad u baahan tahay si aad u dhammaystirto."
   },
   "university": {
     "title": "Meelaynta ardayda",

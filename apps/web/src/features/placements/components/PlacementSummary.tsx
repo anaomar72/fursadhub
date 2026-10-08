@@ -2,6 +2,7 @@ import { useTranslation } from 'react-i18next'
 import { PageHeader, StatusBadge } from '../../../components/ui'
 import { PLACEMENT_STATUS_TONE } from './statusTone'
 import type { PlacementResponse } from '../types'
+import { formatDate } from '../../../lib/utils/formatDate'
 
 interface PlacementSummaryProps {
   placement: PlacementResponse
@@ -45,7 +46,7 @@ export function PlacementSummary({ placement, audience }: PlacementSummaryProps)
         <div>
           <dt className="text-foreground-secondary">{t('placements:detail.dates')}</dt>
           <dd className="mt-0.5 text-foreground">
-            {t('placements:detail.dateRange', { start: placement.startDate, end: placement.endDate })}
+            {t('placements:detail.dateRange', { start: formatDate(placement.startDate), end: formatDate(placement.endDate) })}
           </dd>
         </div>
 

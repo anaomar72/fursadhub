@@ -2,11 +2,12 @@ import { useState } from 'react'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { useTranslation } from 'react-i18next'
 import { useParams } from 'react-router-dom'
-import { Button, ErrorState, FormField, Input, LoadingState, Select, StatusBadge, Textarea, EmptyState } from '../../../components/ui'
+import { Button, ErrorState, FormField, Input, SkeletonList, Select, StatusBadge, Textarea, EmptyState } from '../../../components/ui'
 import type { StatusTone } from '../../../components/ui'
 import { apiErrorMessage } from '../../../lib/api/errorMessage'
 import * as attendanceApi from '../api/attendanceApi'
 import type { AttendanceConfirmationStatus, AttendanceResponse, AttendanceValue } from '../types'
+import { formatDate } from '../../../lib/utils/formatDate'
 
 const ATTENDANCE_VALUES: AttendanceValue[] = ['PRESENT', 'ABSENT', 'EXCUSED']
 
@@ -83,7 +84,7 @@ export function AttendancePage({ audience }: AttendancePageProps) {
   })
 
   if (attendanceQuery.isLoading) {
-    return <LoadingState label={t('common:status.loading')} />
+    return <SkeletonList rows={3} />
   }
 
   if (attendanceQuery.isError) {
@@ -125,6 +126,13 @@ export function AttendancePage({ audience }: AttendancePageProps) {
           title={t('internship:attendance.empty')}
           description={t('internship:attendance.emptyHint')}
         />
+      ) : audience === 'student' ? (
+        <StudentAttendanceList
+          records={records}
+          busy={busy}
+          onConfirm={(id) => confirmMutation.mutate(id)}
+          onDispute={(id) => setDisputing(id)}
+        />
       ) : (
         // The table scrolls inside its own container so the page body never scrolls sideways on a
         // phone, including with the longer Somali status labels.
@@ -145,7 +153,7 @@ export function AttendancePage({ audience }: AttendancePageProps) {
             <tbody className="divide-y divide-border bg-surface">
               {records.map((record) => (
                 <tr key={record.id}>
-                  <td className="px-3 py-2 text-foreground">{record.attendanceDate}</td>
+                  <td className="px-3 py-2 text-foreground">{formatDate(record.attendanceDate)}</td>
                   <td className="px-3 py-2 text-foreground">
                     {t(`internship:attendance.valueValues.${record.attendanceValue}`)}
                   </td>
@@ -306,5 +314,80 @@ function RecordAttendanceForm({
         {t('internship:attendance.actions.record')}
       </Button>
     </form>
+  )
+}
+
+/**
+ * The student's attendance (Phase 5): a summary, then one row per recorded day — a list, not a
+ * table, so a phone never scrolls sideways through the student's own record.
+ *
+ * <p>The counts are computed here from the records the endpoint returned. That is reliable: the
+ * list endpoint returns EVERY record for this placement (it is not paginated), so nothing is
+ * estimated and no percentage of "expected days" is implied — FursadHub does not define one.
+ */
+function StudentAttendanceList({
+  records,
+  busy,
+  onConfirm,
+  onDispute,
+}: {
+  records: AttendanceResponse[]
+  busy: boolean
+  onConfirm: (recordId: string) => void
+  onDispute: (recordId: string) => void
+}) {
+  const { t } = useTranslation()
+  const count = (value: AttendanceValue) => records.filter((record) => record.attendanceValue === value).length
+  const toConfirm = records.filter((record) => record.confirmationStatus === 'RECORDED').length
+
+  return (
+    <div className="flex flex-col gap-4">
+      <section aria-label={t('internship:attendance.summaryLabel')} className="flex flex-col gap-3 rounded-lg bg-surface-muted p-4">
+        <dl className="flex flex-wrap gap-x-8 gap-y-3">
+          {(['PRESENT', 'ABSENT', 'EXCUSED'] as const).map((value) => (
+            <div key={value}>
+              <dt className="text-caption text-foreground-secondary">{t(`internship:attendance.valueValues.${value}`)}</dt>
+              <dd className="font-display text-title-panel tabular-nums text-foreground">{count(value)}</dd>
+            </div>
+          ))}
+        </dl>
+        <p className={toConfirm > 0 ? 'text-body font-semibold text-warning' : 'text-body text-foreground-secondary'}>
+          {toConfirm > 0 ? t('internship:attendance.toConfirm', { count: toConfirm }) : t('internship:attendance.allSettled')}
+        </p>
+      </section>
+
+      <ul className="divide-y divide-border rounded-lg border border-border bg-surface">
+        {records.map((record) => (
+          <li key={record.id} className="flex flex-col gap-2 p-4 sm:flex-row sm:items-center sm:gap-4">
+            <div className="min-w-0 flex-1">
+              <p className="flex flex-wrap items-center gap-x-3 gap-y-1">
+                <span className="font-semibold text-foreground">{formatDate(record.attendanceDate)}</span>
+                <span className="text-body text-foreground-secondary">{t(`internship:attendance.valueValues.${record.attendanceValue}`)}</span>
+              </p>
+              {(record.disputeReason || record.resolutionNote || record.notes) && (
+                <p className="mt-1 break-words text-caption text-foreground-secondary">
+                  {record.disputeReason
+                    ? t('internship:attendance.disputedBecause', { reason: record.disputeReason })
+                    : (record.resolutionNote ?? record.notes)}
+                </p>
+              )}
+            </div>
+            <div className="flex flex-wrap items-center gap-2">
+              <StatusBadge tone={CONFIRMATION_TONE[record.confirmationStatus]}>
+                {t(`internship:attendance.statusValues.${record.confirmationStatus}`)}
+              </StatusBadge>
+              <RowActions
+                record={record}
+                audience="student"
+                busy={busy}
+                onConfirm={() => onConfirm(record.id)}
+                onResolve={() => {}}
+                onDispute={() => onDispute(record.id)}
+              />
+            </div>
+          </li>
+        ))}
+      </ul>
+    </div>
   )
 }

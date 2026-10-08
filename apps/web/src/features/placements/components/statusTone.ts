@@ -1,22 +1,5 @@
-import type { StatusTone } from '../../../components/ui'
-import type { PlacementStatus } from '../types'
-
 /**
- * One status→tone mapping shared by the student, university and organization areas, so a placement
- * never reads as "success" on one screen and "warning" on another
- * (BRAND_AND_UI_GUIDELINES.md section 17 — one status visual language).
- *
- * Status is never conveyed by colour alone: every consumer pairs these tones with translated text.
- *
- * CANCELLED and TERMINATED deliberately carry DIFFERENT tones. They are different outcomes — one
- * never started, the other ended early — and flattening them into a single grey "ended" would hide
- * a distinction the domain treats as significant.
+ * Moved to the cross-feature registry (`lib/status/statusTones.ts`) in Phase 5, because the student
+ * workspace now reads this machine too. Re-exported here so existing imports keep working.
  */
-export const PLACEMENT_STATUS_TONE: Record<PlacementStatus, StatusTone> = {
-  PLANNED: 'info',
-  ACTIVE: 'success',
-  COMPLETION_PENDING: 'warning',
-  COMPLETED: 'success',
-  CANCELLED: 'neutral',
-  TERMINATED: 'danger',
-}
+export { PLACEMENT_STATUS_TONE } from '../../../lib/status/statusTones'

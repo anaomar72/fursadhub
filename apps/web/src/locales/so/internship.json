@@ -106,7 +106,11 @@
       "VALIDATION_FAILED": "Fadlan hubi foomka oo mar kale isku day.",
       "generic": "Diiwaanka xaadirinta lama kaydin karin. Fadlan mar kale isku day."
     },
-    "emptyHint": "Xaadirintu halkan way ka soo muuqanaysaa marka kormeeraha shaqada uu bilaabo diiwaangelinta maalmaha."
+    "emptyHint": "Xaadirintu halkan way ka soo muuqanaysaa marka kormeeraha shaqada uu bilaabo diiwaangelinta maalmaha.",
+    "summaryLabel": "Soo koobidda xaadirinta",
+    "toConfirm_one": "{{count}} maalin ayaa sugaysa xaqiijintaada",
+    "toConfirm_other": "{{count}} maalmood ayaa sugaya xaqiijintaada",
+    "allSettled": "Maalin kasta oo la diiwaan geliyay waa la xalliyay."
   },
   "evaluation": {
     "title": "Qiimaynta hay'adda",
@@ -184,7 +188,15 @@
       "VALIDATION_FAILED": "Fadlan hubi foomka oo mar kale isku day.",
       "generic": "Warbixinta lama kaydin karin. Fadlan mar kale isku day."
     },
-    "notSubmittedYetHint": "Warbixintu waxay diyaar u noqonaysaa dib-u-eegis marka ardaygu soo geliyo dhammaadka tababarka."
+    "notSubmittedYetHint": "Warbixintu waxay diyaar u noqonaysaa dib-u-eegis marka ardaygu soo geliyo dhammaadka tababarka.",
+    "uploading": "Warbixintaada waa la soo gelinayaa…",
+    "studentNext": {
+      "MISSING": "Soo geli warbixintaada PDF ahaan, kadibna u gudbi dib-u-eegis.",
+      "DRAFT": "Warbixintaada waa la soo geliyay laakiin lama gudbin. Gudbi marka ay dhammaato.",
+      "SUBMITTED": "Jaamacaddaadu waxay eegaysaa warbixintaada.",
+      "NEEDS_REVISION": "Ku cusbooneysii warbixintaada faallada dib-u-eegaha, kadibna mar kale gudbi.",
+      "APPROVED": "Warbixintaada waa la ansixiyay."
+    }
   },
   "defense": {
     "title": "Difaaca",

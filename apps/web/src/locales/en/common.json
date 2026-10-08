@@ -681,5 +681,14 @@
     },
     "selectedFile": "Uploaded: {{name}}",
     "statusHeading": "Status"
+  },
+  "lifecycle": {
+    "states": {
+      "complete": "completed",
+      "current": "in progress",
+      "attention": "needs attention",
+      "upcoming": "not started",
+      "notReached": "not reached"
+    }
   }
 }

@@ -13,7 +13,7 @@ import { ProfileFormSection } from '../../../components/ui/Presentation'
 import { profileSchema, type ProfileFormValues } from '../schemas/profileSchema'
 import { apiErrorMessage } from '../../../lib/api/errorMessage'
 import { ApiError } from '../../../lib/api/client'
-import { Alert, Button, Card, FormField, Input, LoadingState, PageHeader, StatusBadge, TagInput, Textarea } from '../../../components/ui'
+import { Alert, Button, Card, FormField, Input, PageHeader, SkeletonPanel, StatusBadge, TagInput, Textarea } from '../../../components/ui'
 import { PageContainer } from '../../../app/layouts/PageContainer'
 
 /**
@@ -64,7 +64,7 @@ export function StudentProfilePage() {
   if (profileQuery.isLoading) {
     return (
       <PageContainer width="narrow">
-        <LoadingState label={t('common:status.loading')} />
+        <SkeletonPanel rows={5} />
       </PageContainer>
     )
   }

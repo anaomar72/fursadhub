@@ -681,5 +681,14 @@
     },
     "selectedFile": "La soo geliyay: {{name}}",
     "statusHeading": "Xaaladda"
+  },
+  "lifecycle": {
+    "states": {
+      "complete": "la dhammeeyay",
+      "current": "socda",
+      "attention": "u baahan feejignaan",
+      "upcoming": "lama bilaabin",
+      "notReached": "lama gaarin"
+    }
   }
 }

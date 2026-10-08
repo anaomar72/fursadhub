@@ -15,7 +15,8 @@
     "title": "My internship",
     "empty": "You do not have an internship placement yet. Once you accept an offer, it will appear here.",
     "subtitle": "Your current and past internship placements.",
-    "resultsHeading": "Your internships"
+    "resultsHeading": "Your internships",
+    "emptyHint": "When you accept an internship offer, your internship appears here with everything you need to complete it."
   },
   "university": {
     "title": "Student placements",

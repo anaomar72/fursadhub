@@ -3,6 +3,7 @@ import { useTranslation } from 'react-i18next'
 import { Button, StatusBadge, Textarea } from '../../../components/ui'
 import { WEEKLY_LOG_STATE_TONE } from './weeklyLogTone'
 import type { WeeklyLogResponse } from '../types'
+import { formatDate } from '../../../lib/utils/formatDate'
 
 interface WeeklyLogCardProps {
   log: WeeklyLogResponse
@@ -63,7 +64,7 @@ export function WeeklyLogCard({
             {t('internship:weeklyLogs.weekHeading', { week: log.weekNumber })}
           </h3>
           <p className="mt-0.5 text-xs text-foreground-secondary">
-            {t('internship:weeklyLogs.period', { start: log.periodStart, end: log.periodEnd })}
+            {t('internship:weeklyLogs.period', { start: formatDate(log.periodStart), end: formatDate(log.periodEnd) })}
           </p>
         </div>
         <StatusBadge tone={WEEKLY_LOG_STATE_TONE[log.state]}>

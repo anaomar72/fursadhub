@@ -1,8 +1,8 @@
-import { useRef, useState } from 'react'
+import { useState } from 'react'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { useTranslation } from 'react-i18next'
 import { useParams } from 'react-router-dom'
-import { AnimatedCheck, Button, ErrorState, LoadingState, StatusBadge, Textarea, EmptyState } from '../../../components/ui'
+import { AnimatedCheck, Button, ErrorState, FileUpload, SkeletonList, StatusBadge, Textarea, EmptyState } from '../../../components/ui'
 import type { StatusTone } from '../../../components/ui'
 import { apiErrorMessage } from '../../../lib/api/errorMessage'
 import * as finalReportsApi from '../api/finalReportsApi'
@@ -31,7 +31,6 @@ export function FinalReportPage({ audience }: FinalReportPageProps) {
   const { t } = useTranslation()
   const { placementId } = useParams<{ placementId: string }>()
   const queryClient = useQueryClient()
-  const fileInputRef = useRef<HTMLInputElement>(null)
   const [error, setError] = useState<string | null>(null)
   const [reviewComment, setReviewComment] = useState('')
   const [returning, setReturning] = useState(false)
@@ -96,7 +95,7 @@ export function FinalReportPage({ audience }: FinalReportPageProps) {
   })
 
   if (reportQuery.isLoading) {
-    return <LoadingState label={t('common:status.loading')} />
+    return <SkeletonList rows={3} />
   }
 
   if (reportQuery.isError) {
@@ -179,27 +178,26 @@ export function FinalReportPage({ audience }: FinalReportPageProps) {
         </p>
       )}
 
+      {audience === 'student' && (
+        // What to do next, for the state the report is in — never a promise about review time.
+        <p className="text-body text-foreground-secondary">
+          {t(`internship:finalReport.studentNext.${report?.state ?? 'MISSING'}`)}
+        </p>
+      )}
+
       {audience === 'student' && (!report || report.fileEditable) && (
-        <div className="flex flex-col gap-2 rounded-lg border border-border bg-surface p-4">
-          <label htmlFor="report-file" className="text-sm font-medium text-foreground">
-            {t('internship:finalReport.uploadLabel')}
-          </label>
-          <input
-            id="report-file"
-            ref={fileInputRef}
-            type="file"
-            accept="application/pdf"
-            className="text-sm text-foreground file:mr-3 file:rounded-md file:border file:border-border file:bg-surface-muted file:px-3 file:py-1.5 file:text-sm file:text-foreground"
-            onChange={(event) => {
-              const file = event.target.files?.[0]
-              if (file) {
-                uploadMutation.mutate(file)
-              }
-            }}
-            disabled={busy}
-          />
-          <p className="text-xs text-foreground-secondary">{t('internship:finalReport.uploadHint')}</p>
-        </div>
+        // The standard upload zone: PDF only (FileClassification), with its busy state and the
+        // file on record shown inside it, so choosing again is visibly a replacement.
+        <FileUpload
+          label={t('internship:finalReport.uploadLabel')}
+          hint={t('internship:finalReport.uploadHint')}
+          accept="application/pdf"
+          disabled={busy && !uploadMutation.isPending}
+          busy={uploadMutation.isPending}
+          busyLabel={t('internship:finalReport.uploading')}
+          current={report?.hasDocument ? (report.documentFilename ?? undefined) : undefined}
+          onFiles={(files) => files[0] && uploadMutation.mutate(files[0])}
+        />
       )}
 
       <div className="flex flex-wrap gap-2">

@@ -2,17 +2,18 @@ import { useState } from 'react'
 import { useQuery } from '@tanstack/react-query'
 import { useTranslation } from 'react-i18next'
 import { Link } from 'react-router-dom'
-import * as recruitmentApi from '../api/recruitmentApi'
-import { CANDIDACY_STATUS_TONE } from '../components/statusTone'
+import { CANDIDACY_STATUS_TONE } from '../../../lib/status/statusTones'
 import { ACTIVE_CANDIDACY_STATUSES } from '../../student/studentReadiness'
-import type { CandidacyStatus } from '../types'
+import { studentQueries } from '../../student/studentQueries'
+import type { CandidacyStatus, StudentCandidacyResponse } from '../types'
 import {
-  Card,
+  Badge,
+  ButtonLink,
   EmptyState,
   ErrorState,
   Icon,
-  LoadingState,
   PageHeader,
+  SkeletonList,
   StatusBadge,
   Tabs,
 } from '../../../components/ui'
@@ -40,10 +41,7 @@ export function MyApplicationsPage() {
   const { t } = useTranslation()
   const [filter, setFilter] = useState<StatusFilter>('all')
 
-  const candidaciesQuery = useQuery({
-    queryKey: ['student', 'candidacies'],
-    queryFn: recruitmentApi.listMyCandidacies,
-  })
+  const candidaciesQuery = useQuery(studentQueries.candidacies())
 
   const candidacies = candidaciesQuery.data ?? []
   const counts = {
@@ -76,7 +74,7 @@ export function MyApplicationsPage() {
       />
 
       {candidaciesQuery.isLoading ? (
-        <LoadingState label={t('common:status.loading')} />
+        <SkeletonList rows={4} />
       ) : candidaciesQuery.isError ? (
         <ErrorState
           description={t('recruitment:applications.error')}
@@ -111,46 +109,75 @@ export function MyApplicationsPage() {
           {visible.length === 0 ? (
             <EmptyState title={t('recruitment:applications.emptyForFilter')} />
           ) : (
-            <ul className="flex flex-col gap-3">
+            <ul className="divide-y divide-border rounded-lg border border-border bg-surface">
               {visible.map((candidacy) => (
-                <li key={candidacy.id}>
-                  <Card interactive padding="lg" className="relative">
-                    <div className="flex flex-wrap items-start justify-between gap-3">
-                      <div className="min-w-0">
-                        <h2 className="truncate font-semibold text-foreground">
-                          <Link
-                            to={`/student/applications/${candidacy.id}`}
-                            className="focus-visible:outline-none focus-visible:underline after:absolute after:inset-0"
-                          >
-                            {candidacy.opportunityTitle}
-                          </Link>
-                        </h2>
-                        <p className="mt-1 text-xs text-muted">
-                          {t('recruitment:applications.appliedOn', { date: formatDate(candidacy.createdAt) })}
-                          {' · '}
-                          {t(`recruitment:sourceValues.${candidacy.source}`)}
-                        </p>
-                      </div>
-                      <StatusBadge tone={CANDIDACY_STATUS_TONE[candidacy.status]}>
-                        {t(`recruitment:candidacyStatusValues.${candidacy.status}`)}
-                      </StatusBadge>
-                    </div>
-
-                    {candidacy.liveOffer?.status === 'PENDING' && (
-                      <p className="mt-3 flex items-center gap-2 rounded-md bg-warning-bg px-3 py-2 text-sm font-medium text-warning">
-                        <Icon name="alert" className="size-4 shrink-0" />
-                        {t('recruitment:applications.offerAwaitingResponse', {
-                          deadline: formatDate(candidacy.liveOffer.responseDeadline),
-                        })}
-                      </p>
-                    )}
-                  </Card>
-                </li>
+                <ApplicationRow key={candidacy.id} candidacy={candidacy} />
               ))}
             </ul>
           )}
         </>
       )}
     </PageContainer>
+  )
+}
+
+/**
+ * One application: what it is, how it started, where it stands — and, in a sentence, what that
+ * status means for the student. The sentence is a plain reading of the backend status (CLAUDE.md
+ * section 37), never a promise about timing. A live offer gets its deadline and its one action.
+ */
+function ApplicationRow({ candidacy }: { candidacy: StudentCandidacyResponse }) {
+  const { t } = useTranslation()
+  const offer = candidacy.liveOffer?.status === 'PENDING' ? candidacy.liveOffer : null
+
+  return (
+    <li className="flex flex-col gap-3 p-4 sm:p-5">
+      <div className="flex flex-wrap items-start justify-between gap-x-4 gap-y-2">
+        <div className="min-w-0 flex-1">
+          <h2 className="break-words text-body-lg font-semibold text-foreground">
+            <Link
+              to={`/student/applications/${candidacy.id}`}
+              className="rounded-sm underline-offset-4 hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus-ring"
+            >
+              {candidacy.opportunityTitle}
+            </Link>
+          </h2>
+          <p className="mt-1 flex flex-wrap items-center gap-x-2 gap-y-1 text-caption text-foreground-secondary">
+            <span>{t('recruitment:applications.appliedOn', { date: formatDate(candidacy.createdAt) })}</span>
+            {candidacy.source !== 'SELF_APPLICATION' && <Badge>{t(`recruitment:sourceValues.${candidacy.source}`)}</Badge>}
+          </p>
+        </div>
+        <StatusBadge tone={CANDIDACY_STATUS_TONE[candidacy.status]}>
+          {t(`recruitment:candidacyStatusValues.${candidacy.status}`)}
+        </StatusBadge>
+      </div>
+
+      {offer ? (
+        <div className="flex flex-col gap-3 rounded-lg bg-warning-bg p-3 sm:flex-row sm:items-center sm:justify-between">
+          <p className="flex items-start gap-2 text-body font-medium text-foreground">
+            <Icon name="alert" className="mt-0.5 size-4 shrink-0 text-warning" />
+            {t('recruitment:applications.offerAwaitingResponse', { deadline: formatDate(offer.responseDeadline) })}
+          </p>
+          <ButtonLink to={`/student/applications/${candidacy.id}`} size="sm" className="w-full sm:w-auto sm:shrink-0">
+            {t('recruitment:applications.reviewOffer')}
+          </ButtonLink>
+        </div>
+      ) : (
+        <p className="text-body text-foreground-secondary">
+          {t(`recruitment:applications.statusGuidance.${candidacy.status}`)}
+          {candidacy.status === 'ACCEPTED' && (
+            <>
+              {' '}
+              <Link
+                to="/student/placements"
+                className="rounded-sm font-semibold text-link underline-offset-4 hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus-ring"
+              >
+                {t('recruitment:applications.viewInternship')}
+              </Link>
+            </>
+          )}
+        </p>
+      )}
+    </li>
   )
 }

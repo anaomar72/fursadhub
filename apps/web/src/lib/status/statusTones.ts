@@ -91,6 +91,69 @@ export const PRIVACY_REQUEST_TONE: Record<PrivacyRequestStatus, StatusTone> = {
   REJECTED: 'danger',
 }
 
+// ---------------------------------------------------------------- recruitment and placement
+// Read by the student workspace as well as by the recruitment and placement areas (dashboard,
+// applications, nominations, internship hub), so they are cross-feature machines and live here.
+
+/** Candidacy states — CLAUDE.md section 37. */
+export type CandidacyStatus =
+  | 'SUBMITTED'
+  | 'UNDER_REVIEW'
+  | 'SHORTLISTED'
+  | 'INTERVIEW'
+  | 'OFFERED'
+  | 'OFFER_DECLINED'
+  | 'OFFER_EXPIRED'
+  | 'ACCEPTED'
+  | 'REJECTED'
+  | 'WITHDRAWN'
+
+export const CANDIDACY_STATUS_TONE: Record<CandidacyStatus, StatusTone> = {
+  SUBMITTED: 'info',
+  UNDER_REVIEW: 'info',
+  SHORTLISTED: 'info',
+  INTERVIEW: 'info',
+  OFFERED: 'warning',
+  OFFER_DECLINED: 'neutral',
+  OFFER_EXPIRED: 'neutral',
+  ACCEPTED: 'success',
+  REJECTED: 'danger',
+  WITHDRAWN: 'neutral',
+}
+
+/** Nomination states — CLAUDE.md section 35. */
+export type NominationStatus = 'PENDING_STUDENT_CONSENT' | 'ACCEPTED' | 'DECLINED' | 'WITHDRAWN'
+
+export const NOMINATION_STATUS_TONE: Record<NominationStatus, StatusTone> = {
+  PENDING_STUDENT_CONSENT: 'warning',
+  ACCEPTED: 'success',
+  DECLINED: 'neutral',
+  WITHDRAWN: 'neutral',
+}
+
+/** Offer states — CLAUDE.md section 38. */
+export type OfferStatus = 'PENDING' | 'ACCEPTED' | 'DECLINED' | 'EXPIRED' | 'WITHDRAWN'
+
+export const OFFER_STATUS_TONE: Record<OfferStatus, StatusTone> = {
+  PENDING: 'warning',
+  ACCEPTED: 'success',
+  DECLINED: 'neutral',
+  EXPIRED: 'neutral',
+  WITHDRAWN: 'neutral',
+}
+
+/** Placement states — CLAUDE.md section 39. */
+export type PlacementStatus = 'PLANNED' | 'ACTIVE' | 'COMPLETION_PENDING' | 'COMPLETED' | 'CANCELLED' | 'TERMINATED'
+
+export const PLACEMENT_STATUS_TONE: Record<PlacementStatus, StatusTone> = {
+  PLANNED: 'info',
+  ACTIVE: 'success',
+  COMPLETION_PENDING: 'warning',
+  COMPLETED: 'success',
+  CANCELLED: 'neutral',
+  TERMINATED: 'danger',
+}
+
 /**
  * Tone for a status that arrives as a plain string on the wire. An unrecognised value — a state
  * added to a machine later — renders neutral instead of throwing.

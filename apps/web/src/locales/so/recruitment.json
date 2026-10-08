@@ -84,7 +84,21 @@
       "active": "Socda",
       "offers": "Dalabyo",
       "closed": "La xiray"
-    }
+    },
+    "statusGuidance": {
+      "SUBMITTED": "Hay'addu way haysaa codsigaaga.",
+      "UNDER_REVIEW": "Hay'addu waxay eegaysaa codsigaaga.",
+      "SHORTLISTED": "Waxaad ku jirtaa liiska kooban.",
+      "INTERVIEW": "Waxaad joogtaa heerka wareysiga. Hay'addu way kula soo xiriiri doontaa.",
+      "OFFERED": "Dalab ayaad haysataa.",
+      "OFFER_DECLINED": "Waad diiday dalabka.",
+      "OFFER_EXPIRED": "Dalabku wuu dhacay intaan jawaab la bixin.",
+      "ACCEPTED": "Waad aqbashay. Tababarkaaga waa la diyaariyay.",
+      "REJECTED": "Markan lama dooran.",
+      "WITHDRAWN": "Waad ka laabatay codsigan."
+    },
+    "reviewOffer": "Eeg dalabka",
+    "viewInternship": "Fiiri tababarka"
   },
   "detail": {
     "notFound": "Codsigan hadda lama heli karo.",
@@ -128,7 +142,19 @@
       "OPPORTUNITY_NOT_PUBLISHED": "Fursaddan hadda ma aqbalayso musharrixiin.",
       "generic": "Wax baa qaldamay. Fadlan isku day mar kale."
     },
-    "emptyUniversity": "Weli ma jiraan magacaabisyo."
+    "emptyUniversity": "Weli ma jiraan magacaabisyo.",
+    "subtitle": "Magacaabisyada jaamacaddaada ee tababarrada laga codsaday inay buuxiso.",
+    "emptyHint": "Marka jaamacaddaadu kuu magacaabto tababar, halkan ayay uga muuqan doontaa si aad u oggolaato. Uma baahnid magacaabis si aad si toos ah u codsato.",
+    "nominatedBy": "Waxaa ku magacaabay jaamacaddaada",
+    "nominatedOn": "La magacaabay {{date}}",
+    "respondedOn": "La jawaabay {{date}}",
+    "noteLabel": "Qoraal ka yimid jaamacaddaada",
+    "statusGuidance": {
+      "ACCEPTED": "Waad oggolaatay in lagu tixgeliyo. Hadda waxay ka muuqataa codsiyadaada.",
+      "DECLINED": "Waad diiday. Hay'adda looma muujin xogtaada.",
+      "WITHDRAWN": "Jaamacaddaadu way ka laabatay magacaabistan."
+    },
+    "viewApplications": "Fiiri codsiyada"
   },
   "pool": {
     "title": "Musharrixiinta",

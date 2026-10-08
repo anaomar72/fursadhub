@@ -2,7 +2,7 @@ import { useState } from 'react'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { useTranslation } from 'react-i18next'
 import { useParams } from 'react-router-dom'
-import { Button, ErrorState, LoadingState, EmptyState } from '../../../components/ui'
+import { Button, ErrorState, SkeletonList, EmptyState } from '../../../components/ui'
 import { apiErrorMessage } from '../../../lib/api/errorMessage'
 import * as weeklyLogsApi from '../api/weeklyLogsApi'
 import { WeeklyLogCard } from '../components/WeeklyLogCard'
@@ -88,7 +88,7 @@ export function WeeklyLogsPage({ audience }: WeeklyLogsPageProps) {
   })
 
   if (logsQuery.isLoading) {
-    return <LoadingState label={t('common:status.loading')} />
+    return <SkeletonList rows={3} />
   }
 
   if (logsQuery.isError) {
@@ -102,6 +102,13 @@ export function WeeklyLogsPage({ audience }: WeeklyLogsPageProps) {
   }
 
   const logs = logsQuery.data ?? []
+  // Phase 5: the student sees what needs them first — a log returned for changes, then drafts not
+  // yet submitted — and the rest in week order. Reviewers keep the plain week order they review in.
+  const NEEDS_STUDENT: Record<string, number> = { RETURNED_FOR_CHANGES: 0, DRAFT: 1 }
+  const ordered =
+    audience === 'student'
+      ? [...logs].sort((a, b) => (NEEDS_STUDENT[a.state] ?? 2) - (NEEDS_STUDENT[b.state] ?? 2) || a.weekNumber - b.weekNumber)
+      : logs
   const usedWeeks = new Set(logs.map((log) => log.weekNumber))
   const expectedWeeks = weeksQuery.data?.expectedWeekCount ?? 0
   const availableWeeks = Array.from({ length: expectedWeeks }, (_, index) => index + 1).filter(
@@ -164,7 +171,7 @@ export function WeeklyLogsPage({ audience }: WeeklyLogsPageProps) {
         />
       ) : (
         <div className="flex flex-col gap-3">
-          {logs.map((log) => (
+          {ordered.map((log) => (
             <WeeklyLogCard
               key={log.id}
               log={log}

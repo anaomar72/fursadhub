@@ -106,7 +106,11 @@
       "VALIDATION_FAILED": "Please check the form and try again.",
       "generic": "The attendance record could not be saved. Please try again."
     },
-    "emptyHint": "Attendance appears here once the workplace supervisor starts recording days for this internship."
+    "emptyHint": "Attendance appears here once the workplace supervisor starts recording days for this internship.",
+    "summaryLabel": "Attendance summary",
+    "toConfirm_one": "{{count}} day awaits your confirmation",
+    "toConfirm_other": "{{count}} days await your confirmation",
+    "allSettled": "Every recorded day is settled."
   },
   "evaluation": {
     "title": "Organization evaluation",
@@ -184,7 +188,15 @@
       "VALIDATION_FAILED": "Please check the form and try again.",
       "generic": "The final report could not be saved. Please try again."
     },
-    "notSubmittedYetHint": "The report becomes available for review once the student uploads it near the end of the internship."
+    "notSubmittedYetHint": "The report becomes available for review once the student uploads it near the end of the internship.",
+    "uploading": "Uploading your report…",
+    "studentNext": {
+      "MISSING": "Upload your report as a PDF, then submit it for review.",
+      "DRAFT": "Your report is uploaded but not submitted. Submit it when it is final.",
+      "SUBMITTED": "Your university is reviewing your report.",
+      "NEEDS_REVISION": "Update your report using the reviewer's comment, then submit it again.",
+      "APPROVED": "Your report is approved."
+    }
   },
   "defense": {
     "title": "Defense",
