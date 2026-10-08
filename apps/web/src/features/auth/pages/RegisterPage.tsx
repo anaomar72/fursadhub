@@ -9,22 +9,14 @@ import * as authApi from '../api/authApi'
 import { authErrorMessage } from '../api/errorMessage'
 import { AuthCard } from '../components/AuthCard'
 import { PasswordRequirements } from '../components/PasswordRequirements'
-import { Alert, Button, Checkbox, FormField, Icon, Input, PasswordInput, type IconName } from '../../../components/ui'
+import type { VerifyEmailLocationState } from './VerifyEmailPage'
+import { Alert, Button, Checkbox, FormField, Icon, Input, PasswordInput } from '../../../components/ui'
+import { ACCOUNT_TYPE_OPTIONS, type SelfServiceAccountType } from '../accountTypes'
 import { cn } from '../../../lib/utils/cn'
 import * as legalApi from '../../legal/api/legalApi'
 import { PENDING_TERMS_ACCEPTANCE_KEY } from '../../legal/pendingAcceptance'
 
-type RegisterRole = 'student' | 'organization' | 'university'
-
-/**
- * The three SELF-registration account types. Staff (coordinators, supervisors, recruiters) are
- * never offered here: tenant administrators create those accounts (CLAUDE.md section 26A).
- */
-const ROLE_OPTIONS: readonly { role: RegisterRole; icon: IconName }[] = [
-  { role: 'student', icon: 'graduationCap' },
-  { role: 'organization', icon: 'building' },
-  { role: 'university', icon: 'bank' },
-]
+type RegisterRole = SelfServiceAccountType
 
 function readRole(value: string | null): RegisterRole {
   return value === 'organization' || value === 'university' ? value : 'student'
@@ -84,8 +76,9 @@ export function RegisterPage() {
       }
       // `registered` makes the next screen acknowledge what just happened rather than opening cold
       // on a code field. Presentation only — it changes one confirmation line and grants nothing.
-      const params = new URLSearchParams({ email: data.email, role, registered: '1' })
-      navigate(`/verify-email?${params.toString()}`)
+      // The address itself travels in navigation state, never the URL (see VerifyEmailPage).
+      const params = new URLSearchParams({ role, registered: '1' })
+      navigate(`/verify-email?${params.toString()}`, { state: { email: data.email } satisfies VerifyEmailLocationState })
     },
   })
 
@@ -106,7 +99,7 @@ export function RegisterPage() {
         <fieldset className="min-w-0">
           <legend className="text-label text-foreground">{t('auth:register.roleSelector.label')}</legend>
           <div className="mt-2.5 grid gap-2">
-            {ROLE_OPTIONS.map(({ role: option, icon }) => {
+            {ACCOUNT_TYPE_OPTIONS.map(({ type: option, icon }) => {
               const selected = role === option
               return (
                 <label

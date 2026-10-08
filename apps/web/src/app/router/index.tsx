@@ -19,6 +19,7 @@ import { RequireUniversityCapability } from '../../features/university/component
 const RegisterPage = lazy(() => authArea().then((m) => ({ default: m.RegisterPage })))
 const LoginPage = lazy(() => authArea().then((m) => ({ default: m.LoginPage })))
 const VerifyEmailPage = lazy(() => authArea().then((m) => ({ default: m.VerifyEmailPage })))
+const GetStartedPage = lazy(() => authArea().then((m) => ({ default: m.GetStartedPage })))
 const ForgotPasswordPage = lazy(() => authArea().then((m) => ({ default: m.ForgotPasswordPage })))
 const ResetPasswordPage = lazy(() => authArea().then((m) => ({ default: m.ResetPasswordPage })))
 const StudentAreaLayout = lazy(() => studentArea().then((m) => ({ default: m.StudentAreaLayout })))
@@ -155,6 +156,16 @@ export const router = createBrowserRouter([
       { path: 'verify-email', element: <VerifyEmailPage /> },
       { path: 'forgot-password', element: <ForgotPasswordPage /> },
       { path: 'reset-password', element: <ResetPasswordPage /> },
+      // Signed-in, no workspace yet (see GetStartedPage). Inside the auth shell because it is the
+      // last step of getting an account going, not a page of any one portal.
+      {
+        path: 'get-started',
+        element: (
+          <RequireAuth>
+            <GetStartedPage />
+          </RequireAuth>
+        ),
+      },
     ],
   },
   {

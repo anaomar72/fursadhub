@@ -1,16 +1,18 @@
 import { render, screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
-import { MemoryRouter, Route, Routes, useSearchParams } from 'react-router-dom'
+import { MemoryRouter, Route, Routes, useLocation, useSearchParams } from 'react-router-dom'
 import { AppProviders } from '../../../src/app/providers/AppProviders'
 import { RegisterPage } from '../../../src/features/auth/pages/RegisterPage'
 import { VerifyEmailPage } from '../../../src/features/auth/pages/VerifyEmailPage'
 
 function VerifyEmailRoleProbe() {
   const [searchParams] = useSearchParams()
+  const location = useLocation()
   return (
     <div>
       <span>role param: {searchParams.get('role')}</span>
+      <output data-testid="verify-location" data-search={location.search} data-state-email={(location.state as { email?: string } | null)?.email ?? ''} />
       <VerifyEmailPage />
     </div>
   )
@@ -130,5 +132,21 @@ describe('RegisterPage', () => {
     await user.click(screen.getByRole('button', { name: /^register$/i }))
 
     expect(await screen.findByText('role param: organization')).toBeInTheDocument()
+  })
+
+  it('hands the address to the verify step in navigation state, never in the URL', async () => {
+    const user = userEvent.setup()
+    renderRegisterPage(<VerifyEmailRoleProbe />)
+
+    await user.type(screen.getByLabelText(/^email$/i), 'student@example.com')
+    await user.type(screen.getByLabelText(/^password$/i), 'Password123')
+    await user.type(screen.getByLabelText(/confirm password/i), 'Password123')
+    await user.click(screen.getByRole('button', { name: /^register$/i }))
+
+    const probe = await screen.findByTestId('verify-location')
+    expect(probe.getAttribute('data-search')).not.toMatch(/email|student%40|@/)
+    expect(probe).toHaveAttribute('data-state-email', 'student@example.com')
+    // The verify step still knows whom it is verifying.
+    expect(await screen.findByText(/student@example\.com/)).toBeInTheDocument()
   })
 })
