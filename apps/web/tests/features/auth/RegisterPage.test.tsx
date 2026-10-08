@@ -100,13 +100,13 @@ describe('RegisterPage', () => {
   it('only offers the backend-supported self-registration account types, defaulting to student', async () => {
     renderRegisterPage()
 
-    const studentOption = screen.getByRole('button', { name: /^student$/i })
-    const organizationOption = screen.getByRole('button', { name: /^organization$/i })
-    const universityOption = screen.getByRole('button', { name: /^university$/i })
+    const studentOption = screen.getByRole('radio', { name: /^student$/i })
+    const organizationOption = screen.getByRole('radio', { name: /^organization$/i })
+    const universityOption = screen.getByRole('radio', { name: /^university$/i })
 
-    expect(studentOption).toHaveAttribute('aria-pressed', 'true')
-    expect(organizationOption).toHaveAttribute('aria-pressed', 'false')
-    expect(universityOption).toHaveAttribute('aria-pressed', 'false')
+    expect(studentOption).toBeChecked()
+    expect(organizationOption).not.toBeChecked()
+    expect(universityOption).not.toBeChecked()
 
     // No internal staff role (CLAUDE.md section 23/26A) or platform-admin role is ever offered here.
     expect(screen.queryByText(/super.?admin/i)).not.toBeInTheDocument()
@@ -120,8 +120,8 @@ describe('RegisterPage', () => {
     const user = userEvent.setup()
     renderRegisterPage(<VerifyEmailRoleProbe />)
 
-    await user.click(screen.getByRole('button', { name: /^organization$/i }))
-    expect(screen.getByRole('button', { name: /^organization$/i })).toHaveAttribute('aria-pressed', 'true')
+    await user.click(screen.getByRole('radio', { name: /^organization$/i }))
+    expect(screen.getByRole('radio', { name: /^organization$/i })).toBeChecked()
     expect(screen.getByRole('link', { name: /login/i })).toHaveAttribute('href', '/login?role=organization')
 
     await user.type(screen.getByLabelText(/^email$/i), 'org@example.com')

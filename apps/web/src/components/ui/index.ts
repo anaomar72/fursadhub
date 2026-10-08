@@ -58,7 +58,7 @@ export { DataTable, type DataTableProps, type DataTableColumn } from './DataTabl
 export { Modal, type ModalProps } from './Modal'
 export { Drawer, type DrawerProps } from './Drawer'
 export { ConfirmationDialog, type ConfirmationDialogProps } from './ConfirmationDialog'
-export { Stepper, type StepItem } from './Stepper'
+export { Stepper, type StepItem, type StepperProps } from './Stepper'
 export { Timeline, type TimelineItem } from './Timeline'
 export { ProgressIndicator } from './ProgressIndicator'
 export { FileUpload, type FileUploadProps } from './FileUpload'

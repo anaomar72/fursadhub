@@ -125,7 +125,25 @@
       "browse": "Fiiri tabobarrada",
       "profile": "Dhammaystir bogga"
     },
-    "studentNumberHint": "Lambarka ardayga ee jaamacaddaadu ku siisay. Shaqaalaha jaamacaddu waxay ku hubiyaan diiwaannadooda."
+    "studentNumberHint": "Lambarka ardayga ee jaamacaddaadu ku siisay. Shaqaalaha jaamacaddu waxay ku hubiyaan diiwaannadooda.",
+    "whyTitle": "Sababta diiwaangelintaada loo xaqiijiyo",
+    "whyBody": "Ardayda ay xaqiijisay jaamacaddoodu oo keliya ayaa codsan kara tababaro ama la magacaabi karaa. Shaqaalaha jaamacaddaadu waxay faahfaahintan la barbar dhigaan diiwaankooda.",
+    "progressLabel": "Horumarka xaqiijinta diiwaangelinta",
+    "steps": {
+      "details": "Faahfaahinta diiwaangelinta",
+      "evidence": "Kaarka ardayga",
+      "submit": "Gudbi",
+      "review": "Dib-u-eegista jaamacadda",
+      "verified": "La xaqiijiyay"
+    },
+    "statusMeaning": {
+      "DRAFT": "Faahfaahintaada waa la keydiyay laakiin weli looma dirin jaamacaddaada. Soo geli kaarka ardaygaaga, kadib gudbi.",
+      "NEEDS_MORE_EVIDENCE": "Jaamacaddaadu waxay u baahan tahay caddayn dheeraad ah ka hor inta aysan go’aan gaarin. Akhri qoraalka hoose, soo geli dukumeenti cad ama ka duwan, kadib dib u gudbi.",
+      "REJECTED": "Jaamacaddaadu ma xaqiijin karin diiwaangelintan. La xiriir xafiiska tababarka jaamacaddaada haddii aad u malaynayso inay khalad tahay.",
+      "REVOKED": "Jaamacaddaadu way kala noqotay xaqiijintan. La xiriir xafiiska tababarka jaamacaddaada si loo xalliyo."
+    },
+    "reviewerNote": "Qoraal ka yimid jaamacaddaada",
+    "whileWaiting": "Inta aad sugeyso, waad dhammaystiri kartaa astaantaada oo daalacan kartaa tababarada. Codsashadu waxay furantaa marka diiwaangelintaada la xaqiijiyo."
   },
   "documents": {
     "onFile": "Waa la keydiyay",

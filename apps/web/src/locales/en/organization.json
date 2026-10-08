@@ -70,7 +70,24 @@
       "VALIDATION_FAILED": "Please check the form and try again.",
       "generic": "We couldn't create your organization right now. Check your connection and try again."
     },
-    "registrationNumberHint": "The official registration or license number shown on your organization's registration document. It is never shown on your public profile."
+    "registrationNumberHint": "The official registration or license number shown on your organization's registration document. It is never shown on your public profile.",
+    "stepDetails": "Organization details",
+    "sections": {
+      "identity": {
+        "title": "About your organization",
+        "description": "How your organization is named on FursadHub."
+      },
+      "registration": {
+        "title": "Registration details",
+        "description": "Used for verification only."
+      },
+      "public": {
+        "title": "Public information",
+        "description": "You can add or change this later from your organization profile."
+      }
+    },
+    "nextTitle": "After you create it",
+    "nextBody": "Your organization’s workspace opens straight away. From the organization profile, upload its registration document and submit it for verification — that is what unlocks publishing internships."
   },
   "publicProfile": {
     "notFound": "This organization could not be found.",
@@ -177,7 +194,8 @@
       "attach": "Attach your document, then select \"Submit for verification\".",
       "review": "FursadHub's verification team reviews your document and organization details.",
       "notify": "You'll get a notification when your organization is verified, or if the team asks for changes."
-    }
+    },
+    "verifiedBody": "Your organization is verified. You can publish internships."
   },
   "staff": {
     "title": "Staff",

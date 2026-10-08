@@ -2,6 +2,7 @@ import { useQuery } from '@tanstack/react-query'
 import { useTranslation } from 'react-i18next'
 import { Link } from 'react-router-dom'
 import * as universityApi from '../api/universityApi'
+import { InstitutionVerificationCue } from '../../../components/verification/InstitutionVerificationCue'
 import * as recruitmentApi from '../../recruitment/api/recruitmentApi'
 import * as placementsApi from '../../placements/api/placementsApi'
 import { useUniversityMembership } from '../components/UniversityMembershipContext'
@@ -55,6 +56,15 @@ function StaffDashboard() {
   const { t } = useTranslation()
   const { universityId, role } = useUniversityMembership()
   const isAdmin = role === 'UNIVERSITY_ADMIN'
+
+  // The university's own record, for the verification cue (admins only — they are the ones who can
+  // act on it). Same query key as the profile page.
+  const universityQuery = useQuery({
+    queryKey: ['university', 'detail', universityId],
+    queryFn: () => universityApi.getUniversityDetail(universityId),
+    enabled: isAdmin,
+    retry: false,
+  })
 
   const studentsQuery = useQuery({
     queryKey: ['university', 'students', universityId, ''],
@@ -137,6 +147,8 @@ function StaffDashboard() {
         title={t('university:dashboard.title')}
         description={t('university:dashboard.subtitle')}
       />
+
+      <InstitutionVerificationCue namespace="university" status={universityQuery.data?.status} to="/university/profile" />
 
       <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
         <StatCard

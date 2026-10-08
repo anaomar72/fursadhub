@@ -80,7 +80,7 @@ export function AuthStatus({ tone, title, description, actions, children }: Auth
 
         {description && (
           <p
-            className="mt-5 max-w-sm text-sm leading-6 text-foreground-secondary"
+            className="mt-5 max-w-sm text-body text-foreground-secondary"
             // A pending request and a failure are both things the user is waiting on an answer
             // about, so they are announced; a success already speaks through AnimatedCheck's own
             // live label, and announcing it twice is the duplicate-noise problem, not politeness.

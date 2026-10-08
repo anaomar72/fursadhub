@@ -54,7 +54,24 @@
       "VALIDATION_FAILED": "Please check the form and try again.",
       "generic": "We couldn't register your university right now. Check your connection and try again."
     },
-    "registrationNumberHint": "The official registration or accreditation number shown on your university's registration document. It is never shown on your public profile."
+    "registrationNumberHint": "The official registration or accreditation number shown on your university's registration document. It is never shown on your public profile.",
+    "stepDetails": "University details",
+    "sections": {
+      "identity": {
+        "title": "About your university",
+        "description": "How your university is named on FursadHub."
+      },
+      "registration": {
+        "title": "Registration details",
+        "description": "Used for verification only."
+      },
+      "public": {
+        "title": "Public information",
+        "description": "You can add or change this later from your university profile."
+      }
+    },
+    "nextTitle": "After you register it",
+    "nextBody": "Your university’s workspace opens straight away. From the university profile, upload its registration or accreditation document and submit it for verification — organizations can target your university with internships once it is verified."
   },
   "publicProfile": {
     "notFound": "This university could not be found.",
@@ -129,7 +146,20 @@
       "attach": "Attach your document, then select \"Submit for verification\".",
       "review": "FursadHub's verification team reviews your document and university details.",
       "notify": "You'll get a notification when your university is verified, or if the team asks for changes."
-    }
+    },
+    "verificationRestrictions": "Until your university is verified, organizations cannot target it with internship opportunities. You can keep setting up your workspace in the meantime.",
+    "verifiedBody": "Your university is verified. Organizations can target it with internship opportunities.",
+    "statusGuidance": {
+      "DRAFT": "Attach your registration or accreditation document below and submit it for verification.",
+      "SUBMITTED": "Your submission is with FursadHub. You will be notified when the review is complete.",
+      "UNDER_REVIEW": "FursadHub is reviewing your submission. You will be notified when it is complete.",
+      "NEEDS_CHANGES": "FursadHub has asked for changes. Update your university details or document and submit again.",
+      "REJECTED": "Your verification was rejected. Contact FursadHub before submitting again.",
+      "SUSPENDED": "Your verification is suspended. Contact FursadHub to resolve it.",
+      "REVOKED": "Your verification has been revoked. Contact FursadHub to resolve it.",
+      "VERIFIED": ""
+    },
+    "goToVerification": "Go to university profile"
   },
   "departments": {
     "title": "Departments",

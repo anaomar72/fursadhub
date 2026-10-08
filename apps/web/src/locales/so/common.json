@@ -431,7 +431,10 @@
     "closeDrawer": "Xir bogga dhinaca",
     "search": "Raadi",
     "progress": "Horumar",
-    "timeline": "Taxanaha wakhtiga"
+    "timeline": "Taxanaha wakhtiga",
+    "stepCompleted": "la dhammeeyay",
+    "stepCurrent": "tallaabada hadda",
+    "stepUpcoming": "weli lama bilaabin"
   },
   "notFound": {
     "title": "Bogga lama helin",
@@ -659,5 +662,24 @@
       "eyebrow": "Dalabka kadib",
       "finalReport": "Warbixinta ugu dambeysa"
     }
+  },
+  "onboarding": {
+    "progressLabel": "Horumarka diyaarinta akoonka",
+    "steps": {
+      "account": "Akoonka waa la sameeyay",
+      "email": "Iimaylka waa la xaqiijiyay",
+      "verification": "Xaqiijin"
+    }
+  },
+  "verification": {
+    "progressLabel": "Horumarka xaqiijinta",
+    "steps": {
+      "upload": "Soo geli dukumeentigaaga",
+      "submit": "U gudbi dib-u-eegis",
+      "review": "FursadHub ayaa dib u eegaysa",
+      "verified": "La xaqiijiyay"
+    },
+    "selectedFile": "La soo geliyay: {{name}}",
+    "statusHeading": "Xaaladda"
   }
 }

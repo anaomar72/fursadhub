@@ -125,7 +125,25 @@
       "browse": "Browse internships",
       "profile": "Complete your profile"
     },
-    "studentNumberHint": "The student number your university issued you. University staff check it against their records."
+    "studentNumberHint": "The student number your university issued you. University staff check it against their records.",
+    "whyTitle": "Why your enrollment is verified",
+    "whyBody": "Only students confirmed by their own university can apply to internships or be nominated. Your university’s staff check these details against their records.",
+    "progressLabel": "Enrollment verification progress",
+    "steps": {
+      "details": "Enrollment details",
+      "evidence": "Student ID",
+      "submit": "Submit",
+      "review": "University review",
+      "verified": "Verified"
+    },
+    "statusMeaning": {
+      "DRAFT": "Your details are saved but not yet sent to your university. Upload your student ID, then submit.",
+      "NEEDS_MORE_EVIDENCE": "Your university needs more evidence before it can decide. Read the note below, upload a clearer or different document, then resubmit.",
+      "REJECTED": "Your university could not confirm this enrollment. Contact your university’s internship office if you think this is a mistake.",
+      "REVOKED": "Your university has withdrawn this verification. Contact your university’s internship office to resolve it."
+    },
+    "reviewerNote": "Note from your university",
+    "whileWaiting": "While you wait, you can complete your profile and browse internships. Applying opens once your enrollment is verified."
   },
   "documents": {
     "onFile": "On file",

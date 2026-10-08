@@ -54,7 +54,24 @@
       "VALIDATION_FAILED": "Fadlan hubi foomka oo isku day mar kale.",
       "generic": "Hadda lama diiwaan gelin karin jaamacaddaada. Hubi xiriirkaaga oo isku day mar kale."
     },
-    "registrationNumberHint": "Lambarka rasmiga ah ee diiwaangelinta ama aqoonsiga ee ku qoran dukumeentiga diiwaangelinta jaamacaddaada. Weligii laguma muujiyo profile-kaaga dadweynaha."
+    "registrationNumberHint": "Lambarka rasmiga ah ee diiwaangelinta ama aqoonsiga ee ku qoran dukumeentiga diiwaangelinta jaamacaddaada. Weligii laguma muujiyo profile-kaaga dadweynaha.",
+    "stepDetails": "Faahfaahinta jaamacadda",
+    "sections": {
+      "identity": {
+        "title": "Ku saabsan jaamacaddaada",
+        "description": "Sida jaamacaddaada loogu magacaabo FursadHub."
+      },
+      "registration": {
+        "title": "Faahfaahinta diiwaangelinta",
+        "description": "Waxaa loo isticmaalaa xaqiijinta oo keliya."
+      },
+      "public": {
+        "title": "Macluumaadka guud",
+        "description": "Mar dambe waad ku dari kartaa ama beddeli kartaa bogga jaamacadda."
+      }
+    },
+    "nextTitle": "Marka aad diiwaangeliso kadib",
+    "nextBody": "Goobta shaqada jaamacaddaadu isla markiiba way furmaysaa. Bogga jaamacadda ka soo geli dukumeentiga diiwaangelinta ama aqoonsiga oo u gudbi xaqiijin — ururradu waxay jaamacaddaada ku beegsan karaan tababaro marka la xaqiijiyo."
   },
   "publicProfile": {
     "notFound": "Jaamacaddan lama helin.",
@@ -129,7 +146,20 @@
       "attach": "Ku lifaaq dukumeentigaaga, kadibna dooro \"U gudbi xaqiijinta\".",
       "review": "Kooxda xaqiijinta FursadHub ayaa dib u eegaysa dukumeentigaaga iyo faahfaahinta jaamacaddaada.",
       "notify": "Waa lagu wargelin doonaa marka jaamacaddaada la xaqiijiyo, ama haddii kooxdu codsato isbeddello."
-    }
+    },
+    "verificationRestrictions": "Ilaa jaamacaddaada la xaqiijiyo, ururradu kuma beegsan karaan fursado tababar. Inta lagu jiro waad sii wadi kartaa diyaarinta goobtaada shaqada.",
+    "verifiedBody": "Jaamacaddaada waa la xaqiijiyay. Ururradu waxay ku beegsan karaan fursado tababar.",
+    "statusGuidance": {
+      "DRAFT": "Hoos ku lifaaq dukumeentiga diiwaangelinta ama aqoonsiga kadibna u gudbi xaqiijinta.",
+      "SUBMITTED": "Codsigaagu wuxuu la joogaa FursadHub. Waa lagu wargelin doonaa marka dib-u-eegistu dhammaato.",
+      "UNDER_REVIEW": "FursadHub wuxuu dib u eegayaa codsigaaga. Waa lagu wargelin doonaa marka la dhammeeyo.",
+      "NEEDS_CHANGES": "FursadHub wuxuu codsaday isbeddello. Cusbooneysii faahfaahinta jaamacadda ama dukumeentiga kadibna dib u gudbi.",
+      "REJECTED": "Xaqiijintaadii waa la diiday. La xiriir FursadHub ka hor inta aadan dib u gudbin.",
+      "SUSPENDED": "Xaqiijintaadu waa hakad. La xiriir FursadHub si loo xalliyo.",
+      "REVOKED": "Xaqiijintaadii waa la burburiyay. La xiriir FursadHub si loo xalliyo.",
+      "VERIFIED": ""
+    },
+    "goToVerification": "U gudub bogga jaamacadda"
   },
   "departments": {
     "title": "Qaybaha",

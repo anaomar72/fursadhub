@@ -2,6 +2,8 @@ import { useQuery } from '@tanstack/react-query'
 import { useTranslation } from 'react-i18next'
 import { Link } from 'react-router-dom'
 import * as opportunityApi from '../../opportunities/api/opportunityApi'
+import * as organizationApi from '../api/organizationApi'
+import { InstitutionVerificationCue } from '../../../components/verification/InstitutionVerificationCue'
 import * as placementsApi from '../../placements/api/placementsApi'
 import { useOrganizationMembership } from '../components/OrganizationMembershipContext'
 import { organizationCapabilities } from '../organizationCapabilities'
@@ -93,6 +95,15 @@ function AdminDashboard() {
   const { organizationId } = membership
   const can = organizationCapabilities(membership)
 
+  // The organization's own record, for the verification cue — the same query the profile page
+  // runs, so after the profile has been opened this is served from cache.
+  const organizationQuery = useQuery({
+    queryKey: ['organization', 'detail', organizationId],
+    queryFn: () => organizationApi.getOrganization(organizationId),
+    enabled: can.canEditProfile,
+    retry: false,
+  })
+
   const opportunitiesQuery = useQuery({
     queryKey: ['opportunities', 'organization', organizationId],
     queryFn: () => opportunityApi.listOrganizationOpportunities(organizationId),
@@ -158,6 +169,9 @@ function AdminDashboard() {
           )
         }
       />
+
+      {/* First-use cue: until the organization is verified, what that means and where to finish it. */}
+      <InstitutionVerificationCue namespace="organization" status={organizationQuery.data?.verificationStatus} to="/organization/profile" />
 
       <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
         <StatCard

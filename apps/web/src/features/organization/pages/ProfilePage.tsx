@@ -15,8 +15,7 @@ import {
   type UpdateOrganizationFormValues,
 } from '../schemas/organizationProfileSchema'
 import { buildOrganizationProfilePayload, toOrganizationFormValues } from '../organizationProfilePayload'
-import { VerificationGateNotice } from '../components/VerificationGateNotice'
-import { VerificationNextSteps } from '../../../components/verification/VerificationNextSteps'
+import { InstitutionVerificationPanel } from '../../../components/verification/InstitutionVerificationPanel'
 import { apiErrorMessage } from '../../../lib/api/errorMessage'
 import {
   Alert,
@@ -32,12 +31,10 @@ import {
   PageHeader,
   ProfileBanner,
   Select,
-  StatusBadge,
   Textarea,
 } from '../../../components/ui'
 import { PageContainer } from '../../../app/layouts/PageContainer'
 import { formatDate } from '../../../lib/utils/formatDate'
-import { INSTITUTION_VERIFICATION_TONE } from '../../../lib/status/statusTones'
 
 /**
  * The organization's own record, and its institution-verification state (CLAUDE.md section 31).
@@ -109,6 +106,8 @@ export function ProfilePage() {
   })
 
   const [evidenceError, setEvidenceError] = useState<string | null>(null)
+  // The name of the file just uploaded, so the upload zone can say exactly what is on file.
+  const [lastEvidenceName, setLastEvidenceName] = useState<string | null>(null)
   const evidenceMutation = useMutation({
     mutationFn: (file: File) => {
       setEvidenceError(null)
@@ -117,7 +116,10 @@ export function ProfilePage() {
         throw cause
       })
     },
-    onSuccess: invalidate,
+    onSuccess: (_data, file) => {
+      setLastEvidenceName(file.name)
+      void invalidate()
+    },
   })
 
   const [logoError, setLogoError] = useState<string | null>(null)
@@ -155,9 +157,6 @@ export function ProfilePage() {
   const organization = organizationQuery.data
   if (!organization) return null
 
-  const canSubmitForVerification =
-    organization.verificationStatus === 'DRAFT' || organization.verificationStatus === 'NEEDS_CHANGES'
-
   return (
     <PageContainer className="flex flex-col gap-6">
       <PageHeader
@@ -165,14 +164,23 @@ export function ProfilePage() {
         description={t('organization:profile.subtitle')}
         actions={<>
           {organization.verificationStatus === 'VERIFIED' && <Link to={`/organizations/${organization.id}`} className="inline-flex min-h-10 items-center rounded-lg border border-border px-4 text-sm font-semibold text-link">{t('common:remediation.viewPublicProfile')}</Link>}
-          <StatusBadge tone={INSTITUTION_VERIFICATION_TONE[organization.verificationStatus]}>
-            {t(`organization:profile.verificationStatusValues.${organization.verificationStatus}`)}
-          </StatusBadge>
         </>}
       />
 
-      {/* Backend Phase B1.5. Explains, before anything else, why publish/resume are unavailable. */}
-      <VerificationGateNotice status={organization.verificationStatus} canEditProfile={can.canEditProfile} />
+      {/* Directly under the heading: the one step that unlocks the institution, with its status,
+          meaning, progress, upload and next steps in one place. */}
+      <InstitutionVerificationPanel
+        namespace="organization"
+        status={organization.verificationStatus}
+        hasEvidence={!!organization.hasEvidence}
+        canManage={can.canEditProfile}
+        upload={{ onFile: (file) => evidenceMutation.mutate(file), pending: evidenceMutation.isPending, error: evidenceError, lastFileName: lastEvidenceName }}
+        submit={{
+          onSubmit: () => submitMutation.mutate(),
+          pending: submitMutation.isPending,
+          error: submitMutation.isError ? apiErrorMessage(t, 'organization', 'profile', submitMutation.error) : null,
+        }}
+      />
 
       {/* Backend Phase B2 cover. hasCover is a flag, never a file id (CLAUDE.md section 47); the
           bytes come from the public route, and the upload timestamp busts the browser cache after a
@@ -435,64 +443,6 @@ export function ProfilePage() {
         </Card>
       )}
 
-      {can.canEditProfile && canSubmitForVerification && (
-        <Card padding="lg">
-          <h2 className="font-display text-base font-bold text-brand-navy dark:text-foreground">
-            {t('organization:profile.verificationTitle')}
-          </h2>
-          <p className="mt-1 text-sm text-foreground-secondary">
-            {t('organization:profile.submitForVerificationBody')}
-          </p>
-          {/* Exactly the actions OrganizationVerificationGuard gates — see organizationVerificationGating.ts. */}
-          <p className="mt-1 text-sm text-foreground-secondary">{t('organization:profile.verificationRestrictions')}</p>
-
-          <div className="mt-5">
-            {/* PDF, 10MB: FileClassification.ORGANIZATION_VERIFICATION_EVIDENCE. One file; a new upload replaces it. */}
-            <FileUpload
-              label={t('organization:profile.evidence.label')}
-              hint={t('organization:profile.evidence.hint')}
-              accept="application/pdf"
-              disabled={evidenceMutation.isPending}
-              invalid={!!evidenceError}
-              onFiles={(files) => files[0] && evidenceMutation.mutate(files[0])}
-            />
-            <p className="mt-2 text-xs text-foreground-secondary">{t('organization:profile.evidence.privacy')}</p>
-            {evidenceMutation.isPending && (
-              <p className="mt-2 text-xs text-foreground-secondary">{t('organization:profile.evidence.uploading')}</p>
-            )}
-            {organization.hasEvidence && !evidenceMutation.isPending && (
-              <p className="mt-2 text-sm text-success">{t('organization:profile.evidence.attached')}</p>
-            )}
-            {evidenceError && (
-              <p className="mt-2 text-sm text-danger" role="alert">
-                {evidenceError}
-              </p>
-            )}
-          </div>
-
-          {submitMutation.isError && (
-            <Alert tone="danger" className="mt-4">
-              {apiErrorMessage(t, 'organization', 'profile', submitMutation.error)}
-            </Alert>
-          )}
-
-          <div className="mt-5 border-t border-border pt-5">
-            <VerificationNextSteps namespace="organization" />
-            <Button
-              type="button"
-              variant="outline"
-              loading={submitMutation.isPending}
-              disabled={!organization.hasEvidence}
-              onClick={() => submitMutation.mutate()}
-            >
-              {t('organization:profile.submitForVerification')}
-            </Button>
-            {!organization.hasEvidence && (
-              <p className="mt-2 text-xs text-foreground-secondary">{t('organization:profile.evidence.required')}</p>
-            )}
-          </div>
-        </Card>
-      )}
     </PageContainer>
   )
 }

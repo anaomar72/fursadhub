@@ -3,6 +3,7 @@ import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { useTranslation } from 'react-i18next'
+import { Link } from 'react-router-dom'
 import * as studentApi from '../api/studentApi'
 import * as documentsApi from '../api/documentsApi'
 import { PrivateDocumentUpload } from '../components/PrivateDocumentUpload'
@@ -12,14 +13,65 @@ import type { StudentEnrollmentResponse } from '../types'
 import { enrollmentSchema, type EnrollmentFormValues } from '../schemas/enrollmentSchema'
 import { apiErrorMessage } from '../../../lib/api/errorMessage'
 import { ApiError } from '../../../lib/api/client'
-import { Button, FormField, Input, LoadingSpinner, PageHeader, Select, StatusBadge } from '../../../components/ui'
+import { PageContainer } from '../../../app/layouts/PageContainer'
+import {
+  Alert,
+  Button,
+  FormField,
+  Icon,
+  Input,
+  PageHeader,
+  Panel,
+  Select,
+  Skeleton,
+  SkeletonRegion,
+  SkeletonText,
+  StatusBadge,
+  Stepper,
+} from '../../../components/ui'
 import { formatTime } from '../../../lib/utils/formatDate'
 import { ENROLLMENT_VERIFICATION_TONE, toneOf } from '../../../lib/status/statusTones'
 
+/**
+ * The five real stages of enrollment verification (CLAUDE.md sections 27-30): the student claims
+ * their enrollment, provides their student ID, submits, their university reviews, and the
+ * enrollment is verified. `NEEDS_MORE_EVIDENCE` sends the student back to the ID step.
+ */
+function useEnrollmentSteps() {
+  const { t } = useTranslation()
+  return (['details', 'evidence', 'submit', 'review', 'verified'] as const).map((key) => ({
+    label: t(`student:enrollment.steps.${key}`),
+  }))
+}
+
+function stepFor(enrollment: StudentEnrollmentResponse | undefined): number {
+  if (!enrollment) return 0
+  switch (enrollment.verificationStatus) {
+    case 'DRAFT':
+      return enrollment.hasDraftEvidence ? 2 : 1
+    case 'NEEDS_MORE_EVIDENCE':
+      return 1
+    case 'SUBMITTED':
+    case 'UNDER_REVIEW':
+      return 3
+    default:
+      return 0
+  }
+}
+
+/**
+ * The student's university affiliation and its verification.
+ *
+ * <p>Every state answers four questions: what the status is, what it means, what the student can do
+ * now, and what happens next. The workflow itself is unchanged — claim, upload, submit, and the
+ * in-person code while the university reviews — and nothing here promises a review time or implies
+ * the review is automatic: it is done by the university's own staff.
+ */
 export function EnrollmentPage() {
   const { t } = useTranslation()
   const queryClient = useQueryClient()
   const [editing, setEditing] = useState(false)
+  const steps = useEnrollmentSteps()
 
   const enrollmentQuery = useQuery({
     queryKey: ['student', 'enrollment'],
@@ -51,15 +103,19 @@ export function EnrollmentPage() {
 
   if (enrollmentQuery.isLoading) {
     return (
-      <div className="flex justify-center py-16">
-        <LoadingSpinner size="lg" label={t('common:status.loading')} />
-      </div>
+      <PageContainer width="narrow">
+        <SkeletonRegion className="flex flex-col gap-6">
+          <Skeleton className="h-8 w-64 max-w-full" />
+          <SkeletonText lines={2} />
+          <Skeleton className="h-40 w-full rounded-lg" />
+        </SkeletonRegion>
+      </PageContainer>
     )
   }
 
   if (!enrollmentQuery.data || enrollmentNotFound || editing) {
     return (
-      <div className="mx-auto max-w-lg px-4 py-10 sm:px-6">
+      <PageContainer width="narrow">
         <ClaimForm
           existing={enrollmentQuery.data}
           onDone={() => {
@@ -68,56 +124,82 @@ export function EnrollmentPage() {
           }}
           onCancelEdit={enrollmentQuery.data ? () => setEditing(false) : undefined}
         />
-      </div>
+      </PageContainer>
     )
   }
 
   const enrollment = enrollmentQuery.data
-  const tone = toneOf(ENROLLMENT_VERIFICATION_TONE, enrollment.verificationStatus)
-  const canEdit = enrollment.verificationStatus === 'DRAFT' || enrollment.verificationStatus === 'NEEDS_MORE_EVIDENCE'
+  const status = enrollment.verificationStatus
+  const tone = toneOf(ENROLLMENT_VERIFICATION_TONE, status)
+  const canEdit = status === 'DRAFT' || status === 'NEEDS_MORE_EVIDENCE'
+  const pending = status === 'SUBMITTED' || status === 'UNDER_REVIEW'
+  const closed = status === 'REJECTED' || status === 'REVOKED'
 
   /*
    * A verified enrollment is a finished thing, so it gets a finished screen rather than the
    * submission layout with a tick bolted on. Returning early is what guarantees none of the
    * upload/submit/resubmit affordances below can reach a student who has nothing left to do.
    */
-  if (enrollment.verificationStatus === 'VERIFIED') {
+  if (status === 'VERIFIED') {
     return (
-      <div className="mx-auto max-w-2xl px-4 py-10 sm:px-6">
+      <PageContainer width="narrow">
         <PageHeader title={t('student:enrollment.title')} />
         <div className="mt-6">
           <VerifiedEnrollment enrollment={enrollment} />
         </div>
-      </div>
+      </PageContainer>
     )
   }
 
+  const meaning = pending
+    ? t('student:enrollment.pendingReviewBody')
+    : t(`student:enrollment.statusMeaning.${status}`, { defaultValue: '' })
+
   return (
-    <div className="mx-auto max-w-lg px-4 py-10 sm:px-6">
+    <PageContainer width="narrow" className="flex flex-col gap-6">
       <PageHeader title={t('student:enrollment.title')} />
 
-      <div className="mt-6 rounded-lg border border-border bg-surface p-5">
-        <div className="flex items-center justify-between">
-          <span className="text-sm font-medium text-foreground-secondary">{t('student:enrollment.statusLabel')}</span>
-          <StatusBadge tone={tone}>{t(`student:enrollment.status.${enrollment.verificationStatus}`)}</StatusBadge>
-        </div>
+      {!closed && (
+        <Stepper
+          orientation="horizontal"
+          label={t('student:enrollment.progressLabel')}
+          steps={steps}
+          currentStep={stepFor(enrollment)}
+          attention={status === 'NEEDS_MORE_EVIDENCE'}
+        />
+      )}
 
-        <dl className="mt-4 grid grid-cols-1 gap-2 text-sm">
-          <Row label={t('student:enrollment.studentNumberLabel')} value={enrollment.studentNumber} />
-          <Row label={t('student:enrollment.programLabel')} value={enrollment.program} />
-          <Row label={t('student:enrollment.academicYearLabel')} value={enrollment.academicYear} />
-        </dl>
+      {/* ------------------------------------------------------------ status: what it is, what it means */}
+      <Panel
+        title={t('student:enrollment.statusLabel')}
+        action={<StatusBadge tone={tone}>{t(`student:enrollment.status.${status}`)}</StatusBadge>}
+        footer={
+          canEdit ? (
+            <button
+              type="button"
+              onClick={() => setEditing(true)}
+              className="rounded-sm font-semibold text-link underline-offset-4 hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus-ring"
+            >
+              {t('student:enrollment.editDetails')}
+            </button>
+          ) : undefined
+        }
+      >
+        {meaning && <p className="text-body-lg text-foreground">{meaning}</p>}
 
-        {canEdit && (
-          <button
-            type="button"
-            onClick={() => setEditing(true)}
-            className="mt-4 text-sm font-medium text-link hover:underline"
-          >
-            {t('student:enrollment.editDetails')}
-          </button>
+        {(status === 'NEEDS_MORE_EVIDENCE' || closed) && caseQuery.data?.reviewNotes && (
+          <div className={closed ? 'mt-4 rounded-lg border border-danger/25 bg-danger-bg p-4' : 'mt-4 rounded-lg border border-warning/25 bg-warning-bg p-4'}>
+            <p className="text-label text-foreground">{t('student:enrollment.reviewerNote')}</p>
+            <p className="mt-1 whitespace-pre-line text-body text-foreground-secondary">{caseQuery.data.reviewNotes}</p>
+          </div>
         )}
-      </div>
+
+        <dl className="mt-5 grid gap-3 border-t border-border pt-5 sm:grid-cols-3">
+          <Fact label={t('student:enrollment.studentNumberLabel')} value={enrollment.studentNumber} />
+          <Fact label={t('student:enrollment.programLabel')} value={enrollment.program} />
+          <Fact label={t('student:enrollment.academicYearLabel')} value={enrollment.academicYear} />
+        </dl>
+      </Panel>
 
       {/*
         Phase 7 evidence. Offered from the moment a case exists and while it is still open, since
@@ -126,95 +208,81 @@ export function EnrollmentPage() {
         verification officer — never by any organization user (CLAUDE.md sections 31, 60).
       */}
       {canEdit && (
-        <div className="mt-6">
-          <PrivateDocumentUpload
-            title={t('student:evidence.title')}
-            description={t('student:evidence.description')}
-            present={enrollment.hasDraftEvidence === true || caseQuery.data?.hasEvidence === true}
-            accept="application/pdf,image/jpeg,image/png"
-            allowPhoto
-            errorPage="evidence"
-            invalidateKeys={[['student', 'verification-case'], ['student', 'enrollment']]}
-            onUpload={documentsApi.uploadMyEvidence}
-            onDownload={documentsApi.downloadMyEvidence}
-            downloadFilename="verification-evidence"
-          />
-        </div>
+        <PrivateDocumentUpload
+          title={t('student:evidence.title')}
+          description={t('student:evidence.description')}
+          present={enrollment.hasDraftEvidence === true || caseQuery.data?.hasEvidence === true}
+          accept="application/pdf,image/jpeg,image/png"
+          allowPhoto
+          errorPage="evidence"
+          invalidateKeys={[['student', 'verification-case'], ['student', 'enrollment']]}
+          onUpload={documentsApi.uploadMyEvidence}
+          onDownload={documentsApi.downloadMyEvidence}
+          downloadFilename="verification-evidence"
+        />
       )}
 
-      {enrollment.verificationStatus === 'DRAFT' && (
-        <div className="mt-6">
-          {submitMutation.isError && (
-            <p className="mb-2 text-sm text-danger" role="alert">
-              {apiErrorMessage(t, 'student', 'enrollment', submitMutation.error)}
-            </p>
-          )}
-          {!enrollment.hasDraftEvidence && <p className="mb-3 text-sm text-foreground-secondary">{t('common:remediation.studentIdRequired')}</p>}
-          <Button disabled={!enrollment.hasDraftEvidence} loading={submitMutation.isPending} onClick={() => submitMutation.mutate()} className="w-full sm:w-auto">
+      {status === 'DRAFT' && (
+        <div className="flex flex-col gap-3">
+          {submitMutation.isError && <Alert tone="danger">{apiErrorMessage(t, 'student', 'enrollment', submitMutation.error)}</Alert>}
+          {!enrollment.hasDraftEvidence && <p className="text-body text-foreground-secondary">{t('common:remediation.studentIdRequired')}</p>}
+          <Button size="lg" disabled={!enrollment.hasDraftEvidence} loading={submitMutation.isPending} onClick={() => submitMutation.mutate()} className="w-full sm:w-auto sm:self-start">
             {t('student:enrollment.submitForVerification')}
           </Button>
         </div>
       )}
 
-      {enrollment.verificationStatus === 'NEEDS_MORE_EVIDENCE' && (
-        <div className="mt-6 rounded-lg border border-warning bg-warning-bg p-4">
-          <p className="text-sm font-medium text-foreground">{t('student:enrollment.needsMoreEvidenceTitle')}</p>
-          {caseQuery.data?.reviewNotes && <p className="mt-1 text-sm text-foreground-secondary">{caseQuery.data.reviewNotes}</p>}
-          <Button
-            variant="outline"
-            loading={submitMutation.isPending}
-            disabled={!caseQuery.data?.hasEvidence}
-            onClick={() => submitMutation.mutate()}
-            className="mt-4"
-          >
+      {status === 'NEEDS_MORE_EVIDENCE' && (
+        <div className="flex flex-col gap-3">
+          {submitMutation.isError && <Alert tone="danger">{apiErrorMessage(t, 'student', 'enrollment', submitMutation.error)}</Alert>}
+          <Button size="lg" loading={submitMutation.isPending} disabled={!caseQuery.data?.hasEvidence} onClick={() => submitMutation.mutate()} className="w-full sm:w-auto sm:self-start">
             {t('student:enrollment.resubmit')}
           </Button>
         </div>
       )}
 
-      {(enrollment.verificationStatus === 'SUBMITTED' || enrollment.verificationStatus === 'UNDER_REVIEW') && (
-        <div className="mt-6 rounded-lg border border-border bg-surface p-4">
-          <p className="text-sm text-foreground-secondary">{t('student:enrollment.pendingReviewBody')}</p>
-          <p className="mt-3 text-sm font-medium text-foreground">{t('student:enrollment.challengeTitle')}</p>
-          <p className="text-sm text-foreground-secondary">{t('student:enrollment.challengeBody')}</p>
-
+      {pending && (
+        <Panel title={t('student:enrollment.challengeTitle')} headingLevel="h2">
+          <p className="text-body text-foreground-secondary">{t('student:enrollment.challengeBody')}</p>
           {challengeMutation.data ? (
-            <div className="mt-3 rounded-md bg-surface-muted p-4 text-center">
-              <p className="text-2xl font-semibold tracking-widest text-foreground">{challengeMutation.data.code}</p>
-              <p className="mt-1 text-xs text-foreground-secondary">
+            <div className="mt-4 rounded-lg bg-surface-muted p-5 text-center">
+              <p className="font-display text-metric tracking-[0.3em] tabular-nums text-foreground">{challengeMutation.data.code}</p>
+              <p className="mt-1 text-caption text-foreground-secondary">
                 {t('student:enrollment.challengeExpires', { time: formatTime(challengeMutation.data.expiresAt) })}
               </p>
             </div>
           ) : (
-            <Button
-              variant="outline"
-              loading={challengeMutation.isPending}
-              onClick={() => challengeMutation.mutate()}
-              className="mt-3"
-            >
+            <Button variant="outline" loading={challengeMutation.isPending} onClick={() => challengeMutation.mutate()} className="mt-4">
               {t('student:enrollment.generateCode')}
             </Button>
           )}
-        </div>
+        </Panel>
       )}
 
-      {(enrollment.verificationStatus === 'REJECTED' || enrollment.verificationStatus === 'REVOKED') && (
-        <div className="mt-6 rounded-lg border border-danger bg-danger-bg p-4">
-          <p className="text-sm font-medium text-foreground">
-            {t(`student:enrollment.${enrollment.verificationStatus === 'REJECTED' ? 'rejectedTitle' : 'revokedTitle'}`)}
-          </p>
-          {caseQuery.data?.reviewNotes && <p className="mt-1 text-sm text-foreground-secondary">{caseQuery.data.reviewNotes}</p>}
+      {/* No dead end: what the student can do while the university decides. Applying stays closed
+          until the enrollment is verified, and the copy says so. */}
+      {(pending || canEdit) && (
+        <div className="flex flex-col gap-3 rounded-lg bg-surface-muted p-4 sm:flex-row sm:items-center sm:justify-between">
+          <p className="text-body text-foreground-secondary">{t('student:enrollment.whileWaiting')}</p>
+          <div className="flex shrink-0 flex-wrap gap-x-4 gap-y-2">
+            <Link to="/student/profile" className="rounded-sm text-body font-semibold text-link underline-offset-4 hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus-ring">
+              {t('student:enrollment.verified.profile')}
+            </Link>
+            <Link to="/student/opportunities" className="rounded-sm text-body font-semibold text-link underline-offset-4 hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus-ring">
+              {t('student:enrollment.verified.browse')}
+            </Link>
+          </div>
         </div>
       )}
-    </div>
+    </PageContainer>
   )
 }
 
-function Row({ label, value }: { label: string; value: string }) {
+function Fact({ label, value }: { label: string; value: string }) {
   return (
-    <div className="flex justify-between gap-4">
-      <dt className="text-foreground-secondary">{label}</dt>
-      <dd className="font-medium text-foreground">{value}</dd>
+    <div className="min-w-0">
+      <dt className="text-caption text-foreground-secondary">{label}</dt>
+      <dd className="mt-0.5 break-words text-body font-semibold text-foreground">{value}</dd>
     </div>
   )
 }
@@ -229,6 +297,7 @@ function ClaimForm({
   onCancelEdit?: () => void
 }) {
   const { t } = useTranslation()
+  const steps = useEnrollmentSteps()
 
   const universitiesQuery = useQuery({ queryKey: ['universities'], queryFn: universityApi.listUniversities })
 
@@ -262,16 +331,36 @@ function ClaimForm({
     onSuccess: onDone,
   })
 
+  const errors = form.formState.errors
+
   return (
-    <div>
+    <div className="flex flex-col gap-6">
       <PageHeader
         title={t(existing ? 'student:enrollment.editTitle' : 'student:enrollment.claimTitle')}
         description={t('student:enrollment.claimSubtitle')}
       />
 
-      <form className="mt-6 flex flex-col gap-4" noValidate onSubmit={form.handleSubmit((values) => mutation.mutate(values))}>
-        <FormField label={t('student:enrollment.universityLabel')} htmlFor="universityId">
-          <Select id="universityId" {...form.register('universityId')}>
+      {!existing && (
+        <Stepper orientation="horizontal" label={t('student:enrollment.progressLabel')} steps={steps} currentStep={0} />
+      )}
+
+      {/* Why this exists, before the student is asked for anything. */}
+      <div className="flex items-start gap-3 rounded-lg bg-surface-muted p-4">
+        <Icon name="shield" className="mt-0.5 size-5 shrink-0 text-info" />
+        <div className="min-w-0">
+          <p className="text-label text-foreground">{t('student:enrollment.whyTitle')}</p>
+          <p className="mt-1 text-body text-foreground-secondary">{t('student:enrollment.whyBody')}</p>
+        </div>
+      </div>
+
+      <form className="flex flex-col gap-4" noValidate onSubmit={form.handleSubmit((values) => mutation.mutate(values))}>
+        <FormField
+          label={t('student:enrollment.universityLabel')}
+          htmlFor="universityId"
+          required
+          error={errors.universityId && t(errors.universityId.message ?? '')}
+        >
+          <Select id="universityId" disabled={universitiesQuery.isLoading} {...form.register('universityId')}>
             <option value="">{t('student:enrollment.selectPlaceholder')}</option>
             {universitiesQuery.data?.map((u) => (
               <option key={u.id} value={u.id}>
@@ -281,8 +370,13 @@ function ClaimForm({
           </Select>
         </FormField>
 
-        <FormField label={t('student:enrollment.departmentLabel')} htmlFor="departmentId">
-          <Select id="departmentId" disabled={!selectedUniversityId} {...form.register('departmentId')}>
+        <FormField
+          label={t('student:enrollment.departmentLabel')}
+          htmlFor="departmentId"
+          required
+          error={errors.departmentId && t(errors.departmentId.message ?? '')}
+        >
+          <Select id="departmentId" disabled={!selectedUniversityId || departmentsQuery.isLoading} {...form.register('departmentId')}>
             <option value="">{t('student:enrollment.selectPlaceholder')}</option>
             {departmentsQuery.data?.map((d) => (
               <option key={d.id} value={d.id}>
@@ -295,31 +389,39 @@ function ClaimForm({
         <FormField
           label={t('student:enrollment.studentNumberLabel')}
           htmlFor="studentNumber"
+          required
           hint={t('student:enrollment.studentNumberHint')}
+          error={errors.studentNumber && t(errors.studentNumber.message ?? '')}
         >
-          <Input id="studentNumber" {...form.register('studentNumber')} />
+          <Input id="studentNumber" invalid={!!errors.studentNumber} {...form.register('studentNumber')} />
         </FormField>
 
-        <FormField label={t('student:enrollment.programLabel')} htmlFor="program">
-          <Input id="program" {...form.register('program')} />
+        <FormField
+          label={t('student:enrollment.programLabel')}
+          htmlFor="program"
+          required
+          error={errors.program && t(errors.program.message ?? '')}
+        >
+          <Input id="program" invalid={!!errors.program} {...form.register('program')} />
         </FormField>
 
-        <FormField label={t('student:enrollment.academicYearLabel')} htmlFor="academicYear">
-          <Input id="academicYear" placeholder="2025/2026" {...form.register('academicYear')} />
+        <FormField
+          label={t('student:enrollment.academicYearLabel')}
+          htmlFor="academicYear"
+          required
+          error={errors.academicYear && t(errors.academicYear.message ?? '')}
+        >
+          <Input id="academicYear" placeholder="2025/2026" invalid={!!errors.academicYear} {...form.register('academicYear')} />
         </FormField>
 
-        {mutation.isError && (
-          <p className="text-sm text-danger" role="alert">
-            {apiErrorMessage(t, 'student', 'enrollment', mutation.error)}
-          </p>
-        )}
+        {mutation.isError && <Alert tone="danger">{apiErrorMessage(t, 'student', 'enrollment', mutation.error)}</Alert>}
 
-        <div className="mt-2 flex gap-3">
-          <Button type="submit" loading={mutation.isPending}>
+        <div className="mt-2 flex flex-col gap-3 border-t border-border pt-5 sm:flex-row">
+          <Button type="submit" size="lg" loading={mutation.isPending} className="w-full sm:w-auto">
             {t(existing ? 'student:enrollment.saveChanges' : 'student:enrollment.claimSubmit')}
           </Button>
           {onCancelEdit && (
-            <Button type="button" variant="ghost" onClick={onCancelEdit}>
+            <Button type="button" variant="ghost" size="lg" onClick={onCancelEdit} className="w-full sm:w-auto">
               {t('student:enrollment.cancel')}
             </Button>
           )}

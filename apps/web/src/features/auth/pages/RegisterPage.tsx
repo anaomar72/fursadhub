@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { useForm } from 'react-hook-form'
+import { useForm, useWatch } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useMutation, useQuery } from '@tanstack/react-query'
 import { useTranslation } from 'react-i18next'
@@ -8,19 +8,36 @@ import { registerSchema, type RegisterFormValues } from '../schemas/registerSche
 import * as authApi from '../api/authApi'
 import { authErrorMessage } from '../api/errorMessage'
 import { AuthCard } from '../components/AuthCard'
-import { Button, Checkbox, FormField, Input, PasswordInput } from '../../../components/ui'
+import { PasswordRequirements } from '../components/PasswordRequirements'
+import { Alert, Button, Checkbox, FormField, Icon, Input, PasswordInput, type IconName } from '../../../components/ui'
 import { cn } from '../../../lib/utils/cn'
 import * as legalApi from '../../legal/api/legalApi'
 import { PENDING_TERMS_ACCEPTANCE_KEY } from '../../legal/pendingAcceptance'
 
 type RegisterRole = 'student' | 'organization' | 'university'
 
-const ROLE_OPTIONS: readonly RegisterRole[] = ['student', 'organization', 'university']
+/**
+ * The three SELF-registration account types. Staff (coordinators, supervisors, recruiters) are
+ * never offered here: tenant administrators create those accounts (CLAUDE.md section 26A).
+ */
+const ROLE_OPTIONS: readonly { role: RegisterRole; icon: IconName }[] = [
+  { role: 'student', icon: 'graduationCap' },
+  { role: 'organization', icon: 'building' },
+  { role: 'university', icon: 'bank' },
+]
 
 function readRole(value: string | null): RegisterRole {
   return value === 'organization' || value === 'university' ? value : 'student'
 }
 
+/**
+ * Account creation. Order follows the decision a person makes: first WHO they are registering as
+ * (with what happens next for that kind of account), then their sign-in details, then consent.
+ *
+ * <p>The account type is presentation and routing only — the request body is still just email and
+ * password; the type rides along in the URL to choose the next screen's guidance and the first
+ * destination after sign-in. Nothing about it is trusted by the server.
+ */
 export function RegisterPage() {
   const { t, i18n } = useTranslation()
   const navigate = useNavigate()
@@ -32,6 +49,7 @@ export function RegisterPage() {
     resolver: zodResolver(registerSchema),
     defaultValues: { email: '', password: '', confirmPassword: '' },
   })
+  const password = useWatch({ control: form.control, name: 'password' })
   const [acceptedTerms, setAcceptedTerms] = useState(false)
   const [termsError, setTermsError] = useState(false)
 
@@ -65,9 +83,7 @@ export function RegisterPage() {
         )
       }
       // `registered` makes the next screen acknowledge what just happened rather than opening cold
-      // on a code field. It is presentation only — it changes one confirmation line and grants
-      // nothing — and the verification page works identically without it, which is what happens
-      // when someone returns to that URL later.
+      // on a code field. Presentation only — it changes one confirmation line and grants nothing.
       const params = new URLSearchParams({ email: data.email, role, registered: '1' })
       navigate(`/verify-email?${params.toString()}`)
     },
@@ -76,7 +92,7 @@ export function RegisterPage() {
   return (
     <AuthCard title={t('auth:register.title')} subtitle={t('auth:register.subtitle')}>
       <form
-        className="flex flex-col gap-4"
+        className="flex flex-col gap-6"
         noValidate
         onSubmit={form.handleSubmit((values) => {
           if (termsGateActive && !acceptedTerms) {
@@ -86,154 +102,182 @@ export function RegisterPage() {
           registerMutation.mutate({ email: values.email, password: values.password })
         })}
       >
-        <FormField
-          label={t('auth:register.emailLabel')}
-          htmlFor="email"
-          error={form.formState.errors.email && t(form.formState.errors.email.message ?? '')}
-        >
-          <Input
-            id="email"
-            type="email"
-            autoComplete="email"
-            placeholder={t('auth:register.emailPlaceholder')}
-            invalid={!!form.formState.errors.email}
-            {...form.register('email')}
-          />
-        </FormField>
-
-        <FormField
-          label={t('auth:register.passwordLabel')}
-          htmlFor="password"
-          // Stated before typing, not only after a failed submit. Mirrors PasswordPolicy.REGEX.
-          hint={t('auth:register.passwordHint')}
-          error={form.formState.errors.password && t(form.formState.errors.password.message ?? '')}
-        >
-          <PasswordInput
-            id="password"
-            autoComplete="new-password"
-            placeholder={t('auth:register.passwordPlaceholder')}
-            invalid={!!form.formState.errors.password}
-            showLabel={t('common:password.show')}
-            hideLabel={t('common:password.hide')}
-            {...form.register('password')}
-          />
-        </FormField>
-
-        <FormField
-          label={t('auth:register.confirmPasswordLabel')}
-          htmlFor="confirmPassword"
-          error={form.formState.errors.confirmPassword && t(form.formState.errors.confirmPassword.message ?? '')}
-        >
-          <PasswordInput
-            id="confirmPassword"
-            autoComplete="new-password"
-            placeholder={t('auth:register.confirmPasswordPlaceholder')}
-            invalid={!!form.formState.errors.confirmPassword}
-            showLabel={t('common:password.show')}
-            hideLabel={t('common:password.hide')}
-            {...form.register('confirmPassword')}
-          />
-        </FormField>
-
-        <div>
-          <span className="text-sm font-medium text-foreground">{t('auth:register.roleSelector.label')}</span>
-          <div className="mt-2 grid grid-cols-3 gap-2">
-            {ROLE_OPTIONS.map((option) => (
-              <button
-                key={option}
-                type="button"
-                aria-pressed={role === option}
-                onClick={() => selectRole(option)}
-                className={cn(
-                  'flex flex-col items-center gap-2 rounded-md border px-2 py-3 text-xs font-semibold transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus-ring',
-                  role === option
-                    ? 'border-brand-primary bg-brand-blue-soft text-brand-blue dark:border-info dark:bg-info-bg dark:text-info'
-                    : 'border-border text-foreground-secondary hover:bg-control-hover',
-                )}
-              >
-                <RoleIcon role={option} className="size-5" />
-                {t(`auth:register.roleSelector.${option}`)}
-              </button>
-            ))}
+        {/* ------------------------------------------------------------ account type */}
+        <fieldset className="min-w-0">
+          <legend className="text-label text-foreground">{t('auth:register.roleSelector.label')}</legend>
+          <div className="mt-2.5 grid gap-2">
+            {ROLE_OPTIONS.map(({ role: option, icon }) => {
+              const selected = role === option
+              return (
+                <label
+                  key={option}
+                  className={cn(
+                    'flex cursor-pointer items-start gap-3 rounded-lg border p-3.5 transition-colors duration-150 motion-reduce:transition-none',
+                    'focus-within:ring-2 focus-within:ring-focus-ring',
+                    selected ? 'border-action-primary bg-brand-accent-soft' : 'border-border-strong bg-surface hover:bg-control-hover',
+                  )}
+                >
+                  <input
+                    type="radio"
+                    name="account-type"
+                    value={option}
+                    checked={selected}
+                    onChange={() => selectRole(option)}
+                    // Named by the title only; the explanation is its description.
+                    aria-labelledby={`account-type-${option}-label`}
+                    aria-describedby={`account-type-${option}-hint`}
+                    className="sr-only"
+                  />
+                  {/* The visible radio mark: filled when chosen, so the state never rests on colour. */}
+                  <span
+                    aria-hidden="true"
+                    className={cn(
+                      'mt-0.5 flex size-5 shrink-0 items-center justify-center rounded-full border-2',
+                      selected ? 'border-action-primary' : 'border-border-strong',
+                    )}
+                  >
+                    {selected && <span className="size-2.5 rounded-full bg-action-primary" />}
+                  </span>
+                  <span className="min-w-0 flex-1">
+                    <span id={`account-type-${option}-label`} className="flex items-center gap-2 text-body font-semibold text-foreground">
+                      <Icon name={icon} className="size-4 shrink-0 text-foreground-secondary" />
+                      {t(`auth:register.roleSelector.${option}`)}
+                    </span>
+                    <span id={`account-type-${option}-hint`} className="mt-1 block text-caption text-foreground-secondary">
+                      {t(`auth:register.roleSelector.${option}Hint`)}
+                    </span>
+                  </span>
+                </label>
+              )
+            })}
           </div>
-        </div>
+          <p className="mt-2.5 flex items-start gap-1.5 text-caption text-foreground-secondary">
+            <Icon name="info" className="mt-px size-3.5 shrink-0" />
+            {t('auth:register.staffNote')}
+          </p>
+        </fieldset>
+
+        {/* ------------------------------------------------------------ sign-in details */}
+        <fieldset className="flex min-w-0 flex-col gap-4 border-t border-border pt-6">
+          <legend className="sr-only">{t('auth:register.accountSection')}</legend>
+          <FormField
+            label={t('auth:register.emailLabel')}
+            htmlFor="email"
+            required
+            error={form.formState.errors.email && t(form.formState.errors.email.message ?? '')}
+          >
+            <Input
+              id="email"
+              type="email"
+              autoComplete="email"
+              placeholder={t('auth:register.emailPlaceholder')}
+              invalid={!!form.formState.errors.email}
+              {...form.register('email')}
+            />
+          </FormField>
+
+          <div className="flex flex-col gap-2">
+            <FormField
+              label={t('auth:register.passwordLabel')}
+              htmlFor="password"
+              required
+              // Stated before typing, not only after a failed submit. Mirrors PasswordPolicy.REGEX.
+              hint={t('auth:register.passwordHint')}
+              error={form.formState.errors.password && t(form.formState.errors.password.message ?? '')}
+            >
+              <PasswordInput
+                id="password"
+                autoComplete="new-password"
+                placeholder={t('auth:register.passwordPlaceholder')}
+                invalid={!!form.formState.errors.password}
+                showLabel={t('common:password.show')}
+                hideLabel={t('common:password.hide')}
+                {...form.register('password')}
+              />
+            </FormField>
+            <PasswordRequirements id="password-requirements" value={password ?? ''} />
+          </div>
+
+          <FormField
+            label={t('auth:register.confirmPasswordLabel')}
+            htmlFor="confirmPassword"
+            required
+            error={form.formState.errors.confirmPassword && t(form.formState.errors.confirmPassword.message ?? '')}
+          >
+            <PasswordInput
+              id="confirmPassword"
+              autoComplete="new-password"
+              placeholder={t('auth:register.confirmPasswordPlaceholder')}
+              invalid={!!form.formState.errors.confirmPassword}
+              showLabel={t('common:password.show')}
+              hideLabel={t('common:password.hide')}
+              {...form.register('confirmPassword')}
+            />
+          </FormField>
+        </fieldset>
 
         {termsGateActive && (
-          <Checkbox
-            id="accept-terms"
-            checked={acceptedTerms}
-            onChange={(event) => {
-              setAcceptedTerms(event.target.checked)
-              if (event.target.checked) setTermsError(false)
-            }}
-            invalid={termsError}
-            label={
-              <span>
-                {t('auth:register.acceptTermsPrefix')}{' '}
-                {documentsRequiringAcceptance.map((doc, index) => (
-                  <span key={doc.id}>
-                    <a
-                      href={`/legal/${doc.documentType.toLowerCase().replace(/_/g, '-')}`}
-                      target="_blank"
-                      rel="noreferrer"
-                      className="font-medium text-link underline-offset-2 hover:underline"
-                    >
-                      {t(`legal:documentTypes.${doc.documentType}`)}
-                    </a>
-                    {index < documentsRequiringAcceptance.length - 2
-                      ? ', '
-                      : index === documentsRequiringAcceptance.length - 2
-                        ? ` ${t('auth:register.acceptTermsAnd')} `
-                        : ''}
-                  </span>
-                ))}
-              </span>
-            }
-          />
-        )}
-        {termsError && (
-          <p className="text-sm text-danger" role="alert">
-            {t('auth:register.acceptTermsRequired')}
-          </p>
-        )}
-
-        {registerMutation.isError && (
-          <p className="text-sm text-danger" role="alert">
-            {authErrorMessage(t, 'register', registerMutation.error)}
-          </p>
+          <div>
+            <Checkbox
+              id="accept-terms"
+              checked={acceptedTerms}
+              onChange={(event) => {
+                setAcceptedTerms(event.target.checked)
+                if (event.target.checked) setTermsError(false)
+              }}
+              invalid={termsError}
+              label={
+                <span>
+                  {t('auth:register.acceptTermsPrefix')}{' '}
+                  {documentsRequiringAcceptance.map((doc, index) => (
+                    <span key={doc.id}>
+                      <a
+                        href={`/legal/${doc.documentType.toLowerCase().replace(/_/g, '-')}`}
+                        target="_blank"
+                        rel="noreferrer"
+                        className="font-medium text-link underline-offset-2 hover:underline"
+                      >
+                        {t(`legal:documentTypes.${doc.documentType}`)}
+                      </a>
+                      {index < documentsRequiringAcceptance.length - 2
+                        ? ', '
+                        : index === documentsRequiringAcceptance.length - 2
+                          ? ` ${t('auth:register.acceptTermsAnd')} `
+                          : ''}
+                    </span>
+                  ))}
+                </span>
+              }
+            />
+            {termsError && (
+              <p className="mt-2 flex items-start gap-1.5 text-body text-danger" role="alert">
+                <Icon name="alert" className="mt-0.5 size-4 shrink-0" />
+                {t('auth:register.acceptTermsRequired')}
+              </p>
+            )}
+          </div>
         )}
 
-        <Button type="submit" loading={registerMutation.isPending} className="mt-2 w-full">
-          {t('auth:register.submit')}
-        </Button>
+        {registerMutation.isError && <Alert tone="danger">{authErrorMessage(t, 'register', registerMutation.error)}</Alert>}
+
+        <div>
+          <Button type="submit" size="lg" loading={registerMutation.isPending} className="w-full">
+            {t('auth:register.submit')}
+          </Button>
+          {/* What happens the moment they press it — so the next screen is not a surprise. */}
+          <p className="mt-3 text-center text-caption text-foreground-secondary">{t('auth:register.nextStep')}</p>
+        </div>
       </form>
 
-      <p className="mt-6 text-center text-sm text-foreground-secondary">
+      <p className="mt-8 border-t border-border pt-6 text-center text-body text-foreground-secondary">
         {t('auth:register.haveAccount')}{' '}
-        <Link to={`/login?role=${role}`} className="font-medium text-link hover:underline">
+        <Link
+          to={`/login?role=${role}`}
+          className="rounded-sm font-semibold text-link underline-offset-4 hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus-ring"
+        >
           {t('auth:register.signIn')}
         </Link>
       </p>
     </AuthCard>
-  )
-}
-
-function RoleIcon({ role, className }: { role: RegisterRole; className?: string }) {
-  return (
-    <svg viewBox="0 0 24 24" className={className} fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
-      {role === 'student' ? (
-        <>
-          <path d="M22 10 12 5 2 10l10 5 10-5Z" />
-          <path d="M6 12v5c0 1.5 2.7 3 6 3s6-1.5 6-3v-5" />
-        </>
-      ) : role === 'organization' ? (
-        <>
-          <rect x="3" y="8" width="18" height="12" rx="1.5" />
-          <path d="M9 8V6a2 2 0 0 1 2-2h2a2 2 0 0 1 2 2v2" />
-        </>
-      ) : (
-        <path d="m3 10 9-6 9 6M5 10v8M9 10v8M15 10v8M19 10v8M3 21h18" />
-      )}
-    </svg>
   )
 }

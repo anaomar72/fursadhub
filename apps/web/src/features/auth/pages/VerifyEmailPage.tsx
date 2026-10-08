@@ -136,11 +136,11 @@ export function VerifyEmailPage() {
             />
           </FormField>
           {resendMutation.isError && (
-            <p className="text-sm text-danger" role="alert">
+            <p className="text-body text-danger" role="alert">
               {authErrorMessage(t, 'verifyEmail', resendMutation.error)}
             </p>
           )}
-          <Button type="submit" loading={resendMutation.isPending} className="w-full">
+          <Button type="submit" size="lg" loading={resendMutation.isPending} className="w-full">
             {t('auth:verifyEmail.sendCode')}
           </Button>
         </form>
@@ -219,7 +219,10 @@ export function VerifyEmailPage() {
   }
 
   return (
-    <AuthCard title={t('auth:verifyEmail.title')} subtitle={t('auth:verifyEmail.subtitle', { email })}>
+    <AuthCard
+      title={t('auth:verifyEmail.title')}
+      subtitle={t('auth:verifyEmail.subtitle', { email })}
+    >
       {/* Arriving straight from registration. It confirms the one thing that definitely happened —
           the account exists — and nothing beyond it: not that the address is valid, not that any
           institution has been approved. Someone who opens this URL later never sees it. */}
@@ -238,9 +241,13 @@ export function VerifyEmailPage() {
         invalid={verifyMutation.isError}
         label={t('auth:verifyEmail.codeLabel')}
       />
+      {/* Says what the auto-submit will do BEFORE it does it, so the form disappearing on the
+          fourth digit is expected rather than startling. Presentation only — the submit rules
+          (whole code only, never the same code twice) live in `submit` above. */}
+      <p className="mt-3 text-center text-caption text-foreground-secondary">{t('auth:verifyEmail.autoHint')}</p>
 
       {verifyMutation.isError && (
-        <p className="mt-4 text-center text-sm text-danger" role="alert">
+        <p className="mt-4 text-center text-body text-danger" role="alert">
           {authErrorMessage(t, 'verifyEmail', verifyMutation.error)}
         </p>
       )}
@@ -249,18 +256,19 @@ export function VerifyEmailPage() {
         onClick={() => submit(code)}
         loading={verifyMutation.isPending}
         disabled={code.length !== CODE_LENGTH || verifyMutation.isPending || isLocked}
+        size="lg"
         className="mt-6 w-full"
       >
         {t('auth:verifyEmail.verify')}
       </Button>
 
-      <div className="mt-6 text-center text-sm text-foreground-secondary">
+      <div className="mt-6 text-center text-body text-foreground-secondary">
         {secondsLeft > 0 ? (
           <span>{t('auth:verifyEmail.resendCooldown', { seconds: secondsLeft })}</span>
         ) : (
           <button
             type="button"
-            className="font-medium text-link hover:underline disabled:opacity-60"
+            className="rounded-sm font-semibold text-link underline-offset-4 hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus-ring disabled:opacity-60"
             onClick={handleResend}
             disabled={resendMutation.isPending}
           >
@@ -280,9 +288,9 @@ export function VerifyEmailPage() {
       {/* The route out for someone whose address is in fact already verified. The server cannot
           tell us that (see the comment above the expired/locked branch), so instead of guessing,
           the page simply keeps the door to sign-in visible from here. */}
-      <p className="mt-6 text-center text-sm text-foreground-secondary">
+      <p className="mt-8 border-t border-border pt-6 text-center text-body text-foreground-secondary">
         {t('auth:verifyEmail.alreadyVerifiedPrompt')}{' '}
-        <Link to={role ? `/login?role=${role}` : '/login'} className="font-medium text-link hover:underline">
+        <Link to={role ? `/login?role=${role}` : '/login'} className="rounded-sm font-semibold text-link underline-offset-4 hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus-ring">
           {t('auth:verifyEmail.backToLogin')}
         </Link>
       </p>

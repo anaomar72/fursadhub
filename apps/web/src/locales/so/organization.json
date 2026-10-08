@@ -70,7 +70,24 @@
       "VALIDATION_FAILED": "Fadlan hubi foomka oo isku day mar kale.",
       "generic": "Hadda lama abuuri karin ururkaaga. Hubi xiriirkaaga oo isku day mar kale."
     },
-    "registrationNumberHint": "Lambarka rasmiga ah ee diiwaangelinta ama shatiga ee ku qoran dukumeentiga diiwaangelinta ururkaaga. Weligii laguma muujiyo profile-kaaga dadweynaha."
+    "registrationNumberHint": "Lambarka rasmiga ah ee diiwaangelinta ama shatiga ee ku qoran dukumeentiga diiwaangelinta ururkaaga. Weligii laguma muujiyo profile-kaaga dadweynaha.",
+    "stepDetails": "Faahfaahinta ururka",
+    "sections": {
+      "identity": {
+        "title": "Ku saabsan ururkaaga",
+        "description": "Sida ururkaaga loogu magacaabo FursadHub."
+      },
+      "registration": {
+        "title": "Faahfaahinta diiwaangelinta",
+        "description": "Waxaa loo isticmaalaa xaqiijinta oo keliya."
+      },
+      "public": {
+        "title": "Macluumaadka guud",
+        "description": "Mar dambe waad ku dari kartaa ama beddeli kartaa bogga ururka."
+      }
+    },
+    "nextTitle": "Marka aad samayso kadib",
+    "nextBody": "Goobta shaqada ururkaagu isla markiiba way furmaysaa. Bogga ururka ka soo geli dukumeentiga diiwaangelinta oo u gudbi xaqiijin — taasi ayaa furta daabacaadda tababarada."
   },
   "publicProfile": {
     "notFound": "Ururkan lama helin.",
@@ -177,7 +194,8 @@
       "attach": "Ku lifaaq dukumeentigaaga, kadibna dooro \"U gudbi xaqiijinta\".",
       "review": "Kooxda xaqiijinta FursadHub ayaa dib u eegaysa dukumeentigaaga iyo faahfaahinta ururkaaga.",
       "notify": "Waa lagu wargelin doonaa marka ururkaaga la xaqiijiyo, ama haddii kooxdu codsato isbeddello."
-    }
+    },
+    "verifiedBody": "Ururkaaga waa la xaqiijiyay. Waxaad daabici kartaa tababaro."
   },
   "staff": {
     "title": "Shaqaalaha",

@@ -431,7 +431,10 @@
     "closeDrawer": "Close drawer",
     "search": "Search",
     "progress": "Progress",
-    "timeline": "Timeline"
+    "timeline": "Timeline",
+    "stepCompleted": "completed",
+    "stepCurrent": "current step",
+    "stepUpcoming": "not started"
   },
   "notFound": {
     "title": "Page not found",
@@ -659,5 +662,24 @@
       "eyebrow": "After the offer",
       "finalReport": "Final report"
     }
+  },
+  "onboarding": {
+    "progressLabel": "Account setup progress",
+    "steps": {
+      "account": "Account created",
+      "email": "Email verified",
+      "verification": "Verification"
+    }
+  },
+  "verification": {
+    "progressLabel": "Verification progress",
+    "steps": {
+      "upload": "Upload your document",
+      "submit": "Submit for review",
+      "review": "FursadHub reviews it",
+      "verified": "Verified"
+    },
+    "selectedFile": "Uploaded: {{name}}",
+    "statusHeading": "Status"
   }
 }

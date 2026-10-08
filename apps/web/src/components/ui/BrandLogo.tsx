@@ -1,5 +1,6 @@
 import markNavy from '../../assets/brand/fursadhub-mark-navy.webp'
 import markWhite from '../../assets/brand/fursadhub-mark-white.webp'
+import { useTranslation } from 'react-i18next'
 import { cn } from '../../lib/utils/cn'
 
 export interface BrandLogoProps {
@@ -37,6 +38,7 @@ export function BrandLogo({
   withTagline = false,
   className,
 }: BrandLogoProps) {
+  const { t } = useTranslation()
   // 'dark' is an always-dark context (a navy band, the navy rail, the footer), so it pins the
   // white tile. 'light' means whatever the page surface is — light in the light theme, and dark
   // once the visitor switches themes — so it carries BOTH marks and lets the theme choose.
@@ -76,11 +78,12 @@ export function BrandLogo({
         {withTagline && (
           <span
             className={cn(
-              'mt-1 block truncate text-[11px] leading-none',
+              'mt-1 block truncate text-caption leading-none',
               surface === 'dark' ? 'text-white/70' : 'text-foreground-secondary',
             )}
           >
-            Opportunities for a Brighter Tomorrow
+            {/* The approved tagline, translated (common:app.tagline) — it was hard-coded in English. */}
+            {t('common:app.tagline')}
           </span>
         )}
       </span>
