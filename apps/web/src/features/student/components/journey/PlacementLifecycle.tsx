@@ -9,11 +9,34 @@ import { deriveLifecycle, type LifecycleStep, type PlacementSignals } from '../.
  * The pages each audience can open for a requirement — exactly the routes that exist for it. The
  * student has no evaluation page (the backend shows it only once FINAL); the organization has only
  * the workplace records (attendance, evaluation) — weekly logs, the report and the defense are
- * university-only academic content.
+ * university-only academic content; the university opens all five (the evaluation read-only).
  */
-const MODULE_PATH: Record<'student' | 'organization', Partial<Record<CompletionRequirementType, string>>> = {
+type LifecycleAudience = 'student' | 'organization' | 'university'
+
+const MODULE_PATH: Record<LifecycleAudience, Partial<Record<CompletionRequirementType, string>>> = {
   student: { WEEKLY_LOGS: 'weekly-logs', ATTENDANCE: 'attendance', FINAL_REPORT: 'final-report', DEFENSE: 'defense' },
   organization: { ATTENDANCE: 'attendance', ORGANIZATION_EVALUATION: 'evaluation' },
+  university: {
+    WEEKLY_LOGS: 'weekly-logs',
+    ATTENDANCE: 'attendance',
+    ORGANIZATION_EVALUATION: 'evaluation',
+    FINAL_REPORT: 'final-report',
+    DEFENSE: 'defense',
+  },
+}
+
+/** Staff read the evaluation's own state; the student reads it as their supervisor's work. */
+const EVALUATION_WORDING: Record<LifecycleAudience, string> = {
+  student: 'student:journey.lifecycle.details.evaluation',
+  organization: 'organization:workspace.lifecycle.evaluation',
+  university: 'university:workspace.lifecycle.evaluation',
+}
+
+/** Who is waiting on whom once the organization hands the internship over for completion. */
+const COMPLETION_PENDING_WORDING: Record<LifecycleAudience, string> = {
+  student: 'student:journey.lifecycle.details.completionPending',
+  organization: 'organization:workspace.lifecycle.completionPending',
+  university: 'university:workspace.lifecycle.completionPending',
 }
 
 interface PlacementLifecycleProps {
@@ -23,8 +46,8 @@ interface PlacementLifecycleProps {
   completionUnavailable?: boolean
   /** Link each requirement to its module page (the hub, the dashboard). */
   linkModules?: boolean
-  /** Whose wording and routes: the student's own, or the host organization's staff. */
-  audience?: 'student' | 'organization'
+  /** Whose wording and routes: the student's own, the host organization's staff, or the university's. */
+  audience?: LifecycleAudience
   className?: string
 }
 
@@ -82,7 +105,7 @@ function describeStep(
   placement: PlacementResponse,
   signals: PlacementSignals,
   t: (key: string, options?: Record<string, unknown>) => string,
-  audience: 'student' | 'organization' = 'student',
+  audience: LifecycleAudience = 'student',
 ): string | undefined {
   const k = 'student:journey.lifecycle.details'
   const ended = placement.status === 'CANCELLED' || placement.status === 'TERMINATED'
@@ -95,7 +118,7 @@ function describeStep(
       return undefined
     case 'completion':
       if (placement.status === 'COMPLETED') return t(`${k}.completedOn`, { date: formatDate(placement.completedAt) })
-      if (placement.status === 'COMPLETION_PENDING') return t(`${k}.completionPending`)
+      if (placement.status === 'COMPLETION_PENDING') return t(COMPLETION_PENDING_WORDING[audience])
       if (ended) return t(`${k}.ended`)
       return undefined
     case 'WEEKLY_LOGS':
@@ -107,9 +130,7 @@ function describeStep(
     case 'ORGANIZATION_EVALUATION':
       // The student's copy speaks of "your supervisor"; staff read the evaluation's own state.
       if (!step.detail) return undefined
-      return audience === 'organization'
-        ? t(`organization:workspace.lifecycle.evaluation.${step.detail}`, { defaultValue: '' }) || undefined
-        : t(`${k}.evaluation.${step.detail}`, { defaultValue: '' }) || undefined
+      return t(`${EVALUATION_WORDING[audience]}.${step.detail}`, { defaultValue: '' }) || undefined
     case 'FINAL_REPORT':
       return step.detail ? t(`${k}.finalReport.${step.detail}`, { defaultValue: '' }) || undefined : undefined
     case 'DEFENSE': {

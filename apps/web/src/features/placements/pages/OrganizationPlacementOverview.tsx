@@ -20,8 +20,7 @@ import type { PlacementResponse } from '../types'
  * <p>What needs doing on this internship, where it stands (the same lifecycle tracker the student
  * sees, driven by the same backend completion checklist, but in staff wording and linking only to
  * the records the organization can open), the lifecycle commands for the roles that run it, and who
- * supervises it. The university's view of a placement is a different page (PlacementDetailPage) and
- * is unchanged.
+ * supervises it. The university's view of a placement is its own page (UniversityPlacementOverview).
  *
  * <p>Authority mirrors the backend: only the assigned organization supervisor confirms or resolves
  * attendance and writes the evaluation (AttendanceService / PlacementEvaluationService lock for the

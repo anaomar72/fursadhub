@@ -485,7 +485,8 @@
         "DRAFT": "Draft in progress",
         "SUBMITTED": "Submitted, not final",
         "FINAL": "Final"
-      }
+      },
+      "completionPending": "Waiting for the university’s completion decision"
     }
   }
 }

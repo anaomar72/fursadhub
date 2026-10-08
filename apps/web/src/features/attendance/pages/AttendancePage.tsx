@@ -3,11 +3,11 @@ import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { useTranslation } from 'react-i18next'
 import { useParams } from 'react-router-dom'
 import { Button, ErrorState, FormField, Input, SkeletonList, Select, StatusBadge, Textarea, EmptyState } from '../../../components/ui'
-import type { StatusTone } from '../../../components/ui'
 import { apiErrorMessage } from '../../../lib/api/errorMessage'
 import * as attendanceApi from '../api/attendanceApi'
-import type { AttendanceConfirmationStatus, AttendanceResponse, AttendanceValue } from '../types'
+import type { AttendanceResponse, AttendanceValue } from '../types'
 import { formatDate } from '../../../lib/utils/formatDate'
+import { ATTENDANCE_CONFIRMATION_TONE } from '../../../lib/status/statusTones'
 
 const ATTENDANCE_VALUES: AttendanceValue[] = ['PRESENT', 'ABSENT', 'EXCUSED']
 
@@ -15,12 +15,7 @@ const ATTENDANCE_VALUES: AttendanceValue[] = ['PRESENT', 'ABSENT', 'EXCUSED']
  * Settled versus unsettled is the distinction that matters, because unsettled attendance is what
  * blocks completion. Tones pair with translated text everywhere; colour alone never carries it.
  */
-const CONFIRMATION_TONE: Record<AttendanceConfirmationStatus, StatusTone> = {
-  RECORDED: 'info',
-  CONFIRMED: 'success',
-  DISPUTED: 'warning',
-  RESOLVED: 'neutral',
-}
+const CONFIRMATION_TONE = ATTENDANCE_CONFIRMATION_TONE
 
 interface AttendancePageProps {
   /**

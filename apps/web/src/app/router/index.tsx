@@ -78,7 +78,7 @@ const MyPlacementsPage = lazy(() => internshipArea().then((m) => ({ default: m.M
 const StudentPlacementDetailPage = lazy(() => internshipArea().then((m) => ({ default: m.StudentPlacementDetailPage })))
 const UniversityPlacementsPage = lazy(() => internshipArea().then((m) => ({ default: m.UniversityPlacementsPage })))
 const OrganizationPlacementsPage = lazy(() => internshipArea().then((m) => ({ default: m.OrganizationPlacementsPage })))
-const PlacementDetailPage = lazy(() => internshipArea().then((m) => ({ default: m.PlacementDetailPage })))
+const UniversityPlacementOverview = lazy(() => internshipArea().then((m) => ({ default: m.UniversityPlacementOverview })))
 const OrganizationPlacementOverview = lazy(() => internshipArea().then((m) => ({ default: m.OrganizationPlacementOverview })))
 // Phase 6 internship management. One placement is a workspace with sections; which sections exist
 // mirrors the backend's authorization split, and the backend enforces it regardless.
@@ -285,7 +285,8 @@ export const router = createBrowserRouter([
             path: 'placements/:placementId',
             element: <PlacementWorkspace area="university" />,
             children: [
-              { index: true, element: <PlacementDetailPage area="university" /> },
+              // Phase 7: the university's own academic-supervision overview.
+              { index: true, element: <UniversityPlacementOverview /> },
               // Phase 6. Academic supervision: review logs, review the report, run the defense.
               { path: 'weekly-logs', element: <WeeklyLogsPage audience="reviewer" /> },
               { path: 'attendance', element: <AttendancePage audience="observer" /> },
@@ -361,8 +362,8 @@ export const router = createBrowserRouter([
             path: 'placements/:placementId',
             element: <PlacementWorkspace area="organization" />,
             children: [
-              // Phase 6: the organization's own supervision-first overview (the university keeps
-              // PlacementDetailPage).
+              // Phase 6: the organization's own supervision-first overview (the university has its
+              // own, UniversityPlacementOverview).
               { index: true, element: <OrganizationPlacementOverview /> },
               // Phase 6. Workplace records only — weekly logs, the final report and the defense are
               // university-only academic content and have no route here.

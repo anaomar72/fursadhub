@@ -1,100 +1,109 @@
 import { useQuery } from '@tanstack/react-query'
 import { useTranslation } from 'react-i18next'
 import { Link } from 'react-router-dom'
-import * as recruitmentApi from '../api/recruitmentApi'
 import { useUniversityMembership } from '../../university/components/UniversityMembershipContext'
-import {
-  Badge,
-  Card,
-  EmptyState,
-  ErrorState,
-  Icon,
-  LoadingState,
-  PageHeader,
-  ProgressIndicator,
-  StatusBadge,
-} from '../../../components/ui'
+import { universityQueries } from '../../university/universityQueries'
+import { nominationDeadlinePassed, OPEN_TARGET_STATUSES, requestNeedsNominees } from '../../university/universityAttention'
+import { Badge, EmptyState, ErrorState, PageHeader, SkeletonList, StatusBadge } from '../../../components/ui'
 import { PageContainer } from '../../../app/layouts/PageContainer'
 import { formatDate } from '../../../lib/utils/formatDate'
+import { OPPORTUNITY_TARGET_STATUS_TONE, toneOf } from '../../../lib/status/statusTones'
+import type { TargetRequestResponse } from '../types'
+import { NominationWorkflowNote } from '../components/NominationWorkflowNote'
 
 /**
- * Published opportunities targeting this university, awaiting nominations
- * (CLAUDE.md Phase 4 section 26).
+ * Published internships that target this university and ask it for nominees (CLAUDE.md sections
+ * 32-35), Phase 7.
  *
- * <p>The sourcing mode is shown as it really is — a `UNIVERSITY_TARGETED` opportunity sources
- * candidates only through nominations, while a `HYBRID` one also takes direct applications — so
- * staff can see why a request exists rather than treating every row as the same thing.
+ * <p>An institutional queue, not a marketplace: one row per request with who is asking, for which
+ * departments, by when, and how many of the requested nominees are already put forward. Requests
+ * still asking for nominees come first, nearest deadline first. The backend lists only PUBLISHED
+ * opportunities ({@code NominationQueryService.listTargetRequests}), and a coordinator's
+ * eligible-student list on the next page is narrowed to their own departments.
  */
 export function OpportunityRequestsPage() {
   const { t } = useTranslation()
-  const membership = useUniversityMembership()
+  const { universityId } = useUniversityMembership()
 
-  const requestsQuery = useQuery({
-    queryKey: ['university', 'target-requests', membership.universityId],
-    queryFn: () => recruitmentApi.listTargetRequests(membership.universityId),
-  })
+  const requestsQuery = useQuery(universityQueries.targetRequests(universityId))
+  const departmentsQuery = useQuery(universityQueries.departments(universityId))
+  const departmentNames = new Map((departmentsQuery.data ?? []).map((department) => [department.id, department.name]))
 
-  const requests = requestsQuery.data ?? []
+  const requests = [...(requestsQuery.data ?? [])].sort(
+    (a, b) => Number(requestNeedsNominees(b)) - Number(requestNeedsNominees(a)) || a.nominationDeadline.localeCompare(b.nominationDeadline),
+  )
 
   return (
     <PageContainer className="flex flex-col gap-6">
       <PageHeader title={t('recruitment:requests.title')} description={t('recruitment:requests.subtitle')} />
 
+      <NominationWorkflowNote />
+
       {requestsQuery.isLoading ? (
-        <LoadingState label={t('common:status.loading')} />
+        <SkeletonList rows={4} />
       ) : requestsQuery.isError ? (
         <ErrorState onRetry={() => void requestsQuery.refetch()} retryLabel={t('common:actions.retry')} />
       ) : requests.length === 0 ? (
         <EmptyState title={t('recruitment:requests.empty')} description={t('recruitment:requests.emptyHint')} />
       ) : (
-        <ul className="grid gap-4 xl:grid-cols-2">
-          {requests.map((request) => {
-            const filled = request.requestedNominees === 0 ? 0 : Math.round((request.liveNominationCount / request.requestedNominees) * 100)
-            return (
-              <li key={request.targetId} className="flex">
-                <Card interactive padding="lg" className="relative flex w-full flex-col">
-                  <div className="flex items-start gap-3">
-                    <span className="flex size-11 shrink-0 items-center justify-center rounded-xl bg-brand-blue-soft text-brand-blue dark:bg-info-bg dark:text-info">
-                      <Icon name="briefcase" className="size-5" />
-                    </span>
-                    <div className="min-w-0 flex-1">
-                      <h2 className="truncate font-semibold text-foreground">
-                        <Link
-                          to={`/university/opportunity-requests/${request.targetId}`}
-                          className="focus-visible:outline-none focus-visible:underline after:absolute after:inset-0"
-                        >
-                          {request.opportunityTitle}
-                        </Link>
-                      </h2>
-                      <p className="mt-0.5 truncate text-sm text-foreground-secondary">{request.organizationName}</p>
-                    </div>
-                    <StatusBadge tone={request.targetStatus === 'COMPLETED' ? 'success' : 'info'}>
-                      {t(`recruitment:targetStatusValues.${request.targetStatus}`)}
-                    </StatusBadge>
-                  </div>
-
-                  <div className="mt-3 flex flex-wrap gap-2">
-                    <Badge tone="brand">{t(`opportunities:modeValues.${request.mode}`)}</Badge>
-                    <Badge>
-                      {t('recruitment:requests.deadline', { deadline: formatDate(request.nominationDeadline) })}
-                    </Badge>
-                  </div>
-
-                  <ProgressIndicator
-                    className="mt-4"
-                    label={t('recruitment:requests.progress', {
-                      current: request.liveNominationCount,
-                      requested: request.requestedNominees,
-                    })}
-                    value={filled}
-                    showValue={false}
-                  />
-                </Card>
-              </li>
-            )
-          })}
-        </ul>
+        <>
+          <p className="text-body text-foreground-secondary" aria-live="polite">
+            {t('recruitment:requests.resultCount', { count: requests.length })}
+          </p>
+          <ul className="divide-y divide-border rounded-lg border border-border bg-surface">
+            {requests.map((request) => (
+              <RequestRow key={request.targetId} request={request} departmentNames={departmentNames} />
+            ))}
+          </ul>
+        </>
       )}
     </PageContainer>
+  )
+}
+
+function RequestRow({ request, departmentNames }: { request: TargetRequestResponse; departmentNames: Map<string, string> }) {
+  const { t } = useTranslation()
+  const passed = nominationDeadlinePassed(request)
+  const open = OPEN_TARGET_STATUSES.has(request.targetStatus)
+  const departments = request.eligibleDepartmentIds.map((id) => departmentNames.get(id)).filter((name): name is string => !!name)
+  const remaining = Math.max(request.requestedNominees - request.liveNominationCount, 0)
+
+  return (
+    <li className="flex flex-col gap-3 p-4 sm:flex-row sm:items-start sm:justify-between sm:gap-6 sm:px-5">
+      <div className="min-w-0 flex-1">
+        <h2 className="text-body font-semibold text-foreground">
+          <Link
+            to={`/university/opportunity-requests/${request.targetId}`}
+            className="break-words rounded-sm underline-offset-4 hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus-ring"
+          >
+            {request.opportunityTitle}
+          </Link>
+        </h2>
+        <p className="mt-0.5 break-words text-caption text-foreground-secondary">
+          {request.organizationName} · {t('placements:detail.dateRange', { start: formatDate(request.startDate), end: formatDate(request.endDate) })}
+        </p>
+        <div className="mt-2 flex flex-wrap items-center gap-2">
+          <Badge>{t(`opportunities:modeValues.${request.mode}`)}</Badge>
+          {departments.length > 0 ? (
+            departments.map((name) => <Badge key={name}>{name}</Badge>)
+          ) : (
+            <span className="text-caption text-foreground-secondary">{t('recruitment:requests.allDepartments')}</span>
+          )}
+        </div>
+      </div>
+
+      <div className="flex shrink-0 flex-col gap-1.5 sm:items-end sm:text-right">
+        <StatusBadge tone={toneOf(OPPORTUNITY_TARGET_STATUS_TONE, request.targetStatus)}>{t(`recruitment:targetStatusValues.${request.targetStatus}`)}</StatusBadge>
+        <span className="text-caption font-semibold text-foreground">
+          {t('recruitment:requests.progress', { current: request.liveNominationCount, requested: request.requestedNominees })}
+        </span>
+        <span className="text-caption text-foreground-secondary">
+          {passed ? t('recruitment:requests.deadlinePassed', { date: formatDate(request.nominationDeadline) }) : t('recruitment:requests.deadline', { deadline: formatDate(request.nominationDeadline) })}
+        </span>
+        {open && !passed && remaining > 0 && (
+          <span className="text-caption text-foreground-secondary">{t('recruitment:requests.remaining', { count: remaining })}</span>
+        )}
+      </div>
+    </li>
   )
 }

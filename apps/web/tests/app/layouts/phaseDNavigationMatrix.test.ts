@@ -117,7 +117,7 @@ describe('Phase D navigation matrix', () => {
       expect(universityNav('UNIVERSITY_SUPERVISOR')).not.toContain('/university/staff')
     })
 
-    it('files the university record under Manage for the admin and Account for the others', () => {
+    it('files the university record under University for the admin and Account for the others', () => {
       const groupOf = (role: UniversityRole) => {
         const sections = buildUniversityNav(i18n.t, {
           universityId: 'uni-1',
@@ -127,7 +127,7 @@ describe('Phase D navigation matrix', () => {
         return sections.find((section) => section.items.some((item) => item.to === '/university/profile'))?.label
       }
 
-      expect(groupOf('UNIVERSITY_ADMIN')).toBe('Manage')
+      expect(groupOf('UNIVERSITY_ADMIN')).toBe('University')
       expect(groupOf('DEPARTMENT_COORDINATOR')).toBe('Account')
       expect(groupOf('UNIVERSITY_SUPERVISOR')).toBe('Account')
     })

@@ -279,7 +279,32 @@
     "progress": "{{current}} of {{requested}} nominated",
     "deadline": "Nominate by {{deadline}}",
     "subtitle": "Organizations asking your university to nominate students.",
-    "emptyHint": "When an organization targets your university, its request appears here."
+    "emptyHint": "When an organization targets your university, its request appears here.",
+    "allDepartments": "All departments",
+    "deadlinePassed": "Nomination deadline passed {{date}}",
+    "remaining_one": "{{count}} more nominee requested",
+    "remaining_other": "{{count}} more nominees requested",
+    "resultCount_one": "{{count}} request",
+    "resultCount_other": "{{count}} requests",
+    "workflow": {
+      "label": "How nominations work",
+      "request": {
+        "title": "Request",
+        "body": "An organization targets your university and asks for nominees."
+      },
+      "nominate": {
+        "title": "Nominate",
+        "body": "You put forward verified students from eligible departments."
+      },
+      "consent": {
+        "title": "Student agrees",
+        "body": "Each student decides whether to be considered."
+      },
+      "recruit": {
+        "title": "Recruitment",
+        "body": "The organization reviews them alongside other candidates and decides on offers."
+      }
+    }
   },
   "nominate": {
     "eligibleTitle": "Eligible students",
@@ -300,7 +325,27 @@
       "generic": "Something went wrong. Please try again."
     },
     "viewProfile": "View professional profile",
-    "noProfile": "This student has not written a professional profile yet."
+    "noProfile": "This student has not written a professional profile yet.",
+    "subtitle": "Put forward verified students from the eligible departments.",
+    "emptyHint": "Only students with a verified enrollment in an eligible department, who are available, can be nominated.",
+    "closedTitle": "Nominations are closed for this request",
+    "closedDeadline": "The nomination deadline was {{date}}.",
+    "closedStatus": "This request is no longer accepting nominations.",
+    "nominateNamed": "Nominate {{name}}",
+    "skills": "Skills",
+    "requestTitle": "About this request",
+    "status": "Status",
+    "nominees": "Nominees",
+    "deadline": "Nomination deadline",
+    "dates": "Internship dates",
+    "mode": "Sourcing",
+    "departments": "Eligible departments",
+    "whatHappensTitle": "What happens after you nominate",
+    "whatHappens": {
+      "consent": "The student is asked whether they want to be considered. Nothing is shared with the organization until they agree.",
+      "pipeline": "If they agree, they join the organization’s candidate list for this internship. The organization decides on interviews and offers.",
+      "withdraw": "You can withdraw a nomination while the student has not answered yet."
+    }
   },
   "universityNominations": {
     "title": "Nominations",
@@ -311,6 +356,30 @@
       "NOMINATION_NOT_FOUND": "This nomination is no longer available.",
       "ACCESS_DENIED": "You do not have access to this nomination.",
       "generic": "Something went wrong. Please try again."
+    },
+    "subtitle": "Students your university has put forward, and whose move it is next.",
+    "searchLabel": "Search nominations",
+    "searchPlaceholder": "Student, internship or organization",
+    "statusLabel": "Nomination status",
+    "allStatuses": "All statuses",
+    "resultCount_one": "{{count}} nomination",
+    "resultCount_other": "{{count}} nominations",
+    "noMatches": "No nominations match these filters",
+    "emptyHint": "Nominations appear here once you put students forward for an internship request.",
+    "unknownStudent": "Unnamed student",
+    "nominatedOn": "Nominated {{date}}",
+    "respondedOn": "answered {{date}}",
+    "withdrawNamed": "Withdraw the nomination of {{name}}",
+    "next": {
+      "PENDING_STUDENT_CONSENT": "Waiting for the student to agree to be considered.",
+      "ACCEPTED": "The student agreed and is now a candidate with the organization.",
+      "DECLINED": "The student chose not to be considered.",
+      "WITHDRAWN": "Withdrawn by the university."
+    },
+    "confirmWithdraw": {
+      "title": "Withdraw this nomination?",
+      "body": "{{name}} will no longer be asked to be considered for {{opportunity}}.",
+      "keep": "Keep nomination"
     }
   },
   "targetStatusValues": {

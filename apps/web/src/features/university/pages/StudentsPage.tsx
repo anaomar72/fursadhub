@@ -1,14 +1,15 @@
 import { useState } from 'react'
 import { useQuery } from '@tanstack/react-query'
 import { useTranslation } from 'react-i18next'
-import * as universityApi from '../api/universityApi'
+import { useSearchParams } from 'react-router-dom'
+import { universityQueries } from '../universityQueries'
 import { useUniversityMembership } from '../components/UniversityMembershipContext'
 import {
   DataTable,
   EmptyState,
   ErrorState,
   FilterBar,
-  LoadingState,
+  SkeletonList,
   PageHeader,
   SearchInput,
   Select,
@@ -34,28 +35,25 @@ import { ENROLLMENT_VERIFICATION_TONE, toneOf } from '../../../lib/status/status
 export function StudentsPage() {
   const { t } = useTranslation()
   const { universityId, role, departmentIds } = useUniversityMembership()
+  // The department can arrive in the URL — the departments page links here with `?department=`.
+  // It only narrows the request; the backend still scopes the list to the caller's departments.
+  const [params] = useSearchParams()
   const [departmentId, setDepartmentId] = useState<string>(
-    role === 'DEPARTMENT_COORDINATOR' && departmentIds.length === 1 ? departmentIds[0] : '',
+    params.get('department') ?? (role === 'DEPARTMENT_COORDINATOR' && departmentIds.length === 1 ? departmentIds[0] : ''),
   )
   const [search, setSearch] = useState('')
   const [status, setStatus] = useState('')
 
-  const departmentsQuery = useQuery({
-    queryKey: ['departments', universityId],
-    queryFn: () => universityApi.listDepartments(universityId),
-  })
-  const studentsQuery = useQuery({
-    queryKey: ['university', 'students', universityId, departmentId],
-    queryFn: () => universityApi.listStudents(universityId, departmentId || undefined),
-  })
+  const departmentsQuery = useQuery(universityQueries.departments(universityId))
+  const studentsQuery = useQuery(universityQueries.students(universityId, departmentId))
 
   const visibleDepartments =
     role === 'UNIVERSITY_ADMIN'
       ? (departmentsQuery.data ?? [])
       : (departmentsQuery.data ?? []).filter((department) => departmentIds.includes(department.id))
 
-  const departmentName = (id: string) =>
-    departmentsQuery.data?.find((department) => department.id === id)?.name ?? id
+  // Never the raw id: while the department list loads (or if it failed) the cell stays quiet.
+  const departmentName = (id: string) => departmentsQuery.data?.find((department) => department.id === id)?.name ?? '—'
 
   const term = search.trim().toLowerCase()
   const rows = (studentsQuery.data ?? []).filter((student) => {
@@ -146,7 +144,7 @@ export function StudentsPage() {
       </FilterBar>
 
       {studentsQuery.isLoading ? (
-        <LoadingState label={t('common:status.loading')} />
+        <SkeletonList rows={5} />
       ) : studentsQuery.isError ? (
         <ErrorState onRetry={() => void studentsQuery.refetch()} retryLabel={t('common:actions.retry')} />
       ) : (
@@ -159,6 +157,24 @@ export function StudentsPage() {
             columns={columns}
             rows={rows}
             rowKey={(student) => student.enrollmentId}
+            // Phones: one stacked row per student — who, which department, the claim, the status —
+            // instead of a five-column table scrolled sideways.
+            renderMobileRow={(student) => (
+              <div className="flex flex-col gap-1.5">
+                <div className="flex items-start justify-between gap-3">
+                  <span className="min-w-0 break-words font-semibold text-foreground">{student.email ?? student.studentNumber}</span>
+                  <StatusBadge tone={toneOf(ENROLLMENT_VERIFICATION_TONE, student.verificationStatus)}>
+                    {t(`university:students.statusValues.${student.verificationStatus}`)}
+                  </StatusBadge>
+                </div>
+                <p className="break-words text-caption text-foreground-secondary">
+                  {[student.studentNumber, departmentName(student.departmentId)].join(' · ')}
+                </p>
+                <p className="break-words text-caption text-foreground-secondary">
+                  {student.program} · {student.academicYear}
+                </p>
+              </div>
+            )}
             empty={<EmptyState title={t('university:students.empty')} />}
           />
         </>

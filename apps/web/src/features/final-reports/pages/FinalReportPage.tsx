@@ -2,18 +2,12 @@ import { useState } from 'react'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { useTranslation } from 'react-i18next'
 import { useParams } from 'react-router-dom'
-import { AnimatedCheck, Button, ErrorState, FileUpload, SkeletonList, StatusBadge, Textarea, EmptyState } from '../../../components/ui'
-import type { StatusTone } from '../../../components/ui'
+import { AnimatedCheck, Button, ConfirmationDialog, ErrorState, FileUpload, SkeletonList, StatusBadge, Textarea, EmptyState } from '../../../components/ui'
 import { apiErrorMessage } from '../../../lib/api/errorMessage'
 import * as finalReportsApi from '../api/finalReportsApi'
-import type { FinalReportState } from '../types'
+import { FINAL_REPORT_STATE_TONE } from '../../../lib/status/statusTones'
 
-const STATE_TONE: Record<FinalReportState, StatusTone> = {
-  DRAFT: 'neutral',
-  SUBMITTED: 'info',
-  NEEDS_REVISION: 'warning',
-  APPROVED: 'success',
-}
+const STATE_TONE = FINAL_REPORT_STATE_TONE
 
 interface FinalReportPageProps {
   /** The owning student uploads and submits; a university reviewer approves or returns. */
@@ -71,8 +65,10 @@ export function FinalReportPage({ audience }: FinalReportPageProps) {
       invalidate()
     },
   })
+  const [confirmingApproval, setConfirmingApproval] = useState(false)
   const approveMutation = useMutation({
     mutationFn: () => run(finalReportsApi.approveFinalReport(placementId!)),
+    onSettled: () => setConfirmingApproval(false),
     onSuccess: () => {
       // A one-time confirmation, then the stable APPROVED state remains
       // (BRAND_AND_UI_GUIDELINES.md section 14). Never replayed on re-render.
@@ -209,7 +205,8 @@ export function FinalReportPage({ audience }: FinalReportPageProps) {
 
         {audience === 'reviewer' && report?.state === 'SUBMITTED' && !returning && (
           <>
-            <Button loading={approveMutation.isPending} onClick={() => approveMutation.mutate()}>
+            {/* Approval is final — an approved report cannot be returned — so it is confirmed first. */}
+            <Button loading={approveMutation.isPending} disabled={busy} onClick={() => setConfirmingApproval(true)}>
               {t('internship:finalReport.actions.approve')}
             </Button>
             <Button variant="outline" onClick={() => setReturning(true)} disabled={busy}>
@@ -245,6 +242,17 @@ export function FinalReportPage({ audience }: FinalReportPageProps) {
           </div>
         </div>
       )}
+
+      <ConfirmationDialog
+        open={confirmingApproval}
+        onClose={() => setConfirmingApproval(false)}
+        loading={approveMutation.isPending}
+        title={t('internship:finalReport.confirmApprove.title')}
+        description={t('internship:finalReport.confirmApprove.body')}
+        confirmLabel={t('internship:finalReport.actions.approve')}
+        cancelLabel={t('internship:finalReport.confirmApprove.keep')}
+        onConfirm={() => approveMutation.mutate()}
+      />
     </div>
   )
 }

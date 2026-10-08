@@ -64,7 +64,20 @@
       "generic": "The weekly log could not be saved. Please try again."
     },
     "emptyStudentHint": "Write one short entry a week describing what you worked on. Your university supervisor reviews them as you go.",
-    "emptyReviewerHint": "Entries appear here as the student writes them, newest first, ready for your review."
+    "emptyReviewerHint": "Entries appear here as the student writes them, newest first, ready for your review.",
+    "reviewer": {
+      "caughtUp": "No weekly log is waiting for your review.",
+      "groups": {
+        "awaiting_one": "Waiting for your review ({{count}})",
+        "awaiting_other": "Waiting for your review ({{count}})",
+        "returned_one": "Returned to the student ({{count}})",
+        "returned_other": "Returned to the student ({{count}})",
+        "reviewed_one": "Reviewed ({{count}})",
+        "reviewed_other": "Reviewed ({{count}})",
+        "drafts_one": "Not submitted yet ({{count}})",
+        "drafts_other": "Not submitted yet ({{count}})"
+      }
+    }
   },
   "attendance": {
     "title": "Attendance",
@@ -201,6 +214,11 @@
       "SUBMITTED": "Your university is reviewing your report.",
       "NEEDS_REVISION": "Update your report using the reviewer's comment, then submit it again.",
       "APPROVED": "Your report is approved."
+    },
+    "confirmApprove": {
+      "title": "Approve this final report?",
+      "body": "An approved report is final: it cannot be returned to the student or changed afterwards.",
+      "keep": "Not yet"
     }
   },
   "defense": {
@@ -241,7 +259,12 @@
       "VALIDATION_FAILED": "Please check the form and try again.",
       "generic": "The defense could not be updated. Please try again."
     },
-    "emptyHint": "A defense appears here once the university schedules one for this internship."
+    "emptyHint": "A defense appears here once the university schedules one for this internship.",
+    "confirmCancel": {
+      "title": "Cancel this defense?",
+      "body": "The attempt stays in the history as cancelled. You can schedule a new one afterwards.",
+      "keep": "Keep it"
+    }
   },
   "completion": {
     "title": "Internship completion",

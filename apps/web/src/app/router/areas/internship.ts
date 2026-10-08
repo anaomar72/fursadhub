@@ -31,7 +31,7 @@ export { MyPlacementsPage } from '../../../features/placements/pages/MyPlacement
 export { StudentPlacementDetailPage } from '../../../features/placements/pages/StudentPlacementDetailPage'
 export { UniversityPlacementsPage } from '../../../features/placements/pages/UniversityPlacementsPage'
 export { OrganizationPlacementsPage } from '../../../features/placements/pages/OrganizationPlacementsPage'
-export { PlacementDetailPage } from '../../../features/placements/pages/PlacementDetailPage'
+export { UniversityPlacementOverview } from '../../../features/placements/pages/UniversityPlacementOverview'
 export { PlacementWorkspace } from '../../../features/placements/components/PlacementWorkspace'
 export { WeeklyLogsPage } from '../../../features/weekly-logs/pages/WeeklyLogsPage'
 export { AttendancePage } from '../../../features/attendance/pages/AttendancePage'

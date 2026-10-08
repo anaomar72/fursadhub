@@ -181,6 +181,66 @@ export const OPPORTUNITY_TARGET_STATUS_TONE: Record<OpportunityTargetStatus, Sta
   EXPIRED: 'neutral',
 }
 
+/*
+ * Internship records (CLAUDE.md sections 42-46). Phase 7 moved these here from the six pages that
+ * each kept a private copy: the student, the host organization and the university all read the same
+ * records, so a state must never read as "warning" on one side and "info" on another. Values are
+ * unchanged. Whose turn it is drives the tone — SUBMITTED waits on the reviewer (info), a record
+ * returned to the student waits on them (warning).
+ */
+export type WeeklyLogState = 'DRAFT' | 'SUBMITTED' | 'RETURNED_FOR_CHANGES' | 'REVIEWED'
+
+export const WEEKLY_LOG_STATE_TONE: Record<WeeklyLogState, StatusTone> = {
+  DRAFT: 'neutral',
+  SUBMITTED: 'info',
+  RETURNED_FOR_CHANGES: 'warning',
+  REVIEWED: 'success',
+}
+
+export type FinalReportState = 'DRAFT' | 'SUBMITTED' | 'NEEDS_REVISION' | 'APPROVED'
+
+export const FINAL_REPORT_STATE_TONE: Record<FinalReportState, StatusTone> = {
+  DRAFT: 'neutral',
+  SUBMITTED: 'info',
+  NEEDS_REVISION: 'warning',
+  APPROVED: 'success',
+}
+
+/** A dispute is what blocks completion, so it is the one confirmation state that warns. */
+export type AttendanceConfirmationState = 'RECORDED' | 'CONFIRMED' | 'DISPUTED' | 'RESOLVED'
+
+export const ATTENDANCE_CONFIRMATION_TONE: Record<AttendanceConfirmationState, StatusTone> = {
+  RECORDED: 'info',
+  CONFIRMED: 'success',
+  DISPUTED: 'warning',
+  RESOLVED: 'neutral',
+}
+
+export type EvaluationState = 'DRAFT' | 'SUBMITTED' | 'FINAL'
+
+export const EVALUATION_STATE_TONE: Record<EvaluationState, StatusTone> = {
+  DRAFT: 'neutral',
+  SUBMITTED: 'info',
+  FINAL: 'success',
+}
+
+export type DefenseAttemptState = 'SCHEDULED' | 'COMPLETED' | 'CANCELLED'
+
+export const DEFENSE_ATTEMPT_TONE: Record<DefenseAttemptState, StatusTone> = {
+  SCHEDULED: 'info',
+  COMPLETED: 'neutral',
+  CANCELLED: 'neutral',
+}
+
+/** Once an attempt is completed its result carries the meaning, so it overrides the state tone. */
+export type DefenseResult = 'PASSED' | 'FAILED' | 'RETAKE_REQUIRED'
+
+export const DEFENSE_RESULT_TONE: Record<DefenseResult, StatusTone> = {
+  PASSED: 'success',
+  FAILED: 'danger',
+  RETAKE_REQUIRED: 'warning',
+}
+
 /**
  * Tone for a status that arrives as a plain string on the wire. An unrecognised value — a state
  * added to a machine later — renders neutral instead of throwing.

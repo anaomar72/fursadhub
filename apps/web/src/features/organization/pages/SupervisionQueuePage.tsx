@@ -20,18 +20,12 @@ import {
   PageHeader,
   StatusBadge,
   Tabs,
-  type StatusTone,
 } from '../../../components/ui'
 import { PageContainer } from '../../../app/layouts/PageContainer'
 import { formatDate } from '../../../lib/utils/formatDate'
-import type { EvaluationState } from '../../evaluations/types'
 import type { PlacementResponse } from '../../placements/types'
+import { EVALUATION_STATE_TONE } from '../../../lib/status/statusTones'
 
-const EVALUATION_STATE_TONE: Record<EvaluationState, StatusTone> = {
-  DRAFT: 'neutral',
-  SUBMITTED: 'info',
-  FINAL: 'success',
-}
 
 const SECTIONS = ['attendance', 'evaluation'] as const
 type Section = (typeof SECTIONS)[number]

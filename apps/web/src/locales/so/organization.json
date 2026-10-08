@@ -485,7 +485,8 @@
         "DRAFT": "Qabyo socota",
         "SUBMITTED": "La gudbiyay, weli ma dhammaystirna",
         "FINAL": "Dhammaystiran"
-      }
+      },
+      "completionPending": "Waxay sugaysaa go’aanka dhammaystirka ee jaamacadda"
     }
   }
 }

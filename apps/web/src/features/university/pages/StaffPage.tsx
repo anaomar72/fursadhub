@@ -4,6 +4,7 @@ import { zodResolver } from '@hookform/resolvers/zod'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { useTranslation } from 'react-i18next'
 import * as universityApi from '../api/universityApi'
+import { universityQueries } from '../universityQueries'
 import { useUniversityMembership } from '../components/UniversityMembershipContext'
 import { createStaffSchema, type CreateStaffFormValues } from '../schemas/createStaffSchema'
 import {
@@ -26,7 +27,7 @@ import {
   FormField,
   Icon,
   Input,
-  LoadingState,
+  SkeletonList,
   PageHeader,
   PasswordInput,
   Select,
@@ -60,7 +61,7 @@ export function StaffPage() {
   const [createOpen, setCreateOpen] = useState(false)
 
   const staffQuery = useQuery({ queryKey: ['university', 'staff', universityId], queryFn: () => universityApi.listStaff(universityId) })
-  const departmentsQuery = useQuery({ queryKey: ['departments', universityId], queryFn: () => universityApi.listDepartments(universityId) })
+  const departmentsQuery = useQuery(universityQueries.departments(universityId))
 
   const form = useForm<CreateStaffFormValues>({
     resolver: zodResolver(createStaffSchema),
@@ -288,11 +289,13 @@ export function StaffPage() {
       )}
 
       {staffQuery.isLoading ? (
-        <LoadingState label={t('common:status.loading')} />
+        <SkeletonList rows={4} />
       ) : staff.length === 0 ? (
         <EmptyState title={t('university:staff.empty')} description={t('university:staff.emptyHint')} />
       ) : (
-        <ul className="flex flex-col gap-3">
+        // Phase 7: one roster surface, a row per member, instead of a bordered card each — the same
+        // treatment as the organization roster. Presentation only; every command is unchanged.
+        <ul className="divide-y divide-border rounded-lg border border-border bg-surface">
           {staff.map((member) => (
             <li key={member.membershipId}>
               <StaffRow
@@ -427,12 +430,14 @@ function StaffRow({
   // to the assignable roles, so an admin membership's row shows no identity controls.
   const isFounderAdmin = member.role === 'UNIVERSITY_ADMIN'
 
+  // Names only — a department the list has not loaded (or no longer has) is left out, never shown as a UUID.
   const scopeNames = member.departmentIds
-    .map((id) => departments.find((department) => department.id === id)?.name ?? id)
+    .map((id) => departments.find((department) => department.id === id)?.name)
+    .filter(Boolean)
     .join(', ')
 
   return (
-    <Card padding="lg">
+    <div className="p-4 sm:p-5">
       <div className="flex flex-wrap items-start justify-between gap-3">
         <div className="flex min-w-0 items-start gap-3">
           <span className="flex size-10 shrink-0 items-center justify-center rounded-full bg-brand-blue-soft text-brand-blue dark:bg-info-bg dark:text-info">
@@ -553,6 +558,6 @@ function StaffRow({
           </div>
         </form>
       )}
-    </Card>
+    </div>
   )
 }

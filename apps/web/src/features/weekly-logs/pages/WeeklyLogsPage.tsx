@@ -25,6 +25,9 @@ export function WeeklyLogsPage({ audience }: WeeklyLogsPageProps) {
   const [composing, setComposing] = useState(false)
   const [editing, setEditing] = useState<WeeklyLogResponse | null>(null)
   const [error, setError] = useState<string | null>(null)
+  // The log a command was last sent for, so its error and spinner stay on that log's card instead
+  // of appearing on every card at once.
+  const [actingId, setActingId] = useState<string | null>(null)
 
   const logsQuery = useQuery({
     queryKey: ['weekly-logs', placementId],
@@ -122,6 +125,29 @@ export function WeeklyLogsPage({ audience }: WeeklyLogsPageProps) {
     reviewMutation.isPending ||
     returnMutation.isPending
 
+  const card = (log: WeeklyLogResponse) => (
+    <WeeklyLogCard
+      key={log.id}
+      log={log}
+      audience={audience}
+      busy={busy && actingId === log.id}
+      error={actingId === log.id ? error : null}
+      onEdit={setEditing}
+      onSubmit={(target) => {
+        setActingId(target.id)
+        submitMutation.mutate(target)
+      }}
+      onReview={(target) => {
+        setActingId(target.id)
+        reviewMutation.mutate(target)
+      }}
+      onReturn={(target, comment) => {
+        setActingId(target.id)
+        returnMutation.mutate({ log: target, comment })
+      }}
+    />
+  )
+
   return (
     <div className="flex flex-col gap-4">
       <div className="flex flex-wrap items-start justify-between gap-2">
@@ -170,22 +196,50 @@ export function WeeklyLogsPage({ audience }: WeeklyLogsPageProps) {
             : t('internship:weeklyLogs.emptyReviewerHint')}
         />
       ) : (
-        <div className="flex flex-col gap-3">
-          {ordered.map((log) => (
-            <WeeklyLogCard
-              key={log.id}
-              log={log}
-              audience={audience}
-              busy={busy}
-              error={error}
-              onEdit={setEditing}
-              onSubmit={(target) => submitMutation.mutate(target)}
-              onReview={(target) => reviewMutation.mutate(target)}
-              onReturn={(target, comment) => returnMutation.mutate({ log: target, comment })}
-            />
-          ))}
-        </div>
+        audience === 'reviewer' ? (
+          <ReviewerLogGroups logs={logs} render={card} />
+        ) : (
+          <div className="flex flex-col gap-3">{ordered.map(card)}</div>
+        )
       )}
+    </div>
+  )
+}
+
+/**
+ * The reviewer's composition (Phase 7): logs grouped by whose turn it is, the reviewer's own work
+ * first — logs waiting for review, oldest week first — then logs back with the student, then the
+ * reviewed record and drafts not yet handed in. The student's page keeps its own order.
+ */
+const REVIEWER_GROUPS: { id: string; states: WeeklyLogResponse['state'][] }[] = [
+  { id: 'awaiting', states: ['SUBMITTED'] },
+  { id: 'returned', states: ['RETURNED_FOR_CHANGES'] },
+  { id: 'reviewed', states: ['REVIEWED'] },
+  { id: 'drafts', states: ['DRAFT'] },
+]
+
+function ReviewerLogGroups({ logs, render }: { logs: WeeklyLogResponse[]; render: (log: WeeklyLogResponse) => React.ReactNode }) {
+  const { t } = useTranslation()
+  const awaiting = logs.filter((log) => log.state === 'SUBMITTED').length
+  return (
+    <div className="flex flex-col gap-6">
+      {awaiting === 0 && (
+        <p className="rounded-lg border border-border bg-surface-muted px-4 py-3 text-body text-foreground-secondary" role="status">
+          {t('internship:weeklyLogs.reviewer.caughtUp')}
+        </p>
+      )}
+      {REVIEWER_GROUPS.map((group) => {
+        const items = logs.filter((log) => group.states.includes(log.state)).sort((a, b) => a.weekNumber - b.weekNumber)
+        if (items.length === 0) return null
+        return (
+          <section key={group.id} aria-labelledby={`logs-${group.id}`} className="flex flex-col gap-3">
+            <h3 id={`logs-${group.id}`} className="text-label text-foreground">
+              {t(`internship:weeklyLogs.reviewer.groups.${group.id}`, { count: items.length })}
+            </h3>
+            {items.map(render)}
+          </section>
+        )
+      })}
     </div>
   )
 }

@@ -10,7 +10,13 @@
     "partners": "Partner organizations",
     "myStudents": "My students",
     "supervision": "Supervision",
-    "university": "University"
+    "university": "University",
+    "sections": {
+      "students": "Students",
+      "nominations": "Nominations",
+      "internships": "Internships",
+      "university": "University"
+    }
   },
   "dashboard": {
     "title": "University overview",
@@ -181,7 +187,8 @@
     "emptyHint": "Add your first department to start assigning coordinators and students.",
     "addTitle": "Add a department",
     "students": "Students",
-    "viewStudents": "View students"
+    "viewStudents": "View students",
+    "renameNamed": "Rename {{name}}"
   },
   "students": {
     "title": "Students",
@@ -213,11 +220,18 @@
     "title": "Verification queue",
     "allStatuses": "All statuses",
     "empty": "No verification cases found.",
-    "subtitle": "Enrollment claims from your students, newest first. Open a case to review its evidence and decide.",
+    "subtitle": "Enrollment claims from your students. Those waiting longest come first; open a case to review its evidence and decide.",
     "submittedOn": "Submitted {{date}}",
     "evidenceAttached": "Evidence attached",
     "noEvidence": "No evidence",
-    "review": "Review"
+    "review": "Review",
+    "filterLabel": "Show cases",
+    "needsReview": "Needs review",
+    "clearTitle": "Nothing to review",
+    "clearBody": "Every submitted enrollment has been reviewed. New submissions appear here.",
+    "resultCount_one": "{{count}} case",
+    "resultCount_other": "{{count}} cases",
+    "escalated": "Escalated to FursadHub"
   },
   "caseDetail": {
     "notesLabel": "Notes",
@@ -260,7 +274,23 @@
     "escalationReasonLabel": "Why can this case not be settled here?",
     "escalationReasonHint": "The platform reviewer reads this, so give them what they need to pick it up.",
     "escalatedTitle": "Escalated to FursadHub",
-    "escalatedOn": "Handed to the platform on {{date}}."
+    "escalatedOn": "Handed to the platform on {{date}}.",
+    "statusTitle": "Case status",
+    "statusLabel": "Status",
+    "reviewedAt": "Last reviewed",
+    "lastNote": "Latest review note",
+    "decisionHint": "Check the claim against your university records and the evidence before deciding.",
+    "codeLabel": "Student’s six-digit code",
+    "revokeHint": "Revoking removes this student’s verified enrollment. They will no longer be able to apply or be nominated.",
+    "confirmReject": {
+      "title": "Reject this enrollment?",
+      "body": "The student will be told their enrollment was not verified, with your note. The case cannot be reopened."
+    },
+    "confirmRevoke": {
+      "title": "Revoke this verification?",
+      "body": "The student’s enrollment will no longer count as verified. This cannot be undone."
+    },
+    "confirmKeep": "Go back"
   },
   "staff": {
     "title": "Staff",
@@ -435,6 +465,128 @@
       "SUSPENDED": "Your verification is suspended. Contact FursadHub to resolve it.",
       "REVOKED": "Your verification has been revoked. Contact FursadHub to resolve it.",
       "VERIFIED": ""
+    }
+  },
+  "workspace": {
+    "unknownStudent": "Unnamed student",
+    "unknownDepartment": "Department",
+    "admin": {
+      "subtitle": "Your university’s students, internships and the work waiting on you."
+    },
+    "coordinator": {
+      "title": "Department coordination",
+      "subtitle": "Nominations, verification and internships for your departments.",
+      "scope": "Your departments: {{departments}}",
+      "noScopeTitle": "No department assigned yet",
+      "noScopeBody": "Coordinator work is limited to the departments you are assigned. Ask your university admin to assign you a department.",
+      "internsTitle": "Your departments’ internships",
+      "internsEmpty": "No students from your departments are on an internship right now."
+    },
+    "supervisor": {
+      "internsDescription": "The students you are assigned to supervise, and what is waiting on you for each."
+    },
+    "attention": {
+      "title": "Needs your attention",
+      "clearTitle": "You’re all caught up",
+      "clearBody": "Verification cases, nomination requests and internships that need the university will appear here.",
+      "coordinatorClearBody": "Students to verify, requests to nominate for and internships to complete in your departments will appear here.",
+      "supervisorClearBody": "Weekly logs and final reports your students submit for review will appear here.",
+      "partial": "Some of your work could not be loaded, so this list may be incomplete.",
+      "items": {
+        "casesToReview": {
+          "title_one": "{{count}} student enrollment to verify",
+          "title_other": "{{count}} student enrollments to verify",
+          "action": "Review"
+        },
+        "requestsOpen": {
+          "title_one": "{{count}} internship is waiting for nominees",
+          "title_other": "{{count}} internships are waiting for nominees",
+          "action": "Nominate"
+        },
+        "nominationsAwaitingStudent": {
+          "title_one": "{{count}} nomination is waiting for the student’s answer",
+          "title_other": "{{count}} nominations are waiting for students’ answers",
+          "action": "View"
+        },
+        "placementsAwaitingCompletion": {
+          "title_one": "{{count}} internship is ready for your completion decision",
+          "title_other": "{{count}} internships are ready for your completion decision",
+          "action": "Decide"
+        },
+        "placementsWithoutSupervisor": {
+          "title_one": "{{count}} internship has no academic supervisor",
+          "title_other": "{{count}} internships have no academic supervisor",
+          "action": "Assign"
+        },
+        "logsToReview": {
+          "title_one": "{{count}} weekly log to review",
+          "title_other": "{{count}} weekly logs to review",
+          "action": "Review"
+        },
+        "reportsToReview": {
+          "title_one": "{{count}} final report to review",
+          "title_other": "{{count}} final reports to review",
+          "action": "Review"
+        }
+      }
+    },
+    "metrics": {
+      "title": "At a glance",
+      "verifiedStudents": "Verified students",
+      "ofStudents_one": "of {{count}} student",
+      "ofStudents_other": "of {{count}} students",
+      "casesToReview": "Enrollments to verify",
+      "openRequests": "Requests needing nominees",
+      "currentInterns": "Students on internship",
+      "departmentStudents": "Students in your departments"
+    },
+    "cases": {
+      "title": "Enrollments to verify",
+      "description": "Oldest submission first.",
+      "empty": "No enrollment is waiting for review.",
+      "more_one": "{{count}} more waiting",
+      "more_other": "{{count}} more waiting"
+    },
+    "requests": {
+      "title": "Requests needing nominees",
+      "description": "Nearest nomination deadline first.",
+      "empty": "No internship is waiting for nominees from your university right now."
+    },
+    "interns": {
+      "readyToComplete": "Ready for your completion decision",
+      "noSupervisor": "No academic supervisor yet",
+      "logsWaiting_one": "{{count}} log to review",
+      "logsWaiting_other": "{{count}} logs to review",
+      "reportWaiting": "Final report to review"
+    },
+    "lifecycle": {
+      "title": "Internship progress",
+      "completionPending": "Waiting for the university’s completion decision",
+      "evaluation": {
+        "MISSING": "Not started by the host organization",
+        "DRAFT": "Being written by the host organization",
+        "SUBMITTED": "Submitted by the host organization, not final",
+        "FINAL": "Final"
+      }
+    },
+    "placement": {
+      "clearBody": "Weekly logs, the final report and the defense will appear here when they need the university.",
+      "attention": {
+        "logs_one": "{{count}} weekly log waiting for review",
+        "logs_other": "{{count}} weekly logs waiting for review",
+        "report": "Final report waiting for review",
+        "review": "Review",
+        "defenseScheduled": "Defense scheduled",
+        "defenseToSchedule": "Defense not scheduled yet",
+        "schedule": "Schedule",
+        "open": "Open",
+        "disputes_one": "{{count}} disputed attendance record — the host organization’s supervisor resolves it",
+        "disputes_other": "{{count}} disputed attendance records — the host organization’s supervisor resolves them",
+        "completion": "Ready for your completion decision",
+        "decide": "Decide",
+        "noSupervisor": "No academic supervisor assigned",
+        "assign": "Assign"
+      }
     }
   }
 }

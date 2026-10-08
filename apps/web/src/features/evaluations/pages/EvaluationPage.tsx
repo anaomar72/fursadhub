@@ -3,24 +3,19 @@ import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { useTranslation } from 'react-i18next'
 import { useParams } from 'react-router-dom'
 import { Button, ConfirmationDialog, ErrorState, FormField, SkeletonList, Select, StatusBadge, Textarea, EmptyState } from '../../../components/ui'
-import type { StatusTone } from '../../../components/ui'
 import { apiErrorMessage } from '../../../lib/api/errorMessage'
+import { EVALUATION_STATE_TONE } from '../../../lib/status/statusTones'
 import * as evaluationsApi from '../api/evaluationsApi'
 import {
   EVALUATION_RATING_FIELDS,
   type EvaluationDraftInput,
   type EvaluationRatingField,
   type EvaluationResponse,
-  type EvaluationState,
 } from '../types'
 
 const RATINGS = [1, 2, 3, 4, 5]
 
-const STATE_TONE: Record<EvaluationState, StatusTone> = {
-  DRAFT: 'neutral',
-  SUBMITTED: 'info',
-  FINAL: 'success',
-}
+const STATE_TONE = EVALUATION_STATE_TONE
 
 interface EvaluationPageProps {
   /**

@@ -10,7 +10,13 @@
     "partners": "Ururrada iskaashiga",
     "myStudents": "Ardaydayda",
     "supervision": "Kormeerka",
-    "university": "Jaamacadda"
+    "university": "Jaamacadda",
+    "sections": {
+      "students": "Ardayda",
+      "nominations": "Magacaabista",
+      "internships": "Tababarrada",
+      "university": "Jaamacadda"
+    }
   },
   "dashboard": {
     "title": "Guudmarka jaamacadda",
@@ -181,7 +187,8 @@
     "emptyHint": "Ku dar waaxdaada ugu horreysa si aad u bilowdo qoondaynta.",
     "addTitle": "Ku dar waax",
     "students": "Ardayda",
-    "viewStudents": "Fiiri ardayda"
+    "viewStudents": "Fiiri ardayda",
+    "renameNamed": "Magaca beddel: {{name}}"
   },
   "students": {
     "title": "Ardayda",
@@ -213,11 +220,18 @@
     "title": "Safka xaqiijinta",
     "allStatuses": "Dhammaan xaaladaha",
     "empty": "Xaalado xaqiijin ah lama helin.",
-    "subtitle": "Sheegashooyinka diiwaangelinta ardaydaada, kuwa ugu cusub marka hore. Fur kiis si aad u eegto caddaynta oo aad go’aan u gaadho.",
+    "subtitle": "Sheegashooyinka diiwaangelinta ardaydaada. Kuwa ugu muddada dheer sugayay ayaa marka hore yimaada; fur kiis si aad u eegto caddaynta oo aad go’aan u gaadho.",
     "submittedOn": "La gudbiyay {{date}}",
     "evidenceAttached": "Caddayn ayaa lifaaqan",
     "noEvidence": "Caddayn ma jirto",
-    "review": "Dib u eeg"
+    "review": "Dib u eeg",
+    "filterLabel": "Muuji kiisaska",
+    "needsReview": "U baahan dib-u-eegis",
+    "clearTitle": "Wax dib-u-eegis u baahan ma jiro",
+    "clearBody": "Diiwaangelin kasta oo la soo gudbiyay waa la eegay. Kuwa cusub halkan ayay ka muuqan doonaan.",
+    "resultCount_one": "{{count}} kiis",
+    "resultCount_other": "{{count}} kiis",
+    "escalated": "Loo gudbiyay FursadHub"
   },
   "caseDetail": {
     "notesLabel": "Faallooyin",
@@ -260,7 +274,23 @@
     "escalationReasonLabel": "Maxaa halkan looga xallin karin kiiskan?",
     "escalationReasonHint": "Eegaha nidaamku wuu akhrinayaa, sidaas darteed sii wixii uu ku qaadi karo.",
     "escalatedTitle": "Waxaa loo gudbiyay FursadHub",
-    "escalatedOn": "Nidaamka waxaa loo gudbiyay {{date}}."
+    "escalatedOn": "Nidaamka waxaa loo gudbiyay {{date}}.",
+    "statusTitle": "Xaaladda kiiska",
+    "statusLabel": "Xaaladda",
+    "reviewedAt": "Markii ugu dambeysay ee la eegay",
+    "lastNote": "Qoraalkii ugu dambeeyay ee dib-u-eegista",
+    "decisionHint": "Ka hor intaadan go’aan gaarin, sheegashada iyo caddaynta la barbardhig diiwaannada jaamacaddaada.",
+    "codeLabel": "Koodhka lix-god ah ee ardayga",
+    "revokeHint": "Ka-noqoshadu waxay meesha ka saaraysaa diiwaangelinta la xaqiijiyay ee ardaygan. Mar dambe ma codsan karo, lamana magacaabi karo.",
+    "confirmReject": {
+      "title": "Ma diidaysaa diiwaangelintan?",
+      "body": "Ardayga waxaa loo sheegi doonaa in diiwaangelintiisa aan la xaqiijin, iyadoo la raacinayo qoraalkaaga. Kiiska dib looma furi karo."
+    },
+    "confirmRevoke": {
+      "title": "Ma ka noqonaysaa xaqiijintan?",
+      "body": "Diiwaangelinta ardayga looma tirin doono mid la xaqiijiyay. Tan dib looma celin karo."
+    },
+    "confirmKeep": "Dib u noqo"
   },
   "staff": {
     "title": "Shaqaalaha",
@@ -435,6 +465,128 @@
       "SUSPENDED": "Xaqiijintaadu waa hakad. La xiriir FursadHub si loo xalliyo.",
       "REVOKED": "Xaqiijintaadii waa la burburiyay. La xiriir FursadHub si loo xalliyo.",
       "VERIFIED": ""
+    }
+  },
+  "workspace": {
+    "unknownStudent": "Arday aan magac lahayn",
+    "unknownDepartment": "Waax",
+    "admin": {
+      "subtitle": "Ardayda jaamacaddaada, tababarrada iyo shaqada adiga ku sugaysa."
+    },
+    "coordinator": {
+      "title": "Isku-duwidda waaxda",
+      "subtitle": "Magacaabista, xaqiijinta iyo tababarrada waaxyahaaga.",
+      "scope": "Waaxyahaaga: {{departments}}",
+      "noScopeTitle": "Weli waax laguuma xilsaarin",
+      "noScopeBody": "Shaqada isku-duwaha waxay ku eg tahay waaxyaha laguu xilsaaray. Weydii maamulaha jaamacadda inuu waax kuu xilsaaro.",
+      "internsTitle": "Tababarrada waaxyahaaga",
+      "internsEmpty": "Hadda arday ka mid ah waaxyahaaga oo tababar ku jira ma jiro."
+    },
+    "supervisor": {
+      "internsDescription": "Ardayda laguu xilsaaray inaad kormeerto, iyo waxa adiga kugu sugaya mid kasta."
+    },
+    "attention": {
+      "title": "U baahan feejignaantaada",
+      "clearTitle": "Wax kaa dhiman ma jiraan",
+      "clearBody": "Kiisaska xaqiijinta, codsiyada magacaabista iyo tababarrada u baahan jaamacadda halkan ayay ka muuqan doonaan.",
+      "coordinatorClearBody": "Ardayda la xaqiijinayo, codsiyada la magacaabayo iyo tababarrada la dhammaystirayo ee waaxyahaaga halkan ayay ka muuqan doonaan.",
+      "supervisorClearBody": "Warbixinnada toddobaadlaha ah iyo warbixinnada kama dambaysta ah ee ardaydaadu u soo gudbiyaan dib-u-eegis halkan ayay ka muuqan doonaan.",
+      "partial": "Qayb ka mid ah shaqadaada lama soo qaadi karin, sidaas darteed liiskani waxaa laga yaabaa inuu dhiman yahay.",
+      "items": {
+        "casesToReview": {
+          "title_one": "{{count}} diiwaangelin arday oo la xaqiijinayo",
+          "title_other": "{{count}} diiwaangelin arday oo la xaqiijinayo",
+          "action": "Eeg"
+        },
+        "requestsOpen": {
+          "title_one": "{{count}} tababar ayaa sugaya musharrixiin la magacaabo",
+          "title_other": "{{count}} tababar ayaa sugaya musharrixiin la magacaabo",
+          "action": "Magacaab"
+        },
+        "nominationsAwaitingStudent": {
+          "title_one": "{{count}} magacaabis ayaa sugaysa jawaabta ardayga",
+          "title_other": "{{count}} magacaabis ayaa sugaya jawaabaha ardayda",
+          "action": "Eeg"
+        },
+        "placementsAwaitingCompletion": {
+          "title_one": "{{count}} tababar ayaa diyaar u ah go’aankaaga dhammaystirka",
+          "title_other": "{{count}} tababar ayaa diyaar u ah go’aankaaga dhammaystirka",
+          "action": "Go’aami"
+        },
+        "placementsWithoutSupervisor": {
+          "title_one": "{{count}} tababar ma laha kormeere tacliimeed",
+          "title_other": "{{count}} tababar ma laha kormeere tacliimeed",
+          "action": "Xilsaar"
+        },
+        "logsToReview": {
+          "title_one": "{{count}} warbixin toddobaadle ah oo la eegayo",
+          "title_other": "{{count}} warbixin toddobaadle ah oo la eegayo",
+          "action": "Eeg"
+        },
+        "reportsToReview": {
+          "title_one": "{{count}} warbixin kama dambays ah oo la eegayo",
+          "title_other": "{{count}} warbixin kama dambays ah oo la eegayo",
+          "action": "Eeg"
+        }
+      }
+    },
+    "metrics": {
+      "title": "Jaleecada koowaad",
+      "verifiedStudents": "Ardayda la xaqiijiyay",
+      "ofStudents_one": "ka mid ah {{count}} arday",
+      "ofStudents_other": "ka mid ah {{count}} arday",
+      "casesToReview": "Diiwaangelinta la xaqiijinayo",
+      "openRequests": "Codsiyada u baahan musharrixiin",
+      "currentInterns": "Ardayda tababarka ku jira",
+      "departmentStudents": "Ardayda waaxyahaaga"
+    },
+    "cases": {
+      "title": "Diiwaangelinta la xaqiijinayo",
+      "description": "Kuwa ugu horreeyay ee la soo gudbiyay marka hore.",
+      "empty": "Diiwaangelin sugaysa dib-u-eegis ma jirto.",
+      "more_one": "{{count}} kale ayaa sugaya",
+      "more_other": "{{count}} kale ayaa sugaya"
+    },
+    "requests": {
+      "title": "Codsiyada u baahan musharrixiin",
+      "description": "Waqtiga magacaabista ee ugu dhow marka hore.",
+      "empty": "Hadda tababar sugaya musharrixiin jaamacaddaada ka yimaada ma jiro."
+    },
+    "interns": {
+      "readyToComplete": "Diyaar u ah go’aankaaga dhammaystirka",
+      "noSupervisor": "Weli ma laha kormeere tacliimeed",
+      "logsWaiting_one": "{{count}} warbixin oo la eegayo",
+      "logsWaiting_other": "{{count}} warbixin oo la eegayo",
+      "reportWaiting": "Warbixinta kama dambaysta ah oo la eegayo"
+    },
+    "lifecycle": {
+      "title": "Horumarka tababarka",
+      "completionPending": "Waxay sugaysaa go’aanka dhammaystirka ee jaamacadda",
+      "evaluation": {
+        "MISSING": "Hay’adda martigelisay weli ma bilaabin",
+        "DRAFT": "Hay’adda martigelisay ayaa qoraysa",
+        "SUBMITTED": "Hay’adda martigelisay ayaa gudbisay, weli ma aha kama dambays",
+        "FINAL": "Kama dambays"
+      }
+    },
+    "placement": {
+      "clearBody": "Warbixinnada toddobaadlaha ah, warbixinta kama dambaysta ah iyo difaaca halkan ayay ka muuqan doonaan marka ay u baahdaan jaamacadda.",
+      "attention": {
+        "logs_one": "{{count}} warbixin toddobaadle ah ayaa sugaysa dib-u-eegis",
+        "logs_other": "{{count}} warbixin toddobaadle ah ayaa sugaya dib-u-eegis",
+        "report": "Warbixinta kama dambaysta ah ayaa sugaysa dib-u-eegis",
+        "review": "Eeg",
+        "defenseScheduled": "Difaaca waa la qorsheeyay",
+        "defenseToSchedule": "Difaaca weli lama qorsheyn",
+        "schedule": "Qorshee",
+        "open": "Fur",
+        "disputes_one": "{{count}} diiwaan xaadiris oo lagu murmay — kormeeraha hay’adda martigelisay ayaa xalliya",
+        "disputes_other": "{{count}} diiwaan xaadiris oo lagu murmay — kormeeraha hay’adda martigelisay ayaa xalliya",
+        "completion": "Diyaar u ah go’aankaaga dhammaystirka",
+        "decide": "Go’aami",
+        "noSupervisor": "Kormeere tacliimeed lama xilsaarin",
+        "assign": "Xilsaar"
+      }
     }
   }
 }

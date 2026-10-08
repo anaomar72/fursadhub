@@ -2,27 +2,17 @@ import { useState } from 'react'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { useTranslation } from 'react-i18next'
 import { useParams } from 'react-router-dom'
-import { Button, ErrorState, FormField, Icon, Input, SkeletonList, Select, StatusBadge, Textarea, EmptyState } from '../../../components/ui'
-import type { StatusTone } from '../../../components/ui'
+import { Button, ConfirmationDialog, ErrorState, FormField, Icon, Input, SkeletonList, Select, StatusBadge, Textarea, EmptyState } from '../../../components/ui'
 import { apiErrorMessage } from '../../../lib/api/errorMessage'
 import { formatDateTime } from '../../../lib/utils/formatDate'
 import * as defenseApi from '../api/defenseApi'
-import type { DefenseAttemptResponse, DefenseAttemptState, DefenseResult } from '../types'
+import type { DefenseAttemptResponse, DefenseResult } from '../types'
+import { DEFENSE_ATTEMPT_TONE, DEFENSE_RESULT_TONE } from '../../../lib/status/statusTones'
 
 const RESULTS: DefenseResult[] = ['PASSED', 'FAILED', 'RETAKE_REQUIRED']
 
-const STATE_TONE: Record<DefenseAttemptState, StatusTone> = {
-  SCHEDULED: 'info',
-  COMPLETED: 'neutral',
-  CANCELLED: 'neutral',
-}
-
-/** The result carries the meaning once an attempt is completed, so it overrides the state tone. */
-const RESULT_TONE: Record<DefenseResult, StatusTone> = {
-  PASSED: 'success',
-  FAILED: 'danger',
-  RETAKE_REQUIRED: 'warning',
-}
+const STATE_TONE = DEFENSE_ATTEMPT_TONE
+const RESULT_TONE = DEFENSE_RESULT_TONE
 
 interface DefensePageProps {
   /** University staff manage attempts; the student reads their own history. */
@@ -43,6 +33,8 @@ export function DefensePage({ audience }: DefensePageProps) {
   const [error, setError] = useState<string | null>(null)
   const [scheduling, setScheduling] = useState(false)
   const [recordingFor, setRecordingFor] = useState<string | null>(null)
+  // A cancelled attempt stays in the history for good, so cancelling is confirmed first.
+  const [cancellingId, setCancellingId] = useState<string | null>(null)
 
   const attemptsQuery = useQuery({
     queryKey: ['defense-attempts', placementId],
@@ -164,7 +156,7 @@ export function DefensePage({ audience }: DefensePageProps) {
                 recording={recordingFor === attempt.id}
                 onStartRecording={() => setRecordingFor(attempt.id)}
                 onStopRecording={() => setRecordingFor(null)}
-                onCancel={() => cancelMutation.mutate(attempt.id)}
+                onCancel={() => setCancellingId(attempt.id)}
                 onRecord={(result, notes) =>
                   resultMutation.mutate({ attemptId: attempt.id, result, notes })
                 }
@@ -173,6 +165,18 @@ export function DefensePage({ audience }: DefensePageProps) {
           ))}
         </ol>
       )}
+
+      <ConfirmationDialog
+        open={cancellingId !== null}
+        onClose={() => setCancellingId(null)}
+        destructive
+        loading={cancelMutation.isPending}
+        title={t('internship:defense.confirmCancel.title')}
+        description={t('internship:defense.confirmCancel.body')}
+        confirmLabel={t('internship:defense.actions.cancelAttempt')}
+        cancelLabel={t('internship:defense.confirmCancel.keep')}
+        onConfirm={() => cancellingId && cancelMutation.mutate(cancellingId, { onSettled: () => setCancellingId(null) })}
+      />
     </div>
   )
 }

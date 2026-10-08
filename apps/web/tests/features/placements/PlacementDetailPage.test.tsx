@@ -3,7 +3,8 @@ import userEvent from '@testing-library/user-event'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 import { MemoryRouter, Route, Routes } from 'react-router-dom'
 import { AppProviders } from '../../../src/app/providers/AppProviders'
-import { PlacementDetailPage } from '../../../src/features/placements/pages/PlacementDetailPage'
+import { OrganizationPlacementOverview } from '../../../src/features/placements/pages/OrganizationPlacementOverview'
+import { UniversityPlacementOverview } from '../../../src/features/placements/pages/UniversityPlacementOverview'
 import { PlacementWorkspace } from '../../../src/features/placements/components/PlacementWorkspace'
 import i18n from '../../../src/lib/i18n'
 import { OrganizationMembershipContext } from '../../../src/features/organization/components/OrganizationMembershipContext'
@@ -97,7 +98,7 @@ function renderPage(
   const page = (
     <Routes>
       <Route path={`/${area}/placements/:placementId`} element={<PlacementWorkspace area={area} />}>
-        <Route index element={<PlacementDetailPage area={area} />} />
+        <Route index element={area === 'organization' ? <OrganizationPlacementOverview /> : <UniversityPlacementOverview />} />
       </Route>
     </Routes>
   )

@@ -1,5 +1,4 @@
 import { Link } from 'react-router-dom'
-import { ProfileFormSection } from '../../../components/ui/Presentation'
 import { useEffect, useState } from 'react'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
@@ -19,7 +18,8 @@ import {
   FileUpload,
   FormField,
   Input,
-  LoadingState,
+  FormSection,
+  SkeletonPanel,
   PageHeader,
   ProfileBanner,
   Textarea,
@@ -131,7 +131,7 @@ export function UniversityProfilePage() {
   if (universityQuery.isLoading) {
     return (
       <PageContainer>
-        <LoadingState label={t('common:status.loading')} />
+        <SkeletonPanel rows={6} />
       </PageContainer>
     )
   }
@@ -244,7 +244,7 @@ export function UniversityProfilePage() {
       {isAdmin ? (
         <form noValidate onSubmit={form.handleSubmit((values) => updateMutation.mutate(values))}>
           <div className="grid gap-5">
-            <ProfileFormSection title={t('common:remediation.basic')} hint={t('common:remediation.basicHint')} icon="bank"><FormField
+            <FormSection title={t('common:remediation.basic')} description={t('common:remediation.basicHint')}><FormField
               label={t('university:setup.nameLabel')}
               htmlFor="uni-profile-name"
               className="sm:col-span-2"
@@ -259,9 +259,9 @@ export function UniversityProfilePage() {
                 hint={t('university:setup.registrationNumberHint')}
               >
                 <Input id="uni-profile-registration" {...form.register('registrationNumber')} />
-              </FormField></ProfileFormSection>
+              </FormField></FormSection>
 
-            <ProfileFormSection title={t('common:remediation.publicProfile')} hint={t('common:remediation.publicHint')} icon="document"><FormField
+            <FormSection title={t('common:remediation.publicProfile')} description={t('common:remediation.publicHint')}><FormField
               label={t('university:setup.cityLabel')}
               htmlFor="uni-profile-city"
               error={form.formState.errors.city && t(form.formState.errors.city.message ?? '')}
@@ -278,9 +278,9 @@ export function UniversityProfilePage() {
               </FormField>
               <FormField label={t('university:setup.descriptionLabel')} htmlFor="uni-profile-description">
                 <Textarea id="uni-profile-description" rows={4} {...form.register('description')} />
-              </FormField></ProfileFormSection>
+              </FormField></FormSection>
 
-            <ProfileFormSection title={t('common:remediation.web')} hint={t('common:remediation.webHint')} icon="globe"><FormField
+            <FormSection title={t('common:remediation.web')} description={t('common:remediation.webHint')}><FormField
               label={t('university:setup.websiteLabel')}
               htmlFor="uni-profile-website"
               error={form.formState.errors.website && t(form.formState.errors.website.message ?? '')}
@@ -297,8 +297,8 @@ export function UniversityProfilePage() {
                 }
               >
                 <Input id="uni-profile-contact-email" type="email" {...form.register('publicContactEmail')} />
-              </FormField></ProfileFormSection>
-            <div className="sticky bottom-0 z-20 rounded-xl border border-border bg-surface p-4 shadow-md">{updateMutation.isError && (
+              </FormField></FormSection>
+            <div className="sticky bottom-0 z-20 rounded-xl border border-border bg-surface p-4">{updateMutation.isError && (
               <Alert tone="danger">{apiErrorMessage(t, 'university', 'profile', updateMutation.error)}</Alert>
             )}
               {/* As on the organization profile: the failure was reported, the success was not. */}

@@ -64,7 +64,20 @@
       "generic": "Diiwaanka toddobaadka lama kaydin karin. Fadlan mar kale isku day."
     },
     "emptyStudentHint": "Toddobaadkiiba hal qoraal gaaban ka qor waxaad ka shaqaysay. Kormeeraha jaamacaddaadu wuu eegayaa markaad socoto.",
-    "emptyReviewerHint": "Qoraalladu halkan way ka soo muuqanayaan marka ardaygu qoro, kuwa ugu cusub marka hore, diyaar u ah dib-u-eegistaada."
+    "emptyReviewerHint": "Qoraalladu halkan way ka soo muuqanayaan marka ardaygu qoro, kuwa ugu cusub marka hore, diyaar u ah dib-u-eegistaada.",
+    "reviewer": {
+      "caughtUp": "Warbixin toddobaadle ah oo sugaysa dib-u-eegistaada ma jirto.",
+      "groups": {
+        "awaiting_one": "Waxay sugaysaa dib-u-eegistaada ({{count}})",
+        "awaiting_other": "Waxay sugayaan dib-u-eegistaada ({{count}})",
+        "returned_one": "Dib loogu celiyay ardayga ({{count}})",
+        "returned_other": "Dib loogu celiyay ardayga ({{count}})",
+        "reviewed_one": "La eegay ({{count}})",
+        "reviewed_other": "La eegay ({{count}})",
+        "drafts_one": "Weli lama gudbin ({{count}})",
+        "drafts_other": "Weli lama gudbin ({{count}})"
+      }
+    }
   },
   "attendance": {
     "title": "Xaadirinta",
@@ -201,6 +214,11 @@
       "SUBMITTED": "Jaamacaddaadu waxay eegaysaa warbixintaada.",
       "NEEDS_REVISION": "Ku cusbooneysii warbixintaada faallada dib-u-eegaha, kadibna mar kale gudbi.",
       "APPROVED": "Warbixintaada waa la ansixiyay."
+    },
+    "confirmApprove": {
+      "title": "Ma ansixinaysaa warbixintan kama dambaysta ah?",
+      "body": "Warbixin la ansixiyay waa kama dambays: dib looguma celin karo ardayga, lamana beddeli karo kadib.",
+      "keep": "Weli maya"
     }
   },
   "defense": {
@@ -241,7 +259,12 @@
       "VALIDATION_FAILED": "Fadlan hubi foomka oo mar kale isku day.",
       "generic": "Difaaca lama cusboonaysiin karin. Fadlan mar kale isku day."
     },
-    "emptyHint": "Difaacu halkan wuu ka soo muuqanayaa marka jaamacaddu u qorsheyso tababarkan."
+    "emptyHint": "Difaacu halkan wuu ka soo muuqanayaa marka jaamacaddu u qorsheyso tababarkan.",
+    "confirmCancel": {
+      "title": "Ma joojinaysaa difaacan?",
+      "body": "Isku-daygu wuxuu ku jiri doonaa taariikhda isagoo la joojiyay. Kadib waad qorshayn kartaa mid cusub.",
+      "keep": "Hay"
+    }
   },
   "completion": {
     "title": "Dhammaystirka tababarka",
