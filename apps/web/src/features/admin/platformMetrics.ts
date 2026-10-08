@@ -1,4 +1,5 @@
 import type { StatusTone } from '../../components/ui'
+import type { StatisticMachine } from './statusTone'
 import type { PlatformStatistics } from './types'
 
 /**
@@ -22,6 +23,8 @@ export interface HeadlineCount {
   value: number
   /** The status split behind the headline, when the statistic carries one. */
   breakdown: Record<string, number> | null
+  /** Which state machine the breakdown's keys belong to — tones resolve per machine. */
+  machine: StatisticMachine | null
 }
 
 /**
@@ -42,6 +45,7 @@ export function headlineCounts(statistics: PlatformStatistics): HeadlineCount[] 
       to: '/admin/users',
       value: total(statistics.usersByStatus),
       breakdown: statistics.usersByStatus,
+      machine: 'accounts',
     },
     {
       // Backend Phase B6. Student PROFILES, not accounts — a recruiter has an account and is not a
@@ -49,7 +53,8 @@ export function headlineCounts(statistics: PlatformStatistics): HeadlineCount[] 
       id: 'students',
       to: null,
       value: statistics.studentProfiles,
-      breakdown: null,
+      breakdown: statistics.studentEnrollmentsByVerificationStatus,
+      machine: 'enrollments',
     },
     {
       id: 'universities',
@@ -57,12 +62,14 @@ export function headlineCounts(statistics: PlatformStatistics): HeadlineCount[] 
       value: statistics.universities,
       // Backend Phase B6 gave universities the breakdown organizations always had.
       breakdown: statistics.universitiesByVerificationStatus,
+      machine: 'institutions',
     },
     {
       id: 'organizations',
       to: '/admin/organizations',
       value: total(statistics.organizationsByVerificationStatus),
       breakdown: statistics.organizationsByVerificationStatus,
+      machine: 'institutions',
     },
     {
       // Applications is a plain scalar — {@code candidacies} has no GROUP BY behind it.
@@ -70,6 +77,7 @@ export function headlineCounts(statistics: PlatformStatistics): HeadlineCount[] 
       to: null,
       value: statistics.candidacies,
       breakdown: null,
+      machine: null,
     },
     {
       // Backend Phase B6: the total is every opportunity in any state, and the screen behind the
@@ -79,12 +87,14 @@ export function headlineCounts(statistics: PlatformStatistics): HeadlineCount[] 
       to: '/admin/opportunities',
       value: total(statistics.opportunitiesByStatus),
       breakdown: statistics.opportunitiesByStatus,
+      machine: 'opportunities',
     },
     {
       id: 'placements',
       to: null,
       value: total(statistics.placementsByStatus),
       breakdown: statistics.placementsByStatus,
+      machine: 'placements',
     },
   ]
 }
@@ -108,59 +118,6 @@ export function publiclyDiscoverable(statistics: PlatformStatistics): {
   return { discoverable, published, hidden: Math.max(published - discoverable, 0) }
 }
 
-export interface AttentionItem {
-  id: string
-  value: number
-  /** Where the work is done, when a screen exists for it. */
-  to: string | null
-  tone: StatusTone
-  /** A figure to watch rather than a queue to clear — it never reads as "needs action". */
-  informational?: boolean
-}
-
-/**
- * The operations strip: the four figures that mean somebody has to do something today.
- *
- * <p>Not in the prototype, which was drawn as a growth dashboard. These are the reason the console
- * exists — {@code PlatformStatistics} carries all four precisely because Phase 7 treated them as the
- * platform's health, and a console that showed totals but hid a mail outage would be decoration.
- *
- * <p>Tone is severity, not decoration: zero is the healthy state for every one of them, so a
- * non-zero value is always worth the eye. Failed email and login failures have no screen to link to
- * — nothing in the API lists them — so they read as indicators rather than pretending to be links.
- */
-export function attentionItems(statistics: PlatformStatistics): AttentionItem[] {
-  return [
-    {
-      id: 'escalatedCases',
-      value: statistics.escalatedVerificationCases,
-      to: '/admin/verification-escalations',
-      tone: statistics.escalatedVerificationCases > 0 ? 'warning' : 'success',
-    },
-    {
-      id: 'openPrivacyRequests',
-      value: statistics.openPrivacyRequests,
-      to: '/admin/privacy-requests',
-      tone: statistics.openPrivacyRequests > 0 ? 'warning' : 'success',
-    },
-    {
-      id: 'failedEmails',
-      value: statistics.failedEmailDeliveries,
-      to: null,
-      tone: statistics.failedEmailDeliveries > 0 ? 'danger' : 'success',
-    },
-    {
-      // Never "needs action": some failed sign-ins every day is normal, and calling that an alarm
-      // would train an administrator to ignore this strip. It is here to be watched, not worked.
-      id: 'recentLoginFailures',
-      value: statistics.recentLoginFailures,
-      to: null,
-      tone: 'info',
-      informational: true,
-    },
-  ]
-}
-
 /**
  * Institutions still waiting on a reviewer, from the organization breakdown.
  *
@@ -169,4 +126,58 @@ export function attentionItems(statistics: PlatformStatistics): AttentionItem[] 
  */
 export function pendingInstitutionReviews(counts: Record<string, number>): number {
   return (counts.SUBMITTED ?? 0) + (counts.UNDER_REVIEW ?? 0)
+}
+
+/**
+ * Phase 8: what needs a platform operator, as work items with a destination. Only real queues with a
+ * screen behind them, each linking to that screen already filtered; zero-count items are left out,
+ * so an empty list is the honest "caught up". Failed email and sign-in failures have no screen and
+ * are reported as system signals instead ({@link systemSignals}), never as a link to nowhere.
+ *
+ * <p>`pendingTestimonials` is the SUBMITTED total from the moderation list, or undefined when it is
+ * not loaded — then it simply contributes nothing.
+ */
+export type PlatformAttentionKind =
+  | 'organizationReviews'
+  | 'universityReviews'
+  | 'escalatedCases'
+  | 'openPrivacyRequests'
+  | 'pendingTestimonials'
+
+export interface PlatformAttention {
+  kind: PlatformAttentionKind
+  count: number
+  to: string
+}
+
+export function platformAttention(statistics: PlatformStatistics, pendingTestimonials?: number): PlatformAttention[] {
+  const items: PlatformAttention[] = [
+    { kind: 'organizationReviews', count: pendingInstitutionReviews(statistics.organizationsByVerificationStatus), to: '/admin/organizations' },
+    { kind: 'universityReviews', count: pendingInstitutionReviews(statistics.universitiesByVerificationStatus), to: '/admin/universities' },
+    { kind: 'escalatedCases', count: statistics.escalatedVerificationCases, to: '/admin/verification-escalations' },
+    { kind: 'openPrivacyRequests', count: statistics.openPrivacyRequests, to: '/admin/privacy-requests' },
+    { kind: 'pendingTestimonials', count: pendingTestimonials ?? 0, to: '/admin/testimonials' },
+  ]
+  return items.filter((item) => item.count > 0)
+}
+
+/** At most four operational figures, each a real count from the statistics endpoint. */
+export function platformHealth(statistics: PlatformStatistics) {
+  return {
+    activeAccounts: statistics.usersByStatus.ACTIVE ?? 0,
+    verifiedInstitutions: (statistics.organizationsByVerificationStatus.VERIFIED ?? 0) + (statistics.universitiesByVerificationStatus.VERIFIED ?? 0),
+    discoverableInternships: statistics.publiclyDiscoverableOpportunities,
+    activePlacements: statistics.placementsByStatus.ACTIVE ?? 0,
+  }
+}
+
+/**
+ * Signals to watch rather than queues to clear: failed email deliveries (a real fault when non-zero)
+ * and recent sign-in failures (some every day is normal, so it is never an alarm).
+ */
+export function systemSignals(statistics: PlatformStatistics) {
+  return [
+    { id: 'failedEmails', value: statistics.failedEmailDeliveries, tone: (statistics.failedEmailDeliveries > 0 ? 'danger' : 'success') as StatusTone },
+    { id: 'recentLoginFailures', value: statistics.recentLoginFailures, tone: 'info' as StatusTone },
+  ]
 }

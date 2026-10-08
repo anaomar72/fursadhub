@@ -15,7 +15,6 @@ import {
   StarRatingInput,
   StatusBadge,
   Textarea,
-  type StatusTone,
 } from '../../../components/ui'
 import { PageContainer } from '../../../app/layouts/PageContainer'
 import { apiErrorMessage } from '../../../lib/api/errorMessage'
@@ -23,13 +22,10 @@ import { formatDate } from '../../../lib/utils/formatDate'
 import { getMyTestimonialContext, listMyTestimonials, submitTestimonial } from '../api/testimonialApi'
 import { testimonialAttribution } from '../attribution'
 import { testimonialSchema, type TestimonialFormValues } from '../schemas/testimonialSchema'
-import type { Testimonial, TestimonialStatus } from '../types'
+import type { Testimonial } from '../types'
+import { TESTIMONIAL_STATUS_TONE } from '../../../lib/status/statusTones'
 
-const STATUS_TONE: Record<TestimonialStatus, StatusTone> = {
-  SUBMITTED: 'info',
-  PUBLISHED: 'success',
-  REJECTED: 'danger',
-}
+const STATUS_TONE = TESTIMONIAL_STATUS_TONE
 
 /**
  * Where a user offers a testimonial, and sees what became of it.

@@ -19,7 +19,7 @@ import {
 } from '../../../components/ui'
 import { AdminDetailSkeleton, AdminTableSkeleton } from '../components/AdminSkeletons'
 import * as adminApi from '../api/adminApi'
-import { distributionTone } from '../statusTone'
+import { statisticTone } from '../statusTone'
 import { formatDate } from '../../../lib/utils/formatDate'
 import type { AdminOpportunity, OpportunityMode, OpportunityStatus } from '../types'
 
@@ -78,7 +78,7 @@ export function AdminOpportunitiesPage() {
       key: 'status',
       header: t('admin:opportunities.status'),
       render: (opportunity) => (
-        <StatusBadge tone={distributionTone(opportunity.status)}>
+        <StatusBadge tone={statisticTone('opportunities', opportunity.status)}>
           {t(`admin:statusLabels.${opportunity.status}`, opportunity.status)}
         </StatusBadge>
       ),

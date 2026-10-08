@@ -242,6 +242,18 @@ export const DEFENSE_RESULT_TONE: Record<DefenseResult, StatusTone> = {
 }
 
 /**
+ * Testimonial moderation (Phase 8 moved it here from the two pages that each kept a copy — the
+ * author's own page and the moderation queue). REJECTED is terminal and the author is told so.
+ */
+export type TestimonialStatus = 'SUBMITTED' | 'PUBLISHED' | 'REJECTED'
+
+export const TESTIMONIAL_STATUS_TONE: Record<TestimonialStatus, StatusTone> = {
+  SUBMITTED: 'info',
+  PUBLISHED: 'success',
+  REJECTED: 'danger',
+}
+
+/**
  * Tone for a status that arrives as a plain string on the wire. An unrecognised value — a state
  * added to a machine later — renders neutral instead of throwing.
  */

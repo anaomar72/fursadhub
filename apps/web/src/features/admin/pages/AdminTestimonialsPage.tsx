@@ -16,7 +16,7 @@ import {
   StatusBadge,
   Textarea,
   type DataTableColumn,
-  type StatusTone,
+  useToast,
 } from '../../../components/ui'
 import { apiErrorMessage } from '../../../lib/api/errorMessage'
 import { AdminTableSkeleton } from '../components/AdminSkeletons'
@@ -24,6 +24,9 @@ import * as adminApi from '../api/adminApi'
 import { formatDateTime } from '../../../lib/utils/formatDate'
 import { testimonialAttribution } from '../../testimonials/attribution'
 import type { Testimonial, TestimonialStatus } from '../../testimonials/types'
+import { TESTIMONIAL_STATUS_TONE } from '../../../lib/status/statusTones'
+import { useListParams } from '../hooks/useListParams'
+import { adminQueries } from '../adminQueries'
 
 type ModerationAction = 'publish' | 'unpublish' | 'reject'
 
@@ -32,11 +35,7 @@ const NEEDS_NOTE = new Set<ModerationAction>(['reject'])
 
 const FILTER_STATUSES: TestimonialStatus[] = ['SUBMITTED', 'PUBLISHED', 'REJECTED']
 
-const STATUS_TONE: Record<TestimonialStatus, StatusTone> = {
-  SUBMITTED: 'info',
-  PUBLISHED: 'success',
-  REJECTED: 'danger',
-}
+const STATUS_TONE = TESTIMONIAL_STATUS_TONE
 
 /**
  * Which commands each status offers. The state machine lives on the backend and refuses anything
@@ -58,16 +57,13 @@ const ACTIONS: Record<TestimonialStatus, ModerationAction[]> = {
 export function AdminTestimonialsPage() {
   const { t } = useTranslation()
   const queryClient = useQueryClient()
-  const [status, setStatus] = useState<TestimonialStatus | ''>('SUBMITTED')
-  const [page, setPage] = useState(0)
+  const toast = useToast()
+  const { status, page, setStatus, setPage } = useListParams(FILTER_STATUSES, 'SUBMITTED')
   const [error, setError] = useState<string | null>(null)
   const [prompting, setPrompting] = useState<{ id: string; action: ModerationAction } | null>(null)
   const [note, setNote] = useState('')
 
-  const testimonialsQuery = useQuery({
-    queryKey: ['admin', 'testimonials', status, page],
-    queryFn: () => adminApi.listTestimonials({ status: status === '' ? undefined : status, page }),
-  })
+  const testimonialsQuery = useQuery(adminQueries.testimonials(status, page))
 
   const moderate = useMutation({
     mutationFn: ({
@@ -85,7 +81,8 @@ export function AdminTestimonialsPage() {
         throw cause
       })
     },
-    onSuccess: () => {
+    onSuccess: (_result, { action }) => {
+      toast.success(t(`admin:testimonials.done.${action}`))
       setPrompting(null)
       setNote('')
       void queryClient.invalidateQueries({ queryKey: ['admin', 'testimonials'] })
@@ -228,7 +225,6 @@ export function AdminTestimonialsPage() {
           value={status}
           onChange={(event) => {
             setStatus(event.target.value as TestimonialStatus | '')
-            setPage(0)
           }}
         >
           <option value="">{t('admin:testimonials.allStatuses')}</option>

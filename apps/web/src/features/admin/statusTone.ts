@@ -3,7 +3,10 @@ import {
   ACCOUNT_STATUS_TONE,
   ENROLLMENT_VERIFICATION_TONE,
   INSTITUTION_VERIFICATION_TONE,
+  OPPORTUNITY_STATUS_TONE,
+  PLACEMENT_STATUS_TONE,
   PRIVACY_REQUEST_TONE as SHARED_PRIVACY_REQUEST_TONE,
+  TESTIMONIAL_STATUS_TONE as SHARED_TESTIMONIAL_STATUS_TONE,
   toneOf,
 } from '../../lib/status/statusTones'
 
@@ -24,6 +27,7 @@ import {
 export const USER_STATUS_TONE = ACCOUNT_STATUS_TONE
 export const INSTITUTION_STATUS_TONE = INSTITUTION_VERIFICATION_TONE
 export const PRIVACY_REQUEST_TONE = SHARED_PRIVACY_REQUEST_TONE
+export const TESTIMONIAL_STATUS_TONE = SHARED_TESTIMONIAL_STATUS_TONE
 
 /** Student-verification states as seen from the escalation queue (a plain string on the wire). */
 export function caseStatusTone(status: string): StatusTone {
@@ -31,29 +35,23 @@ export function caseStatusTone(status: string): StatusTone {
 }
 
 /**
- * Tone for any status appearing in a dashboard breakdown, across every state machine the
- * statistics endpoint groups by — accounts, organizations, opportunities and placements.
+ * The state machines the statistics endpoint groups by, each with its OWN tones.
  *
- * <p>The endpoint returns whatever enum values PostgreSQL actually holds, so this is a lookup with
- * a neutral fallback rather than an exhaustive record: a state added to a machine later shows up
- * uncoloured instead of crashing the dashboard.
+ * <p>Phase 8 fix: these used to be merged into one lookup, so a key two machines share took
+ * whichever tone was spread last — placement CANCELLED (never started, neutral) read as danger
+ * because opportunity CANCELLED is. Each breakdown now resolves against its own machine.
  */
-const DISTRIBUTION_TONES: Record<string, StatusTone> = {
-  ...USER_STATUS_TONE,
-  ...INSTITUTION_STATUS_TONE,
-  // Opportunity states (CLAUDE.md section 33).
-  PUBLISHED: 'success',
-  PAUSED: 'warning',
-  CLOSED: 'neutral',
-  CANCELLED: 'danger',
-  // Placement states (CLAUDE.md section 39).
-  PLANNED: 'info',
-  ACTIVE: 'success',
-  COMPLETION_PENDING: 'warning',
-  COMPLETED: 'success',
-  TERMINATED: 'danger',
+export type StatisticMachine = 'accounts' | 'institutions' | 'enrollments' | 'opportunities' | 'placements'
+
+const STATISTIC_TONES: Record<StatisticMachine, Record<string, StatusTone>> = {
+  accounts: ACCOUNT_STATUS_TONE,
+  institutions: INSTITUTION_VERIFICATION_TONE,
+  enrollments: ENROLLMENT_VERIFICATION_TONE,
+  opportunities: OPPORTUNITY_STATUS_TONE,
+  placements: PLACEMENT_STATUS_TONE,
 }
 
-export function distributionTone(status: string): StatusTone {
-  return DISTRIBUTION_TONES[status] ?? 'neutral'
+/** A neutral fallback, so a state added to a machine later shows uncoloured instead of crashing. */
+export function statisticTone(machine: StatisticMachine, status: string): StatusTone {
+  return toneOf(STATISTIC_TONES[machine], status)
 }
