@@ -108,9 +108,9 @@
     },
     "emptyHint": "Xaadirintu halkan way ka soo muuqanaysaa marka kormeeraha shaqada uu bilaabo diiwaangelinta maalmaha.",
     "summaryLabel": "Soo koobidda xaadirinta",
-    "toConfirm_one": "{{count}} maalin ayaa sugaysa xaqiijintaada",
-    "toConfirm_other": "{{count}} maalmood ayaa sugaya xaqiijintaada",
-    "allSettled": "Maalin kasta oo la diiwaan geliyay waa la xalliyay."
+    "allSettled": "Maalin kasta oo la diiwaan geliyay waa la xalliyay.",
+    "awaitingSupervisor_one": "{{count}} maalin ayaa sugaysa xaqiijinta kormeerahaaga. Haddii diiwaan khaldan yahay, ka doodo.",
+    "awaitingSupervisor_other": "{{count}} maalmood ayaa sugaya xaqiijinta kormeerahaaga. Haddii diiwaan khaldan yahay, ka doodo."
   },
   "evaluation": {
     "title": "Qiimaynta hay'adda",
@@ -149,7 +149,12 @@
       "VALIDATION_FAILED": "Qiimayntu waa inay u dhaxaysaa 1 iyo 5.",
       "generic": "Qiimaynta lama kaydin karin. Fadlan mar kale isku day."
     },
-    "notAvailableHint": "Kormeeraha shaqadu wuxuu dhammaystiraa qiimayntan, waxayna halkan ka soo muuqanaysaa marka uu gudbiyo."
+    "notAvailableHint": "Kormeeraha shaqadu wuxuu dhammaystiraa qiimayntan, waxayna halkan ka soo muuqanaysaa marka uu gudbiyo.",
+    "confirmFinal": {
+      "title": "Ma dhammaystiraysaa qiimayntan?",
+      "body": "Qiimaynta dhammaystiran lama beddeli karo mar dambena lama furi karo. Waxay ku xisaabsantahay dhammaystirka, ardayguna wuu akhrin karaa.",
+      "keep": "Weli maya"
+    }
   },
   "finalReport": {
     "title": "Warbixinta ugu dambaysa",

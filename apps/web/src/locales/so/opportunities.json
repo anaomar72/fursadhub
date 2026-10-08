@@ -34,7 +34,8 @@
     "searchPlaceholder": "Ku raadi cinwaan ama goob",
     "resultCount_one": "{{count}} tababar",
     "resultCount_other": "{{count}} tababar",
-    "emptyHint": "Soo dhig tababarkaagii ugu horreeyay si aad u bilowdo helitaanka musharraxiin."
+    "emptyHint": "Soo dhig tababarkaagii ugu horreeyay si aad u bilowdo helitaanka musharraxiin.",
+    "candidates": "Musharraxiinta"
   },
   "form": {
     "createTitle": "Tababar cusub",
@@ -106,7 +107,36 @@
     "perksHint": "Ilaa 15, tusaale gunno gaadiid, hagitaan.",
     "perksPlaceholder": "tusaale Gunno gaadiid",
     "notAuthorizedTitle": "Ma abuuri kartid tababarro",
-    "notAuthorizedBody": "Kaliya maamulayaasha ururka iyo qorayaasha shaqaalaha ayaa dhigi kara tababarro. Weydii maamule ka tirsan ururkaaga haddii aad u baahan tahay."
+    "notAuthorizedBody": "Kaliya maamulayaasha ururka iyo qorayaasha shaqaalaha ayaa dhigi kara tababarro. Weydii maamule ka tirsan ururkaaga haddii aad u baahan tahay.",
+    "sections": {
+      "basics": {
+        "title": "Tababarka",
+        "description": "Cinwaanka iyo sharaxaadda ardaydu ugu horrayn arkaan."
+      },
+      "role": {
+        "title": "Doorka",
+        "description": "Waxa tababartuhu qabanayo iyo waxa uu u baahan yahay inuu keeno."
+      },
+      "audience": {
+        "title": "Cidda la tixgelin karo",
+        "description": "Waxay go'aamisaa in ardaydu si toos ah u codsadaan, ay jaamacaddoodu magacaabto, ama labadaba."
+      },
+      "dates": {
+        "title": "Taariikhaha iyo kaalmaha",
+        "description": "Goorta tababarku socdo, inta tababarte ee aad u baahan tahay, iyo goorta codsiyadu xirmaan."
+      },
+      "arrangement": {
+        "title": "Habka shaqada",
+        "description": "Halka iyo inta uu tababartuhu shaqeeyo."
+      },
+      "compensation": {
+        "title": "Waxa uu bixiyo",
+        "description": "Mushahar, haddii uu jiro, iyo faa'iidooyin kale."
+      }
+    },
+    "targetsLater": "Jaamacadaha iyo waaxaha aad bartilmaameedsanayso waxaad ka doorataa bogga tababarka, marka la abuuro kadib.",
+    "deadlineHint": "Codsiyadu waxay xirmaan dhammaadka maalintan. Waa inay ka horreysaa taariikhda bilowga.",
+    "deadlineHintTargeted": "Ikhtiyaari u ah tababar la bartilmaameedsaday — jaamacad kastaa waxay magacaabtaa ilaa wakhtigeeda kama dambaysta ah."
   },
   "actions": {
     "publish": "Daabac",
@@ -247,6 +277,20 @@
       "CLOSED": "Tababarkan waa xiran yahay. Tababarrada xiran lama beddeli karo.",
       "CANCELLED": "Tababarkan waa la joojiyay. Tababarrada la joojiyay lama beddeli karo.",
       "DRAFT": ""
+    },
+    "snapshot": {
+      "title": "Shaqaalaysiinta",
+      "new": "Codsiyo cusub",
+      "inReview": "Dib-u-eegis ku jira",
+      "offered": "Dalabyo la diray",
+      "accepted": "La aqbalay",
+      "open": "Fur liiska musharrixiinta",
+      "unavailable": "Tirooyinka musharrixiinta lama soo rari karin."
+    },
+    "cancelConfirm": {
+      "title": "Ma joojinaysaa tababarkan?",
+      "body": "Joojintu waa joogto. Ardaydu ma codsan karaan lamana magacaabi karo, tababarkana mar dambe lama daabici karo.",
+      "keep": "Hayso"
     }
   },
   "compensation": {

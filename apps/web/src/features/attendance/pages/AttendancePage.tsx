@@ -338,7 +338,8 @@ function StudentAttendanceList({
 }) {
   const { t } = useTranslation()
   const count = (value: AttendanceValue) => records.filter((record) => record.attendanceValue === value).length
-  const toConfirm = records.filter((record) => record.confirmationStatus === 'RECORDED').length
+  // RECORDED days wait on the SUPERVISOR (AttendanceService.confirm), not on the student.
+  const awaitingSupervisor = records.filter((record) => record.confirmationStatus === 'RECORDED').length
 
   return (
     <div className="flex flex-col gap-4">
@@ -351,8 +352,10 @@ function StudentAttendanceList({
             </div>
           ))}
         </dl>
-        <p className={toConfirm > 0 ? 'text-body font-semibold text-warning' : 'text-body text-foreground-secondary'}>
-          {toConfirm > 0 ? t('internship:attendance.toConfirm', { count: toConfirm }) : t('internship:attendance.allSettled')}
+        <p className="text-body text-foreground-secondary">
+          {awaitingSupervisor > 0
+            ? t('internship:attendance.awaitingSupervisor', { count: awaitingSupervisor })
+            : t('internship:attendance.allSettled')}
         </p>
       </section>
 

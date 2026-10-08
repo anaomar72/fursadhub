@@ -154,6 +154,33 @@ export const PLACEMENT_STATUS_TONE: Record<PlacementStatus, StatusTone> = {
   TERMINATED: 'danger',
 }
 
+// ---------------------------------------------------------------- opportunities
+// Read by the organization workspace, the university's target requests and the public/student
+// listings, so they are cross-feature machines too.
+
+/** Opportunity states — CLAUDE.md section 33. */
+export type OpportunityStatus = 'DRAFT' | 'PUBLISHED' | 'PAUSED' | 'CLOSED' | 'CANCELLED'
+
+export const OPPORTUNITY_STATUS_TONE: Record<OpportunityStatus, StatusTone> = {
+  DRAFT: 'neutral',
+  PUBLISHED: 'success',
+  PAUSED: 'warning',
+  CLOSED: 'neutral',
+  CANCELLED: 'danger',
+}
+
+/** Opportunity target states — CLAUDE.md section 34. */
+export type OpportunityTargetStatus = 'REQUESTED' | 'ACKNOWLEDGED' | 'NOMINATING' | 'COMPLETED' | 'DECLINED' | 'EXPIRED'
+
+export const OPPORTUNITY_TARGET_STATUS_TONE: Record<OpportunityTargetStatus, StatusTone> = {
+  REQUESTED: 'info',
+  ACKNOWLEDGED: 'info',
+  NOMINATING: 'warning',
+  COMPLETED: 'success',
+  DECLINED: 'neutral',
+  EXPIRED: 'neutral',
+}
+
 /**
  * Tone for a status that arrives as a plain string on the wire. An unrecognised value — a state
  * added to a machine later — renders neutral instead of throwing.

@@ -1,3 +1,4 @@
+import { useState } from 'react'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
@@ -21,7 +22,8 @@ import {
   EmptyState,
   FormField,
   Input,
-  LoadingState,
+  SkeletonPanel,
+  ConfirmationDialog,
   PageHeader,
   StatusBadge,
   Textarea,
@@ -95,6 +97,8 @@ export function CandidateDetailPage() {
     void queryClient.invalidateQueries({ queryKey: ['recruitment', 'candidates'] })
   }
 
+  // Which destructive action is awaiting confirmation, if any.
+  const [confirming, setConfirming] = useState<{ kind: 'reject' } | { kind: 'withdraw'; offerId: string } | null>(null)
   const commandMutation = useMutation({
     mutationFn: (command: string) => {
       switch (command) {
@@ -138,7 +142,7 @@ export function CandidateDetailPage() {
   if (candidateQuery.isLoading) {
     return (
       <PageContainer>
-        <LoadingState label={t('common:status.loading')} />
+        <SkeletonPanel rows={6} />
       </PageContainer>
     )
   }
@@ -187,41 +191,15 @@ export function CandidateDetailPage() {
           </div>
         }
       />
-      <ProfessionalProfileSummary profile={candidate.professional} />
-
-
-      {commands.length > 0 && (
-        <Card padding="lg">
-          <h2 className="font-display text-base font-bold text-brand-navy dark:text-foreground">
-            {t('recruitment:candidate.actionsTitle')}
-          </h2>
-          <p className="mt-1 text-sm text-foreground-secondary">{t('recruitment:candidate.actionsHint')}</p>
-
-          <div className="mt-4 flex flex-wrap gap-2">
-            {commands.map((command) => (
-              <Button
-                key={command}
-                variant={command === 'reject' ? 'danger' : command === 'review' ? 'outline' : 'primary'}
-                className={command === 'reject' ? 'sm:ml-auto' : undefined}
-                loading={commandMutation.isPending && commandMutation.variables === command}
-                disabled={commandMutation.isPending}
-                onClick={() => commandMutation.mutate(command)}
-              >
-                {t(`recruitment:candidate.commands.${command}`)}
-              </Button>
-            ))}
-          </div>
-
-          {commandMutation.isError && (
-            <Alert tone="danger" className="mt-4">
-              {apiErrorMessage(t, 'recruitment', 'candidate', commandMutation.error)}
-            </Alert>
-          )}
-        </Card>
-      )}
-
-      <div className="grid gap-5 xl:grid-cols-[1.4fr_1fr]">
-        <div className="flex min-w-0 flex-col gap-5">
+      {/*
+        Phase 6: a review layout. The main column is what you review — the candidate's profile,
+        their answers, their CV and what has happened so far; the side column is what you decide —
+        the stage actions this status allows, the offer, and sending one. Actions stay exactly the
+        ones the state machine permits (availableCommands / canSendOffer).
+      */}
+      <div className="grid items-start gap-8 lg:grid-cols-[minmax(0,1fr)_minmax(0,22rem)]">
+        <div className="flex min-w-0 flex-col gap-6">
+          <ProfessionalProfileSummary profile={candidate.professional} />
           <Card padding="lg">
             <h2 className="font-display text-base font-bold text-brand-navy dark:text-foreground">
               {t('recruitment:candidate.answersTitle')}
@@ -240,117 +218,6 @@ export function CandidateDetailPage() {
             )}
           </Card>
 
-          <Card padding="lg">
-            <h2 className="font-display text-base font-bold text-brand-navy dark:text-foreground">
-              {t('recruitment:candidate.offersTitle')}
-            </h2>
-            {candidate.offers.length === 0 ? (
-              <p className="mt-3 text-sm text-foreground-secondary">{t('recruitment:candidate.noOffers')}</p>
-            ) : (
-              <ul className="mt-4 flex flex-col gap-3">
-                {candidate.offers.map((offer) => (
-                  <li
-                    key={offer.id}
-                    className="flex flex-wrap items-start justify-between gap-3 rounded-md border border-border bg-surface-muted p-4"
-                  >
-                    <div className="min-w-0">
-                      <p className="text-sm font-semibold text-foreground">
-                        {t('placements:detail.dateRange', {
-                          start: formatDate(offer.startDate),
-                          end: formatDate(offer.endDate),
-                        })}
-                      </p>
-                      <p className="mt-1 text-xs text-muted">
-                        {t('recruitment:candidate.respondBy', { date: formatDate(offer.responseDeadline) })}
-                      </p>
-                      {offer.location && <p className="mt-1 text-xs text-muted">{offer.location}</p>}
-                    </div>
-                    <div className="flex shrink-0 items-center gap-2">
-                      <StatusBadge tone={OFFER_STATUS_TONE[offer.status]}>
-                        {t(`recruitment:offerStatusValues.${offer.status}`)}
-                      </StatusBadge>
-                      {can.canManageCandidates && offer.status === 'PENDING' && (
-                        <Button
-                          type="button"
-                          size="sm"
-                          variant="ghost"
-                          className="text-danger"
-                          loading={withdrawOfferMutation.isPending && withdrawOfferMutation.variables === offer.id}
-                          onClick={() => withdrawOfferMutation.mutate(offer.id)}
-                        >
-                          {t('recruitment:candidate.withdrawOffer')}
-                        </Button>
-                      )}
-                    </div>
-                  </li>
-                ))}
-              </ul>
-            )}
-
-            {withdrawOfferMutation.isError && (
-              <Alert tone="danger" className="mt-4">
-                {apiErrorMessage(t, 'recruitment', 'candidate', withdrawOfferMutation.error)}
-              </Alert>
-            )}
-          </Card>
-
-          {/* An offer can only be sent when the state machine allows it and no offer is live. */}
-          {can.canManageCandidates && canSendOffer(candidate.status) && !liveOffer && (
-            <form noValidate onSubmit={offerForm.handleSubmit((values) => offerMutation.mutate(values))}>
-              <Card padding="lg" className="flex flex-col gap-4">
-                <div>
-                  <h2 className="font-display text-base font-bold text-brand-navy dark:text-foreground">
-                    {t('recruitment:candidate.sendOfferTitle')}
-                  </h2>
-                  <p className="mt-1 text-sm text-foreground-secondary">{t('recruitment:candidate.sendOfferHint')}</p>
-                </div>
-
-                <div className="grid gap-4 sm:grid-cols-2">
-                  <FormField
-                    label={t('recruitment:candidate.startDate')}
-                    htmlFor="offer-start"
-                    error={fieldError(t, offerForm.formState.errors.startDate?.message)}
-                  >
-                    <Input id="offer-start" type="date" {...offerForm.register('startDate')} />
-                  </FormField>
-                  <FormField
-                    label={t('recruitment:candidate.endDate')}
-                    htmlFor="offer-end"
-                    error={fieldError(t, offerForm.formState.errors.endDate?.message)}
-                  >
-                    <Input id="offer-end" type="date" {...offerForm.register('endDate')} />
-                  </FormField>
-                  <FormField
-                    label={t('recruitment:candidate.responseDeadline')}
-                    htmlFor="offer-deadline"
-                    error={fieldError(t, offerForm.formState.errors.responseDeadline?.message)}
-                  >
-                    <Input id="offer-deadline" type="date" {...offerForm.register('responseDeadline')} />
-                  </FormField>
-                  <FormField label={t('recruitment:candidate.location')} htmlFor="offer-location">
-                    <Input id="offer-location" {...offerForm.register('location')} />
-                  </FormField>
-                </div>
-
-                <FormField label={t('recruitment:candidate.details')} htmlFor="offer-details">
-                  <Textarea id="offer-details" rows={3} {...offerForm.register('details')} />
-                </FormField>
-
-                {offerMutation.isError && (
-                  <Alert tone="danger">{apiErrorMessage(t, 'recruitment', 'candidate', offerMutation.error)}</Alert>
-                )}
-
-                <div className="border-t border-border pt-4">
-                  <Button type="submit" loading={offerMutation.isPending}>
-                    {t('recruitment:candidate.sendOffer')}
-                  </Button>
-                </div>
-              </Card>
-            </form>
-          )}
-        </div>
-
-        <div className="flex min-w-0 flex-col gap-5">
           <Card padding="lg">
             <h2 className="font-display text-base font-bold text-brand-navy dark:text-foreground">
               {t('recruitment:candidate.cvTitle')}
@@ -407,7 +274,7 @@ export function CandidateDetailPage() {
                     id: `${event.eventType}-${event.occurredAt}-${index}`,
                     title: event.toStatus
                       ? t(`recruitment:candidacyStatusValues.${event.toStatus}`)
-                      : event.eventType,
+                      : t(`recruitment:candidate.events.${event.eventType}`, { defaultValue: humanize(event.eventType) }),
                     description: event.fromStatus
                       ? t('recruitment:candidate.transition', {
                           from: t(`recruitment:candidacyStatusValues.${event.fromStatus}`),
@@ -422,7 +289,161 @@ export function CandidateDetailPage() {
             )}
           </Card>
         </div>
+
+        <aside className="flex min-w-0 flex-col gap-6" aria-label={t('recruitment:candidate.actionsTitle')}>
+          {commands.length > 0 && (
+            <Card padding="lg">
+              <h2 className="font-display text-base font-bold text-brand-navy dark:text-foreground">
+                {t('recruitment:candidate.actionsTitle')}
+              </h2>
+              <p className="mt-1 text-sm text-foreground-secondary">{t('recruitment:candidate.actionsHint')}</p>
+
+              <div className="mt-4 flex flex-wrap gap-2">
+                {commands.map((command) => (
+                  <Button
+                    key={command}
+                    variant={command === 'reject' ? 'danger' : command === 'review' ? 'outline' : 'primary'}
+                        loading={commandMutation.isPending && commandMutation.variables === command}
+                    disabled={commandMutation.isPending}
+                    // Rejection ends the candidacy for this internship, so it is confirmed first.
+                onClick={() => (command === 'reject' ? setConfirming({ kind: 'reject' }) : commandMutation.mutate(command))}
+                  >
+                    {t(`recruitment:candidate.commands.${command}`)}
+                  </Button>
+                ))}
+              </div>
+
+              {commandMutation.isError && (
+                <Alert tone="danger" className="mt-4">
+                  {apiErrorMessage(t, 'recruitment', 'candidate', commandMutation.error)}
+                </Alert>
+              )}
+            </Card>
+          )}
+            <Card padding="lg">
+              <h2 className="font-display text-base font-bold text-brand-navy dark:text-foreground">
+                {t('recruitment:candidate.offersTitle')}
+              </h2>
+              {candidate.offers.length === 0 ? (
+                <p className="mt-3 text-sm text-foreground-secondary">{t('recruitment:candidate.noOffers')}</p>
+              ) : (
+                <ul className="mt-4 flex flex-col gap-3">
+                  {candidate.offers.map((offer) => (
+                    <li
+                      key={offer.id}
+                      className="flex flex-wrap items-start justify-between gap-3 rounded-md border border-border bg-surface-muted p-4"
+                    >
+                      <div className="min-w-0">
+                        <p className="text-sm font-semibold text-foreground">
+                          {t('placements:detail.dateRange', {
+                            start: formatDate(offer.startDate),
+                            end: formatDate(offer.endDate),
+                          })}
+                        </p>
+                        <p className="mt-1 text-xs text-muted">
+                          {t('recruitment:candidate.respondBy', { date: formatDate(offer.responseDeadline) })}
+                        </p>
+                        {offer.location && <p className="mt-1 text-xs text-muted">{offer.location}</p>}
+                      </div>
+                      <div className="flex shrink-0 items-center gap-2">
+                        <StatusBadge tone={OFFER_STATUS_TONE[offer.status]}>
+                          {t(`recruitment:offerStatusValues.${offer.status}`)}
+                        </StatusBadge>
+                        {can.canManageCandidates && offer.status === 'PENDING' && (
+                          <Button
+                            type="button"
+                            size="sm"
+                            variant="ghost"
+                            className="text-danger"
+                            loading={withdrawOfferMutation.isPending && withdrawOfferMutation.variables === offer.id}
+                            onClick={() => setConfirming({ kind: 'withdraw', offerId: offer.id })}
+                          >
+                            {t('recruitment:candidate.withdrawOffer')}
+                          </Button>
+                        )}
+                      </div>
+                    </li>
+                  ))}
+                </ul>
+              )}
+
+              {withdrawOfferMutation.isError && (
+                <Alert tone="danger" className="mt-4">
+                  {apiErrorMessage(t, 'recruitment', 'candidate', withdrawOfferMutation.error)}
+                </Alert>
+              )}
+            </Card>
+
+            {/* An offer can only be sent when the state machine allows it and no offer is live. */}
+            {can.canManageCandidates && canSendOffer(candidate.status) && !liveOffer && (
+              <form noValidate onSubmit={offerForm.handleSubmit((values) => offerMutation.mutate(values))}>
+                <Card padding="lg" className="flex flex-col gap-4">
+                  <div>
+                    <h2 className="font-display text-base font-bold text-brand-navy dark:text-foreground">
+                      {t('recruitment:candidate.sendOfferTitle')}
+                    </h2>
+                    <p className="mt-1 text-sm text-foreground-secondary">{t('recruitment:candidate.sendOfferHint')}</p>
+                  </div>
+
+                  <div className="grid gap-4 sm:grid-cols-2">
+                    <FormField
+                      label={t('recruitment:candidate.startDate')}
+                      htmlFor="offer-start"
+                      error={fieldError(t, offerForm.formState.errors.startDate?.message)}
+                    >
+                      <Input id="offer-start" type="date" {...offerForm.register('startDate')} />
+                    </FormField>
+                    <FormField
+                      label={t('recruitment:candidate.endDate')}
+                      htmlFor="offer-end"
+                      error={fieldError(t, offerForm.formState.errors.endDate?.message)}
+                    >
+                      <Input id="offer-end" type="date" {...offerForm.register('endDate')} />
+                    </FormField>
+                    <FormField
+                      label={t('recruitment:candidate.responseDeadline')}
+                      htmlFor="offer-deadline"
+                      error={fieldError(t, offerForm.formState.errors.responseDeadline?.message)}
+                    >
+                      <Input id="offer-deadline" type="date" {...offerForm.register('responseDeadline')} />
+                    </FormField>
+                    <FormField label={t('recruitment:candidate.location')} htmlFor="offer-location">
+                      <Input id="offer-location" {...offerForm.register('location')} />
+                    </FormField>
+                  </div>
+
+                  <FormField label={t('recruitment:candidate.details')} htmlFor="offer-details">
+                    <Textarea id="offer-details" rows={3} {...offerForm.register('details')} />
+                  </FormField>
+
+                  {offerMutation.isError && (
+                    <Alert tone="danger">{apiErrorMessage(t, 'recruitment', 'candidate', offerMutation.error)}</Alert>
+                  )}
+
+                  <div className="border-t border-border pt-4">
+                    <Button type="submit" loading={offerMutation.isPending}>
+                      {t('recruitment:candidate.sendOffer')}
+                    </Button>
+                  </div>
+                </Card>
+              </form>
+            )}
+        </aside>
       </div>
+      <ConfirmationDialog
+        open={confirming !== null}
+        onClose={() => setConfirming(null)}
+        destructive
+        loading={commandMutation.isPending || withdrawOfferMutation.isPending}
+        title={t(confirming?.kind === 'withdraw' ? 'recruitment:candidate.confirmWithdraw.title' : 'recruitment:candidate.confirmReject.title')}
+        description={t(confirming?.kind === 'withdraw' ? 'recruitment:candidate.confirmWithdraw.body' : 'recruitment:candidate.confirmReject.body')}
+        confirmLabel={t(confirming?.kind === 'withdraw' ? 'recruitment:candidate.withdrawOffer' : 'recruitment:candidate.commands.reject')}
+        cancelLabel={t('recruitment:candidate.confirmKeep')}
+        onConfirm={() => {
+          if (confirming?.kind === 'withdraw') withdrawOfferMutation.mutate(confirming.offerId, { onSettled: () => setConfirming(null) })
+          else commandMutation.mutate('reject', { onSettled: () => setConfirming(null) })
+        }}
+      />
     </PageContainer>
   )
 }
@@ -430,4 +451,10 @@ export function CandidateDetailPage() {
 /** Zod messages are translation keys, never user-facing English (CLAUDE.md section 56). */
 function fieldError(t: (key: string) => string, message?: string): string | undefined {
   return message ? t(`recruitment:candidate.errors.${message}`) : undefined
+}
+
+/** A readable fallback for an event type with no translation yet — never the raw enum. */
+function humanize(value: string): string {
+  const words = value.toLowerCase().replace(/_/g, ' ')
+  return words.charAt(0).toUpperCase() + words.slice(1)
 }

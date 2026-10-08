@@ -156,13 +156,14 @@ describe('supervisor dashboard', () => {
     stubApi({ attendance: [RECORDED_DAY, { ...RECORDED_DAY, id: 'att-2', confirmationStatus: 'CONFIRMED' }] })
     renderAs('ORGANIZATION_SUPERVISOR', <DashboardPage />)
 
-    expect((await screen.findByText('Assigned interns')).closest('div')?.parentElement).toHaveTextContent('1')
-    // One RECORDED day is unsettled; the CONFIRMED one is done.
-    await waitFor(() => {
-      expect(screen.getAllByText('Attendance to settle')[0].closest('div')?.parentElement).toHaveTextContent('1')
-    })
-    // No evaluation row at all counts as outstanding — nobody has started writing it.
-    expect(screen.getAllByText('Evaluations to finish')[0].closest('div')?.parentElement).toHaveTextContent('1')
+    await waitFor(async () => expect((await screen.findByText('Assigned interns')).parentElement).toHaveTextContent('1'))
+    // One RECORDED day waits for the supervisor's confirmation; the CONFIRMED one is done.
+    expect(await screen.findByText('1 attendance record to confirm')).toBeInTheDocument()
+    // No evaluation yet (204 → null) is outstanding — nobody has started writing it.
+    expect(screen.getByText('1 evaluation to finish')).toBeInTheDocument()
+    // Supervision only: no recruiting anywhere on this page.
+    expect(screen.queryByRole('heading', { name: 'Candidate pipeline' })).not.toBeInTheDocument()
+    expect(screen.queryByRole('link', { name: /create internship/i })).not.toBeInTheDocument()
   })
 
   it('renders in Somali without falling back to English', async () => {

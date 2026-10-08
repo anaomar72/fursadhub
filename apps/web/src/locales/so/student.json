@@ -304,12 +304,6 @@
           "meta": "Akhri faallada kormeerahaaga oo dib u gudbi",
           "action": "Fur diiwaanka"
         },
-        "attendanceToConfirm": {
-          "title_one": "{{count}} maalin xaadirin ah oo aad xaqiijinayso",
-          "title_other": "{{count}} maalmood xaadirin ah oo aad xaqiijinayso",
-          "meta": "Xaqiiji ama ka doodo waxa hay'addaadu diiwaangelisay",
-          "action": "Eeg"
-        },
         "finalReportRevision": {
           "title": "Warbixintaada ugu dambaysa waxay u baahan tahay dib-u-eegis",
           "meta": "Akhri faallada dib-u-eegaha, cusbooneysii oo dib u gudbi",

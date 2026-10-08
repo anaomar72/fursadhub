@@ -97,16 +97,16 @@ describe('Phase D navigation matrix', () => {
     /**
      * The tenant record is READABLE by every member — ProfilePage renders it without a form for a
      * non-admin — and EDITABLE only by the admin. So the destination exists for all three roles and
-     * moves between groups: under "Manage" for the admin, under "Account" for everyone else, where
+     * moves between groups: under "Organization" for the admin, under "Account" for everyone else, where
      * it reads as a reference rather than as something they can change.
      */
-    it('files the organization record under Manage for the admin and Account for the others', () => {
+    it('files the organization record under Organization for the admin and Account for the others', () => {
       const groupOf = (role: OrganizationRole) => {
         const sections = buildOrganizationNav(i18n.t, { organizationId: 'org-1', role })
         return sections.find((section) => section.items.some((item) => item.to === '/organization/profile'))?.label
       }
 
-      expect(groupOf('ORGANIZATION_ADMIN')).toBe('Manage')
+      expect(groupOf('ORGANIZATION_ADMIN')).toBe('Organization')
       expect(groupOf('RECRUITER')).toBe('Account')
       expect(groupOf('ORGANIZATION_SUPERVISOR')).toBe('Account')
     })

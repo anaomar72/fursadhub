@@ -5,12 +5,15 @@ import { formatDate, formatDateTime } from '../../../../lib/utils/formatDate'
 import type { CompletionRequirementType, PlacementResponse } from '../../../placements/types'
 import { deriveLifecycle, type LifecycleStep, type PlacementSignals } from '../../studentJourney'
 
-/** Requirements the student can open a page for. The evaluation is the supervisor's, not theirs. */
-const MODULE_PATH: Partial<Record<CompletionRequirementType, string>> = {
-  WEEKLY_LOGS: 'weekly-logs',
-  ATTENDANCE: 'attendance',
-  FINAL_REPORT: 'final-report',
-  DEFENSE: 'defense',
+/**
+ * The pages each audience can open for a requirement — exactly the routes that exist for it. The
+ * student has no evaluation page (the backend shows it only once FINAL); the organization has only
+ * the workplace records (attendance, evaluation) — weekly logs, the report and the defense are
+ * university-only academic content.
+ */
+const MODULE_PATH: Record<'student' | 'organization', Partial<Record<CompletionRequirementType, string>>> = {
+  student: { WEEKLY_LOGS: 'weekly-logs', ATTENDANCE: 'attendance', FINAL_REPORT: 'final-report', DEFENSE: 'defense' },
+  organization: { ATTENDANCE: 'attendance', ORGANIZATION_EVALUATION: 'evaluation' },
 }
 
 interface PlacementLifecycleProps {
@@ -20,6 +23,8 @@ interface PlacementLifecycleProps {
   completionUnavailable?: boolean
   /** Link each requirement to its module page (the hub, the dashboard). */
   linkModules?: boolean
+  /** Whose wording and routes: the student's own, or the host organization's staff. */
+  audience?: 'student' | 'organization'
   className?: string
 }
 
@@ -28,20 +33,20 @@ interface PlacementLifecycleProps {
  * {@link deriveLifecycle} (placement status + the backend completion checklist); this component only
  * phrases it — including the backend's own short `detail` ("3/12", "NEEDS_REVISION").
  */
-export function PlacementLifecycle({ placement, signals, completionUnavailable = false, linkModules = false, className }: PlacementLifecycleProps) {
+export function PlacementLifecycle({ placement, signals, completionUnavailable = false, linkModules = false, audience = 'student', className }: PlacementLifecycleProps) {
   const { t } = useTranslation()
   const steps = deriveLifecycle(placement, signals)
   const hasRequirements = steps.some((step) => step.group === 'requirements')
-  const base = `/student/placements/${placement.id}`
+  const base = `/${audience}/placements/${placement.id}`
 
   const trackerSteps: LifecycleTrackerStep[] = steps.map((step) => {
-    const modulePath = MODULE_PATH[step.id as CompletionRequirementType]
+    const modulePath = MODULE_PATH[audience][step.id as CompletionRequirementType]
     return {
       id: step.id,
       label: t(`student:journey.lifecycle.steps.${step.id}`),
       state: step.state,
       group: step.group,
-      description: describeStep(step, placement, signals, t),
+      description: describeStep(step, placement, signals, t, audience),
       action:
         linkModules && modulePath && step.state !== 'notReached' ? (
           <Link
@@ -77,6 +82,7 @@ function describeStep(
   placement: PlacementResponse,
   signals: PlacementSignals,
   t: (key: string, options?: Record<string, unknown>) => string,
+  audience: 'student' | 'organization' = 'student',
 ): string | undefined {
   const k = 'student:journey.lifecycle.details'
   const ended = placement.status === 'CANCELLED' || placement.status === 'TERMINATED'
@@ -99,7 +105,11 @@ function describeStep(
       return t(`${k}.${step.id === 'WEEKLY_LOGS' ? 'weeklyLogs' : 'attendance'}`, { done, total })
     }
     case 'ORGANIZATION_EVALUATION':
-      return step.detail ? t(`${k}.evaluation.${step.detail}`, { defaultValue: '' }) || undefined : undefined
+      // The student's copy speaks of "your supervisor"; staff read the evaluation's own state.
+      if (!step.detail) return undefined
+      return audience === 'organization'
+        ? t(`organization:workspace.lifecycle.evaluation.${step.detail}`, { defaultValue: '' }) || undefined
+        : t(`${k}.evaluation.${step.detail}`, { defaultValue: '' }) || undefined
     case 'FINAL_REPORT':
       return step.detail ? t(`${k}.finalReport.${step.detail}`, { defaultValue: '' }) || undefined : undefined
     case 'DEFENSE': {

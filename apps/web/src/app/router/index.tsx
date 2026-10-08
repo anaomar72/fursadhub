@@ -79,6 +79,7 @@ const StudentPlacementDetailPage = lazy(() => internshipArea().then((m) => ({ de
 const UniversityPlacementsPage = lazy(() => internshipArea().then((m) => ({ default: m.UniversityPlacementsPage })))
 const OrganizationPlacementsPage = lazy(() => internshipArea().then((m) => ({ default: m.OrganizationPlacementsPage })))
 const PlacementDetailPage = lazy(() => internshipArea().then((m) => ({ default: m.PlacementDetailPage })))
+const OrganizationPlacementOverview = lazy(() => internshipArea().then((m) => ({ default: m.OrganizationPlacementOverview })))
 // Phase 6 internship management. One placement is a workspace with sections; which sections exist
 // mirrors the backend's authorization split, and the backend enforces it regardless.
 const PlacementWorkspace = lazy(() => internshipArea().then((m) => ({ default: m.PlacementWorkspace })))
@@ -360,7 +361,9 @@ export const router = createBrowserRouter([
             path: 'placements/:placementId',
             element: <PlacementWorkspace area="organization" />,
             children: [
-              { index: true, element: <PlacementDetailPage area="organization" /> },
+              // Phase 6: the organization's own supervision-first overview (the university keeps
+              // PlacementDetailPage).
+              { index: true, element: <OrganizationPlacementOverview /> },
               // Phase 6. Workplace records only — weekly logs, the final report and the defense are
               // university-only academic content and have no route here.
               { path: 'attendance', element: <AttendancePage audience="supervisor" /> },

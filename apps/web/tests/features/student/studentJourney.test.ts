@@ -107,7 +107,7 @@ describe('deriveAttention — only what the student can act on', () => {
     expect(deriveAttention(records({ enrollment: enrollment('UNDER_REVIEW') }))).toEqual([])
   })
 
-  it('reads returned logs, unconfirmed attendance and a report needing revision from a running placement', () => {
+  it('reads returned logs and a report needing revision — never attendance, which the supervisor confirms', () => {
     const items = deriveAttention(records({ placements: [placement('ACTIVE')] }), {
       weeklyLogs: [{ id: 'w', weekNumber: 3, state: 'RETURNED_FOR_CHANGES' }] as never,
       attendance: [{ confirmationStatus: 'RECORDED' }, { confirmationStatus: 'RECORDED' }, { confirmationStatus: 'DISPUTED' }] as never,
@@ -115,7 +115,6 @@ describe('deriveAttention — only what the student can act on', () => {
     })
     expect(items).toEqual([
       { kind: 'weeklyLogReturned', id: 'w', weekNumber: 3, to: '/student/placements/p1/weekly-logs' },
-      { kind: 'attendanceToConfirm', count: 2, to: '/student/placements/p1/attendance' },
       { kind: 'finalReportRevision', to: '/student/placements/p1/final-report' },
     ])
   })

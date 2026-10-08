@@ -1,5 +1,4 @@
 import { Link } from 'react-router-dom'
-import { ProfileFormSection } from '../../../components/ui/Presentation'
 import { SocialIcon } from '../../../components/ui/SocialIcon'
 import { useEffect, useState } from 'react'
 import { Controller, useForm } from 'react-hook-form'
@@ -27,7 +26,8 @@ import {
   FileUpload,
   FormField,
   Input,
-  LoadingState,
+  FormSection,
+  SkeletonPanel,
   PageHeader,
   ProfileBanner,
   Select,
@@ -149,7 +149,7 @@ export function ProfilePage() {
   if (organizationQuery.isLoading) {
     return (
       <PageContainer>
-        <LoadingState label={t('common:status.loading')} />
+        <SkeletonPanel rows={6} />
       </PageContainer>
     )
   }
@@ -267,7 +267,7 @@ export function ProfilePage() {
       {can.canEditProfile ? (
         <form noValidate onSubmit={form.handleSubmit((values) => updateMutation.mutate(values))}>
           <div className="grid gap-5">
-            <ProfileFormSection title={t('common:remediation.basic')} hint={t('common:remediation.basicHint')} icon="building"><FormField
+            <FormSection title={t('common:remediation.basic')} description={t('common:remediation.basicHint')}><FormField
               label={t('organization:setup.nameLabel')}
               htmlFor="org-profile-name"
               className="sm:col-span-2"
@@ -330,9 +330,9 @@ export function ProfilePage() {
                 hint={t('organization:setup.registrationNumberHint')}
               >
                 <Input id="org-profile-registration" {...form.register('registrationNumber')} />
-              </FormField></ProfileFormSection>
+              </FormField></FormSection>
 
-            <ProfileFormSection title={t('common:remediation.publicProfile')} hint={t('common:remediation.publicHint')} icon="document"><FormField
+            <FormSection title={t('common:remediation.publicProfile')} description={t('common:remediation.publicHint')}><FormField
               label={t('organization:profile.shortDescriptionLabel')}
               htmlFor="org-profile-short-description"
               className="sm:col-span-2"
@@ -358,9 +358,9 @@ export function ProfilePage() {
               </FormField>
               <FormField label={t('organization:setup.descriptionLabel')} htmlFor="org-profile-description">
                 <Textarea id="org-profile-description" rows={4} {...form.register('description')} />
-              </FormField></ProfileFormSection>
+              </FormField></FormSection>
 
-            <ProfileFormSection title={t('common:remediation.web')} hint={t('common:remediation.webHint')} icon="globe"><FormField
+            <FormSection title={t('common:remediation.web')} description={t('common:remediation.webHint')}><FormField
               label={t('organization:setup.websiteLabel')}
               htmlFor="org-profile-website"
               error={form.formState.errors.website && t(form.formState.errors.website.message ?? '')}
@@ -398,8 +398,8 @@ export function ProfilePage() {
                 error={form.formState.errors.youtubeUrl && t(form.formState.errors.youtubeUrl.message ?? '')}
               >
                 <Input id="org-profile-youtube" type="url" {...form.register('youtubeUrl')} />
-              </FormField></ProfileFormSection>
-            <div className="sticky bottom-0 z-20 rounded-xl border border-border bg-surface p-4 shadow-md">{updateMutation.isError && (
+              </FormField></FormSection>
+            <div className="sticky bottom-0 z-20 rounded-xl border border-border bg-surface p-4">{updateMutation.isError && (
               <Alert tone="danger">{apiErrorMessage(t, 'organization', 'profile', updateMutation.error)}</Alert>
             )}
               {/* A long form that saves silently leaves the author guessing whether it took. The

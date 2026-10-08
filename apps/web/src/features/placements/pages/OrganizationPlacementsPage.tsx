@@ -13,7 +13,7 @@ import {
   EmptyState,
   ErrorState,
   FilterBar,
-  LoadingState,
+  SkeletonList,
   PageHeader,
   SearchInput,
   Select,
@@ -222,7 +222,7 @@ export function OrganizationPlacementsPage() {
       </FilterBar>
 
       {placementsQuery.isLoading ? (
-        <LoadingState label={t('common:status.loading')} />
+        <SkeletonList rows={4} />
       ) : placementsQuery.isError ? (
         <ErrorState onRetry={() => void placementsQuery.refetch()} retryLabel={t('common:actions.retry')} />
       ) : (
@@ -235,7 +235,31 @@ export function OrganizationPlacementsPage() {
             columns={visibleColumns}
             rows={rows}
             rowKey={(placement) => placement.id}
-            empty={<EmptyState title={t('placements:organization.empty')} />}
+            // Phones: one stacked row per intern — who, where, when, status, and the supervisor
+            // gap a manager must close — instead of a table scrolled sideways.
+            renderMobileRow={(placement) => (
+              <div className="flex flex-col gap-1.5">
+                <div className="flex items-start justify-between gap-3">
+                  <Link
+                    to={`/organization/placements/${placement.id}`}
+                    className="min-w-0 break-words rounded-sm font-semibold text-foreground underline-offset-4 hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus-ring"
+                  >
+                    {placement.studentFullName ?? placement.studentEmail ?? placement.studentUserId}
+                  </Link>
+                  <StatusBadge tone={PLACEMENT_STATUS_TONE[placement.status]}>{t(`placements:statusValues.${placement.status}`)}</StatusBadge>
+                </div>
+                <p className="break-words text-caption text-foreground-secondary">
+                  {[placement.opportunityTitle, placement.universityName].filter(Boolean).join(' · ')}
+                </p>
+                <p className="text-caption text-foreground-secondary">
+                  {t('placements:detail.dateRange', { start: formatDate(placement.startDate), end: formatDate(placement.endDate) })}
+                </p>
+                {!placement.organizationSupervisor && (placement.status === 'PLANNED' || placement.status === 'ACTIVE') && can.canManagePlacementLifecycle && (
+                  <StatusBadge tone="warning">{t('placements:organization.supervisorMissing')}</StatusBadge>
+                )}
+              </div>
+            )}
+            empty={<EmptyState title={t('placements:organization.empty')} description={t('placements:organization.emptyHint')} />}
           />
         </>
       )}

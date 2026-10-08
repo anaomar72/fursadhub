@@ -14,7 +14,12 @@
     "partners": "University partners",
     "organization": "Organization",
     "myInterns": "My interns",
-    "supervision": "Supervision"
+    "supervision": "Supervision",
+    "sections": {
+      "recruitment": "Recruitment",
+      "internships": "Internships",
+      "organization": "Organization"
+    }
   },
   "dashboard": {
     "title": "Organization overview",
@@ -384,6 +389,103 @@
       "SUSPENDED": "Your verification is suspended. Contact FursadHub to resolve it.",
       "REVOKED": "Your verification has been revoked. Contact FursadHub to resolve it.",
       "VERIFIED": ""
+    }
+  },
+  "workspace": {
+    "attention": {
+      "title": "Needs attention",
+      "clearTitle": "Nothing needs attention",
+      "clearBody": "New applications, offers waiting on candidates and interns without a supervisor will appear here.",
+      "supervisorClearBody": "Attendance to confirm, disputes to resolve and evaluations to finish will appear here.",
+      "items": {
+        "newApplications": {
+          "title_one": "{{count}} new application to review",
+          "title_other": "{{count}} new applications to review",
+          "action": "Review"
+        },
+        "awaitingReview": {
+          "title_one": "{{count}} application under review",
+          "title_other": "{{count}} applications under review",
+          "action": "Continue"
+        },
+        "interviews": {
+          "title_one": "{{count}} candidate at the interview stage",
+          "title_other": "{{count}} candidates at the interview stage",
+          "action": "Open"
+        },
+        "offersAwaitingCandidate": {
+          "title_one": "{{count}} offer waiting for the candidate's answer",
+          "title_other": "{{count}} offers waiting for candidates' answers",
+          "action": "View"
+        },
+        "placementsWithoutSupervisor": {
+          "title_one": "{{count}} intern has no organization supervisor",
+          "title_other": "{{count}} interns have no organization supervisor",
+          "action": "Assign"
+        },
+        "draftsToPublish": {
+          "title_one": "{{count}} draft internship not yet published",
+          "title_other": "{{count}} draft internships not yet published",
+          "action": "Review drafts"
+        },
+        "attendanceToConfirm": {
+          "title_one": "{{count}} attendance record to confirm",
+          "title_other": "{{count}} attendance records to confirm",
+          "action": "Confirm"
+        },
+        "attendanceDisputed": {
+          "title_one": "{{count}} disputed attendance record to resolve",
+          "title_other": "{{count}} disputed attendance records to resolve",
+          "action": "Resolve"
+        },
+        "evaluationsDue": {
+          "title_one": "{{count}} evaluation to finish",
+          "title_other": "{{count}} evaluations to finish",
+          "action": "Open"
+        }
+      }
+    },
+    "metrics": {
+      "title": "At a glance",
+      "recruiting": "Recruiting internships",
+      "awaitingReview": "Awaiting your review",
+      "offersOut": "Offers out",
+      "currentInterns": "Current interns",
+      "assignedInterns": "Assigned interns",
+      "runningNow": "Running now"
+    },
+    "work": {
+      "candidatesTitle": "Candidates waiting on you",
+      "candidatesEmpty": "No candidate is waiting on your organization right now.",
+      "offersTitle": "Open offers",
+      "offersEmpty": "No offer is waiting for a candidate.",
+      "offerDeadline": "Answer due {{date}}",
+      "internshipsTitle": "Your internships",
+      "internshipsEmpty": "No internship is recruiting right now.",
+      "applicants_one": "{{count}} applicant",
+      "applicants_other": "{{count}} applicants",
+      "awaiting_one": "{{count}} waiting",
+      "awaiting_other": "{{count}} waiting",
+      "pipelineTitle": "Candidate pipeline",
+      "pipelineScope_one": "Across {{count}} recruiting internship.",
+      "pipelineScope_other": "Across {{count}} recruiting internships.",
+      "internsTitle": "Your interns",
+      "internsEmpty": "You have no assigned interns yet. Interns you supervise appear here once a placement assigns you.",
+      "internAttendance_one": "{{count}} attendance record waiting on you",
+      "internAttendance_other": "{{count}} attendance records waiting on you",
+      "internEvaluation": "Evaluation not final yet",
+      "internClear": "Nothing waiting on you",
+      "notRunning": "Not running",
+      "partialError": "Some figures could not be loaded, so they may be incomplete."
+    },
+    "lifecycle": {
+      "title": "Internship progress",
+      "evaluation": {
+        "MISSING": "Not started",
+        "DRAFT": "Draft in progress",
+        "SUBMITTED": "Submitted, not final",
+        "FINAL": "Final"
+      }
     }
   }
 }

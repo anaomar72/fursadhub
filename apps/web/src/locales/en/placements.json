@@ -44,7 +44,8 @@
     "evaluation": "Evaluation",
     "attendanceUnsettled_one": "{{count}} to settle",
     "attendanceUnsettled_other": "{{count}} to settle",
-    "attendanceSettled": "Up to date"
+    "attendanceSettled": "Up to date",
+    "emptyHint": "Interns appear here once a candidate accepts an internship offer."
   },
   "list": {
     "supervisorMissing": "A supervisor has not been assigned yet."

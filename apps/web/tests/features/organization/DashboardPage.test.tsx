@@ -1,4 +1,4 @@
-import { render, screen } from '@testing-library/react'
+import { render, screen, within, waitFor } from '@testing-library/react'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import { MemoryRouter } from 'react-router-dom'
 import { AppProviders } from '../../../src/app/providers/AppProviders'
@@ -79,6 +79,8 @@ function stubApi({
   opportunities = [OPPORTUNITY] as unknown[],
   placements = [PLACEMENT] as unknown[],
   candidates = [] as unknown[],
+  verification = 'VERIFIED' as string | null,
+  failPlacements = false,
 } = {}) {
   const calls: string[] = []
   vi.stubGlobal(
@@ -89,6 +91,8 @@ function stubApi({
       if (url.includes('/auth/refresh')) return jsonResponse({ accessToken: 't', tokenType: 'Bearer', expiresIn: 600 })
       // Most specific first: the candidate pool sits under /opportunities/{id}/candidacies.
       if (url.includes('/candidacies')) return jsonResponse(candidates)
+      if (/\/organizations\/org-1$/.test(url)) return jsonResponse(verification ? { id: 'org-1', verificationStatus: verification } : {})
+      if (failPlacements && url.includes('/placements')) return jsonResponse({ code: 'X', message: '', status: 500, path: '', timestamp: '', fieldErrors: [] }, 500)
       if (url.includes('/opportunities')) return jsonResponse(opportunities)
       if (url.includes('/placements')) return jsonResponse(placements)
       return jsonResponse({})
@@ -96,6 +100,12 @@ function stubApi({
   )
   return calls
 }
+
+
+/** The figure shown beside a metric's label (Metric renders a dt/dd pair). */
+const metric = async (label: string) => (await screen.findByText(label)).parentElement!
+/** Waits for a metric to settle on a figure (it shows a dash while its source loads). */
+const expectMetric = (label: string, value: string) => waitFor(async () => expect(await metric(label)).toHaveTextContent(value))
 
 function renderDashboard(role: OrganizationRole = 'ORGANIZATION_ADMIN') {
   return render(
@@ -118,36 +128,32 @@ describe('organization DashboardPage', () => {
     vi.unstubAllGlobals()
   })
 
-  it('counts every headline metric from the real list endpoints', async () => {
+  it('shows at most four figures, each counted from the real list endpoints', async () => {
     stubApi({
       opportunities: [OPPORTUNITY, { ...OPPORTUNITY, id: 'opp-2', status: 'DRAFT' }],
       placements: [PLACEMENT, { ...PLACEMENT, id: 'plc-2', status: 'COMPLETED' }],
-      candidates: [CANDIDATE, { ...CANDIDATE, candidacyId: 'cand-2', status: 'SHORTLISTED' }],
+      candidates: [CANDIDATE, { ...CANDIDATE, candidacyId: 'cand-2', status: 'OFFERED' }],
     })
     renderDashboard()
 
-    // One PUBLISHED internship; the DRAFT is not live.
-    expect((await screen.findByText('Active internships')).closest('div')?.parentElement).toHaveTextContent('1')
+    // One PUBLISHED internship; the DRAFT is not recruiting.
+    await expectMetric('Recruiting internships', '1')
     // One ACTIVE placement is a current intern; the COMPLETED one is not.
-    expect(screen.getByText('Current interns').closest('div')?.parentElement).toHaveTextContent('1')
+    await expectMetric('Current interns', '1')
+    await expectMetric('Offers out', '1')
+    expect(screen.getByRole('region', { name: 'At a glance' }).querySelectorAll('li')).toHaveLength(4)
   })
 
-  it('reads the pipeline from the real candidacy states, not the prototype labels', async () => {
+  it('puts the real candidacy states in the attention queue — waiting work, and offers waiting on candidates', async () => {
     stubApi({
-      candidates: [
-        CANDIDATE,
-        { ...CANDIDATE, candidacyId: 'cand-2', status: 'SHORTLISTED' },
-        { ...CANDIDATE, candidacyId: 'cand-3', status: 'OFFERED' },
-      ],
+      candidates: [CANDIDATE, { ...CANDIDATE, candidacyId: 'cand-2', status: 'OFFERED' }],
     })
     renderDashboard()
 
-    const board = await screen.findByRole('list', { name: 'Candidate pipeline' })
-    expect(board).toHaveTextContent('Submitted')
-    expect(board).toHaveTextContent('Offer sent')
-    // "New" and "Reviewing" are prototype inventions, not statuses.
-    expect(board).not.toHaveTextContent('New')
-    expect(board).not.toHaveTextContent('Reviewing')
+    const review = await screen.findByText('1 new application to review')
+    expect(within(review.closest('li')!).getByRole('link', { name: 'Review' })).toHaveAttribute('href', '/organization/candidates?stage=SUBMITTED')
+    expect(screen.getByText("1 offer waiting for the candidate's answer")).toBeInTheDocument()
+    expect(screen.getByRole('heading', { name: 'Candidates waiting on you' })).toBeInTheDocument()
   })
 
   it('hands a supervisor their own dashboard instead of this one', async () => {
@@ -161,19 +167,37 @@ describe('organization DashboardPage', () => {
 
     expect(screen.queryByText('Organization overview')).not.toBeInTheDocument()
     expect(calls.some((url) => url.includes('/candidacies'))).toBe(false)
-    expect(screen.queryByText('Recent applications')).not.toBeInTheDocument()
-    expect(screen.queryByRole('list', { name: 'Candidate pipeline' })).not.toBeInTheDocument()
+    expect(screen.queryByText('Candidates waiting on you')).not.toBeInTheDocument()
+    expect(screen.queryByRole('heading', { name: 'Candidate pipeline' })).not.toBeInTheDocument()
   })
 
-  it('surfaces drafts and unsupervised placements as work to do', async () => {
+  it('surfaces drafts and unsupervised placements as work to do once verified', async () => {
     stubApi({
       opportunities: [{ ...OPPORTUNITY, status: 'DRAFT' }],
       placements: [PLACEMENT],
     })
     renderDashboard()
 
-    expect(await screen.findByText('Needs publishing')).toBeInTheDocument()
-    expect(screen.getByText('Placements without a supervisor')).toBeInTheDocument()
+    expect(await screen.findByText('1 draft internship not yet published')).toBeInTheDocument()
+    expect(screen.getByText('1 intern has no organization supervisor')).toBeInTheDocument()
+  })
+
+  it('does not ask an unverified organization to publish drafts — the verification cue covers that', async () => {
+    stubApi({ opportunities: [{ ...OPPORTUNITY, status: 'DRAFT' }], verification: 'DRAFT' })
+    renderDashboard()
+
+    expect(await screen.findByRole('heading', { name: 'Verification' })).toBeInTheDocument()
+    await screen.findByText('1 intern has no organization supervisor')
+    expect(screen.queryByText(/draft internship not yet published/)).not.toBeInTheDocument()
+  })
+
+  it('keeps the page when the placements cannot be read: the queue reports it, the rest still renders', async () => {
+    stubApi({ failPlacements: true })
+    renderDashboard()
+
+    expect(await screen.findByRole('button', { name: 'Try again' })).toBeInTheDocument()
+    expect(screen.getByRole('heading', { level: 1, name: 'Organization overview' })).toBeInTheDocument()
+    await expectMetric('Recruiting internships', '1')
   })
 
   it('renders in Somali without falling back to English', async () => {

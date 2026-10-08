@@ -159,7 +159,6 @@ export type AttentionItem =
   | { kind: 'nomination'; id: string; title: string | null; organization: string | null; to: string }
   | { kind: 'enrollment'; status: 'missing' | 'incomplete' | 'changesRequested'; to: string }
   | { kind: 'weeklyLogReturned'; id: string; weekNumber: number; to: string }
-  | { kind: 'attendanceToConfirm'; count: number; to: string }
   | { kind: 'finalReportRevision'; to: string }
   | { kind: 'defenseScheduled'; id: string; scheduledAt: string; location: string | null; to: string }
 
@@ -226,9 +225,9 @@ export function placementAttention(placement: PlacementResponse, signals: Placem
         items.push({ kind: 'weeklyLogReturned', id: log.id, weekNumber: log.weekNumber, to: `${base}/weekly-logs` })
       }
     }
-    // RECORDED = the organization recorded a day and the student has not confirmed or disputed it.
-    const toConfirm = (signals.attendance ?? []).filter((record) => record.confirmationStatus === 'RECORDED').length
-    if (toConfirm > 0) items.push({ kind: 'attendanceToConfirm', count: toConfirm, to: `${base}/attendance` })
+    // Attendance is deliberately NOT here: confirming or resolving a record is the organization
+    // supervisor's command (AttendanceService.confirm/resolve), never the student's. The student's
+    // only move is to dispute a wrong record, which is a choice, not a pending task.
 
     const report = signals.completion?.requirements.find((requirement) => requirement.type === 'FINAL_REPORT')
     if (report?.required && report.detail === 'NEEDS_REVISION') items.push({ kind: 'finalReportRevision', to: `${base}/final-report` })
@@ -274,7 +273,7 @@ export function deriveLifecycle(placement: PlacementResponse, signals: Placement
   const started = status === 'ACTIVE' || status === 'COMPLETION_PENDING' || status === 'COMPLETED' || status === 'TERMINATED'
   const attentionTypes = new Set<CompletionRequirementType | null>(
     placementAttention(placement, signals).map((item) =>
-      item.kind === 'weeklyLogReturned' ? 'WEEKLY_LOGS' : item.kind === 'attendanceToConfirm' ? 'ATTENDANCE' : item.kind === 'finalReportRevision' ? 'FINAL_REPORT' : null,
+      item.kind === 'weeklyLogReturned' ? 'WEEKLY_LOGS' : item.kind === 'finalReportRevision' ? 'FINAL_REPORT' : null,
     ),
   )
 

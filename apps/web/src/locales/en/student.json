@@ -304,12 +304,6 @@
           "meta": "Read your supervisor's comment and resubmit",
           "action": "Open log"
         },
-        "attendanceToConfirm": {
-          "title_one": "{{count}} attendance day to confirm",
-          "title_other": "{{count}} attendance days to confirm",
-          "meta": "Confirm or dispute what your organization recorded",
-          "action": "Review"
-        },
         "finalReportRevision": {
           "title": "Your final report needs revision",
           "meta": "Read the reviewer's comment, update and resubmit",

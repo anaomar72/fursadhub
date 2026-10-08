@@ -1,6 +1,8 @@
 import { useState } from 'react'
 import { Link } from 'react-router-dom'
 import { useQuery } from '@tanstack/react-query'
+import { useOrganizationCandidates } from '../../organization/hooks/useOrganizationCandidates'
+import { opportunityLoad, type OpportunityLoad } from '../../organization/recruiterMetrics'
 import { useTranslation } from 'react-i18next'
 import * as opportunityApi from '../api/opportunityApi'
 import { useOrganizationMembership } from '../../organization/components/OrganizationMembershipContext'
@@ -14,7 +16,6 @@ import {
   ErrorState,
   FilterBar,
   Icon,
-  LoadingState,
   PageHeader,
   SearchInput,
   Select,
@@ -54,6 +55,11 @@ export function OpportunityListPage() {
     queryFn: () => opportunityApi.listOrganizationOpportunities(membership.organizationId),
   })
 
+  // Applicant counts per internship, from the same per-internship pools the dashboards read
+  // (same query keys — usually already cached). Recruiting internships only; a draft has none.
+  const pools = useOrganizationCandidates(opportunitiesQuery.data ?? [], can.canManageCandidates && opportunitiesQuery.isSuccess)
+  const loadById = new Map(opportunityLoad(pools.rows).map((row) => [row.opportunityId, row]))
+
   const term = search.trim().toLowerCase()
   const rows = (opportunitiesQuery.data ?? []).filter((opportunity) => {
     if (status && opportunity.status !== status) return false
@@ -74,7 +80,9 @@ export function OpportunityListPage() {
           >
             {opportunity.title}
           </Link>
-          {opportunity.location && <span className="block truncate text-xs text-muted">{opportunity.location}</span>}
+          <span className="block truncate text-caption text-foreground-secondary">
+            {[t(`opportunities:workModeValues.${opportunity.workMode}`), opportunity.location].filter(Boolean).join(' · ')}
+          </span>
         </span>
       ),
     },
@@ -82,18 +90,6 @@ export function OpportunityListPage() {
       key: 'mode',
       header: t('opportunities:list.mode'),
       render: (opportunity) => <Badge>{t(`opportunities:modeValues.${opportunity.mode}`)}</Badge>,
-    },
-    {
-      key: 'workMode',
-      header: t('opportunities:list.workMode'),
-      render: (opportunity) => (
-        <span className="text-foreground-secondary">{t(`opportunities:workModeValues.${opportunity.workMode}`)}</span>
-      ),
-    },
-    {
-      key: 'openings',
-      header: t('opportunities:list.openings'),
-      render: (opportunity) => <span className="text-foreground-secondary">{opportunity.numberOfOpenings}</span>,
     },
     {
       key: 'dates',
@@ -113,6 +109,11 @@ export function OpportunityListPage() {
           )}
         </span>
       ),
+    },
+    {
+      key: 'candidates',
+      header: t('opportunities:list.candidates'),
+      render: (opportunity) => <CandidateFigure load={loadById.get(opportunity.id)} loading={pools.isLoading} />,
     },
     {
       key: 'status',
@@ -178,20 +179,41 @@ export function OpportunityListPage() {
         </Select>
       </FilterBar>
 
-      {opportunitiesQuery.isLoading ? (
-        <LoadingState label={t('common:status.loading')} />
-      ) : opportunitiesQuery.isError ? (
+      {opportunitiesQuery.isError ? (
         <ErrorState onRetry={() => void opportunitiesQuery.refetch()} retryLabel={t('common:actions.retry')} />
       ) : (
         <>
-          <p className="text-sm text-foreground-secondary" aria-live="polite">
-            {t('opportunities:list.resultCount', { count: rows.length })}
-          </p>
+          {!opportunitiesQuery.isLoading && (
+            <p className="text-body text-foreground-secondary" aria-live="polite">
+              {t('opportunities:list.resultCount', { count: rows.length })}
+            </p>
+          )}
           <DataTable
             caption={t('opportunities:list.title')}
             columns={columns}
             rows={rows}
+            loading={opportunitiesQuery.isLoading}
             rowKey={(opportunity) => opportunity.id}
+            // Phones: one stacked row per internship — title, status, audience, dates, applicants —
+            // instead of a table scrolled sideways.
+            renderMobileRow={(opportunity) => (
+              <div className="flex flex-col gap-1.5">
+                <div className="flex items-start justify-between gap-3">
+                  <Link
+                    to={`/organization/opportunities/${opportunity.id}`}
+                    className="min-w-0 break-words rounded-sm font-semibold text-foreground underline-offset-4 hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus-ring"
+                  >
+                    {opportunity.title}
+                  </Link>
+                  <StatusBadge tone={OPPORTUNITY_STATUS_TONE[opportunity.status]}>{t(`opportunities:statusValues.${opportunity.status}`)}</StatusBadge>
+                </div>
+                <p className="flex flex-wrap items-center gap-x-2 gap-y-1 text-caption text-foreground-secondary">
+                  <Badge>{t(`opportunities:modeValues.${opportunity.mode}`)}</Badge>
+                  {t('placements:detail.dateRange', { start: formatDate(opportunity.startDate), end: formatDate(opportunity.endDate) })}
+                </p>
+                <CandidateFigure load={loadById.get(opportunity.id)} loading={pools.isLoading} />
+              </div>
+            )}
             empty={
               <EmptyState
                 title={t('opportunities:list.empty')}
@@ -209,5 +231,17 @@ export function OpportunityListPage() {
         </>
       )}
     </PageContainer>
+  )
+}
+
+/** Applicants for one internship, and how many are waiting on the organization. */
+function CandidateFigure({ load, loading }: { load: OpportunityLoad | undefined; loading: boolean }) {
+  const { t } = useTranslation()
+  if (!load) return <span className="text-caption text-foreground-secondary">{loading ? '…' : '—'}</span>
+  return (
+    <span className="block text-caption text-foreground-secondary">
+      <span className="font-semibold text-foreground">{t('organization:workspace.work.applicants', { count: load.total })}</span>
+      {load.awaitingReview > 0 && <> · {t('organization:workspace.work.awaiting', { count: load.awaitingReview })}</>}
+    </span>
   )
 }

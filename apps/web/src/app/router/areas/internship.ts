@@ -38,3 +38,4 @@ export { AttendancePage } from '../../../features/attendance/pages/AttendancePag
 export { EvaluationPage } from '../../../features/evaluations/pages/EvaluationPage'
 export { FinalReportPage } from '../../../features/final-reports/pages/FinalReportPage'
 export { DefensePage } from '../../../features/defense/pages/DefensePage'
+export { OrganizationPlacementOverview } from '../../../features/placements/pages/OrganizationPlacementOverview'

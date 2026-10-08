@@ -108,9 +108,9 @@
     },
     "emptyHint": "Attendance appears here once the workplace supervisor starts recording days for this internship.",
     "summaryLabel": "Attendance summary",
-    "toConfirm_one": "{{count}} day awaits your confirmation",
-    "toConfirm_other": "{{count}} days await your confirmation",
-    "allSettled": "Every recorded day is settled."
+    "allSettled": "Every recorded day is settled.",
+    "awaitingSupervisor_one": "{{count}} day is awaiting your supervisor's confirmation. If a record is wrong, dispute it.",
+    "awaitingSupervisor_other": "{{count}} days are awaiting your supervisor's confirmation. If a record is wrong, dispute it."
   },
   "evaluation": {
     "title": "Organization evaluation",
@@ -149,7 +149,12 @@
       "VALIDATION_FAILED": "Ratings must be between 1 and 5.",
       "generic": "The evaluation could not be saved. Please try again."
     },
-    "notAvailableHint": "The workplace supervisor completes this evaluation, and it appears here once they submit it."
+    "notAvailableHint": "The workplace supervisor completes this evaluation, and it appears here once they submit it.",
+    "confirmFinal": {
+      "title": "Finalize this evaluation?",
+      "body": "A final evaluation cannot be changed or reopened. It counts towards completion and the student can read it.",
+      "keep": "Not yet"
+    }
   },
   "finalReport": {
     "title": "Final report",

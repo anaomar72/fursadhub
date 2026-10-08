@@ -228,7 +228,8 @@ describe('student DashboardPage', () => {
       renderDashboard()
 
       expect(await screen.findByText('Week 2 log was returned for changes')).toBeInTheDocument()
-      expect(screen.getByText('1 attendance day to confirm')).toBeInTheDocument()
+      // Recorded attendance waits on the organization supervisor, not the student.
+      expect(screen.queryByText(/attendance day/i)).not.toBeInTheDocument()
       expect(screen.getByText('Your final report needs revision')).toBeInTheDocument()
       // An application under review is not "attention" — the student cannot act on it.
       expect(screen.queryByText(/under review/i)).not.toBeInTheDocument()

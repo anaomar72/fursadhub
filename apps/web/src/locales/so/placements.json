@@ -44,7 +44,8 @@
     "evaluation": "Qiimeynta",
     "attendanceUnsettled_one": "{{count}} la xallinayo",
     "attendanceUnsettled_other": "{{count}} la xallinayo",
-    "attendanceSettled": "Waa cusub tahay"
+    "attendanceSettled": "Waa cusub tahay",
+    "emptyHint": "Tababartayaashu halkan ayay ka muuqdaan marka musharrax uu aqbalo dalab tababar."
   },
   "list": {
     "supervisorMissing": "Weli kormeere lama magacaabin."

@@ -1,4 +1,4 @@
-import { useEffect } from 'react'
+import { useEffect, useState } from 'react'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
@@ -6,6 +6,7 @@ import { useTranslation } from 'react-i18next'
 import { useParams } from 'react-router-dom'
 import * as opportunityApi from '../api/opportunityApi'
 import { ScreeningQuestionEditor } from '../../recruitment/components/ScreeningQuestionEditor'
+import * as recruitmentApi from '../../recruitment/api/recruitmentApi'
 import { OpportunityFormFields } from '../components/OpportunityFormFields'
 import * as universityApi from '../../university/api/universityApi'
 import { opportunityFormSchema, type OpportunityFormValues } from '../schemas/opportunityFormSchema'
@@ -17,7 +18,7 @@ import { organizationCapabilities } from '../../organization/organizationCapabil
 import * as organizationApi from '../../organization/api/organizationApi'
 import { isOrganizationVerified } from '../../organization/organizationVerificationGating'
 import { VerificationGateNotice } from '../../organization/components/VerificationGateNotice'
-import { OPPORTUNITY_STATUS_TONE, OPPORTUNITY_TARGET_STATUS_TONE } from '../components/statusTone'
+import { OPPORTUNITY_STATUS_TONE, OPPORTUNITY_TARGET_STATUS_TONE } from '../../../lib/status/statusTones'
 import { apiErrorMessage } from '../../../lib/api/errorMessage'
 import {
   Alert,
@@ -27,12 +28,15 @@ import {
   ButtonLink,
   Card,
   Checkbox,
+  ConfirmationDialog,
   EmptyState,
   FormField,
   Input,
-  LoadingState,
+  Metric,
   PageHeader,
+  Panel,
   Select,
+  SkeletonPanel,
   StatusBadge,
 } from '../../../components/ui'
 import { PageContainer } from '../../../app/layouts/PageContainer'
@@ -50,6 +54,17 @@ import type { OpportunityResponse } from '../types'
  * <p>Every lifecycle change is its own named command — publish, pause, resume, close, cancel — with
  * no status dropdown anywhere, mirroring the API exactly (CLAUDE.md sections 10/33).
  */
+/**
+ * The recruiting snapshot's four groups — plain readings of the real candidacy states
+ * (CLAUDE.md section 37), never a derived score.
+ */
+const SNAPSHOT: { id: 'new' | 'inReview' | 'offered' | 'accepted'; statuses: string[] }[] = [
+  { id: 'new', statuses: ['SUBMITTED'] },
+  { id: 'inReview', statuses: ['UNDER_REVIEW', 'SHORTLISTED', 'INTERVIEW'] },
+  { id: 'offered', statuses: ['OFFERED'] },
+  { id: 'accepted', statuses: ['ACCEPTED'] },
+]
+
 export function OpportunityDetailPage() {
   const { t } = useTranslation()
   const { opportunityId } = useParams<{ opportunityId: string }>()
@@ -71,6 +86,17 @@ export function OpportunityDetailPage() {
     queryKey: ['organization', 'detail', membership.organizationId],
     queryFn: () => organizationApi.getOrganization(membership.organizationId),
   })
+  // The recruiting snapshot. Same key as the dashboards' per-opportunity fan-out
+  // (useOrganizationCandidates), so it is usually already cached. Recruiting roles only — the
+  // candidate endpoint refuses everyone else (CandidacyAuthorization.RECRUITING_ROLES).
+  const candidatesQuery = useQuery({
+    queryKey: ['recruitment', 'candidates', opportunityId, 'ALL'],
+    queryFn: () => recruitmentApi.listCandidates(opportunityId!),
+    enabled: !!opportunityId && can.canManageCandidates,
+    retry: false,
+  })
+  // Cancelling is irreversible (OpportunityStatus CANCELLED is terminal), so it is confirmed first.
+  const [confirmingCancel, setConfirmingCancel] = useState(false)
   const verificationStatus = organizationQuery.data?.verificationStatus
   // Unknown status fails OPEN for the UI only — the button is offered and the backend decides.
   // Disabling on a failed profile fetch would block a verified organization from publishing.
@@ -105,7 +131,13 @@ export function OpportunityDetailPage() {
   const pauseMutation = useMutation({ mutationFn: () => opportunityApi.pauseOpportunity(opportunityId!), onSuccess: invalidate })
   const resumeMutation = useMutation({ mutationFn: () => opportunityApi.resumeOpportunity(opportunityId!), onSuccess: invalidate })
   const closeMutation = useMutation({ mutationFn: () => opportunityApi.closeOpportunity(opportunityId!), onSuccess: invalidate })
-  const cancelMutation = useMutation({ mutationFn: () => opportunityApi.cancelOpportunity(opportunityId!), onSuccess: invalidate })
+  const cancelMutation = useMutation({
+    mutationFn: () => opportunityApi.cancelOpportunity(opportunityId!),
+    onSuccess: () => {
+      setConfirmingCancel(false)
+      invalidate()
+    },
+  })
 
   const transitionError =
     publishMutation.error ?? pauseMutation.error ?? resumeMutation.error ?? closeMutation.error ?? cancelMutation.error ?? null
@@ -115,7 +147,7 @@ export function OpportunityDetailPage() {
   if (opportunityQuery.isLoading) {
     return (
       <PageContainer>
-        <LoadingState label={t('common:status.loading')} />
+        <SkeletonPanel rows={6} />
       </PageContainer>
     )
   }
@@ -163,14 +195,14 @@ export function OpportunityDetailPage() {
         }
       />
 
-      <OpportunityFacts opportunity={opportunity} />
-
+      {/*
+        Phase 6: a management hub — the internship's content on the left, its operation (status
+        actions, the recruiting snapshot, the way into the pipeline) in a column beside it.
+      */}
+      <div className="grid items-start gap-8 lg:grid-cols-[minmax(0,1fr)_minmax(0,20rem)]">
+      <aside className="flex min-w-0 flex-col gap-6 lg:order-2" aria-label={t('opportunities:detail.lifecycleTitle')}>
       {can.canManageOpportunities && (
-        <Card padding="lg">
-          <h2 className="font-display text-base font-bold text-brand-navy dark:text-foreground">
-            {t('opportunities:detail.lifecycleTitle')}
-          </h2>
-          <p className="mt-1 text-sm text-foreground-secondary">{t('opportunities:detail.lifecycleHint')}</p>
+        <Panel title={t('opportunities:detail.lifecycleTitle')} description={t('opportunities:detail.lifecycleHint')} padding="compact">
 
           {verificationStatus && (
             <VerificationGateNotice
@@ -180,7 +212,7 @@ export function OpportunityDetailPage() {
             />
           )}
 
-          <div className="mt-4 flex flex-wrap gap-2">
+          <div className="flex flex-wrap gap-2">
             {isDraft && (
               <Button
                 loading={publishMutation.isPending}
@@ -217,10 +249,9 @@ export function OpportunityDetailPage() {
             {(isDraft || opportunity.status === 'PUBLISHED' || opportunity.status === 'PAUSED') && (
               <Button
                 variant="danger"
-                className="sm:ml-auto"
                 loading={cancelMutation.isPending}
                 disabled={anyTransitionPending}
-                onClick={() => cancelMutation.mutate()}
+                onClick={() => setConfirmingCancel(true)}
               >
                 {t('opportunities:actions.cancel')}
               </Button>
@@ -232,8 +263,41 @@ export function OpportunityDetailPage() {
               {apiErrorMessage(t, 'opportunities', 'actions', transitionError)}
             </Alert>
           )}
-        </Card>
+        </Panel>
       )}
+
+      {can.canManageCandidates && !isDraft && (
+        <Panel
+          title={t('opportunities:detail.snapshot.title')}
+          padding="compact"
+          footer={
+            <ButtonLink to={`/organization/opportunities/${opportunity.id}/candidates`} variant="outline" size="sm" className="w-full">
+              {t('opportunities:detail.snapshot.open')}
+            </ButtonLink>
+          }
+        >
+          {candidatesQuery.isLoading ? (
+            <SkeletonPanel rows={2} />
+          ) : candidatesQuery.isError ? (
+            <p className="text-body text-foreground-secondary">{t('opportunities:detail.snapshot.unavailable')}</p>
+          ) : (
+            <ul className="grid grid-cols-2 gap-4">
+              {SNAPSHOT.map((group) => (
+                <li key={group.id} className="min-w-0">
+                <Metric
+                  label={t(`opportunities:detail.snapshot.${group.id}`)}
+                  value={(Array.isArray(candidatesQuery.data) ? candidatesQuery.data : []).filter((candidate) => group.statuses.includes(candidate.status)).length}
+                />
+                </li>
+              ))}
+            </ul>
+          )}
+        </Panel>
+      )}
+      </aside>
+
+      <div className="flex min-w-0 flex-col gap-6 lg:order-1">
+      <OpportunityFacts opportunity={opportunity} />
 
       {can.canManageOpportunities && isDraft && (
         <form noValidate onSubmit={form.handleSubmit((values) => updateMutation.mutate(values))}>
@@ -283,6 +347,20 @@ export function OpportunityDetailPage() {
           editable={can.canManageOpportunities && isDraft}
         />
       )}
+      </div>
+      </div>
+
+      <ConfirmationDialog
+        open={confirmingCancel}
+        onClose={() => setConfirmingCancel(false)}
+        onConfirm={() => cancelMutation.mutate()}
+        loading={cancelMutation.isPending}
+        destructive
+        title={t('opportunities:detail.cancelConfirm.title')}
+        description={t('opportunities:detail.cancelConfirm.body')}
+        confirmLabel={t('opportunities:actions.cancel')}
+        cancelLabel={t('opportunities:detail.cancelConfirm.keep')}
+      />
     </PageContainer>
   )
 }

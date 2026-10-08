@@ -14,7 +14,7 @@ import {
   EmptyState,
   ErrorState,
   FilterBar,
-  LoadingState,
+  SkeletonList,
   PageHeader,
   SearchInput,
   Select,
@@ -135,7 +135,7 @@ export function CandidatePoolPage() {
       </FilterBar>
 
       {candidatesQuery.isLoading ? (
-        <LoadingState label={t('common:status.loading')} />
+        <SkeletonList rows={5} />
       ) : candidatesQuery.isError ? (
         <ErrorState onRetry={() => void candidatesQuery.refetch()} retryLabel={t('common:actions.retry')} />
       ) : (
@@ -239,6 +239,26 @@ export function CandidateTable({
       columns={columns}
       rows={rows}
       rowKey={(candidate) => candidate.candidacyId}
+      // Phones: one stacked row per candidate (name, stage, internship, how they came, when).
+      renderMobileRow={(candidate) => (
+        <div className="flex flex-col gap-1.5">
+          <div className="flex items-start justify-between gap-3">
+            <Link
+              to={`/organization/candidacies/${candidate.candidacyId}`}
+              className="min-w-0 break-words rounded-sm font-semibold text-foreground underline-offset-4 hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus-ring"
+            >
+              {candidate.studentFullName ?? candidate.studentEmail ?? candidate.studentUserId}
+            </Link>
+            <StatusBadge tone={CANDIDACY_STATUS_TONE[candidate.status]}>{t(`recruitment:candidacyStatusValues.${candidate.status}`)}</StatusBadge>
+          </div>
+          {opportunityTitle?.(candidate) && <p className="break-words text-caption text-foreground-secondary">{opportunityTitle(candidate)}</p>}
+          <p className="flex flex-wrap items-center gap-x-2 gap-y-1 text-caption text-foreground-secondary">
+            <Badge>{t(`recruitment:sourceValues.${candidate.source}`)}</Badge>
+            {formatDate(candidate.createdAt)}
+            {candidate.liveOffer && <> · {t('recruitment:pool.offerRespondBy', { date: formatDate(candidate.liveOffer.responseDeadline) })}</>}
+          </p>
+        </div>
+      )}
       empty={<EmptyState title={t('recruitment:pool.empty')} description={t('recruitment:pool.emptyHint')} />}
     />
   )

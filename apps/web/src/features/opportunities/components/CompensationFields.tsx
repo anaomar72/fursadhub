@@ -20,7 +20,11 @@ const PERIODS: CompensationPeriod[] = ['HOUR', 'DAY', 'WEEK', 'MONTH', 'TOTAL']
  * change rather than only being protected from it: a hidden-but-retained "500" that silently
  * reappears when they switch back is a surprise either way.
  */
-export function CompensationFields({ form }: { form: UseFormReturn<OpportunityFormValues> }) {
+/**
+ * `framed` (default) draws its own bordered fieldset; `framed={false}` renders the same fields
+ * under a visually hidden legend, for a caller that already titles the group (a FormSection).
+ */
+export function CompensationFields({ form, framed = true }: { form: UseFormReturn<OpportunityFormValues>; framed?: boolean }) {
   const { t } = useTranslation()
   const errors = form.formState.errors
   const type = form.watch('compensationType')
@@ -29,8 +33,8 @@ export function CompensationFields({ form }: { form: UseFormReturn<OpportunityFo
   const showsMaximum = !!type && acceptsMaximum(type)
 
   return (
-    <fieldset className="rounded-lg border border-border p-4">
-      <legend className="px-1.5 text-sm font-bold text-brand-navy dark:text-foreground">
+    <fieldset className={framed ? 'rounded-lg border border-border p-4' : 'min-w-0'}>
+      <legend className={framed ? 'px-1.5 text-sm font-bold text-brand-navy dark:text-foreground' : 'sr-only'}>
         {t('opportunities:form.compensationLegend')}
       </legend>
 

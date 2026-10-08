@@ -237,7 +237,16 @@
     "cvTitle": "CV",
     "cvHint": "Opens the CV this candidate uploaded, if they have one on file.",
     "openCv": "Open CV",
-    "cvApplicationHint": "Opens the CV this candidate attached to this application."
+    "cvApplicationHint": "Opens the CV this candidate attached to this application.",
+    "confirmReject": {
+      "title": "Reject this candidate?",
+      "body": "Rejecting ends their candidacy for this internship. The candidate will see that they were not selected."
+    },
+    "confirmWithdraw": {
+      "title": "Withdraw this offer?",
+      "body": "The candidate can no longer accept it. You can send a new offer afterwards if the candidacy allows it."
+    },
+    "confirmKeep": "Go back"
   },
   "screening": {
     "title": "Screening questions",

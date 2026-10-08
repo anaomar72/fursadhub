@@ -7,6 +7,14 @@ import { CreateOpportunityPage } from '../../../src/features/opportunities/pages
 import { OrganizationMembershipContext } from '../../../src/features/organization/components/OrganizationMembershipContext'
 import i18n from '../../../src/lib/i18n'
 
+/**
+ * These tests fill most of a long form one keystroke at a time. `delay: null` drops the timer
+ * tick user-event waits between keystrokes (every keyboard and input event still fires, in order),
+ * so the suite measures the form's behaviour rather than the machine's scheduler under load.
+ * No timeout or assertion is relaxed.
+ */
+const user = userEvent.setup({ delay: null })
+
 const ORGANIZATION_ID = 'org-1'
 
 function jsonResponse(body: unknown, status = 200) {
@@ -44,12 +52,12 @@ function renderPage() {
 
 function setDate(label: string, value: string) {
   const input = screen.getByLabelText(label) as HTMLInputElement
-  return userEvent.type(input, value)
+  return user.type(input, value)
 }
 
 async function fillRequiredFields() {
-  await userEvent.type(screen.getByLabelText('Title'), 'Frontend Intern')
-  await userEvent.type(screen.getByLabelText('Description'), 'Build interfaces.')
+  await user.type(screen.getByLabelText('Title'), 'Frontend Intern')
+  await user.type(screen.getByLabelText('Description'), 'Build interfaces.')
   await setDate('Start date', '2027-10-01')
   await setDate('End date', '2027-12-31')
   await setDate('Application deadline', '2027-09-20')
@@ -73,9 +81,9 @@ describe('Opportunity form — Backend Phase B3 fields', () => {
     renderPage()
 
     expect(screen.getByLabelText('How is this internship compensated?')).toBeInTheDocument()
-    expect(screen.getByLabelText('Hours per week')).toBeInTheDocument()
-    expect(screen.getByLabelText('Skills')).toBeInTheDocument()
-    expect(screen.getByLabelText('What you offer')).toBeInTheDocument()
+    expect(screen.getByLabelText(/^Hours per week/)).toBeInTheDocument()
+    expect(screen.getByLabelText(/^Skills/)).toBeInTheDocument()
+    expect(screen.getByLabelText(/^What you offer/)).toBeInTheDocument()
   })
 
   it('offers exactly the four compensation types the backend defines, plus "not stated"', () => {
@@ -97,7 +105,7 @@ describe('Opportunity form — Backend Phase B3 fields', () => {
       stubApi()
       renderPage()
 
-      await userEvent.selectOptions(screen.getByLabelText('How is this internship compensated?'), 'UNPAID')
+      await user.selectOptions(screen.getByLabelText('How is this internship compensated?'), 'UNPAID')
 
       expect(screen.queryByLabelText('Amount')).not.toBeInTheDocument()
       expect(screen.queryByLabelText('Currency')).not.toBeInTheDocument()
@@ -107,7 +115,7 @@ describe('Opportunity form — Backend Phase B3 fields', () => {
       stubApi()
       renderPage()
 
-      await userEvent.selectOptions(screen.getByLabelText('How is this internship compensated?'), 'FIXED')
+      await user.selectOptions(screen.getByLabelText('How is this internship compensated?'), 'FIXED')
 
       expect(screen.getByLabelText('Amount')).toBeInTheDocument()
       expect(screen.queryByLabelText('Maximum amount')).not.toBeInTheDocument()
@@ -117,7 +125,7 @@ describe('Opportunity form — Backend Phase B3 fields', () => {
       stubApi()
       renderPage()
 
-      await userEvent.selectOptions(screen.getByLabelText('How is this internship compensated?'), 'RANGE')
+      await user.selectOptions(screen.getByLabelText('How is this internship compensated?'), 'RANGE')
 
       expect(screen.getByLabelText('Minimum amount')).toBeInTheDocument()
       expect(screen.getByLabelText('Maximum amount')).toBeInTheDocument()
@@ -133,13 +141,13 @@ describe('Opportunity form — Backend Phase B3 fields', () => {
     renderPage()
 
     await fillRequiredFields()
-    await userEvent.selectOptions(screen.getByLabelText('How is this internship compensated?'), 'FIXED')
-    await userEvent.type(screen.getByLabelText('Amount'), '500')
-    await userEvent.type(screen.getByLabelText('Currency'), 'USD')
-    await userEvent.selectOptions(screen.getByLabelText('Per'), 'MONTH')
+    await user.selectOptions(screen.getByLabelText('How is this internship compensated?'), 'FIXED')
+    await user.type(screen.getByLabelText('Amount'), '500')
+    await user.type(screen.getByLabelText('Currency'), 'USD')
+    await user.selectOptions(screen.getByLabelText('Per'), 'MONTH')
 
-    await userEvent.selectOptions(screen.getByLabelText('How is this internship compensated?'), 'UNPAID')
-    await userEvent.click(screen.getByRole('button', { name: 'Create draft' }))
+    await user.selectOptions(screen.getByLabelText('How is this internship compensated?'), 'UNPAID')
+    await user.click(screen.getByRole('button', { name: 'Create draft' }))
 
     await waitFor(() => expect(created).not.toBeNull())
     expect(created!.compensation).toEqual({ type: 'UNPAID' })
@@ -150,10 +158,10 @@ describe('Opportunity form — Backend Phase B3 fields', () => {
     renderPage()
 
     await fillRequiredFields()
-    await userEvent.type(screen.getByLabelText('Hours per week'), '20')
-    await userEvent.type(screen.getByLabelText('Skills'), 'React,TypeScript,')
-    await userEvent.type(screen.getByLabelText('What you offer'), 'Transport allowance{Enter}')
-    await userEvent.click(screen.getByRole('button', { name: 'Create draft' }))
+    await user.type(screen.getByLabelText(/^Hours per week/), '20')
+    await user.type(screen.getByLabelText(/^Skills/), 'React,TypeScript,')
+    await user.type(screen.getByLabelText(/^What you offer/), 'Transport allowance{Enter}')
+    await user.click(screen.getByRole('button', { name: 'Create draft' }))
 
     await waitFor(() => expect(created).not.toBeNull())
     expect(created!.skills).toEqual(['React', 'TypeScript'])
@@ -166,7 +174,7 @@ describe('Opportunity form — Backend Phase B3 fields', () => {
     renderPage()
 
     await fillRequiredFields()
-    await userEvent.click(screen.getByRole('button', { name: 'Create draft' }))
+    await user.click(screen.getByRole('button', { name: 'Create draft' }))
 
     await waitFor(() => expect(created).not.toBeNull())
     expect(created!.hoursPerWeek).toBeNull()
@@ -178,11 +186,11 @@ describe('Opportunity form — Backend Phase B3 fields', () => {
     renderPage()
 
     await fillRequiredFields()
-    await userEvent.selectOptions(screen.getByLabelText('How is this internship compensated?'), 'RANGE')
-    await userEvent.type(screen.getByLabelText('Minimum amount'), '300')
-    await userEvent.type(screen.getByLabelText('Currency'), 'USD')
-    await userEvent.selectOptions(screen.getByLabelText('Per'), 'MONTH')
-    await userEvent.click(screen.getByRole('button', { name: 'Create draft' }))
+    await user.selectOptions(screen.getByLabelText('How is this internship compensated?'), 'RANGE')
+    await user.type(screen.getByLabelText('Minimum amount'), '300')
+    await user.type(screen.getByLabelText('Currency'), 'USD')
+    await user.selectOptions(screen.getByLabelText('Per'), 'MONTH')
+    await user.click(screen.getByRole('button', { name: 'Create draft' }))
 
     expect(await screen.findByText('A range needs both a minimum and a maximum.')).toBeInTheDocument()
     expect(created).toBeNull()

@@ -28,7 +28,7 @@ import {
   FormField,
   Icon,
   Input,
-  LoadingState,
+  SkeletonList,
   PageHeader,
   PasswordInput,
   Select,
@@ -338,11 +338,12 @@ export function StaffPage() {
       </FilterBar>
 
       {membersQuery.isLoading ? (
-        <LoadingState label={t('common:status.loading')} />
+        <SkeletonList rows={4} />
       ) : members.length === 0 ? (
         <EmptyState title={t('organization:staff.empty')} description={t('organization:staff.emptyHint')} />
       ) : (
-        <ul className="flex flex-col gap-3">
+        // Phase 6: one roster surface, a row per member, instead of a bordered card each.
+        <ul className="divide-y divide-border rounded-lg border border-border bg-surface">
           {members.map((member) => (
             <li key={member.membershipId}>
               <MemberRow
@@ -442,7 +443,7 @@ function MemberRow({
   const isAdmin = member.role === 'ORGANIZATION_ADMIN'
 
   return (
-    <Card padding="lg">
+    <div className="p-4 sm:p-5">
       <div className="flex flex-wrap items-start justify-between gap-3">
         <div className="flex min-w-0 items-start gap-3">
           <span className="flex size-10 shrink-0 items-center justify-center rounded-full bg-brand-blue-soft text-brand-blue dark:bg-info-bg dark:text-info">
@@ -550,6 +551,6 @@ function MemberRow({
           </div>
         </form>
       )}
-    </Card>
+    </div>
   )
 }

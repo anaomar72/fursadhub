@@ -1,7 +1,5 @@
-import { useId } from 'react'
 import { useTranslation } from 'react-i18next'
-import { ButtonLink, Icon, SectionHeading } from '../../../../components/ui'
-import { cn } from '../../../../lib/utils/cn'
+import { AttentionQueue } from '../../../../components/ui'
 import { formatDate, formatDateTime } from '../../../../lib/utils/formatDate'
 import type { AttentionItem } from '../../studentJourney'
 
@@ -23,57 +21,23 @@ interface AttentionListProps {
  */
 export function AttentionList({ items, className }: AttentionListProps) {
   const { t } = useTranslation()
-  const headingId = useId()
-
   return (
-    <section aria-labelledby={headingId} className={className}>
-      <SectionHeading id={headingId} title={t('student:journey.attention.title')} />
-      {items.length === 0 ? (
-        <div className="mt-3 flex items-start gap-3 rounded-lg bg-success-bg p-4 text-body text-foreground">
-          <Icon name="check" className="mt-0.5 size-5 shrink-0 text-success" />
-          <div className="min-w-0">
-            <p className="font-semibold">{t('student:journey.attention.clearTitle')}</p>
-            <p className="mt-0.5 max-w-prose text-foreground-secondary">{t('student:journey.attention.clearBody')}</p>
-          </div>
-        </div>
-      ) : (
-        <ul className="mt-3 flex flex-col divide-y divide-border rounded-lg border border-border bg-surface">
-          {items.map((item) => (
-            <AttentionRow key={`${item.kind}-${'id' in item ? item.id : ''}`} item={item} />
-          ))}
-        </ul>
-      )}
-    </section>
-  )
-}
-
-function AttentionRow({ item }: { item: AttentionItem }) {
-  const { t } = useTranslation()
-  const titleId = useId()
-  const { title, meta, action } = describe(item, t)
-  const upcoming = item.kind === 'defenseScheduled'
-
-  return (
-    <li className="flex flex-col gap-3 p-4 sm:flex-row sm:items-center">
-      <span
-        aria-hidden="true"
-        className={cn(
-          'flex size-9 shrink-0 items-center justify-center rounded-full',
-          upcoming ? 'bg-info-bg text-info' : 'bg-warning-bg text-warning',
-        )}
-      >
-        <Icon name={upcoming ? 'info' : 'alert'} className="size-4" />
-      </span>
-      <div className="min-w-0 flex-1">
-        <p id={titleId} className="break-words text-body font-semibold text-foreground">
-          {title}
-        </p>
-        {meta && <p className="mt-0.5 break-words text-caption text-foreground-secondary">{meta}</p>}
-      </div>
-      <ButtonLink to={item.to} size="sm" variant={upcoming ? 'outline' : 'primary'} aria-describedby={titleId} className="w-full sm:w-auto sm:shrink-0">
-        {action}
-      </ButtonLink>
-    </li>
+    <AttentionQueue
+      className={className}
+      title={t('student:journey.attention.title')}
+      clearTitle={t('student:journey.attention.clearTitle')}
+      clearBody={t('student:journey.attention.clearBody')}
+      items={items.map((item) => {
+        const { title, meta, action } = describe(item, t)
+        return {
+          id: `${item.kind}-${'id' in item ? item.id : ''}`,
+          title,
+          meta,
+          action: { label: action, to: item.to },
+          tone: item.kind === 'defenseScheduled' ? 'info' : 'action',
+        }
+      })}
+    />
   )
 }
 
@@ -103,12 +67,6 @@ function describe(item: AttentionItem, t: (key: string, options?: Record<string,
         title: t(`${k}.weeklyLogReturned.title`, { week: item.weekNumber }),
         meta: t(`${k}.weeklyLogReturned.meta`),
         action: t(`${k}.weeklyLogReturned.action`),
-      }
-    case 'attendanceToConfirm':
-      return {
-        title: t(`${k}.attendanceToConfirm.title`, { count: item.count }),
-        meta: t(`${k}.attendanceToConfirm.meta`),
-        action: t(`${k}.attendanceToConfirm.action`),
       }
     case 'finalReportRevision':
       return {

@@ -58,12 +58,12 @@ describe('buildOrganizationNav', () => {
     expect(items).not.toContain('/organization/partners')
   })
 
-  it('gives a recruiter no "Manage" group at all, rather than an empty heading', () => {
+  it('gives a recruiter no "Organization" group at all, rather than an empty heading', () => {
     const recruiter = buildOrganizationNav(i18n.t, membership('RECRUITER'))
     const admin = buildOrganizationNav(i18n.t, membership('ORGANIZATION_ADMIN'))
 
-    expect(sectionLabels(recruiter)).not.toContain('Manage')
-    expect(sectionLabels(admin)).toContain('Manage')
+    expect(sectionLabels(recruiter)).not.toContain('Organization')
+    expect(sectionLabels(admin)).toContain('Organization')
   })
 
   it('offers the shortlist as a stage of the real pool, not a separate route', () => {
@@ -76,7 +76,7 @@ describe('buildOrganizationNav', () => {
     expect(items).not.toContain('/organization/shortlist')
   })
 
-  it('keeps the organization record reachable for every role, but only admins under Manage', () => {
+  it('keeps the organization record reachable for every role, but only admins under Organization', () => {
     // OrganizationQueryService.getForMember admits any active member, so everyone can READ it;
     // only UpdateOrganizationService's admin can change it, so only they get it as something to
     // manage. For the others it sits with their own account as a read-only reference.
@@ -85,7 +85,7 @@ describe('buildOrganizationNav', () => {
     }
 
     const recruiter = buildOrganizationNav(i18n.t, membership('RECRUITER'))
-    const manage = recruiter.find((section) => section.label === 'Manage')
+    const manage = recruiter.find((section) => section.label === 'Organization')
     expect(manage).toBeUndefined()
   })
 

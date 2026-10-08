@@ -34,7 +34,8 @@
     "searchPlaceholder": "Search by title or location",
     "resultCount_one": "{{count}} internship",
     "resultCount_other": "{{count}} internships",
-    "emptyHint": "Post your first internship to start receiving candidates."
+    "emptyHint": "Post your first internship to start receiving candidates.",
+    "candidates": "Candidates"
   },
   "form": {
     "createTitle": "New internship",
@@ -106,7 +107,36 @@
     "perksHint": "Up to 15, e.g. transport allowance, mentorship.",
     "perksPlaceholder": "e.g. Transport allowance",
     "notAuthorizedTitle": "You cannot create internships",
-    "notAuthorizedBody": "Only organization admins and recruiters can post internships. Ask an administrator at your organization if you need this."
+    "notAuthorizedBody": "Only organization admins and recruiters can post internships. Ask an administrator at your organization if you need this.",
+    "sections": {
+      "basics": {
+        "title": "The internship",
+        "description": "The title and description students see first."
+      },
+      "role": {
+        "title": "The role",
+        "description": "What the intern will do and what they need to bring."
+      },
+      "audience": {
+        "title": "Who can be considered",
+        "description": "Decides whether students apply directly, are nominated by their university, or both."
+      },
+      "dates": {
+        "title": "Dates and places",
+        "description": "When the internship runs, how many interns you need, and when applications close."
+      },
+      "arrangement": {
+        "title": "Working arrangement",
+        "description": "Where and how much the intern works."
+      },
+      "compensation": {
+        "title": "What it offers",
+        "description": "Pay, if any, and any other benefits."
+      }
+    },
+    "targetsLater": "You choose which universities and departments to target on the internship page, after it is created.",
+    "deadlineHint": "Applications close at the end of this day. It must be before the start date.",
+    "deadlineHintTargeted": "Optional for a targeted internship — each university nominates by its own target deadline."
   },
   "actions": {
     "publish": "Publish",
@@ -247,6 +277,20 @@
       "CLOSED": "This internship is closed. Closed internships cannot be edited.",
       "CANCELLED": "This internship was cancelled. Cancelled internships cannot be edited.",
       "DRAFT": ""
+    },
+    "snapshot": {
+      "title": "Recruiting",
+      "new": "New applications",
+      "inReview": "In review",
+      "offered": "Offers out",
+      "accepted": "Accepted",
+      "open": "Open candidate pipeline",
+      "unavailable": "Candidate figures could not be loaded."
+    },
+    "cancelConfirm": {
+      "title": "Cancel this internship?",
+      "body": "Cancelling is permanent. Students can no longer apply or be nominated, and the internship cannot be published again.",
+      "keep": "Keep it"
     }
   },
   "compensation": {
