@@ -4,6 +4,7 @@ import * as universityApi from '../api/universityApi'
 import { UniversityMembershipContext } from './UniversityMembershipContext'
 import { UniversitySetupPage } from '../pages/UniversitySetupPage'
 import { buildUniversityNav } from './universityNavigation'
+import { universityWorkspaceLabelKey } from '../universityCapabilities'
 import { LoadingSpinner } from '../../../components/ui'
 import { AppShell } from '../../../app/layouts/AppShell'
 import { accountSettingsNavItem } from '../../../app/layouts/navigation'
@@ -71,7 +72,7 @@ export function UniversityAreaLayout() {
           // Only when the backend says a logo exists — an unconditional URL would render a broken
           // image for every university that has not uploaded one.
           logoUrl: university?.hasLogo ? universityApi.universityLogoUrl(university.id) : undefined,
-          portalLabel: t('common:shell.portals.university'),
+          portalLabel: t(universityWorkspaceLabelKey(membershipQuery.data)),
         }}
       />
     </UniversityMembershipContext.Provider>

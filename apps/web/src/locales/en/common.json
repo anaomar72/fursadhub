@@ -19,6 +19,8 @@
     "poweredBy": "Powered by",
     "portals": {
       "university": "University Portal",
+      "universityCoordinator": "Coordinator Portal",
+      "universitySupervisor": "Supervisor Portal",
       "organization": "Organization Portal",
       "organizationRecruiter": "Recruiter Portal",
       "organizationSupervisor": "Supervisor Portal",
