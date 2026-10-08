@@ -46,7 +46,7 @@
     "body": "Diiwaan geli jaamacaddaada si aad u bilowdo maamulka xaqiijinta ardayda iyo meel dhigidda tababarka. Waxaad casumi kartaa asxaabtaada marka la abuuro.",
     "nameLabel": "Magaca jaamacadda",
     "cityLabel": "Magaalada",
-    "registrationNumberLabel": "Lambarka diiwaangelinta ama aqoonsiga (ikhtiyaari)",
+    "registrationNumberLabel": "Lambarka diiwaangelinta ama aqoonsiga",
     "websiteLabel": "Websaydka",
     "descriptionLabel": "Ku saabsan jaamacadda",
     "submit": "Diiwaangeli jaamacadda",
@@ -424,5 +424,17 @@
     "attendanceReadOnly": "Xaadiristu waxaa diiwaangeliya oo xalliya kormeeraha ururka martida loo yahay. Kani waa muuqaal akhris oo keliya.",
     "attendanceClear": "Xaadiris lagu muransan yahay ma jirto",
     "attendanceClearHint": "Maalmaha lagu muransan yahay halkan way ka muuqan lahaayeen ilaa ururku xalliyo."
+  },
+  "verificationGate": {
+    "statusGuidance": {
+      "DRAFT": "Ku lifaaq dukumeentiga diiwaangelinta ama aqoonsiga profile-ka jaamacadda kadibna u gudbi xaqiijinta.",
+      "SUBMITTED": "Codsigaagu wuxuu la joogaa FursadHub. Waa lagu wargelin doonaa marka dib-u-eegistu dhammaato.",
+      "UNDER_REVIEW": "FursadHub wuxuu dib u eegayaa codsigaaga. Waa lagu wargelin doonaa marka la dhammeeyo.",
+      "NEEDS_CHANGES": "FursadHub wuxuu codsaday isbeddello. Cusbooneysii profile-ka jaamacadda kadibna dib u gudbi.",
+      "REJECTED": "Xaqiijintaadii waa la diiday. La xiriir FursadHub ka hor inta aadan dib u gudbin.",
+      "SUSPENDED": "Xaqiijintaadu waa hakad. La xiriir FursadHub si loo xalliyo.",
+      "REVOKED": "Xaqiijintaadii waa la burburiyay. La xiriir FursadHub si loo xalliyo.",
+      "VERIFIED": ""
+    }
   }
 }

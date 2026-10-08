@@ -74,7 +74,11 @@ describe('organization verification guidance', () => {
     stubFetch()
     renderWithOrganization(<OrganizationSetupPage />)
 
-    const field = screen.getByLabelText('Organization registration number (optional)')
+    // One optional convention across the form: the shared FormField "Optional" marker, inside the
+    // label (so it is part of the accessible name), not "(optional)" baked into the label string.
+    const field = screen.getByLabelText(/^Organization registration number/)
+    expect(field.labels?.[0]).toHaveTextContent(/Optional$/)
+    expect(field.labels?.[0]).not.toHaveTextContent(/\(optional\)/i)
     const hint = screen.getByText(/shown on your organization's registration document/i)
     expect(field).toHaveAttribute('aria-describedby', expect.stringContaining(hint.id))
     expect(hint).toHaveTextContent(/never shown on your public profile/i)
@@ -127,6 +131,6 @@ describe('organization verification guidance', () => {
 
     expect(await screen.findByText(/PDF oo keliya, ilaa 10 MB/)).toBeInTheDocument()
     expect(screen.getByRole('heading', { name: 'Maxaa xiga' })).toBeInTheDocument()
-    expect(screen.getByLabelText('Lambarka diiwaangelinta ururka (ikhtiyaari)')).toBeInTheDocument()
+    expect(screen.getByLabelText(/^Lambarka diiwaangelinta ururka/).labels?.[0]).toHaveTextContent(/Ikhtiyaari$/)
   })
 })

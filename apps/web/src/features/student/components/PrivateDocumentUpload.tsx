@@ -118,8 +118,8 @@ export function PrivateDocumentUpload({
       />
 
       <div className="flex flex-wrap gap-2">
-        {present && <PrivateDocumentPreview load={onDownload} />}
-        {allowPhoto && <PhotoCapture disabled={busy} onUse={(file) => uploadMutation.mutate(file)} />}
+        {present && <PrivateDocumentPreview size="sm" load={onDownload} />}
+        {allowPhoto && <PhotoCapture size="sm" disabled={busy} onUse={(file) => uploadMutation.mutate(file)} />}
         <Button
           type="button"
           size="sm"

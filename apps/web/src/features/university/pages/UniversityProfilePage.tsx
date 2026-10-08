@@ -187,7 +187,7 @@ export function UniversityProfilePage() {
             size="lg"
           />
           <div className="min-w-0 flex-1">
-            <h2 className="truncate font-display text-lg font-bold text-brand-navy dark:text-foreground">
+            <h2 className="break-words font-display text-lg font-bold text-brand-navy dark:text-foreground">
               {university.name}
             </h2>
             {(university.city || university.countryCode) && (
@@ -254,6 +254,7 @@ export function UniversityProfilePage() {
             </FormField>
               <FormField
                 label={t('university:setup.registrationNumberLabel')}
+                optional
                 htmlFor="uni-profile-registration"
                 hint={t('university:setup.registrationNumberHint')}
               >

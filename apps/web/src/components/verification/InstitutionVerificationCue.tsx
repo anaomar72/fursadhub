@@ -11,10 +11,12 @@ export interface InstitutionVerificationCueProps {
   className?: string
 }
 
-const GUIDANCE_KEY = {
-  organization: (status: InstitutionVerificationState) => `organization:verificationGate.statusGuidance.${status}`,
-  university: (status: InstitutionVerificationState) => `university:profile.statusGuidance.${status}`,
-} as const
+/**
+ * Guidance that points AT the profile ("… on the organization profile"), because this cue sits on the
+ * dashboard and links there. The profile's own panel uses `profile.statusGuidance` ("… below").
+ */
+const guidanceKey = (ns: InstitutionVerificationCueProps['namespace'], status: InstitutionVerificationState) =>
+  `${ns}:verificationGate.statusGuidance.${status}`
 
 const LINK_KEY = {
   organization: 'organization:verificationGate.goToProfile',
@@ -53,7 +55,7 @@ export function InstitutionVerificationCue({ namespace, status, to, className }:
             </h2>
             <StatusBadge tone={INSTITUTION_VERIFICATION_TONE[status]}>{t(`${namespace}:profile.verificationStatusValues.${status}`)}</StatusBadge>
           </div>
-          <p className="mt-1 text-body text-foreground-secondary">{t(GUIDANCE_KEY[namespace](status))}</p>
+          <p className="mt-1 text-body text-foreground-secondary">{t(guidanceKey(namespace, status))}</p>
         </div>
       </div>
       <ButtonLink to={to} variant="outline" className="shrink-0">

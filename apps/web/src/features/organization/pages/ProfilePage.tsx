@@ -205,7 +205,7 @@ export function ProfilePage() {
             size="lg"
           />
           <div className="min-w-0 flex-1">
-            <h2 className="truncate font-display text-lg font-bold text-brand-navy dark:text-foreground">
+            <h2 className="break-words font-display text-lg font-bold text-brand-navy dark:text-foreground">
               {organization.name}
             </h2>
             <div className="mt-1.5 flex flex-wrap items-center gap-2">
@@ -325,6 +325,7 @@ export function ProfilePage() {
               </FormField>
               <FormField
                 label={t('organization:setup.registrationNumberLabel')}
+                optional
                 htmlFor="org-profile-registration"
                 hint={t('organization:setup.registrationNumberHint')}
               >

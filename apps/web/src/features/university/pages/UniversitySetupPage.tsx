@@ -69,10 +69,10 @@ export function UniversitySetupPage() {
           title={t('university:setup.sections.registration.title')}
           description={t('university:setup.sections.registration.description')}
         >
-          {/* Optional server-side (CreateUniversityRequest has no @NotBlank) and never public. The
-              label already reads "(optional)". */}
+          {/* Optional server-side (CreateUniversityRequest has no @NotBlank) and never public. */}
           <FormField
             label={t('university:setup.registrationNumberLabel')}
+            optional
             htmlFor="uni-registration"
             hint={t('university:setup.registrationNumberHint')}
           >

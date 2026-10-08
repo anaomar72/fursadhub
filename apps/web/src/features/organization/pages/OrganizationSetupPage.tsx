@@ -81,10 +81,10 @@ export function OrganizationSetupPage() {
           title={t('organization:setup.sections.registration.title')}
           description={t('organization:setup.sections.registration.description')}
         >
-          {/* Optional server-side (CreateOrganizationRequest has no @NotBlank) and never public. The
-              label already reads "(optional)", so the field takes no second marker. */}
+          {/* Optional server-side (CreateOrganizationRequest has no @NotBlank) and never public. */}
           <FormField
             label={t('organization:setup.registrationNumberLabel')}
+            optional
             htmlFor="org-registration"
             hint={t('organization:setup.registrationNumberHint')}
           >

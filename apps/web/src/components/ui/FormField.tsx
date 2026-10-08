@@ -70,7 +70,7 @@ export function FormField({ label, labelIcon, htmlFor, hint, error, success, opt
       {/* Above the control, not below it: a hint that explains the field is only useful before it
           is filled in. Errors stay below, next to what the reader is correcting. */}
       {hint && (
-        <p id={hintId} className="-mt-0.5 text-caption text-foreground-secondary">
+        <p id={hintId} className="-mt-0.5 max-w-prose text-caption text-foreground-secondary">
           {hint}
         </p>
       )}

@@ -46,7 +46,7 @@
     "body": "Register your university to start managing student verification and internship placements. You can invite colleagues once it's created.",
     "nameLabel": "University name",
     "cityLabel": "City",
-    "registrationNumberLabel": "Registration or accreditation number (optional)",
+    "registrationNumberLabel": "Registration or accreditation number",
     "websiteLabel": "Website",
     "descriptionLabel": "About the university",
     "submit": "Register university",
@@ -424,5 +424,17 @@
     "attendanceReadOnly": "Attendance is recorded and settled by the host organization supervisor. This is a read-only view.",
     "attendanceClear": "No attendance is disputed",
     "attendanceClearHint": "Disputed days would appear here until the host organization settles them."
+  },
+  "verificationGate": {
+    "statusGuidance": {
+      "DRAFT": "Attach your registration or accreditation document on the university profile and submit it for verification.",
+      "SUBMITTED": "Your submission is with FursadHub. You will be notified when the review is complete.",
+      "UNDER_REVIEW": "FursadHub is reviewing your submission. You will be notified when it is complete.",
+      "NEEDS_CHANGES": "FursadHub has asked for changes. Update your university profile and submit again.",
+      "REJECTED": "Your verification was rejected. Contact FursadHub before submitting again.",
+      "SUSPENDED": "Your verification is suspended. Contact FursadHub to resolve it.",
+      "REVOKED": "Your verification has been revoked. Contact FursadHub to resolve it.",
+      "VERIFIED": ""
+    }
   }
 }

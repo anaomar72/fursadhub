@@ -15,11 +15,12 @@ export interface InstitutionVerificationPanelProps {
   className?: string
 }
 
-/** Where each namespace keeps its per-status guidance (organization's predates this panel). */
-const GUIDANCE_KEY = {
-  organization: (status: InstitutionVerificationState) => `organization:verificationGate.statusGuidance.${status}`,
-  university: (status: InstitutionVerificationState) => `university:profile.statusGuidance.${status}`,
-} as const
+/**
+ * Page-local guidance ("attach … below"): this panel sits on the profile, beside the upload. The
+ * dashboard cue uses `verificationGate.statusGuidance` instead, which points AT the profile.
+ */
+const guidanceKey = (ns: InstitutionVerificationPanelProps['namespace'], status: InstitutionVerificationState) =>
+  `${ns}:profile.statusGuidance.${status}`
 
 /** The submit command is accepted from these two statuses only (see organizationVerificationGating.ts). */
 const SUBMITTABLE: InstitutionVerificationState[] = ['DRAFT', 'NEEDS_CHANGES']
@@ -62,15 +63,15 @@ export function InstitutionVerificationPanel({ namespace, status, hasEvidence, c
       <div className="flex flex-col gap-6">
         {/* What the status MEANS, in words. */}
         {verified ? (
-          <p className="flex items-start gap-2 text-body-lg text-foreground">
+          <p className="flex max-w-prose items-start gap-2 text-body-lg text-foreground">
             <Icon name="badgeCheck" className="mt-0.5 size-5 shrink-0 text-success" />
             {t(`${ns}:profile.verifiedBody`)}
           </p>
         ) : (
           <div className="flex flex-col gap-2">
-            <p className="text-body-lg text-foreground">{t(GUIDANCE_KEY[ns](status))}</p>
+            <p className="max-w-prose text-body-lg text-foreground">{t(guidanceKey(ns, status))}</p>
             {/* Exactly the actions the server's verification guard gates — nothing more is implied. */}
-            <p className="text-body text-foreground-secondary">{t(`${ns}:profile.verificationRestrictions`)}</p>
+            <p className="max-w-prose text-body text-foreground-secondary">{t(`${ns}:profile.verificationRestrictions`)}</p>
           </div>
         )}
 
@@ -92,7 +93,7 @@ export function InstitutionVerificationPanel({ namespace, status, hasEvidence, c
         {canManage && submittable && (
           <div className="flex flex-col gap-6 border-t border-border pt-6">
             <div>
-              <p className="text-body text-foreground-secondary">{t(`${ns}:profile.submitForVerificationBody`)}</p>
+              <p className="max-w-prose text-body text-foreground-secondary">{t(`${ns}:profile.submitForVerificationBody`)}</p>
               {/* PDF, 10MB: FileClassification.*_VERIFICATION_EVIDENCE. One file; a new upload replaces it. */}
               <FileUpload
                 className="mt-4"

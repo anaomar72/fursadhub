@@ -62,7 +62,7 @@
     "body": "Create your organization's workspace — you can add colleagues once it exists. To publish internships, FursadHub must first verify your organization: you'll upload its registration document and submit it for review from the organization profile.",
     "nameLabel": "Organization name",
     "typeLabel": "Organization type",
-    "registrationNumberLabel": "Organization registration number (optional)",
+    "registrationNumberLabel": "Organization registration number",
     "websiteLabel": "Website",
     "descriptionLabel": "About the organization",
     "submit": "Create organization",
@@ -195,7 +195,17 @@
       "review": "FursadHub's verification team reviews your document and organization details.",
       "notify": "You'll get a notification when your organization is verified, or if the team asks for changes."
     },
-    "verifiedBody": "Your organization is verified. You can publish internships."
+    "verifiedBody": "Your organization is verified. You can publish internships.",
+    "statusGuidance": {
+      "DRAFT": "Attach your registration document below and submit it for verification.",
+      "SUBMITTED": "Your submission is with FursadHub. You will be notified when the review is complete.",
+      "UNDER_REVIEW": "FursadHub is reviewing your submission. You will be notified when it is complete.",
+      "NEEDS_CHANGES": "FursadHub has asked for changes. Update your organization details or document and submit again.",
+      "REJECTED": "Your verification was rejected. Contact FursadHub before submitting again.",
+      "SUSPENDED": "Your verification is suspended. Contact FursadHub to resolve it.",
+      "REVOKED": "Your verification has been revoked. Contact FursadHub to resolve it.",
+      "VERIFIED": ""
+    }
   },
   "staff": {
     "title": "Staff",

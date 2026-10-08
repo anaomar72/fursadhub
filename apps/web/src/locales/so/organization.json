@@ -62,7 +62,7 @@
     "body": "Abuur goobta shaqada ururkaaga — waxaad ku dari kartaa asxaabtaada marka la abuuro. Si aad u daabacdo tababarro, FursadHub waa inuu marka hore xaqiijiyaa ururkaaga: waxaad ka soo gelin doontaa dukumeentiga diiwaangelinta ururka profile-ka ururka, kadibna u gudbin doontaa dib-u-eegis.",
     "nameLabel": "Magaca ururka",
     "typeLabel": "Nooca ururka",
-    "registrationNumberLabel": "Lambarka diiwaangelinta ururka (ikhtiyaari)",
+    "registrationNumberLabel": "Lambarka diiwaangelinta ururka",
     "websiteLabel": "Websaydka",
     "descriptionLabel": "Ku saabsan ururka",
     "submit": "Abuur urur",
@@ -195,7 +195,17 @@
       "review": "Kooxda xaqiijinta FursadHub ayaa dib u eegaysa dukumeentigaaga iyo faahfaahinta ururkaaga.",
       "notify": "Waa lagu wargelin doonaa marka ururkaaga la xaqiijiyo, ama haddii kooxdu codsato isbeddello."
     },
-    "verifiedBody": "Ururkaaga waa la xaqiijiyay. Waxaad daabici kartaa tababaro."
+    "verifiedBody": "Ururkaaga waa la xaqiijiyay. Waxaad daabici kartaa tababaro.",
+    "statusGuidance": {
+      "DRAFT": "Hoos ku lifaaq dukumeentiga diiwaangelinta kadibna u gudbi xaqiijinta.",
+      "SUBMITTED": "Codsigaagu wuxuu la joogaa FursadHub. Waa lagu wargelin doonaa marka dib-u-eegistu dhammaato.",
+      "UNDER_REVIEW": "FursadHub wuxuu dib u eegayaa codsigaaga. Waa lagu wargelin doonaa marka la dhammeeyo.",
+      "NEEDS_CHANGES": "FursadHub wuxuu codsaday isbeddello. Cusbooneysii faahfaahinta ururka ama dukumeentiga kadibna dib u gudbi.",
+      "REJECTED": "Xaqiijintaadii waa la diiday. La xiriir FursadHub ka hor inta aadan dib u gudbin.",
+      "SUSPENDED": "Xaqiijintaadu waa hakad. La xiriir FursadHub si loo xalliyo.",
+      "REVOKED": "Xaqiijintaadii waa la burburiyay. La xiriir FursadHub si loo xalliyo.",
+      "VERIFIED": ""
+    }
   },
   "staff": {
     "title": "Shaqaalaha",
