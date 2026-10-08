@@ -19,7 +19,9 @@
     "poweredBy": "Powered by",
     "portals": {
       "university": "University Portal",
-      "organization": "Recruiter Portal",
+      "organization": "Organization Portal",
+      "organizationRecruiter": "Recruiter Portal",
+      "organizationSupervisor": "Supervisor Portal",
       "admin": "Super Admin Console",
       "verificationOfficer": "Verification Console"
     }

@@ -14,6 +14,7 @@ import { isNotFound, studentQueries } from '../../features/student/studentQuerie
 import { GET_STARTED_PATH } from '../../features/auth/roleRedirect'
 import { accountSettingsNavItem } from './navigation'
 import { adminWorkspaceLabelKey } from '../../features/admin/adminCapabilities'
+import { organizationWorkspaceLabelKey } from '../../features/organization/organizationCapabilities'
 
 /**
  * Renders content inside the SIGNED-IN PERSON'S OWN PORTAL, whatever that portal is.
@@ -119,7 +120,7 @@ export function RoleShell({ children }: { children: ReactNode }) {
         workspace="organization"
         areaLabel={t('common:nav.organization')}
         sections={buildOrganizationNav(t, organizationMembership)}
-        brand={{ portalLabel: t('common:shell.portals.organization') }}
+        brand={{ portalLabel: t(organizationWorkspaceLabelKey(organizationMembership)) }}
       >
         {children}
       </AppShell>

@@ -1,6 +1,7 @@
 import { beforeEach, describe, expect, it } from 'vitest'
 import i18n from '../../../src/lib/i18n'
 import { buildOrganizationNav } from '../../../src/features/organization/components/organizationNavigation'
+import { organizationWorkspaceLabelKey } from '../../../src/features/organization/organizationCapabilities'
 import type { MyOrganizationMembershipResponse, OrganizationRole } from '../../../src/features/organization/types'
 
 function membership(role: OrganizationRole): MyOrganizationMembershipResponse {
@@ -144,5 +145,21 @@ describe('buildOrganizationNav', () => {
     expect(labels).toContain('Musharrixiinta')
     expect(labels).not.toContain('Shortlist')
     expect(labels).not.toContain('Candidates')
+  })
+})
+
+describe('the portal names the role the reader actually holds', () => {
+  // It used to read "Recruiter Portal" for every organization member, admins and supervisors included.
+  it('names the workspace after the member’s role, in English and Somali', () => {
+    const expected: Record<OrganizationRole, [string, string]> = {
+      ORGANIZATION_ADMIN: ['Organization Portal', 'Bogga Ururka'],
+      RECRUITER: ['Recruiter Portal', 'Bogga Qorista Shaqaalaha'],
+      ORGANIZATION_SUPERVISOR: ['Supervisor Portal', 'Bogga Kormeeraha'],
+    }
+    for (const [role, [en, so]] of Object.entries(expected) as [OrganizationRole, [string, string]][]) {
+      const key = organizationWorkspaceLabelKey(membership(role))
+      expect(i18n.getFixedT('en')(key)).toBe(en)
+      expect(i18n.getFixedT('so')(key)).toBe(so)
+    }
   })
 })
