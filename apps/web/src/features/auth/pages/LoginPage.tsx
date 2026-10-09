@@ -8,7 +8,7 @@ import { loginSchema, toLoginPayload, type LoginFormValues } from '../schemas/lo
 import * as authApi from '../api/authApi'
 import { authErrorMessage } from '../api/errorMessage'
 import { AuthCard } from '../components/AuthCard'
-import { Button, Checkbox, FormField, Input, PasswordInput } from '../../../components/ui'
+import { Alert, Button, Checkbox, FormField, Input, PasswordInput } from '../../../components/ui'
 import { useAuth } from '../../../lib/auth/AuthContext'
 import { resolveConsolePath, roleLandingPath } from '../roleRedirect'
 import * as legalApi from '../../legal/api/legalApi'
@@ -61,7 +61,7 @@ export function LoginPage() {
 
   return (
     <AuthCard title={t('auth:login.title')} subtitle={t('auth:login.subtitle')}>
-      <form className="flex flex-col gap-4" noValidate onSubmit={form.handleSubmit((values) => loginMutation.mutate(toLoginPayload(values)))}>
+      <form className="flex flex-col gap-5" noValidate onSubmit={form.handleSubmit((values) => loginMutation.mutate(toLoginPayload(values)))}>
         <FormField
           label={t('auth:login.identifierLabel')}
           htmlFor="identifier"
@@ -94,32 +94,30 @@ export function LoginPage() {
           />
         </FormField>
 
-        <div className="flex items-center justify-between gap-4">
+        <div className="flex flex-wrap items-center justify-between gap-x-4 gap-y-2">
           <Checkbox
             id="remember-me"
             checked={rememberMe}
             onChange={(event) => setRememberMe(event.target.checked)}
             label={t('auth:login.rememberMe')}
           />
-          <Link to="/forgot-password" className="shrink-0 text-sm font-medium text-link hover:underline">
+          <Link to="/forgot-password" className="rounded-sm text-body font-semibold text-link underline-offset-4 hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus-ring">
             {t('auth:login.forgotPassword')}
           </Link>
         </div>
 
-        {loginMutation.isError && (
-          <p className="text-sm text-danger" role="alert">
-            {authErrorMessage(t, 'login', loginMutation.error)}
-          </p>
-        )}
+        {/* A submission failure is about the whole form, not one field, so it is a form-level alert
+            (announced once) placed directly above the action that retries it. */}
+        {loginMutation.isError && <Alert tone="danger">{authErrorMessage(t, 'login', loginMutation.error)}</Alert>}
 
-        <Button type="submit" loading={loginMutation.isPending} className="w-full">
+        <Button type="submit" size="lg" loading={loginMutation.isPending} className="w-full">
           {t('auth:login.submit')}
         </Button>
       </form>
 
-      <p className="mt-6 text-center text-sm text-foreground-secondary">
+      <p className="mt-8 border-t border-border pt-6 text-center text-body text-foreground-secondary">
         {t('auth:login.noAccount')}{' '}
-        <Link to={role ? `/register?role=${role}` : '/register'} className="font-medium text-link hover:underline">
+        <Link to={role ? `/register?role=${role}` : '/register'} className="rounded-sm font-semibold text-link underline-offset-4 hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus-ring">
           {t('auth:login.createAccount')}
         </Link>
       </p>

@@ -2,25 +2,20 @@ import { useState } from 'react'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { useTranslation } from 'react-i18next'
 import { useParams } from 'react-router-dom'
-import { Button, ErrorState, FormField, LoadingState, Select, StatusBadge, Textarea, EmptyState } from '../../../components/ui'
-import type { StatusTone } from '../../../components/ui'
+import { Button, ConfirmationDialog, ErrorState, FormField, SkeletonList, Select, StatusBadge, Textarea, EmptyState } from '../../../components/ui'
 import { apiErrorMessage } from '../../../lib/api/errorMessage'
+import { EVALUATION_STATE_TONE } from '../../../lib/status/statusTones'
 import * as evaluationsApi from '../api/evaluationsApi'
 import {
   EVALUATION_RATING_FIELDS,
   type EvaluationDraftInput,
   type EvaluationRatingField,
   type EvaluationResponse,
-  type EvaluationState,
 } from '../types'
 
 const RATINGS = [1, 2, 3, 4, 5]
 
-const STATE_TONE: Record<EvaluationState, StatusTone> = {
-  DRAFT: 'neutral',
-  SUBMITTED: 'info',
-  FINAL: 'success',
-}
+const STATE_TONE = EVALUATION_STATE_TONE
 
 interface EvaluationPageProps {
   /**
@@ -48,7 +43,7 @@ export function EvaluationPage({ audience }: EvaluationPageProps) {
   })
 
   if (evaluationQuery.isLoading) {
-    return <LoadingState label={t('common:status.loading')} />
+    return <SkeletonList rows={4} />
   }
 
   if (evaluationQuery.isError) {
@@ -110,6 +105,9 @@ function EvaluationForm({
   const queryClient = useQueryClient()
   const [draft, setDraft] = useState<EvaluationDraftInput>(() => toDraft(evaluation))
   const [error, setError] = useState<string | null>(null)
+  // Finalizing seals the evaluation for good (PlacementEvaluationService: FINAL is terminal), so it
+  // is confirmed first.
+  const [confirmingFinal, setConfirmingFinal] = useState(false)
 
   function invalidate() {
     void queryClient.invalidateQueries({ queryKey: ['evaluation', placementId] })
@@ -134,7 +132,11 @@ function EvaluationForm({
   })
   const finalizeMutation = useMutation({
     mutationFn: () => run(evaluationsApi.finalizeEvaluation(placementId)),
-    onSuccess: invalidate,
+    onSuccess: () => {
+      setConfirmingFinal(false)
+      invalidate()
+    },
+    onError: () => setConfirmingFinal(false),
   })
 
   const editable = audience === 'evaluator' && (!evaluation || evaluation.state === 'DRAFT')
@@ -192,7 +194,7 @@ function EvaluationForm({
             </>
           )}
           {evaluation?.state === 'SUBMITTED' && (
-            <Button loading={finalizeMutation.isPending} onClick={() => finalizeMutation.mutate()}>
+            <Button loading={finalizeMutation.isPending} onClick={() => setConfirmingFinal(true)}>
               {t('internship:evaluation.actions.finalize')}
             </Button>
           )}
@@ -201,6 +203,17 @@ function EvaluationForm({
           )}
         </div>
       )}
+
+      <ConfirmationDialog
+        open={confirmingFinal}
+        onClose={() => setConfirmingFinal(false)}
+        onConfirm={() => finalizeMutation.mutate()}
+        loading={finalizeMutation.isPending}
+        title={t('internship:evaluation.confirmFinal.title')}
+        description={t('internship:evaluation.confirmFinal.body')}
+        confirmLabel={t('internship:evaluation.actions.finalize')}
+        cancelLabel={t('internship:evaluation.confirmFinal.keep')}
+      />
     </>
   )
 }

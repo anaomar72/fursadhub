@@ -84,7 +84,21 @@
       "active": "Socda",
       "offers": "Dalabyo",
       "closed": "La xiray"
-    }
+    },
+    "statusGuidance": {
+      "SUBMITTED": "Hay'addu way haysaa codsigaaga.",
+      "UNDER_REVIEW": "Hay'addu waxay eegaysaa codsigaaga.",
+      "SHORTLISTED": "Waxaad ku jirtaa liiska kooban.",
+      "INTERVIEW": "Waxaad joogtaa heerka wareysiga. Hay'addu way kula soo xiriiri doontaa.",
+      "OFFERED": "Dalab ayaad haysataa.",
+      "OFFER_DECLINED": "Waad diiday dalabka.",
+      "OFFER_EXPIRED": "Dalabku wuu dhacay intaan jawaab la bixin.",
+      "ACCEPTED": "Waad aqbashay. Tababarkaaga waa la diyaariyay.",
+      "REJECTED": "Markan lama dooran.",
+      "WITHDRAWN": "Waad ka laabatay codsigan."
+    },
+    "reviewOffer": "Eeg dalabka",
+    "viewInternship": "Fiiri tababarka"
   },
   "detail": {
     "notFound": "Codsigan hadda lama heli karo.",
@@ -128,7 +142,19 @@
       "OPPORTUNITY_NOT_PUBLISHED": "Fursaddan hadda ma aqbalayso musharrixiin.",
       "generic": "Wax baa qaldamay. Fadlan isku day mar kale."
     },
-    "emptyUniversity": "Weli ma jiraan magacaabisyo."
+    "emptyUniversity": "Weli ma jiraan magacaabisyo.",
+    "subtitle": "Magacaabisyada jaamacaddaada ee tababarrada laga codsaday inay buuxiso.",
+    "emptyHint": "Marka jaamacaddaadu kuu magacaabto tababar, halkan ayay uga muuqan doontaa si aad u oggolaato. Uma baahnid magacaabis si aad si toos ah u codsato.",
+    "nominatedBy": "Waxaa ku magacaabay jaamacaddaada",
+    "nominatedOn": "La magacaabay {{date}}",
+    "respondedOn": "La jawaabay {{date}}",
+    "noteLabel": "Qoraal ka yimid jaamacaddaada",
+    "statusGuidance": {
+      "ACCEPTED": "Waad oggolaatay in lagu tixgeliyo. Hadda waxay ka muuqataa codsiyadaada.",
+      "DECLINED": "Waad diiday. Hay'adda looma muujin xogtaada.",
+      "WITHDRAWN": "Jaamacaddaadu way ka laabatay magacaabistan."
+    },
+    "viewApplications": "Fiiri codsiyada"
   },
   "pool": {
     "title": "Musharrixiinta",
@@ -208,10 +234,24 @@
     "historyHint": "Isbeddel kasta oo la diiwaangeliyay, kii ugu dambeeyay horeba.",
     "noHistory": "Weli taariikh lama diiwaangelin.",
     "transition": "laga bilaabay {{from}}",
+    "statusUnchanged": "Xaaladda: {{status}}",
+    "events": {
+      "PLACEMENT_CREATED": "Waxaa lagu daray tababarayaashaada",
+      "SOURCE_MERGED_TO_BOTH": "Jaamacaddiisa ayaa sidoo kale u magacawday"
+    },
     "cvTitle": "CV-ga",
     "cvHint": "Wuxuu furayaa CV-ga uu musharraxu soo geliyay, haddii uu mid leeyahay.",
     "openCv": "Fur CV-ga",
-    "cvApplicationHint": "Wuxuu furayaa CV-ga uu musharraxu ku lifaaqay codsigan."
+    "cvApplicationHint": "Wuxuu furayaa CV-ga uu musharraxu ku lifaaqay codsigan.",
+    "confirmReject": {
+      "title": "Ma diidaysaa musharraxan?",
+      "body": "Diidmadu waxay soo afjartaa musharraxnimadiisa tababarkan. Musharraxu wuxuu arki doonaa in aan la dooran."
+    },
+    "confirmWithdraw": {
+      "title": "Ma ka noqonaysaa dalabkan?",
+      "body": "Musharraxu mar dambe ma aqbali karo. Dalab cusub ayaad diri kartaa kadib haddii musharraxnimadu oggolaato."
+    },
+    "confirmKeep": "Dib u noqo"
   },
   "screening": {
     "title": "Su'aalaha kala-sooca",
@@ -244,7 +284,32 @@
     "progress": "{{current}} ka mid ah {{requested}} la magacaabay",
     "deadline": "Magacaw ugu dambeyn {{deadline}}",
     "subtitle": "Ururrada ka codsanaya jaamacaddaada inay ardayda magacawdo.",
-    "emptyHint": "Marka ururku jaamacaddaada beegsado, codsigiisu halkan ayuu ka muuqan doonaa."
+    "emptyHint": "Marka ururku jaamacaddaada beegsado, codsigiisu halkan ayuu ka muuqan doonaa.",
+    "allDepartments": "Dhammaan waaxyaha",
+    "deadlinePassed": "Waqtiga magacaabistu wuu dhaafay {{date}}",
+    "remaining_one": "{{count}} musharrax kale ayaa la codsaday",
+    "remaining_other": "{{count}} musharrax kale ayaa la codsaday",
+    "resultCount_one": "{{count}} codsi",
+    "resultCount_other": "{{count}} codsi",
+    "workflow": {
+      "label": "Sida magacaabistu u shaqeyso",
+      "request": {
+        "title": "Codsi",
+        "body": "Hay’ad ayaa jaamacaddaada beegsata oo codsata musharrixiin."
+      },
+      "nominate": {
+        "title": "Magacaab",
+        "body": "Waxaad soo jeedinaysaa arday la xaqiijiyay oo ka tirsan waaxyaha ku habboon."
+      },
+      "consent": {
+        "title": "Ardaygu wuu oggol yahay",
+        "body": "Arday kastaa wuxuu go’aansadaa inuu doonayo in la tixgeliyo."
+      },
+      "recruit": {
+        "title": "Shaqaalaysiin",
+        "body": "Hay’addu waxay la eegtaa musharrixiinta kale, waxayna go’aamisaa dalabyada."
+      }
+    }
   },
   "nominate": {
     "eligibleTitle": "Ardayda u qalanta",
@@ -265,7 +330,27 @@
       "generic": "Wax baa qaldamay. Fadlan isku day mar kale."
     },
     "viewProfile": "Fiiri bogga xirfadeed",
-    "noProfile": "Ardaygan weli ma qorin bog xirfadeed."
+    "noProfile": "Ardaygan weli ma qorin bog xirfadeed.",
+    "subtitle": "Soo jeedi arday la xaqiijiyay oo ka tirsan waaxyaha ku habboon.",
+    "emptyHint": "Kaliya ardayda diiwaangelintoodu la xaqiijiyay, ku jira waax ku habboon, oo diyaar ah ayaa la magacaabi karaa.",
+    "closedTitle": "Magacaabistu way xiran tahay codsigan",
+    "closedDeadline": "Waqtiga magacaabistu wuxuu ahaa {{date}}.",
+    "closedStatus": "Codsigani mar dambe ma aqbalayo magacaabis.",
+    "nominateNamed": "Magacaab {{name}}",
+    "skills": "Xirfadaha",
+    "requestTitle": "Codsigan ku saabsan",
+    "status": "Xaaladda",
+    "nominees": "Musharrixiinta",
+    "deadline": "Waqtiga magacaabista",
+    "dates": "Taariikhaha tababarka",
+    "mode": "Habka raadinta",
+    "departments": "Waaxyaha ku habboon",
+    "whatHappensTitle": "Waxa dhaca kadib marka aad magacaabto",
+    "whatHappens": {
+      "consent": "Ardayga waxaa la weydiinayaa inuu doonayo in la tixgeliyo. Wax lalama wadaago hay’adda ilaa uu oggolaado.",
+      "pipeline": "Haddii uu oggolaado, wuxuu ku biiraa liiska musharrixiinta hay’adda ee tababarkan. Hay’addu ayaa go’aamisa wareysiyada iyo dalabyada.",
+      "withdraw": "Waad ka noqon kartaa magacaabis inta ardaygu aanu weli jawaabin."
+    }
   },
   "universityNominations": {
     "title": "Magacaabisyada",
@@ -276,6 +361,30 @@
       "NOMINATION_NOT_FOUND": "Magacaabistan hadda lama heli karo.",
       "ACCESS_DENIED": "Ma haysatid oggolaansho magacaabistan.",
       "generic": "Wax baa qaldamay. Fadlan isku day mar kale."
+    },
+    "subtitle": "Ardayda jaamacaddaadu soo jeedisay, iyo cidda talaabada xigta leh.",
+    "searchLabel": "Raadi magacaabista",
+    "searchPlaceholder": "Arday, tababar ama hay’ad",
+    "statusLabel": "Xaaladda magacaabista",
+    "allStatuses": "Dhammaan xaaladaha",
+    "resultCount_one": "{{count}} magacaabis",
+    "resultCount_other": "{{count}} magacaabis",
+    "noMatches": "Magacaabis ku habboon shaandhooyinkan ma jiro",
+    "emptyHint": "Magacaabistu halkan ayay ka muuqan doontaa marka aad arday u soo jeediso codsi tababar.",
+    "unknownStudent": "Arday aan magac lahayn",
+    "nominatedOn": "La magacaabay {{date}}",
+    "respondedOn": "wuxuu jawaabay {{date}}",
+    "withdrawNamed": "Ka noqo magacaabista {{name}}",
+    "next": {
+      "PENDING_STUDENT_CONSENT": "Waxay sugaysaa in ardaygu oggolaado in la tixgeliyo.",
+      "ACCEPTED": "Ardaygu wuu oggolaaday, hadda waa musharrax hay’adda la jira.",
+      "DECLINED": "Ardaygu wuxuu doortay in aan la tixgelin.",
+      "WITHDRAWN": "Jaamacaddu ayaa ka noqotay."
+    },
+    "confirmWithdraw": {
+      "title": "Ma ka noqonaysaa magacaabistan?",
+      "body": "{{name}} mar dambe looma weydiin doono in loo tixgeliyo {{opportunity}}.",
+      "keep": "Hay magacaabista"
     }
   },
   "targetStatusValues": {

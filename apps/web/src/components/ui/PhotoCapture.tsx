@@ -1,9 +1,9 @@
 import { useEffect, useRef, useState } from 'react'
 import { useTranslation } from 'react-i18next'
-import { Button } from './Button'
+import { Button, type ButtonProps } from './Button'
 
 /** Camera access starts only on an explicit button click; captured bytes remain local until Use photo. */
-export function PhotoCapture({ onUse, disabled = false }: { onUse: (file: File) => void; disabled?: boolean }) {
+export function PhotoCapture({ onUse, disabled = false, size }: { onUse: (file: File) => void; disabled?: boolean; size?: ButtonProps['size'] }) {
   const { t } = useTranslation()
   const dialog = useRef<HTMLDialogElement>(null)
   const video = useRef<HTMLVideoElement>(null)
@@ -85,7 +85,7 @@ export function PhotoCapture({ onUse, disabled = false }: { onUse: (file: File) 
   }
 
   return <>
-    <Button type="button" variant="outline" disabled={disabled} onClick={() => void start()}>{t('common:photo.take')}</Button>
+    <Button type="button" variant="outline" size={size} disabled={disabled} onClick={() => void start()}>{t('common:photo.take')}</Button>
     <dialog ref={dialog} onCancel={(event) => { event.preventDefault(); close() }} className="m-auto w-[min(92vw,36rem)] rounded-xl border border-border bg-surface p-5 text-foreground backdrop:bg-black/60" aria-label={t('common:photo.take')}>
       <h2 className="mb-4 text-lg font-bold">{t('common:photo.take')}</h2>
       <video ref={video} hidden={!!photo || error} autoPlay muted playsInline onLoadedData={() => setReady(!!stream.current)} className="aspect-video w-full rounded-lg bg-black object-contain" aria-label={t('common:photo.live')} />

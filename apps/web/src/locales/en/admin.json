@@ -13,7 +13,8 @@
     "noAccess": "You do not have platform administration access.",
     "verification": "Verification",
     "platform": "Platform",
-    "testimonials": "Testimonials"
+    "testimonials": "Testimonials",
+    "operations": "Operations"
   },
   "dashboard": {
     "title": "Platform overview",
@@ -68,7 +69,51 @@
     "monitoring": "Monitoring",
     "publicVisibility": "{{discoverable}} of {{published}} published internships are visible on the public site right now.",
     "publicVisibilityHidden_one": "{{count}} is hidden because it is university-targeted or its organization is not currently verified.",
-    "publicVisibilityHidden_other": "{{count}} are hidden because they are university-targeted or their organization is not currently verified."
+    "publicVisibilityHidden_other": "{{count}} are hidden because they are university-targeted or their organization is not currently verified.",
+    "attention": {
+      "clearTitle": "Nothing needs intervention",
+      "clearBody": "Institution reviews, escalated cases, privacy requests and testimonials waiting for moderation will appear here.",
+      "open": "Open",
+      "items": {
+        "organizationReviews_one": "{{count}} organization waiting for verification review",
+        "organizationReviews_other": "{{count}} organizations waiting for verification review",
+        "universityReviews_one": "{{count}} university waiting for verification review",
+        "universityReviews_other": "{{count}} universities waiting for verification review",
+        "escalatedCases_one": "{{count}} escalated student verification case",
+        "escalatedCases_other": "{{count}} escalated student verification cases",
+        "openPrivacyRequests_one": "{{count}} open privacy request",
+        "openPrivacyRequests_other": "{{count}} open privacy requests",
+        "pendingTestimonials_one": "{{count}} testimonial waiting for moderation",
+        "pendingTestimonials_other": "{{count}} testimonials waiting for moderation"
+      }
+    },
+    "health": {
+      "title": "Platform health",
+      "activeAccounts": "Active accounts",
+      "verifiedInstitutions": "Verified institutions",
+      "discoverableInternships": "Internships visible to the public",
+      "ofPublished": "of {{count}} published",
+      "activePlacements": "Active placements"
+    },
+    "queue": {
+      "title": "Institutions waiting for review",
+      "description": "Submitted and under review, oldest document first.",
+      "empty": "No verification cases need review.",
+      "partial": "Some of the queue could not be loaded; open the organization or university list to see everything.",
+      "kind": {
+        "organizations": "Organization",
+        "universities": "University"
+      }
+    },
+    "signals": {
+      "title": "System signals",
+      "description": "Watched, not worked — neither has a queue to clear.",
+      "investigate": "Investigate"
+    },
+    "records": {
+      "title": "Records by status",
+      "description": "Every population FursadHub counts, split by its state."
+    }
   },
   "organizations": {
     "title": "Organization verification",
@@ -119,9 +164,24 @@
       "begin-review": "This marks the organization as under review.",
       "verify": "This verifies the organization and lets it operate on FursadHub.",
       "request-changes": "The organization will be asked to correct its submission.",
-      "reject": "The organization will be told its application was refused.",
-      "suspend": "A verified organization will lose access until the suspension is lifted.",
-      "revoke": "This permanently withdraws the organization’s verification."
+      "reject": "The organization will be told its application was refused. This is final — a rejected organization cannot be reviewed again.",
+      "suspend": "The organization stops operating on FursadHub straight away: its internships disappear from public view and it cannot take new candidates. There is no reinstatement from suspension — the only later step is revocation.",
+      "revoke": "This permanently withdraws the organization’s verification. It cannot be undone."
+    },
+    "confirmTitles": {
+      "verify": "Verify this organization?",
+      "request-changes": "Request changes?",
+      "reject": "Reject this organization?",
+      "suspend": "Suspend this organization?",
+      "revoke": "Revoke this verification?"
+    },
+    "done": {
+      "begin-review": "Review started.",
+      "verify": "The organization is verified.",
+      "request-changes": "Changes requested.",
+      "reject": "The organization was rejected.",
+      "suspend": "The organization is suspended.",
+      "revoke": "Verification revoked."
     }
   },
   "universities": {
@@ -174,10 +234,26 @@
       "begin-review": "This marks the university as under review.",
       "verify": "This verifies the university and lets it operate on FursadHub.",
       "request-changes": "The university will be asked to correct its submission.",
-      "reject": "The university will be told its application was refused.",
-      "suspend": "A verified university will lose access until the suspension is lifted.",
-      "revoke": "This permanently withdraws the university’s verification."
-    }
+      "reject": "The university will be told its application was refused. This is final — a rejected university cannot be reviewed again.",
+      "suspend": "The university stops operating on FursadHub straight away. There is no reinstatement from suspension — the only later step is revocation.",
+      "revoke": "This permanently withdraws the university’s verification. It cannot be undone."
+    },
+    "confirmTitles": {
+      "verify": "Verify this university?",
+      "request-changes": "Request changes?",
+      "reject": "Reject this university?",
+      "suspend": "Suspend this university?",
+      "revoke": "Revoke this verification?"
+    },
+    "done": {
+      "begin-review": "Review started.",
+      "verify": "The university is verified.",
+      "request-changes": "Changes requested.",
+      "reject": "The university was rejected.",
+      "suspend": "The university is suspended.",
+      "revoke": "Verification revoked."
+    },
+    "viewDocument": "Open registration document"
   },
   "organizationTypes": {
     "COMPANY": "Company",
@@ -222,7 +298,12 @@
     "resultCount_one": "{{count}} case waiting",
     "resultCount_other": "{{count}} cases waiting",
     "emptyHint": "Nothing has been escalated to the platform for review.",
-    "noteHint": "The student is shown this, so say what they need to do."
+    "noteHint": "The student is shown this, so say what they need to do.",
+    "done": {
+      "verify": "Enrollment verified.",
+      "reject": "Enrollment rejected.",
+      "request-more-evidence": "More evidence requested from the student."
+    }
   },
   "verificationStatuses": {
     "DRAFT": "Draft",
@@ -320,6 +401,26 @@
       "title": "Not shown here",
       "body": "FursadHub never exposes a password, a password hash or any token material to an administrator, so none of it appears on this page.",
       "memberships": "University and organization memberships are managed by each tenant admin and are not available through a platform-wide endpoint."
+    },
+    "stateTitle": "Account state",
+    "dangerTitle": "Suspend access",
+    "done": {
+      "suspend": "Account suspended.",
+      "reactivate": "Account reactivated."
+    },
+    "stateHelp": {
+      "PENDING_CONTACT_VERIFICATION": "Registered, but the email address has not been verified yet.",
+      "ACTIVE": "Can sign in and use FursadHub.",
+      "SUSPENDED": "Signed out everywhere and unable to sign in until reactivated.",
+      "CLOSED": "Closed. It cannot be suspended or reactivated."
+    },
+    "platformRoles": {
+      "title": "Platform roles",
+      "description": "Platform authority this account holds or has held.",
+      "manage": "Manage platform roles",
+      "none": "This account has never held a platform role.",
+      "since": "Since {{date}}",
+      "revokedOn": "Revoked {{date}}"
     }
   },
   "privacyRequests": {
@@ -349,7 +450,18 @@
     "noteHint": "Recorded as the outcome of this request.",
     "noActions": "This request has already been resolved.",
     "resultCount_one": "{{count}} request",
-    "resultCount_other": "{{count}} requests"
+    "resultCount_other": "{{count}} requests",
+    "reasonLabel": "Reason for rejecting",
+    "outcomeLabel": "Outcome note",
+    "confirm": {
+      "complete": "Marking the request completed is final. Record what was done for the person.",
+      "reject": "Rejecting is final. The person is told the request was refused, with your reason."
+    },
+    "done": {
+      "begin-review": "Review started.",
+      "complete": "Request marked completed.",
+      "reject": "Request rejected."
+    }
   },
   "legalDocuments": {
     "title": "Legal documents",
@@ -373,7 +485,10 @@
       "generic": "The document could not be published. Please try again.",
       "LEGAL_DOCUMENT_VERSION_EXISTS": "That version already exists in this language. Use a new version number.",
       "VALIDATION_FAILED": "Please check the fields you entered."
-    }
+    },
+    "confirmTitle": "Publish this version?",
+    "confirmBody": "{{type}} version {{version}} ({{locale}}), effective {{date}}. A published version can never be edited or deleted.",
+    "done": "Legal document published."
   },
   "audit": {
     "title": "Audit trail",
@@ -432,6 +547,15 @@
     "roleMeaning": {
       "SUPER_ADMIN": "Full platform authority: statistics, accounts, platform roles, compliance, the audit trail, and every verification queue.",
       "VERIFICATION_OFFICER": "Verification only: the organization and university queues and escalated student cases. No access to accounts, platform roles, compliance or the audit trail."
+    },
+    "done": {
+      "grant": "{{role}} role granted.",
+      "revoke": "Platform role revoked."
+    },
+    "grantConfirm": {
+      "title": "Grant the {{role}} role?",
+      "VERIFICATION_OFFICER": "Account {{userId}} will be able to review institution verification and escalated student cases. Nothing else in the console opens to them.",
+      "SUPER_ADMIN": "Account {{userId}} will receive full platform authority: every account, every institution, platform roles, privacy requests and the audit trail. Grant this only to someone who must administer FursadHub."
     }
   },
   "verificationOfficers": {
@@ -508,7 +632,25 @@
     "NEEDS_MORE_EVIDENCE": "More evidence needed"
   },
   "verification": {
-    "eyebrow": "Verification"
+    "eyebrow": "Verification",
+    "statusTitle": "Verification status",
+    "evidenceOnFile": "Document on file",
+    "evidenceOn": "Document {{date}}",
+    "registeredOn": "Registered {{date}}",
+    "evidenceAudited": "Opening the document is recorded in the audit trail.",
+    "noEvidenceAwaiting": "No document is on file. Without one there is nothing to verify against — request changes rather than verifying.",
+    "withdrawTitle": "Withdraw verification",
+    "withdrawHint": "For an institution that should no longer operate on FursadHub.",
+    "stateHelp": {
+      "DRAFT": "Not submitted yet. Nothing for the platform to review.",
+      "SUBMITTED": "Submitted and waiting for a reviewer.",
+      "UNDER_REVIEW": "Under review. Verify it, request changes, or reject it.",
+      "NEEDS_CHANGES": "Waiting for the institution to correct and resubmit.",
+      "VERIFIED": "Verified and operating on FursadHub.",
+      "REJECTED": "Rejected. This is final.",
+      "SUSPENDED": "Suspended. It cannot operate; the only remaining command is revocation.",
+      "REVOKED": "Verification revoked. This is final."
+    }
   },
   "locales": {
     "en": "English",
@@ -539,6 +681,11 @@
       "VALIDATION_FAILED": "A reason is required when rejecting a testimonial.",
       "ACCESS_DENIED": "You are not authorized to moderate testimonials.",
       "generic": "That testimonial could not be updated. Try again."
+    },
+    "done": {
+      "publish": "Testimonial published.",
+      "unpublish": "Testimonial removed from the public site.",
+      "reject": "Testimonial rejected."
     }
   }
 }

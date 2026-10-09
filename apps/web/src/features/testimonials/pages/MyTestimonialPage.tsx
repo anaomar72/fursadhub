@@ -9,13 +9,12 @@ import {
   EmptyState,
   FormField,
   Input,
-  LoadingState,
   PageHeader,
   StarRating,
   StarRatingInput,
   StatusBadge,
   Textarea,
-  type StatusTone,
+  SkeletonPanel,
 } from '../../../components/ui'
 import { PageContainer } from '../../../app/layouts/PageContainer'
 import { apiErrorMessage } from '../../../lib/api/errorMessage'
@@ -23,13 +22,10 @@ import { formatDate } from '../../../lib/utils/formatDate'
 import { getMyTestimonialContext, listMyTestimonials, submitTestimonial } from '../api/testimonialApi'
 import { testimonialAttribution } from '../attribution'
 import { testimonialSchema, type TestimonialFormValues } from '../schemas/testimonialSchema'
-import type { Testimonial, TestimonialStatus } from '../types'
+import type { Testimonial } from '../types'
+import { TESTIMONIAL_STATUS_TONE } from '../../../lib/status/statusTones'
 
-const STATUS_TONE: Record<TestimonialStatus, StatusTone> = {
-  SUBMITTED: 'info',
-  PUBLISHED: 'success',
-  REJECTED: 'danger',
-}
+const STATUS_TONE = TESTIMONIAL_STATUS_TONE
 
 /**
  * Where a user offers a testimonial, and sees what became of it.
@@ -82,12 +78,12 @@ export function MyTestimonialPage() {
       <PageHeader title={t('testimonials:title')} description={t('testimonials:description')} />
 
       {mine.isPending || context.isPending ? (
-        <LoadingState />
+        <SkeletonPanel rows={5} />
       ) : (
         <div className="grid gap-5 lg:grid-cols-[1.3fr_1fr]">
           {showForm && (
             <Card padding="lg" className="lg:order-2 lg:col-start-1 lg:row-start-1">
-              <h2 className="font-display text-base font-bold text-brand-navy dark:text-foreground">
+              <h2 className="font-display text-title-panel text-foreground">
                 {t('testimonials:form.title')}
               </h2>
               <p className="mt-1 text-sm text-foreground-secondary">{t('testimonials:form.moderationNotice')}</p>
@@ -166,7 +162,7 @@ export function MyTestimonialPage() {
           )}
 
           <Card padding="lg" className="lg:col-start-2 lg:row-start-1">
-            <h2 className="font-display text-base font-bold text-brand-navy dark:text-foreground">
+            <h2 className="font-display text-title-panel text-foreground">
               {t('testimonials:mine.title')}
             </h2>
             {(mine.data ?? []).length === 0 ? (

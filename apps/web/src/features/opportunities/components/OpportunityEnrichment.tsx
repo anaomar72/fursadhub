@@ -42,7 +42,7 @@ export function OpportunityEnrichment({
 
   return (
     <section className={className}>
-      <h2 className="font-display text-base font-bold text-brand-navy dark:text-foreground">
+      <h2 className="font-display text-title-panel text-foreground">
         {t('opportunities:enrichment.title')}
       </h2>
 

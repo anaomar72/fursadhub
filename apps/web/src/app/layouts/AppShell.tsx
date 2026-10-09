@@ -143,17 +143,20 @@ export function AppShell({ areaLabel, sections, tone = 'light', brand, workspace
           aria-label={t('common:shell.primaryNavigation')}
           onCancel={(event) => { event.preventDefault(); closeDrawer() }}
           // The scrim fades in and the rail slides from the edge it lives on, at the panel
-          // duration — a 264px surface travelling its own width, not a dropdown popping open.
+          // duration — a full-height surface travelling its own width, not a dropdown popping open.
           className="fixed inset-0 m-0 h-dvh max-h-none w-screen max-w-none border-0 bg-overlay p-0 text-foreground backdrop:bg-transparent motion-safe:animate-backdrop-in"
           onMouseDown={(event) => {
             if (event.target === event.currentTarget) closeDrawer()
           }}
         >
           <div
-            className="h-full w-[264px] shadow-lg motion-safe:animate-panel-in-left"
+            // The same 18rem rail as desktop, but never more than 85% of a phone, so the page behind
+            // stays visible as the thing a tap on the scrim returns to.
+            className="h-full w-72 max-w-[85vw] shadow-lg motion-safe:animate-panel-in-left"
           >
             <Sidebar
               variant="drawer"
+              className="w-full"
               sections={sections}
               homePath={homePath}
               tone={tone}
@@ -168,7 +171,6 @@ export function AppShell({ areaLabel, sections, tone = 'light', brand, workspace
       <div className="flex min-w-0 flex-1 flex-col overflow-y-auto">
         <Topbar
           areaLabel={areaLabel}
-          sections={sections}
           navigationOpen={drawerOpen}
           navigationId={DRAWER_ID}
           onOpenNavigation={() => openDrawer()}

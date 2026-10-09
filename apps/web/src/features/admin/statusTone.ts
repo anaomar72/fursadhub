@@ -1,6 +1,14 @@
 import type { StatusTone } from '../../components/ui'
-import type { InstitutionVerificationStatus, UserStatus } from './types'
-import type { PrivacyRequestState } from '../privacy/types'
+import {
+  ACCOUNT_STATUS_TONE,
+  ENROLLMENT_VERIFICATION_TONE,
+  INSTITUTION_VERIFICATION_TONE,
+  OPPORTUNITY_STATUS_TONE,
+  PLACEMENT_STATUS_TONE,
+  PRIVACY_REQUEST_TONE as SHARED_PRIVACY_REQUEST_TONE,
+  TESTIMONIAL_STATUS_TONE as SHARED_TESTIMONIAL_STATUS_TONE,
+  toneOf,
+} from '../../lib/status/statusTones'
 
 /**
  * Status → tone, in one place, so the same state never reads as "good" on one admin screen and
@@ -8,88 +16,42 @@ import type { PrivacyRequestState } from '../privacy/types'
  *
  * <p>Tone is never the only signal: every {@code StatusBadge} that uses these also carries the
  * state's translated name, so the meaning survives colour blindness, greyscale printing and forced
- * -colours mode (BRAND_AND_UI_GUIDELINES.md section 9).
+ * -colours mode (WCAG 1.4.1).
  */
-
-/** The frozen account states of CLAUDE.md section 22. */
-export const USER_STATUS_TONE: Record<UserStatus, StatusTone> = {
-  PENDING_CONTACT_VERIFICATION: 'warning',
-  ACTIVE: 'success',
-  SUSPENDED: 'danger',
-  CLOSED: 'neutral',
-}
 
 /**
- * The frozen institution-verification states of CLAUDE.md section 31.
- *
- * <p>{@code SUBMITTED} and {@code UNDER_REVIEW} are `info` rather than `warning`: they are the
- * platform's own queue, normal and expected, not a problem. {@code NEEDS_CHANGES} is `warning`
- * because the ball is back with the institution.
+ * The cross-feature machines resolve through the shared registry (lib/status/statusTones), so an
+ * admin screen and the institution's own screen can never disagree about a state again — they did:
+ * institution SUSPENDED was `warning` here and `danger` on the profile pages.
  */
-export const INSTITUTION_STATUS_TONE: Record<InstitutionVerificationStatus, StatusTone> = {
-  DRAFT: 'neutral',
-  SUBMITTED: 'info',
-  UNDER_REVIEW: 'info',
-  NEEDS_CHANGES: 'warning',
-  VERIFIED: 'success',
-  REJECTED: 'danger',
-  SUSPENDED: 'warning',
-  REVOKED: 'danger',
-}
+export const USER_STATUS_TONE = ACCOUNT_STATUS_TONE
+export const INSTITUTION_STATUS_TONE = INSTITUTION_VERIFICATION_TONE
+export const PRIVACY_REQUEST_TONE = SHARED_PRIVACY_REQUEST_TONE
+export const TESTIMONIAL_STATUS_TONE = SHARED_TESTIMONIAL_STATUS_TONE
 
-/** The frozen data-subject-request states of CLAUDE.md section 50. */
-export const PRIVACY_REQUEST_TONE: Record<PrivacyRequestState, StatusTone> = {
-  SUBMITTED: 'info',
-  IN_REVIEW: 'info',
-  COMPLETED: 'success',
-  REJECTED: 'danger',
-}
-
-/**
- * The student-verification states of CLAUDE.md section 30, as seen from the escalation queue.
- *
- * <p>Typed loosely because {@code EscalatedCaseResponse.status} is a plain string on the wire; an
- * unrecognised state falls back to neutral rather than throwing, so a state added to the machine
- * later shows up uncoloured instead of breaking the queue.
- */
-const CASE_TONES: Record<string, StatusTone> = {
-  DRAFT: 'neutral',
-  SUBMITTED: 'info',
-  UNDER_REVIEW: 'info',
-  NEEDS_MORE_EVIDENCE: 'warning',
-  VERIFIED: 'success',
-  REJECTED: 'danger',
-  REVOKED: 'danger',
-}
-
+/** Student-verification states as seen from the escalation queue (a plain string on the wire). */
 export function caseStatusTone(status: string): StatusTone {
-  return CASE_TONES[status] ?? 'neutral'
+  return toneOf(ENROLLMENT_VERIFICATION_TONE, status)
 }
 
 /**
- * Tone for any status appearing in a dashboard breakdown, across every state machine the
- * statistics endpoint groups by — accounts, organizations, opportunities and placements.
+ * The state machines the statistics endpoint groups by, each with its OWN tones.
  *
- * <p>The endpoint returns whatever enum values PostgreSQL actually holds, so this is a lookup with
- * a neutral fallback rather than an exhaustive record: a state added to a machine later shows up
- * uncoloured instead of crashing the dashboard.
+ * <p>Phase 8 fix: these used to be merged into one lookup, so a key two machines share took
+ * whichever tone was spread last — placement CANCELLED (never started, neutral) read as danger
+ * because opportunity CANCELLED is. Each breakdown now resolves against its own machine.
  */
-const DISTRIBUTION_TONES: Record<string, StatusTone> = {
-  ...USER_STATUS_TONE,
-  ...INSTITUTION_STATUS_TONE,
-  // Opportunity states (CLAUDE.md section 33).
-  PUBLISHED: 'success',
-  PAUSED: 'warning',
-  CLOSED: 'neutral',
-  CANCELLED: 'danger',
-  // Placement states (CLAUDE.md section 39).
-  PLANNED: 'info',
-  ACTIVE: 'success',
-  COMPLETION_PENDING: 'warning',
-  COMPLETED: 'success',
-  TERMINATED: 'danger',
+export type StatisticMachine = 'accounts' | 'institutions' | 'enrollments' | 'opportunities' | 'placements'
+
+const STATISTIC_TONES: Record<StatisticMachine, Record<string, StatusTone>> = {
+  accounts: ACCOUNT_STATUS_TONE,
+  institutions: INSTITUTION_VERIFICATION_TONE,
+  enrollments: ENROLLMENT_VERIFICATION_TONE,
+  opportunities: OPPORTUNITY_STATUS_TONE,
+  placements: PLACEMENT_STATUS_TONE,
 }
 
-export function distributionTone(status: string): StatusTone {
-  return DISTRIBUTION_TONES[status] ?? 'neutral'
+/** A neutral fallback, so a state added to a machine later shows uncoloured instead of crashing. */
+export function statisticTone(machine: StatisticMachine, status: string): StatusTone {
+  return toneOf(STATISTIC_TONES[machine], status)
 }

@@ -14,7 +14,7 @@ import {
   EmptyState,
   ErrorState,
   FilterBar,
-  LoadingState,
+  SkeletonList,
   PageHeader,
   SearchInput,
   Select,
@@ -113,7 +113,7 @@ export function OrganizationCandidatesPage() {
       {opportunitiesQuery.isError ? (
         <ErrorState onRetry={() => void opportunitiesQuery.refetch()} retryLabel={t('common:actions.retry')} />
       ) : opportunitiesQuery.isLoading || pools.isLoading ? (
-        <LoadingState label={t('common:status.loading')} />
+        <SkeletonList rows={5} />
       ) : pools.totalInScope === 0 ? (
         <EmptyState
           title={t('recruitment:organizationPool.noRecruiting')}

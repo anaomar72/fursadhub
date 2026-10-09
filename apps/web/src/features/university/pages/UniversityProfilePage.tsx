@@ -1,5 +1,4 @@
 import { Link } from 'react-router-dom'
-import { ProfileFormSection } from '../../../components/ui/Presentation'
 import { useEffect, useState } from 'react'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
@@ -19,27 +18,14 @@ import {
   FileUpload,
   FormField,
   Input,
-  LoadingState,
+  FormSection,
+  SkeletonPanel,
   PageHeader,
   ProfileBanner,
-  StatusBadge,
   Textarea,
 } from '../../../components/ui'
 import { PageContainer } from '../../../app/layouts/PageContainer'
-import type { StatusTone } from '../../../components/ui'
-import type { InstitutionVerificationStatus } from '../types'
-import { VerificationNextSteps } from '../../../components/verification/VerificationNextSteps'
-
-const STATUS_TONE: Record<InstitutionVerificationStatus, StatusTone> = {
-  DRAFT: 'neutral',
-  SUBMITTED: 'info',
-  UNDER_REVIEW: 'info',
-  NEEDS_CHANGES: 'warning',
-  VERIFIED: 'success',
-  REJECTED: 'danger',
-  SUSPENDED: 'danger',
-  REVOKED: 'danger',
-}
+import { InstitutionVerificationPanel } from '../../../components/verification/InstitutionVerificationPanel'
 
 /**
  * The university's own record and its institution-verification state (CLAUDE.md section 31) — the
@@ -102,6 +88,8 @@ export function UniversityProfilePage() {
   })
 
   const [evidenceError, setEvidenceError] = useState<string | null>(null)
+  // The name of the file just uploaded, so the upload zone can say exactly what is on file.
+  const [lastEvidenceName, setLastEvidenceName] = useState<string | null>(null)
   const evidenceMutation = useMutation({
     mutationFn: (file: File) => {
       setEvidenceError(null)
@@ -110,7 +98,10 @@ export function UniversityProfilePage() {
         throw cause
       })
     },
-    onSuccess: invalidate,
+    onSuccess: (_data, file) => {
+      setLastEvidenceName(file.name)
+      void invalidate()
+    },
   })
 
   const [logoError, setLogoError] = useState<string | null>(null)
@@ -140,15 +131,13 @@ export function UniversityProfilePage() {
   if (universityQuery.isLoading) {
     return (
       <PageContainer>
-        <LoadingState label={t('common:status.loading')} />
+        <SkeletonPanel rows={6} />
       </PageContainer>
     )
   }
 
   const university = universityQuery.data
   if (!university) return null
-
-  const canSubmitForVerification = university.status === 'DRAFT' || university.status === 'NEEDS_CHANGES'
 
   return (
     <PageContainer className="flex flex-col gap-6">
@@ -157,10 +146,22 @@ export function UniversityProfilePage() {
         description={t('university:profile.subtitle')}
         actions={<>
           {university.status === 'VERIFIED' && <Link to={`/universities/${university.id}`} className="inline-flex min-h-10 items-center rounded-lg border border-border px-4 text-sm font-semibold text-link">{t('common:remediation.viewPublicProfile')}</Link>}
-          <StatusBadge tone={STATUS_TONE[university.status]}>
-            {t(`university:profile.verificationStatusValues.${university.status}`)}
-          </StatusBadge>
         </>}
+      />
+
+      {/* Directly under the heading: the one step that unlocks the institution, with its status,
+          meaning, progress, upload and next steps in one place. */}
+      <InstitutionVerificationPanel
+        namespace="university"
+        status={university.status}
+        hasEvidence={!!university.hasEvidence}
+        canManage={isAdmin}
+        upload={{ onFile: (file) => evidenceMutation.mutate(file), pending: evidenceMutation.isPending, error: evidenceError, lastFileName: lastEvidenceName }}
+        submit={{
+          onSubmit: () => submitMutation.mutate(),
+          pending: submitMutation.isPending,
+          error: submitMutation.isError ? apiErrorMessage(t, 'university', 'profile', submitMutation.error) : null,
+        }}
       />
 
       {/* Backend Phase B2 cover. `hasCover` is a flag, never a file id (CLAUDE.md section 47); the
@@ -186,7 +187,7 @@ export function UniversityProfilePage() {
             size="lg"
           />
           <div className="min-w-0 flex-1">
-            <h2 className="truncate font-display text-lg font-bold text-brand-navy dark:text-foreground">
+            <h2 className="break-words font-display text-title-section text-foreground">
               {university.name}
             </h2>
             {(university.city || university.countryCode) && (
@@ -243,7 +244,7 @@ export function UniversityProfilePage() {
       {isAdmin ? (
         <form noValidate onSubmit={form.handleSubmit((values) => updateMutation.mutate(values))}>
           <div className="grid gap-5">
-            <ProfileFormSection title={t('common:remediation.basic')} hint={t('common:remediation.basicHint')} icon="bank"><FormField
+            <FormSection title={t('common:remediation.basic')} description={t('common:remediation.basicHint')}><FormField
               label={t('university:setup.nameLabel')}
               htmlFor="uni-profile-name"
               className="sm:col-span-2"
@@ -253,13 +254,14 @@ export function UniversityProfilePage() {
             </FormField>
               <FormField
                 label={t('university:setup.registrationNumberLabel')}
+                optional
                 htmlFor="uni-profile-registration"
                 hint={t('university:setup.registrationNumberHint')}
               >
                 <Input id="uni-profile-registration" {...form.register('registrationNumber')} />
-              </FormField></ProfileFormSection>
+              </FormField></FormSection>
 
-            <ProfileFormSection title={t('common:remediation.publicProfile')} hint={t('common:remediation.publicHint')} icon="document"><FormField
+            <FormSection title={t('common:remediation.publicProfile')} description={t('common:remediation.publicHint')}><FormField
               label={t('university:setup.cityLabel')}
               htmlFor="uni-profile-city"
               error={form.formState.errors.city && t(form.formState.errors.city.message ?? '')}
@@ -276,9 +278,9 @@ export function UniversityProfilePage() {
               </FormField>
               <FormField label={t('university:setup.descriptionLabel')} htmlFor="uni-profile-description">
                 <Textarea id="uni-profile-description" rows={4} {...form.register('description')} />
-              </FormField></ProfileFormSection>
+              </FormField></FormSection>
 
-            <ProfileFormSection title={t('common:remediation.web')} hint={t('common:remediation.webHint')} icon="globe"><FormField
+            <FormSection title={t('common:remediation.web')} description={t('common:remediation.webHint')}><FormField
               label={t('university:setup.websiteLabel')}
               htmlFor="uni-profile-website"
               error={form.formState.errors.website && t(form.formState.errors.website.message ?? '')}
@@ -295,8 +297,8 @@ export function UniversityProfilePage() {
                 }
               >
                 <Input id="uni-profile-contact-email" type="email" {...form.register('publicContactEmail')} />
-              </FormField></ProfileFormSection>
-            <div className="sticky bottom-0 z-20 rounded-xl border border-border bg-surface p-4 shadow-md">{updateMutation.isError && (
+              </FormField></FormSection>
+            <div className="sticky bottom-0 z-20 rounded-xl border border-border bg-surface p-4">{updateMutation.isError && (
               <Alert tone="danger">{apiErrorMessage(t, 'university', 'profile', updateMutation.error)}</Alert>
             )}
               {/* As on the organization profile: the failure was reported, the success was not. */}
@@ -310,7 +312,7 @@ export function UniversityProfilePage() {
             </div></div></form>
       ) : (
         <Card padding="lg">
-          <h2 className="font-display text-base font-bold text-brand-navy dark:text-foreground">
+          <h2 className="font-display text-title-panel text-foreground">
             {t('university:profile.detailsTitle')}
           </h2>
           <dl className="mt-4 grid gap-4 sm:grid-cols-2">
@@ -336,60 +338,6 @@ export function UniversityProfilePage() {
         </Card>
       )}
 
-      {isAdmin && canSubmitForVerification && (
-        <Card padding="lg">
-          <h2 className="font-display text-base font-bold text-brand-navy dark:text-foreground">
-            {t('university:profile.verificationTitle')}
-          </h2>
-          <p className="mt-1 text-sm text-foreground-secondary">{t('university:profile.submitForVerificationBody')}</p>
-
-          <div className="mt-5">
-            {/* PDF, 10MB: FileClassification.UNIVERSITY_VERIFICATION_EVIDENCE. One file; a new upload replaces it. */}
-            <FileUpload
-              label={t('university:profile.evidence.label')}
-              hint={t('university:profile.evidence.hint')}
-              accept="application/pdf"
-              disabled={evidenceMutation.isPending}
-              invalid={!!evidenceError}
-              onFiles={(files) => files[0] && evidenceMutation.mutate(files[0])}
-            />
-            <p className="mt-2 text-xs text-foreground-secondary">{t('university:profile.evidence.privacy')}</p>
-            {evidenceMutation.isPending && (
-              <p className="mt-2 text-xs text-foreground-secondary">{t('university:profile.evidence.uploading')}</p>
-            )}
-            {university.hasEvidence && !evidenceMutation.isPending && (
-              <p className="mt-2 text-sm text-success">{t('university:profile.evidence.attached')}</p>
-            )}
-            {evidenceError && (
-              <p className="mt-2 text-sm text-danger" role="alert">
-                {evidenceError}
-              </p>
-            )}
-          </div>
-
-          {submitMutation.isError && (
-            <Alert tone="danger" className="mt-4">
-              {apiErrorMessage(t, 'university', 'profile', submitMutation.error)}
-            </Alert>
-          )}
-
-          <div className="mt-5 border-t border-border pt-5">
-            <VerificationNextSteps namespace="university" />
-            <Button
-              type="button"
-              variant="outline"
-              loading={submitMutation.isPending}
-              disabled={!university.hasEvidence}
-              onClick={() => submitMutation.mutate()}
-            >
-              {t('university:profile.submitForVerification')}
-            </Button>
-            {!university.hasEvidence && (
-              <p className="mt-2 text-xs text-foreground-secondary">{t('university:profile.evidence.required')}</p>
-            )}
-          </div>
-        </Card>
-      )}
     </PageContainer>
   )
 }

@@ -1,56 +1,65 @@
 import { RouteSuspense } from '../router/RouteFallback'
-import { Outlet } from 'react-router-dom'
-import { LanguageToggle, ThemeToggle } from '../../components/ui'
-import {
-  AuthBrandPanel,
-  AuthFooterLinks,
-  BackToHomeLink,
-} from '../../features/auth/components/AuthShell'
+import { Link, Outlet } from 'react-router-dom'
+import { useTranslation } from 'react-i18next'
+import { BrandLogo, LanguageToggle, ThemeToggle } from '../../components/ui'
+import { AuthBrandPanel, AuthFooterLinks, BackToHomeLink } from '../../features/auth/components/AuthShell'
 
 /**
- * The FursadHub authentication shell.
+ * The FursadHub authentication shell — sign in, register, email verification and password reset.
  *
- * A true half-and-half split at `lg` and above: the approved photograph and brand copy hold the
- * left column edge-to-edge, and the form column holds the right. The previous shell centred a
- * `max-w-md` card inside a `max-w-6xl` grid, which left a wide empty gutter on either side of the
- * form and read as a stock template — the panel was a plain navy rectangle with a skyline so faint
- * it was invisible.
+ * <p><strong>Desktop (`lg`+):</strong> a split. The approved photograph and the route's own brand
+ * copy hold the left column; the form column holds the right. The split earns its place here: the
+ * panel says, per route, why this step exists (see `authPanels.ts`), which is content, not decoration.
  *
- * The form column, not the card, is the surface here: no nested bordered box floating on a muted
- * background, just a properly proportioned column with the controls in it. `AuthCard` supplies the
- * heading block; each page supplies its own form.
+ * <p><strong>Phones and tablets:</strong> one column — the FursadHub logo, the controls, then the
+ * form. No decorative panel above the form: on a first visit from a phone the form IS the page, and
+ * a photo strip only pushed the first field below the fold.
  *
- * Chrome-free by design — no public header or footer — so nothing competes with the single task on
- * screen. Language, theme, Back to Home and the legal links are all still reachable.
+ * <p>The form column is `max-w-md` (28rem), the same measure the public site uses for a focused
+ * form, rather than a hand-picked pixel width. Chrome-free by design — no public header or footer —
+ * so nothing competes with the single task on screen. Language, theme, the way home and the legal
+ * links are always reachable.
  */
 export function AuthLayout() {
+  const { t } = useTranslation()
   return (
-    <div className="min-h-svh bg-surface lg:grid lg:grid-cols-[minmax(0,1fr)_minmax(0,1fr)] xl:grid-cols-[minmax(0,1.05fr)_minmax(0,1fr)]">
+    <div className="min-h-svh bg-background lg:grid lg:grid-cols-2 lg:bg-surface">
       <AuthBrandPanel />
 
       {/*
         Below `lg` there is no grid, so the column carries its own `min-h-svh` to fill the screen and
         keep the footer links at the bottom rather than floating under the submit button. At `lg` the
-        grid item already stretches to the row, so it drops back to `min-h-0` — asserting `min-h-svh`
-        in both places makes the taller of two viewport measurements win and pushes the page into a
-        scrollbar it does not need.
+        grid item already stretches to the row, so it drops back to `min-h-0`.
       */}
-      <div className="flex min-h-svh flex-col px-5 py-6 sm:px-8 lg:min-h-0 lg:px-12 xl:px-16">
+      <div className="flex min-h-svh flex-col px-4 py-5 sm:px-8 sm:py-6 lg:min-h-0 lg:px-12 xl:px-16">
         <header className="flex items-center justify-between gap-4">
-          <BackToHomeLink />
+          {/* Phones and tablets: the brand, linking home. Desktop: the brand is in the panel, so the
+              slot carries the explicit way back instead. */}
+          <Link
+            to="/"
+            aria-label={t('common:app.name')}
+            className="rounded-md focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus-ring lg:hidden"
+          >
+            <BrandLogo size="sm" />
+          </Link>
+          <div className="hidden lg:block">
+            <BackToHomeLink />
+          </div>
           <div className="flex items-center gap-2">
             <LanguageToggle />
             <ThemeToggle />
           </div>
         </header>
 
-        <main className="flex flex-1 flex-col justify-center py-10">
-          <div className="mx-auto w-full max-w-[27rem]">
-            <RouteSuspense><Outlet /></RouteSuspense>
+        <main className="flex flex-1 flex-col py-8 sm:justify-center sm:py-12">
+          <div className="mx-auto w-full max-w-md">
+            <RouteSuspense>
+              <Outlet />
+            </RouteSuspense>
           </div>
         </main>
 
-        <footer className="mx-auto w-full max-w-[27rem]">
+        <footer className="mx-auto w-full max-w-md border-t border-border pt-5">
           <AuthFooterLinks />
         </footer>
       </div>

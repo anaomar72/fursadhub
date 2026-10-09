@@ -19,10 +19,15 @@
     "poweredBy": "Waxaa ku shaqeeya",
     "portals": {
       "university": "Bogga Jaamacadda",
-      "organization": "Bogga Qorista Shaqaalaha",
+      "universityCoordinator": "Bogga Isku-duwaha",
+      "universitySupervisor": "Bogga Kormeeraha",
+      "organization": "Bogga Ururka",
+      "organizationRecruiter": "Bogga Qorista Shaqaalaha",
+      "organizationSupervisor": "Bogga Kormeeraha",
       "admin": "Konsool-ka Maamulaha Sare",
       "verificationOfficer": "Konsool-ka Xaqiijinta"
-    }
+    },
+    "breadcrumb": "Raadka bogga"
   },
   "publicPages": {
     "about": {
@@ -401,7 +406,8 @@
     "actionRequired": "Tallaabo ayaa loo baahan yahay",
     "rejected": "La diiday",
     "notProvided": "Lama bixin",
-    "error": "Wax qaldan ayaa dhacay"
+    "error": "Wax qaldan ayaa dhacay",
+    "sectionError": "Qaybtan lama soo bandhigi karin."
   },
   "language": {
     "en": "Ingiriisi",
@@ -419,7 +425,8 @@
     "confirm": "Xaqiiji",
     "close": "Xir",
     "apply": "Codso",
-    "clear": "Nadiifi"
+    "clear": "Nadiifi",
+    "back": "Dib u noqo"
   },
   "a11y": {
     "skipToContent": "U gudub nuxurka",
@@ -429,7 +436,10 @@
     "closeDrawer": "Xir bogga dhinaca",
     "search": "Raadi",
     "progress": "Horumar",
-    "timeline": "Taxanaha wakhtiga"
+    "timeline": "Taxanaha wakhtiga",
+    "stepCompleted": "la dhammeeyay",
+    "stepCurrent": "tallaabada hadda",
+    "stepUpcoming": "weli lama bilaabin"
   },
   "notFound": {
     "title": "Bogga lama helin",
@@ -612,5 +622,78 @@
     "title": "Ma haysatid fasax boggan",
     "description": "Akoonkaagu ma laha fasaxa lagu furo qaybtan FursadHub. Haddii aad u malaynayso inay tani khalad tahay, weydiiso maamulaha ururkaaga ama jaamacaddaada inuu hubiyo doorkaaga.",
     "back": "Aad dashboard-kaaga"
+  },
+  "form": {
+    "optional": "Ikhtiyaari"
+  },
+  "home": {
+    "trust": {
+      "title": "Lagu dhisay xaqiijin, ma aha liis keliya",
+      "items": {
+        "institutions": {
+          "title": "Hay'ado la xaqiijiyay",
+          "body": "Ururrada iyo jaamacaduhu waxay maraan xaqiijinta FursadHub, oo ururrada la xaqiijiyay oo keliya ayaa daabici kara tababaro."
+        },
+        "enrollment": {
+          "title": "Diiwaangelin la hubiyay",
+          "body": "Jaamacadda ardayga ayaa xaqiijisa diiwaangelintiisa ka hor inta uusan codsan ama la magacaabin."
+        },
+        "pipeline": {
+          "title": "Hal socod musharrax",
+          "body": "Codsiyada guud iyo magacaabista jaamacadaha waxaa wada dib u eega ururka soo dhigay fursadda."
+        },
+        "completion": {
+          "title": "La socod ilaa dhammaystir",
+          "body": "Meelaynta waxaa kormeeri kara jaamacadda iyo ururkaba, iyadoo loo marayo diiwaanka toddobaadka, imaanshaha iyo qiimeynta."
+        }
+      }
+    },
+    "organizations": {
+      "title": "Ururrada la xaqiijiyay ee FursadHub"
+    },
+    "latest": {
+      "title": "Tababarada ugu dambeeyay",
+      "description": "Waxaa dhawaan daabacay ururrada ku jira FursadHub.",
+      "emptyTitle": "Tababaro cusub ayaa soo socda",
+      "emptyBody": "Fursaduhu halkan ayay ka muuqdaan marka ururrada la xaqiijiyay ay daabacaan."
+    },
+    "journey": {
+      "actors": "Cidda ka qayb qaadata"
+    },
+    "roles": {
+      "title": "Hal madal, saddex waddo"
+    },
+    "lifecycle": {
+      "eyebrow": "Dalabka kadib",
+      "finalReport": "Warbixinta ugu dambeysa"
+    }
+  },
+  "onboarding": {
+    "progressLabel": "Horumarka diyaarinta akoonka",
+    "steps": {
+      "account": "Akoonka waa la sameeyay",
+      "email": "Iimaylka waa la xaqiijiyay",
+      "verification": "Xaqiijin"
+    }
+  },
+  "verification": {
+    "progressLabel": "Horumarka xaqiijinta",
+    "steps": {
+      "upload": "Soo geli dukumeentigaaga",
+      "submit": "U gudbi dib-u-eegis",
+      "review": "FursadHub ayaa dib u eegaysa",
+      "verified": "La xaqiijiyay"
+    },
+    "selectedFile": "La soo geliyay: {{name}}",
+    "statusHeading": "Xaaladda"
+  },
+  "lifecycle": {
+    "states": {
+      "complete": "la dhammeeyay",
+      "current": "socda",
+      "attention": "u baahan feejignaan",
+      "upcoming": "lama bilaabin",
+      "notReached": "lama gaarin"
+    }
   }
 }

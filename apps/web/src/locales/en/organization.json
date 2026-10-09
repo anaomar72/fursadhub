@@ -14,7 +14,12 @@
     "partners": "University partners",
     "organization": "Organization",
     "myInterns": "My interns",
-    "supervision": "Supervision"
+    "supervision": "Supervision",
+    "sections": {
+      "recruitment": "Recruitment",
+      "internships": "Internships",
+      "organization": "Organization"
+    }
   },
   "dashboard": {
     "title": "Organization overview",
@@ -62,7 +67,7 @@
     "body": "Create your organization's workspace — you can add colleagues once it exists. To publish internships, FursadHub must first verify your organization: you'll upload its registration document and submit it for review from the organization profile.",
     "nameLabel": "Organization name",
     "typeLabel": "Organization type",
-    "registrationNumberLabel": "Organization registration number (optional)",
+    "registrationNumberLabel": "Organization registration number",
     "websiteLabel": "Website",
     "descriptionLabel": "About the organization",
     "submit": "Create organization",
@@ -70,7 +75,24 @@
       "VALIDATION_FAILED": "Please check the form and try again.",
       "generic": "We couldn't create your organization right now. Check your connection and try again."
     },
-    "registrationNumberHint": "The official registration or license number shown on your organization's registration document. It is never shown on your public profile."
+    "registrationNumberHint": "The official registration or license number shown on your organization's registration document. It is never shown on your public profile.",
+    "stepDetails": "Organization details",
+    "sections": {
+      "identity": {
+        "title": "About your organization",
+        "description": "How your organization is named on FursadHub."
+      },
+      "registration": {
+        "title": "Registration details",
+        "description": "Used for verification only."
+      },
+      "public": {
+        "title": "Public information",
+        "description": "You can add or change this later from your organization profile."
+      }
+    },
+    "nextTitle": "After you create it",
+    "nextBody": "Your organization’s workspace opens straight away. From the organization profile, upload its registration document and submit it for verification — that is what unlocks publishing internships."
   },
   "publicProfile": {
     "notFound": "This organization could not be found.",
@@ -177,6 +199,17 @@
       "attach": "Attach your document, then select \"Submit for verification\".",
       "review": "FursadHub's verification team reviews your document and organization details.",
       "notify": "You'll get a notification when your organization is verified, or if the team asks for changes."
+    },
+    "verifiedBody": "Your organization is verified. You can publish internships.",
+    "statusGuidance": {
+      "DRAFT": "Attach your registration document below and submit it for verification.",
+      "SUBMITTED": "Your submission is with FursadHub. You will be notified when the review is complete.",
+      "UNDER_REVIEW": "FursadHub is reviewing your submission. You will be notified when it is complete.",
+      "NEEDS_CHANGES": "FursadHub has asked for changes. Update your organization details or document and submit again.",
+      "REJECTED": "Your verification was rejected. Contact FursadHub before submitting again.",
+      "SUSPENDED": "Your verification is suspended. Contact FursadHub to resolve it.",
+      "REVOKED": "Your verification has been revoked. Contact FursadHub to resolve it.",
+      "VERIFIED": ""
     }
   },
   "staff": {
@@ -356,6 +389,104 @@
       "SUSPENDED": "Your verification is suspended. Contact FursadHub to resolve it.",
       "REVOKED": "Your verification has been revoked. Contact FursadHub to resolve it.",
       "VERIFIED": ""
+    }
+  },
+  "workspace": {
+    "attention": {
+      "title": "Needs attention",
+      "clearTitle": "Nothing needs attention",
+      "clearBody": "New applications, offers waiting on candidates and interns without a supervisor will appear here.",
+      "supervisorClearBody": "Attendance to confirm, disputes to resolve and evaluations to finish will appear here.",
+      "items": {
+        "newApplications": {
+          "title_one": "{{count}} new application to review",
+          "title_other": "{{count}} new applications to review",
+          "action": "Review"
+        },
+        "awaitingReview": {
+          "title_one": "{{count}} application under review",
+          "title_other": "{{count}} applications under review",
+          "action": "Continue"
+        },
+        "interviews": {
+          "title_one": "{{count}} candidate at the interview stage",
+          "title_other": "{{count}} candidates at the interview stage",
+          "action": "Open"
+        },
+        "offersAwaitingCandidate": {
+          "title_one": "{{count}} offer waiting for the candidate's answer",
+          "title_other": "{{count}} offers waiting for candidates' answers",
+          "action": "View"
+        },
+        "placementsWithoutSupervisor": {
+          "title_one": "{{count}} intern has no organization supervisor",
+          "title_other": "{{count}} interns have no organization supervisor",
+          "action": "Assign"
+        },
+        "draftsToPublish": {
+          "title_one": "{{count}} draft internship not yet published",
+          "title_other": "{{count}} draft internships not yet published",
+          "action": "Review drafts"
+        },
+        "attendanceToConfirm": {
+          "title_one": "{{count}} attendance record to confirm",
+          "title_other": "{{count}} attendance records to confirm",
+          "action": "Confirm"
+        },
+        "attendanceDisputed": {
+          "title_one": "{{count}} disputed attendance record to resolve",
+          "title_other": "{{count}} disputed attendance records to resolve",
+          "action": "Resolve"
+        },
+        "evaluationsDue": {
+          "title_one": "{{count}} evaluation to finish",
+          "title_other": "{{count}} evaluations to finish",
+          "action": "Open"
+        }
+      }
+    },
+    "metrics": {
+      "title": "At a glance",
+      "recruiting": "Recruiting internships",
+      "awaitingReview": "Awaiting your review",
+      "offersOut": "Offers out",
+      "currentInterns": "Current interns",
+      "assignedInterns": "Assigned interns",
+      "runningNow": "Running now"
+    },
+    "work": {
+      "candidatesTitle": "Candidates waiting on you",
+      "candidatesEmpty": "No candidate is waiting on your organization right now.",
+      "offersTitle": "Open offers",
+      "offersEmpty": "No offer is waiting for a candidate.",
+      "offerDeadline": "Answer due {{date}}",
+      "internshipsTitle": "Your internships",
+      "internshipsEmpty": "No internship is recruiting right now.",
+      "applicants_one": "{{count}} applicant",
+      "applicants_other": "{{count}} applicants",
+      "awaiting_one": "{{count}} waiting",
+      "awaiting_other": "{{count}} waiting",
+      "pipelineTitle": "Candidate pipeline",
+      "pipelineScope_one": "Across {{count}} recruiting internship.",
+      "pipelineScope_other": "Across {{count}} recruiting internships.",
+      "internsTitle": "Your interns",
+      "internsEmpty": "You have no assigned interns yet. Interns you supervise appear here once a placement assigns you.",
+      "internAttendance_one": "{{count}} attendance record waiting on you",
+      "internAttendance_other": "{{count}} attendance records waiting on you",
+      "internEvaluation": "Evaluation not final yet",
+      "internClear": "Nothing waiting on you",
+      "notRunning": "Not running",
+      "partialError": "Some figures could not be loaded, so they may be incomplete."
+    },
+    "lifecycle": {
+      "title": "Internship progress",
+      "evaluation": {
+        "MISSING": "Not started",
+        "DRAFT": "Draft in progress",
+        "SUBMITTED": "Submitted, not final",
+        "FINAL": "Final"
+      },
+      "completionPending": "Waiting for the university’s completion decision"
     }
   }
 }

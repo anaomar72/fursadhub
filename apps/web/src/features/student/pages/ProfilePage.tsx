@@ -9,11 +9,11 @@ import type { StudentProfileResponse } from '../types'
 import * as universityApi from '../../university/api/universityApi'
 import { StudentProfilePhoto } from '../components/StudentProfilePhoto'
 import { ProfessionalProfileSummary } from '../components/ProfessionalProfileSummary'
-import { ProfileFormSection } from '../../../components/ui/Presentation'
+import { ENROLLMENT_VERIFICATION_TONE, toneOf } from '../../../lib/status/statusTones'
 import { profileSchema, type ProfileFormValues } from '../schemas/profileSchema'
 import { apiErrorMessage } from '../../../lib/api/errorMessage'
 import { ApiError } from '../../../lib/api/client'
-import { Alert, Button, Card, FormField, Input, LoadingState, PageHeader, StatusBadge, TagInput, Textarea } from '../../../components/ui'
+import { Alert, Button, Card, FormField, Input, PageHeader, SkeletonPanel, StatusBadge, TagInput, Textarea, FormSection } from '../../../components/ui'
 import { PageContainer } from '../../../app/layouts/PageContainer'
 
 /**
@@ -64,7 +64,7 @@ export function StudentProfilePage() {
   if (profileQuery.isLoading) {
     return (
       <PageContainer width="narrow">
-        <LoadingState label={t('common:status.loading')} />
+        <SkeletonPanel rows={5} />
       </PageContainer>
     )
   }
@@ -75,19 +75,19 @@ export function StudentProfilePage() {
       <Card padding="lg"><StudentProfilePhoto name={profileQuery.data?.fullName ?? ''} /></Card>
       <ProfessionalProfileSummary profile={profileQuery.data?.professional} />
 
+      {/* Phase 9: one form surface with FormSection groups — the same structure as the organization and
+          university profiles — instead of bordered sub-cards inside a card. */}
       <Card padding="lg">
-        <h2 className="font-display text-base font-bold text-brand-navy dark:text-foreground">
-          {t('student:profile.detailsTitle')}
-        </h2>
-
         <form
-          className="mt-4 flex flex-col gap-4"
+          className="flex flex-col gap-6"
           noValidate
           onSubmit={form.handleSubmit(({ fullName, phone, ...professional }) => saveMutation.mutate({
             fullName, phone, professional: { ...professional, skills: professional.skills ?? [], countryCode: professional.countryCode || null },
           }))}
         >
           <fieldset disabled={saveMutation.isPending} className="contents">
+          <div>
+          <FormSection layout="stacked" title={t('student:profile.detailsTitle')}>
           <FormField
             label={t('student:profile.fullNameLabel')}
             htmlFor="fullName"
@@ -99,21 +99,23 @@ export function StudentProfilePage() {
           <FormField label={t('student:profile.phoneLabel')} htmlFor="phone">
             <Input id="phone" type="tel" autoComplete="tel" {...form.register('phone')} />
           </FormField>
+          </FormSection>
 
-          <ProfileFormSection title={t('common:professional.about')} icon="user">
+          <FormSection layout="stacked" title={t('common:professional.about')}>
             <FormField htmlFor="headline" label={t('common:professional.headline')}><Input id="headline" maxLength={160} {...form.register('headline')} /></FormField>
             <FormField htmlFor="city" label={t('common:professional.city')}><Input id="city" autoComplete="address-level2" maxLength={120} {...form.register('city')} /></FormField>
             <FormField htmlFor="countryCode" label={t('common:professional.countryCode')} hint={t('common:professional.countryHint')} error={form.formState.errors.countryCode && t('common:professional.countryError')}><Input id="countryCode" autoComplete="country" maxLength={2} {...form.register('countryCode', { setValueAs: (value: string) => value.toUpperCase() })} /></FormField>
-            <div className="sm:col-span-2"><FormField htmlFor="summary" label={t('common:professional.summary')}><Textarea id="summary" rows={5} maxLength={3000} {...form.register('summary')} /></FormField></div>
-          </ProfileFormSection>
-          <ProfileFormSection title={t('common:professional.skills')} icon="sparkle">
+            <FormField htmlFor="summary" label={t('common:professional.summary')}><Textarea id="summary" rows={5} maxLength={3000} {...form.register('summary')} /></FormField>
+          </FormSection>
+          <FormSection layout="stacked" title={t('common:professional.skills')}>
             <FormField htmlFor="skills" label={t('common:professional.skills')} hint={t('common:professional.skillsHint')}>
               <Controller control={form.control} name="skills" render={({ field }) => <TagInput id="skills" value={field.value ?? []} onChange={field.onChange} onBlur={field.onBlur} ref={field.ref} maxTags={25} maxLength={60} aria-describedby="skills-hint" />} />
             </FormField>
-          </ProfileFormSection>
-          <ProfileFormSection title={t('common:professional.links')} icon="link">
+          </FormSection>
+          <FormSection layout="stacked" title={t('common:professional.links')}>
             {(['linkedinUrl', 'githubUrl', 'portfolioUrl'] as const).map((key) => <FormField key={key} htmlFor={key} label={t(`common:professional.${key}`)} error={form.formState.errors[key] && t('common:professional.urlError')}><Input id={key} type="url" maxLength={500} {...form.register(key)} /></FormField>)}
-          </ProfileFormSection>
+          </FormSection>
+          </div>
 
           {saveMutation.isError && (
             <p className="text-sm text-danger" role="alert">
@@ -136,13 +138,13 @@ export function StudentProfilePage() {
       <Card padding="lg">
         <div className="flex flex-wrap items-start justify-between gap-3">
           <div>
-            <h2 className="font-display text-base font-bold text-brand-navy dark:text-foreground">
+            <h2 className="font-display text-title-panel text-foreground">
               {t('student:enrollment.title')}
             </h2>
             <p className="mt-1 text-sm text-foreground-secondary">{t('student:profile.enrollmentHint')}</p>
           </div>
           {enrollment && (
-            <StatusBadge tone={enrollment.verificationStatus === 'VERIFIED' ? 'success' : 'warning'}>
+            <StatusBadge tone={toneOf(ENROLLMENT_VERIFICATION_TONE, enrollment.verificationStatus)}>
               {t(`student:enrollment.status.${enrollment.verificationStatus}`)}
             </StatusBadge>
           )}

@@ -25,7 +25,7 @@ interface PlacementListProps {
 
 /**
  * The shared placement list used by the student, university and organization areas, so the same
- * placement reads identically wherever it appears (BRAND_AND_UI_GUIDELINES.md section 17).
+ * placement reads identically wherever it appears (WCAG 1.4.1).
  *
  * <p>This component never filters: what arrives has already been scoped by the backend query for
  * the caller's real role, and re-filtering here would imply the UI is part of the boundary. It is

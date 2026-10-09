@@ -1,16 +1,14 @@
 import { useQuery } from '@tanstack/react-query'
 import { useTranslation } from 'react-i18next'
-import { useLocation, useNavigate } from 'react-router-dom'
+import { useNavigate } from 'react-router-dom'
 import { Avatar, Icon, IconButton, LanguageToggle, Menu, ThemeToggle } from '../../components/ui'
 import { NotificationBell } from '../../features/notifications/components/NotificationBell'
 import * as authApi from '../../features/auth/api/authApi'
 import { useAvatarSrc } from '../../lib/api/useAvatarSrc'
-import { findActiveNavItem, type NavSection } from './navigation'
 
 export interface TopbarProps {
-  /** Translated area name, e.g. "University" — the second line of the page context. */
+  /** Translated area name, e.g. "University" — the portal context shown beside the menu button. */
   areaLabel: string
-  sections: NavSection[]
   /**
    * Whether the primary navigation drawer is currently open, and the id of the element it is.
    *
@@ -25,12 +23,14 @@ export interface TopbarProps {
 }
 
 /**
- * The approved authenticated topbar (design-reference/presentation-refresh-2026, references
- * 07-10): page context on the left, then the controls every signed-in person needs wherever they
- * are — language, theme, notifications and their own account block.
+ * The authenticated topbar: GLOBAL controls only — the portal you are in, then language, theme,
+ * notifications and your own account block.
  *
- * <p>The page title is derived from the sidebar item matching the current route rather than passed
- * down by each page, so it can never disagree with the highlighted destination.
+ * <p><strong>It does not name the page.</strong> It used to print the active destination's label in
+ * large display type, directly above a {@link PageHeader} printing the page title again — two
+ * headings for one page, the first truncated to "Acco…" on a phone. The page names itself, once, in
+ * its `<h1>`; the topbar keeps the quiet portal context, which is what orients a person who arrived
+ * from a link or whose sidebar is collapsed into the mobile drawer.
  *
  * <p>Two elements the references show are deliberately NOT built:
  * <ul>
@@ -42,17 +42,14 @@ export interface TopbarProps {
  * Both follow the reference README: never fabricate data, and never change the backend just to
  * match a mockup (CLAUDE.md section 75).
  */
-export function Topbar({ areaLabel, sections, navigationOpen = false, navigationId, onOpenNavigation, onSignOut }: TopbarProps) {
+export function Topbar({ areaLabel, navigationOpen = false, navigationId, onOpenNavigation, onSignOut }: TopbarProps) {
   const { t } = useTranslation()
   const navigate = useNavigate()
-  const location = useLocation()
   const meQuery = useQuery({ queryKey: ['me'], queryFn: authApi.getMe, staleTime: 60_000 })
   const avatarSrc = useAvatarSrc(meQuery.data?.id, meQuery.data?.hasAvatar ?? false)
 
-  const activeItem = findActiveNavItem(sections, location)
-
   return (
-    <header className="sticky top-0 z-30 flex h-[72px] shrink-0 items-center gap-3 border-b border-border bg-surface px-4 sm:px-6">
+    <header className="sticky top-0 z-30 flex h-16 shrink-0 items-center gap-3 border-b border-border bg-surface px-4 sm:px-6 lg:px-8">
       <IconButton
         label={t('common:shell.openNavigation')}
         aria-expanded={navigationOpen}
@@ -64,17 +61,12 @@ export function Topbar({ areaLabel, sections, navigationOpen = false, navigation
       </IconButton>
 
       {/*
-        The second line is the AREA the first line sits in, so it is only worth printing when it
-        says something the first line does not. On a route with no matching rail item — the account
-        pages, which are reached from the user menu rather than the sidebar — the title fell back to
-        the area label and the topbar read "Student" over "Student".
+        Phase 9: below 400px there is no room for the portal context beside the five controls, and
+        it used to truncate to "Stud…". It is secondary there — the drawer names the portal and the
+        page names itself in its h1 — so it steps aside instead of truncating. The controls, which
+        are the only way to change language, theme or sign out, are never the ones that shrink.
       */}
-      <div className="min-w-0">
-        <p className="truncate font-display text-lg font-extrabold tracking-tight text-brand-navy dark:text-foreground sm:text-xl">
-          {activeItem?.label ?? areaLabel}
-        </p>
-        {activeItem && <p className="truncate text-xs text-foreground-secondary">{areaLabel}</p>}
-      </div>
+      <p className="hidden min-w-0 truncate text-label text-foreground-secondary min-[400px]:block">{areaLabel}</p>
 
       <div className="ml-auto flex shrink-0 items-center gap-1 sm:gap-2">
         {/* Always present: unlike PublicHeader, the mobile drawer here carries destinations only,
@@ -86,14 +78,14 @@ export function Topbar({ areaLabel, sections, navigationOpen = false, navigation
           triggerLabel={t('common:nav.account')}
           trigger={
             // The reference pairs the avatar with an identity block. On narrow viewports only the
-            // avatar survives, so the control never crowds out the page title.
+            // avatar survives, so the control never crowds out the portal context.
             <span className="flex items-center gap-2.5 rounded-full border border-border py-1 pe-2 ps-1 sm:pe-3">
               <Avatar name={meQuery.data?.email ?? '?'} src={avatarSrc} size="sm" />
               <span className="hidden min-w-0 text-start sm:block">
                 <span className="block max-w-[10rem] truncate text-xs font-semibold text-foreground">
                   {meQuery.data?.email ?? '—'}
                 </span>
-                <span className="block truncate text-[11px] text-foreground-secondary">{areaLabel}</span>
+                <span className="block truncate text-caption text-foreground-secondary">{areaLabel}</span>
               </span>
               <Icon name="chevronDown" className="hidden size-4 shrink-0 text-foreground-secondary sm:block" />
             </span>

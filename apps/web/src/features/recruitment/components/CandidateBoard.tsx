@@ -42,13 +42,15 @@ export function CandidateBoard({ candidates, opportunityTitle, emptyMessage }: C
 
   return (
     <div className="flex flex-col gap-3">
-      <div className="-mx-4 overflow-x-auto px-4 sm:mx-0 sm:px-0 xl:overflow-x-visible">
+      {/* Phase 6: the stages wrap instead of scrolling sideways — stacked on a phone, two or three
+          across on a tablet, all six from xl up — so no candidate is ever off-screen. */}
+      <div>
         <ul
-          className="flex min-w-max items-start gap-3 xl:grid xl:min-w-0 xl:grid-cols-6"
+          className="grid items-start gap-3 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6"
           aria-label={t('recruitment:pool.boardLabel')}
         >
           {columns.map((column) => (
-            <li key={column.status} className="w-64 shrink-0 rounded-lg border border-border bg-surface-muted p-3 xl:w-auto xl:min-w-0">
+            <li key={column.status} className="min-w-0 rounded-lg border border-border bg-surface-muted p-3">
               <div className="flex items-center justify-between gap-2">
                 <StatusBadge tone={PIPELINE_STAGE_TONE[column.status]}>
                   {t(`recruitment:candidacyStatusValues.${column.status}`)}
@@ -57,7 +59,7 @@ export function CandidateBoard({ candidates, opportunityTitle, emptyMessage }: C
               </div>
 
               {column.candidates.length === 0 ? (
-                <p className="mt-3 rounded-md border border-dashed border-border px-3 py-4 text-center text-xs text-muted">
+                <p className="mt-2 text-caption text-foreground-secondary">
                   {t('recruitment:pool.stageEmpty')}
                 </p>
               ) : (
@@ -68,12 +70,12 @@ export function CandidateBoard({ candidates, opportunityTitle, emptyMessage }: C
                       <li key={candidate.candidacyId}>
                         <Link
                           to={`/organization/candidacies/${candidate.candidacyId}`}
-                          className="block rounded-md border border-border bg-surface p-3 transition-[border-color,box-shadow] duration-150 ease-in-out hover:border-brand-primary hover:shadow-md focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus-ring motion-reduce:transition-none"
+                          className="block rounded-md border border-border bg-surface p-3 transition-colors duration-150 ease-in-out hover:border-border-strong focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus-ring motion-reduce:transition-none"
                         >
-                          <span className="block truncate text-sm font-semibold text-foreground">
+                          <span className="block break-words text-body font-semibold text-foreground">
                             {candidate.studentFullName ?? candidate.studentEmail ?? candidate.studentUserId}
                           </span>
-                          {title && <span className="mt-0.5 block truncate text-xs text-muted">{title}</span>}
+                          {title && <span className="mt-0.5 block break-words text-caption text-foreground-secondary">{title}</span>}
                           <span className="mt-2 flex flex-wrap items-center gap-1.5">
                             <Badge>{t(`recruitment:sourceValues.${candidate.source}`)}</Badge>
                             <span className="text-xs text-muted">{formatDate(candidate.createdAt)}</span>

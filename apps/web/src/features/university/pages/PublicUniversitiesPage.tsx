@@ -1,37 +1,47 @@
-import * as publicOpportunityApi from '../../opportunities/api/publicOpportunityApi'
-import * as organizationApi from '../../organization/api/organizationApi'
 import { UniversityDirectoryCard } from '../components/UniversityDirectoryCard'
-import { cn } from '../../../lib/utils/cn'
 import { useState, type FormEvent } from 'react'
-import { Link, useSearchParams } from 'react-router-dom'
+import { useSearchParams } from 'react-router-dom'
 import { useQuery } from '@tanstack/react-query'
 import { useTranslation } from 'react-i18next'
 import * as universityApi from '../api/universityApi'
 import {
   Button,
-  Card,
+  ButtonLink,
+  CARD_GRID,
   EmptyState,
   ErrorState,
   Icon,
-  LoadingState,
+  Input,
   Pagination,
+  Reveal,
+  SearchInput,
   Select,
+  SkeletonCardGrid,
+  type IconName,
 } from '../../../components/ui'
+import { PublicContainer } from '../../../app/layouts/PublicContainer'
 
-const BENEFITS = ['students', 'nominations', 'placements', 'supervision', 'policies', 'verification'] as const
+const BENEFITS: { key: string; icon: IconName }[] = [
+  { key: 'students', icon: 'idCard' },
+  { key: 'nominations', icon: 'users' },
+  { key: 'placements', icon: 'briefcase' },
+  { key: 'supervision', icon: 'clipboard' },
+  { key: 'policies', icon: 'document' },
+  { key: 'verification', icon: 'shield' },
+]
 const PAGE_SIZE = 12
 
 /**
- * The approved public universities page (design-reference/presentation-refresh-2026, reference 06).
+ * The public universities page: the partner-university directory, then what a university gets from
+ * joining.
  *
- * <p>The reference turns this page from a marketing pitch into a real DIRECTORY: headline, search,
- * then a grid of partner-university cards. That directory endpoint already existed
- * (`GET /api/v1/public/universities`) and was simply never called from the frontend; this page now
- * calls it. The existing "Benefits for universities" section is preserved beneath the directory,
- * since it is working content the reference does not replace.
+ * <p>The directory (`GET /api/v1/public/universities`) is the page's purpose, so it comes first, in
+ * the same header-band-and-toolbar composition as the internships and organizations directories.
  *
- * The top counters use public directory totals; student reach and university-specific opportunity
- * totals are not invented. The longer partnership explanation is available in a disclosure.
+ * <p>Two things were removed. The headline counters ("2 universities, 3 organizations, 5
+ * internships") presented the pilot's size as proof; the directory itself shows who is here. And the
+ * benefits for universities — working, translated content — were folded into a closed disclosure
+ * nobody opened; they are now a visible section with one clear call to action.
  */
 export function PublicUniversitiesPage() {
   const { t } = useTranslation()
@@ -71,125 +81,104 @@ export function PublicUniversitiesPage() {
     setParams(next)
   }
 
-  const network = useQuery({
-    queryKey: ['public-network-counts'],
-    queryFn: async () => {
-      const [universities, organizations, opportunities] = await Promise.all([
-        universityApi.listPublicUniversities({ size: 1 }), organizationApi.listPublicOrganizations({ size: 1 }), publicOpportunityApi.listPublicOpportunities({ size: 1 }),
-      ])
-      return [{ key: 'universities', value: universities.totalElements, icon: 'bank' as const }, { key: 'organizations', value: organizations.totalElements, icon: 'building' as const }, { key: 'internships', value: opportunities.totalElements, icon: 'briefcase' as const }]
-    }, retry: false,
-  })
   const total = result.data?.totalElements ?? 0
   const from = total === 0 ? 0 : page * PAGE_SIZE + 1
   const to = Math.min(total, (page + 1) * PAGE_SIZE)
 
   return (
-    <div className="overflow-x-clip">
-      <section className="mx-auto w-full max-w-[1448px] px-4 py-8 sm:px-6 lg:px-[60px]">
-        <div className="grid items-start gap-8 lg:grid-cols-2"><header>
-          <h1 className="font-display text-[30px] font-extrabold leading-[1.06] tracking-[-0.035em] text-brand-navy dark:text-foreground sm:text-[36px] lg:text-[40px]">
-            <span className="block">{t('common:publicPages.universities.heroLead')}</span>
-            <span className="mt-1.5 block">
-              {t('common:publicPages.universities.heroBuild')}{' '}
-              <span className="text-brand-accent">{t('common:publicPages.universities.heroAccent')}</span>
-            </span>
+    <div className="bg-background">
+      <section className="border-b border-border bg-surface">
+        <PublicContainer className="py-10 lg:py-14">
+          <h1 className="max-w-3xl font-display text-display-lg text-foreground">
+            {t('common:publicPages.universities.heroLead')}{' '}
+            {t('common:publicPages.universities.heroBuild')}{' '}
+            <span className="text-brand-accent-ink">{t('common:publicPages.universities.heroAccent')}</span>
           </h1>
-          <p className="mt-3.5 text-sm leading-6 text-foreground-secondary">
+          <p className="mt-3 max-w-2xl text-body-lg text-foreground-secondary">
             {t('common:publicPages.universities.heroDescription')}
           </p>
-        </header>{network.data && <dl className="grid grid-cols-3 rounded-xl border border-border bg-surface px-3 py-6 shadow-xs">{network.data.map(item => <div key={item.key} className="flex flex-col gap-2 border-border px-3 [&+div]:border-l"><Icon name={item.icon} className="size-6 text-brand-blue" /><dt className="text-xs text-foreground-secondary">{t(`common:landing.stats.${item.key}`)}</dt><dd className="font-display text-xl font-extrabold text-brand-navy dark:text-foreground">{item.value.toLocaleString()}</dd></div>)}</dl>}</div>
 
-        <form onSubmit={applyFilters} className="mt-7 flex flex-col gap-2 sm:flex-row sm:items-center">
-          <label className="relative min-w-0 flex-1 sm:max-w-lg">
-            <span className="sr-only">{t('common:publicPages.universities.searchLabel')}</span>
-            <Icon
-              name="search"
-              className="pointer-events-none absolute start-3.5 top-1/2 size-4 -translate-y-1/2 text-foreground-secondary"
-            />
-            <input
+          <form
+            onSubmit={applyFilters}
+            role="search"
+            aria-label={t('common:publicPages.universities.searchLabel')}
+            className="mt-8 grid gap-2 rounded-xl border border-border bg-background p-2 shadow-sm sm:grid-cols-2 lg:grid-cols-[minmax(0,1fr)_minmax(0,12rem)_auto]"
+          >
+            <SearchInput
+              label={t('common:publicPages.universities.searchLabel')}
               value={query}
               onChange={(event) => setQuery(event.target.value)}
               placeholder={t('common:publicPages.universities.search')}
-              className="h-10 w-full rounded-lg border border-border bg-surface ps-9 pe-3 text-sm text-foreground shadow-xs placeholder:text-muted focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus-ring"
+              className="h-12"
+              wrapperClassName="sm:col-span-2 lg:col-span-1"
             />
-          </label>
-          <label className="min-w-0 sm:w-40">
-            <span className="sr-only">{t('common:publicPages.universities.locationLabel')}</span>
-            <input
+            <Input
+              aria-label={t('common:publicPages.universities.locationLabel')}
               value={city}
               onChange={(event) => setCity(event.target.value)}
               placeholder={t('common:publicPages.universities.locationPlaceholder')}
-              className="h-10 w-full rounded-lg border border-border bg-surface px-3 text-sm text-foreground shadow-xs placeholder:text-muted focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus-ring"
+              className="h-12"
             />
-          </label>
-          <Button type="submit">
-            {t('common:landing.hero2.search')}
-          </Button>
-        </form>
+            <Button type="submit" size="lg">
+              <Icon name="search" className="size-4" />
+              {t('common:landing.hero2.search')}
+            </Button>
+          </form>
+        </PublicContainer>
+      </section>
 
-        <div className="mt-5 flex flex-wrap items-baseline justify-between gap-3">
-          <h2 className="sr-only">
-            {t('common:publicPages.universities.directoryTitle')}
-          </h2>
-          {result.data && (
-            <div className="flex flex-wrap items-center gap-3">
-              <p className="text-sm text-foreground-secondary">
+      <PublicContainer as="section" aria-labelledby="university-results" className="py-10 lg:py-14">
+        <div className="flex flex-wrap items-center justify-between gap-x-6 gap-y-3">
+          <div className="flex flex-wrap items-baseline gap-x-4 gap-y-1">
+            <h2 id="university-results" className="font-display text-title-section text-foreground">
+              {t('common:publicPages.universities.directoryTitle')}
+            </h2>
+            {result.data && total > 0 && (
+              <p className="text-body text-foreground-secondary" aria-live="polite">
                 {t('common:publicPages.universities.showing', { from, to, total })}
               </p>
-              <label className="flex items-center gap-2 text-sm text-foreground-secondary">
-                {t('common:publicPages.universities.sortLabel')}
-                <Select
-                  value={appliedSort}
-                  onChange={(event) => {
-                    const next = new URLSearchParams(params)
-                    if (event.target.value === 'name') next.delete('sort')
-                    else next.set('sort', event.target.value)
-                    setParams(next)
-                  }}
-                  className="h-9 w-48"
-                >
-                  <option value="name">{t('common:publicPages.universities.sortName')}</option>
-                  <option value="nameDesc">{t('common:publicPages.universities.sortNameDesc')}</option>
-                  <option value="recentlyVerified">
-                    {t('common:publicPages.universities.sortRecentlyVerified')}
-                  </option>
-                </Select>
-              </label>
-            </div>
+            )}
+          </div>
+          {result.data && (
+            <label className="flex items-center gap-2 text-body text-foreground-secondary">
+              {t('common:publicPages.universities.sortLabel')}
+              <Select
+                value={appliedSort}
+                onChange={(event) => {
+                  const next = new URLSearchParams(params)
+                  if (event.target.value === 'name') next.delete('sort')
+                  else next.set('sort', event.target.value)
+                  setParams(next)
+                }}
+                className="w-48"
+              >
+                <option value="name">{t('common:publicPages.universities.sortName')}</option>
+                <option value="nameDesc">{t('common:publicPages.universities.sortNameDesc')}</option>
+                <option value="recentlyVerified">{t('common:publicPages.universities.sortRecentlyVerified')}</option>
+              </Select>
+            </label>
           )}
         </div>
 
-        <div className="mt-4">
+        <div className="mt-6">
           {result.isLoading ? (
-            <LoadingState label={t('common:publicPages.universities.loading')} />
+            <SkeletonCardGrid count={4} label={t('common:publicPages.universities.loading')} />
           ) : result.isError ? (
-            <ErrorState
-              description={t('common:publicPages.universities.error')}
-              onRetry={() => void result.refetch()}
-            />
+            <ErrorState description={t('common:publicPages.universities.error')} onRetry={() => void result.refetch()} />
           ) : result.data?.content.length === 0 ? (
-            <EmptyState title={t('common:publicPages.universities.empty')} />
+            <EmptyState icon="bank" title={t('common:publicPages.universities.empty')} />
           ) : (
-            /*
-              Four columns at the widest, not six, and a short row is centred and capped rather than
-              left-packed. At six columns each institution card was 195px wide — too narrow for a
-              crest, a name, a verified badge, a city and a line of description — and the pilot's two
-              partner universities sat as two small cards against two thirds of empty row, which
-              reads as a directory that failed to load rather than as a directory with two entries.
-              Same rule the testimonial wall already uses: adapt to how many there actually are.
-            */
-            <ul
-              className={cn(
-                'grid gap-5',
-                (result.data?.content.length ?? 0) === 1 && 'mx-auto max-w-sm',
-                (result.data?.content.length ?? 0) === 2 && 'mx-auto max-w-3xl sm:grid-cols-2',
-                (result.data?.content.length ?? 0) >= 3 && 'sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4',
-              )}
-            >
+            <ul className={CARD_GRID}>
               {result.data?.content.map((university) => (
-                <li key={university.id}>
-                  <UniversityDirectoryCard id={university.id} name={university.name} verified={university.verified} imageUrl={university.hasLogo ? universityApi.universityLogoUrl(university.id) : undefined} city={university.city} description={university.description} />
+                <li key={university.id} className="min-w-0">
+                  <UniversityDirectoryCard
+                    id={university.id}
+                    name={university.name}
+                    verified={university.verified}
+                    imageUrl={university.hasLogo ? universityApi.universityLogoUrl(university.id) : undefined}
+                    city={university.city}
+                    description={university.description}
+                  />
                 </li>
               ))}
             </ul>
@@ -197,40 +186,39 @@ export function PublicUniversitiesPage() {
         </div>
 
         {result.data && result.data.totalPages > 1 && (
-          <Pagination
-            page={result.data.page}
-            totalPages={result.data.totalPages}
-            onPageChange={setPage}
-            className="mt-10"
-          />
+          <Pagination page={result.data.page} totalPages={result.data.totalPages} onPageChange={setPage} className="mt-10" />
         )}
-      </section>
+      </PublicContainer>
 
-      <section id="benefits" className="scroll-mt-24 border-t border-border bg-surface-muted">
-        <details className="mx-auto max-w-[1448px] px-4 py-5 sm:px-6 lg:px-[60px]"><summary className="cursor-pointer rounded text-sm font-bold text-brand-navy focus-visible:ring-2">{t('common:publicPages.universities.benefits')}</summary>
-          <h2 className="sr-only text-center font-display text-2xl font-extrabold tracking-tight text-brand-navy dark:text-foreground">
-            {t('common:publicPages.universities.benefits')}
-          </h2>
-          <div className="mt-7 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+      <section id="benefits" aria-labelledby="benefits-heading" className="scroll-mt-20 border-t border-border bg-surface">
+        <PublicContainer className="py-14 lg:py-20">
+          <Reveal>
+            <h2 id="benefits-heading" className="font-display text-display-lg text-foreground">
+              {t('common:publicPages.universities.benefits')}
+            </h2>
+          </Reveal>
+          <ul className="mt-10 grid gap-x-10 gap-y-8 sm:grid-cols-2 lg:grid-cols-3">
             {BENEFITS.map((item, index) => (
-              <Card key={item} padding="md" className="h-full">
-                <span className="flex size-10 items-center justify-center rounded-lg bg-brand-blue-soft text-brand-blue">
-                  <Icon name={index % 3 === 0 ? 'globe' : index % 3 === 1 ? 'check' : 'document'} className="size-5" />
+              <Reveal as="li" key={item.key} index={index % 3} className="min-w-0">
+                <span className="flex size-11 items-center justify-center rounded-lg bg-brand-navy-soft text-brand-navy dark:text-foreground">
+                  <Icon name={item.icon} className="size-5" />
                 </span>
-                <h3 className="mt-4 font-display text-base font-extrabold tracking-tight text-brand-navy dark:text-foreground">
-                  {t(`common:publicPages.universities.items.${item}.title`)}
+                <h3 className="mt-4 font-display text-title-panel text-foreground">
+                  {t(`common:publicPages.universities.items.${item.key}.title`)}
                 </h3>
-                <p className="mt-1.5 text-xs leading-5 text-foreground-secondary">
-                  {t(`common:publicPages.universities.items.${item}.body`)}
+                <p className="mt-1.5 text-body text-foreground-secondary">
+                  {t(`common:publicPages.universities.items.${item.key}.body`)}
                 </p>
-              </Card>
+              </Reveal>
             ))}
+          </ul>
+          <div className="mt-12 flex flex-col gap-4 border-t border-border pt-8 sm:flex-row sm:items-center sm:justify-between">
+            <p className="max-w-prose text-body text-foreground-secondary">{t('common:publicPages.universities.directoryNote')}</p>
+            <ButtonLink to="/register?role=university" size="lg" className="shrink-0">
+              {t('common:publicPages.universities.getStarted')}
+            </ButtonLink>
           </div>
-          <p className="mt-8 text-center text-sm text-muted">
-            {t('common:publicPages.universities.directoryNote')}
-          </p>
-          <Link to="/register?role=university" className="mx-auto mt-4 flex min-h-10 w-fit items-center rounded-lg bg-brand-accent px-5 text-sm font-bold text-white focus-visible:ring-2">{t('common:publicPages.universities.getStarted')}</Link>
-        </details>
+        </PublicContainer>
       </section>
     </div>
   )

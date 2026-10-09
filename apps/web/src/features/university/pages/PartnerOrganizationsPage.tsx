@@ -1,10 +1,10 @@
 import { useQuery } from '@tanstack/react-query'
 import { useTranslation } from 'react-i18next'
 import { Link } from 'react-router-dom'
-import * as placementsApi from '../../placements/api/placementsApi'
+import { universityQueries } from '../universityQueries'
 import { useUniversityMembership } from '../components/UniversityMembershipContext'
 import { partnerOrganizations } from '../universityMetrics'
-import { Card, EmptyState, ErrorState, Icon, LoadingState, PageHeader, StatusBadge } from '../../../components/ui'
+import { Card, EmptyState, ErrorState, Icon, SkeletonList, PageHeader, StatusBadge } from '../../../components/ui'
 import { PageContainer } from '../../../app/layouts/PageContainer'
 
 /**
@@ -20,10 +20,7 @@ export function PartnerOrganizationsPage() {
   const { t } = useTranslation()
   const { universityId } = useUniversityMembership()
 
-  const placementsQuery = useQuery({
-    queryKey: ['university', 'placements', universityId],
-    queryFn: () => placementsApi.listUniversityPlacements(universityId),
-  })
+  const placementsQuery = useQuery(universityQueries.placements(universityId))
 
   const partners = partnerOrganizations(placementsQuery.data ?? [])
 
@@ -32,7 +29,7 @@ export function PartnerOrganizationsPage() {
       <PageHeader title={t('university:partners.title')} description={t('university:partners.subtitle')} />
 
       {placementsQuery.isLoading ? (
-        <LoadingState label={t('common:status.loading')} />
+        <SkeletonList rows={4} />
       ) : placementsQuery.isError ? (
         <ErrorState onRetry={() => void placementsQuery.refetch()} retryLabel={t('common:actions.retry')} />
       ) : partners.length === 0 ? (

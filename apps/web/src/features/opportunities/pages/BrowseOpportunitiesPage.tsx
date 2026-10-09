@@ -11,11 +11,11 @@ import {
   EmptyState,
   ErrorState,
   FilterBar,
-  LoadingState,
   Pagination,
   PageHeader,
   SearchInput,
   Select,
+  SkeletonCardGrid,
 } from '../../../components/ui'
 import { PageContainer } from '../../../app/layouts/PageContainer'
 
@@ -119,7 +119,7 @@ export function BrowseOpportunitiesPage() {
       </FilterBar>
 
       {opportunitiesQuery.isLoading ? (
-        <LoadingState label={t('opportunities:public.loading')} />
+        <SkeletonCardGrid count={6} label={t('opportunities:public.loading')} />
       ) : opportunitiesQuery.isError ? (
         <ErrorState
           description={t('opportunities:public.error')}

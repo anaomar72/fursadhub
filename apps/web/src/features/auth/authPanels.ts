@@ -15,6 +15,8 @@ const PANELS = {
   'verify-email': 'verifyEmail',
   'forgot-password': 'forgotPassword',
   'reset-password': 'resetPassword',
+  // Choosing how to use FursadHub is joining it, so it shares the registration panel.
+  'get-started': 'register',
 } as const
 
 export type PanelKey = (typeof PANELS)[keyof typeof PANELS]

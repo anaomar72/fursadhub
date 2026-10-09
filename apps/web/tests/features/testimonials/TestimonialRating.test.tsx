@@ -1,4 +1,4 @@
-import { render, screen, within } from '@testing-library/react'
+import { render, screen, waitFor, within } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 import { MemoryRouter } from 'react-router-dom'
@@ -114,11 +114,12 @@ describe('published testimonial rating display', () => {
     expect(screen.queryByText(/out of 5/i)).not.toBeInTheDocument()
   })
 
-  it('keeps the honest pending state when nothing has been published', async () => {
+  it('shows no rating, and no section, when nothing has been published', async () => {
     vi.mocked(testimonialApi.listPublishedTestimonials).mockResolvedValue([])
     withQuery(<TestimonialWall />)
 
-    expect(await screen.findAllByText('Awaiting approved testimonials')).not.toHaveLength(0)
+    await waitFor(() => expect(testimonialApi.listPublishedTestimonials).toHaveBeenCalled())
+    expect(screen.queryByText('Awaiting approved testimonials')).not.toBeInTheDocument()
     expect(screen.queryByText(/out of 5/i)).not.toBeInTheDocument()
   })
 })

@@ -1,7 +1,6 @@
 import { useState } from 'react'
 import { useQuery } from '@tanstack/react-query'
 import { useTranslation } from 'react-i18next'
-import { Link } from 'react-router-dom'
 import {
   Alert,
   DataTable,
@@ -16,10 +15,11 @@ import {
   type DataTableColumn,
 } from '../../../components/ui'
 import { AdminTableSkeleton } from '../components/AdminSkeletons'
-import * as adminApi from '../api/adminApi'
 import { USER_STATUS_TONE } from '../statusTone'
 import { formatDate } from '../../../lib/utils/formatDate'
 import type { AdminUser, UserStatus } from '../types'
+import { useListParams } from '../hooks/useListParams'
+import { adminQueries } from '../adminQueries'
 
 const FILTER_STATUSES: UserStatus[] = ['ACTIVE', 'SUSPENDED', 'PENDING_CONTACT_VERIFICATION', 'CLOSED']
 
@@ -42,31 +42,19 @@ export function AdminUsersPage() {
   const { t } = useTranslation()
   const [query, setQuery] = useState('')
   const [submittedQuery, setSubmittedQuery] = useState('')
-  const [status, setStatus] = useState<UserStatus | ''>('')
-  const [page, setPage] = useState(0)
+  // Status and page in the URL; the search text (an email address) deliberately is not.
+  const { status, page, setStatus, setPage, resetPage } = useListParams(FILTER_STATUSES, '')
 
-  const usersQuery = useQuery({
-    queryKey: ['admin', 'users', submittedQuery, status, page],
-    queryFn: () =>
-      adminApi.searchUsers({
-        query: submittedQuery || undefined,
-        status: status === '' ? undefined : status,
-        page,
-      }),
-  })
+  const usersQuery = useQuery(adminQueries.users(submittedQuery, status, page))
 
   const columns: DataTableColumn<AdminUser>[] = [
     {
       key: 'email',
       header: t('admin:users.email'),
-      render: (user) => (
-        <Link
-          to={`/admin/users/${user.id}`}
-          className="rounded font-medium text-foreground hover:text-link hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus-ring"
-        >
-          {user.email}
-        </Link>
-      ),
+      // The identifying column: DataTable renders it as the row header and wraps it in the row's
+      // link (rowHref below), so the link is the keyboard route and the rest of the row follows it.
+      primary: true,
+      render: (user) => user.email,
     },
     {
       key: 'status',
@@ -117,7 +105,7 @@ export function AdminUsersPage() {
         onSubmit={(event) => {
           event.preventDefault()
           setSubmittedQuery(query)
-          setPage(0)
+          resetPage()
         }}
       >
         <FilterBar
@@ -136,7 +124,6 @@ export function AdminUsersPage() {
             value={status}
             onChange={(event) => {
               setStatus(event.target.value as UserStatus | '')
-              setPage(0)
             }}
           >
             <option value="">{t('admin:users.allStatuses')}</option>
@@ -172,6 +159,23 @@ export function AdminUsersPage() {
             columns={columns}
             rows={data?.content ?? []}
             rowKey={(user) => user.id}
+            rowHref={(user) => `/admin/users/${user.id}`}
+            density="dense"
+            // Server-paginated, so no column is sortable: sorting one page of results would present
+            // a partial order as the whole one (see DataTable).
+            renderMobileRow={(user) => (
+              <div className="flex flex-col gap-1.5">
+                <span className="break-all font-semibold text-foreground">{user.email}</span>
+                <span className="flex flex-wrap items-center gap-x-3 gap-y-1 text-caption text-foreground-secondary">
+                  <StatusBadge tone={USER_STATUS_TONE[user.status]}>
+                    {t(`admin:statusLabels.${user.status}`)}
+                  </StatusBadge>
+                  <span>
+                    {t('admin:users.registered')}: {formatDate(user.createdAt)}
+                  </span>
+                </span>
+              </div>
+            )}
             empty={
               <EmptyState
                 title={t('admin:users.empty')}

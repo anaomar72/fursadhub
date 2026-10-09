@@ -17,6 +17,7 @@ import {
   StatusBadge,
   Textarea,
   type DataTableColumn,
+  useToast,
 } from '../../../components/ui'
 import { apiErrorMessage } from '../../../lib/api/errorMessage'
 import { AdminTableSkeleton } from '../components/AdminSkeletons'
@@ -25,11 +26,19 @@ import { DetailField } from '../components/DetailField'
 import { PRIVACY_REQUEST_TONE } from '../statusTone'
 import { formatDateTime } from '../../../lib/utils/formatDate'
 import type { PrivacyRequest, PrivacyRequestState } from '../../privacy/types'
+import { useListParams } from '../hooks/useListParams'
+import { adminQueries } from '../adminQueries'
 
 type PrivacyAction = 'begin-review' | 'complete' | 'reject'
 
 /** Rejecting a data-subject request must say why; the other two need no explanation. */
 const NEEDS_NOTE = new Set<PrivacyAction>(['reject'])
+
+/**
+ * Both outcomes are terminal (COMPLETED and REJECTED accept nothing further), so both go through a
+ * confirmation step that says so; completing may carry an outcome note, rejecting must.
+ */
+const CONFIRMED = new Set<PrivacyAction>(['complete', 'reject'])
 
 const FILTER_STATES: PrivacyRequestState[] = ['SUBMITTED', 'IN_REVIEW', 'COMPLETED', 'REJECTED']
 
@@ -57,17 +66,14 @@ const ACTIONS: Record<PrivacyRequestState, PrivacyAction[]> = {
 export function AdminPrivacyRequestsPage() {
   const { t } = useTranslation()
   const queryClient = useQueryClient()
-  const [state, setState] = useState<PrivacyRequestState | ''>('SUBMITTED')
-  const [page, setPage] = useState(0)
+  const toast = useToast()
+  const { status: state, page, setStatus: setState, setPage } = useListParams(FILTER_STATES, 'SUBMITTED')
   const [error, setError] = useState<string | null>(null)
   const [openId, setOpenId] = useState<string | null>(null)
   const [prompting, setPrompting] = useState<PrivacyAction | null>(null)
   const [note, setNote] = useState('')
 
-  const requestsQuery = useQuery({
-    queryKey: ['admin', 'privacy-requests', state, page],
-    queryFn: () => adminApi.listPrivacyRequests({ state: state === '' ? undefined : state, page }),
-  })
+  const requestsQuery = useQuery(adminQueries.privacyRequests(state, page))
 
   const requests = requestsQuery.data?.content ?? []
   const openRequest = requests.find((request) => request.id === openId) ?? null
@@ -88,7 +94,8 @@ export function AdminPrivacyRequestsPage() {
         throw cause
       })
     },
-    onSuccess: () => {
+    onSuccess: (_result, { action }) => {
+      toast.success(t(`admin:privacyRequests.done.${action}`))
       setPrompting(null)
       setNote('')
       void queryClient.invalidateQueries({ queryKey: ['admin', 'privacy-requests'] })
@@ -163,7 +170,6 @@ export function AdminPrivacyRequestsPage() {
           value={state}
           onChange={(event) => {
             setState(event.target.value as PrivacyRequestState | '')
-            setPage(0)
           }}
         >
           <option value="">{t('admin:privacyRequests.allStates')}</option>
@@ -259,14 +265,17 @@ export function AdminPrivacyRequestsPage() {
                   resolveMutation.mutate({
                     requestId: openRequest.id,
                     action: prompting,
-                    resolutionNote: note,
+                    resolutionNote: note.trim() || undefined,
                   })
                 }}
               >
+                <p className="text-body text-foreground-secondary">{t(`admin:privacyRequests.confirm.${prompting}`)}</p>
                 <FormField
-                  label={t(`admin:privacyRequests.actions.${prompting}`)}
+                  label={t(NEEDS_NOTE.has(prompting) ? 'admin:privacyRequests.reasonLabel' : 'admin:privacyRequests.outcomeLabel')}
                   htmlFor="privacy-note"
                   hint={t('admin:privacyRequests.noteHint')}
+                  required={NEEDS_NOTE.has(prompting)}
+                  optional={!NEEDS_NOTE.has(prompting)}
                 >
                   <Textarea
                     id="privacy-note"
@@ -278,8 +287,14 @@ export function AdminPrivacyRequestsPage() {
                   />
                 </FormField>
                 <div className="flex gap-2">
-                  <Button type="submit" size="sm" variant="danger" loading={resolveMutation.isPending}>
-                    {t('common:actions.confirm')}
+                  <Button
+                    type="submit"
+                    size="sm"
+                    variant={prompting === 'reject' ? 'danger' : 'primary'}
+                    loading={resolveMutation.isPending}
+                    disabled={NEEDS_NOTE.has(prompting) && !note.trim()}
+                  >
+                    {t(`admin:privacyRequests.actions.${prompting}`)}
                   </Button>
                   <Button type="button" size="sm" variant="ghost" onClick={() => setPrompting(null)}>
                     {t('common:actions.cancel')}
@@ -297,7 +312,7 @@ export function AdminPrivacyRequestsPage() {
                     variant={action === 'reject' ? 'danger' : action === 'complete' ? 'primary' : 'outline'}
                     disabled={resolveMutation.isPending}
                     onClick={() => {
-                      if (NEEDS_NOTE.has(action)) {
+                      if (CONFIRMED.has(action)) {
                         setNote('')
                         setPrompting(action)
                         return

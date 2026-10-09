@@ -2,11 +2,12 @@ import { useState } from 'react'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { useTranslation } from 'react-i18next'
 import { useParams } from 'react-router-dom'
-import { Button, ErrorState, FormField, Input, LoadingState, Select, StatusBadge, Textarea, EmptyState } from '../../../components/ui'
-import type { StatusTone } from '../../../components/ui'
+import { Button, ErrorState, FormField, Input, SkeletonList, Select, StatusBadge, Textarea, EmptyState, DataTable } from '../../../components/ui'
 import { apiErrorMessage } from '../../../lib/api/errorMessage'
 import * as attendanceApi from '../api/attendanceApi'
-import type { AttendanceConfirmationStatus, AttendanceResponse, AttendanceValue } from '../types'
+import type { AttendanceResponse, AttendanceValue } from '../types'
+import { formatDate } from '../../../lib/utils/formatDate'
+import { ATTENDANCE_CONFIRMATION_TONE } from '../../../lib/status/statusTones'
 
 const ATTENDANCE_VALUES: AttendanceValue[] = ['PRESENT', 'ABSENT', 'EXCUSED']
 
@@ -14,12 +15,7 @@ const ATTENDANCE_VALUES: AttendanceValue[] = ['PRESENT', 'ABSENT', 'EXCUSED']
  * Settled versus unsettled is the distinction that matters, because unsettled attendance is what
  * blocks completion. Tones pair with translated text everywhere; colour alone never carries it.
  */
-const CONFIRMATION_TONE: Record<AttendanceConfirmationStatus, StatusTone> = {
-  RECORDED: 'info',
-  CONFIRMED: 'success',
-  DISPUTED: 'warning',
-  RESOLVED: 'neutral',
-}
+const CONFIRMATION_TONE = ATTENDANCE_CONFIRMATION_TONE
 
 interface AttendancePageProps {
   /**
@@ -83,7 +79,7 @@ export function AttendancePage({ audience }: AttendancePageProps) {
   })
 
   if (attendanceQuery.isLoading) {
-    return <LoadingState label={t('common:status.loading')} />
+    return <SkeletonList rows={3} />
   }
 
   if (attendanceQuery.isError) {
@@ -102,6 +98,21 @@ export function AttendancePage({ audience }: AttendancePageProps) {
     confirmMutation.isPending ||
     disputeMutation.isPending ||
     resolveMutation.isPending
+
+  const recordNote = (record: AttendanceResponse) =>
+    record.disputeReason
+      ? t('internship:attendance.disputedBecause', { reason: record.disputeReason })
+      : (record.resolutionNote ?? record.notes ?? '—')
+  const actions = (record: AttendanceResponse) => (
+    <RowActions
+      record={record}
+      audience={audience}
+      busy={busy}
+      onConfirm={() => confirmMutation.mutate(record.id)}
+      onResolve={() => resolveMutation.mutate(record.id)}
+      onDispute={() => setDisputing(record.id)}
+    />
+  )
 
   return (
     <div className="flex flex-col gap-4">
@@ -125,55 +136,51 @@ export function AttendancePage({ audience }: AttendancePageProps) {
           title={t('internship:attendance.empty')}
           description={t('internship:attendance.emptyHint')}
         />
+      ) : audience === 'student' ? (
+        <StudentAttendanceList
+          records={records}
+          busy={busy}
+          onConfirm={(id) => confirmMutation.mutate(id)}
+          onDispute={(id) => setDisputing(id)}
+        />
       ) : (
-        // The table scrolls inside its own container so the page body never scrolls sideways on a
-        // phone, including with the longer Somali status labels.
-        <div className="overflow-x-auto rounded-lg border border-border">
-          <table className="w-full min-w-[36rem] text-sm">
-            <caption className="sr-only">{t('internship:attendance.tableCaption')}</caption>
-            <thead className="bg-surface-muted text-left text-xs text-foreground-secondary">
-              <tr>
-                <th scope="col" className="px-3 py-2 font-medium">{t('internship:attendance.date')}</th>
-                <th scope="col" className="px-3 py-2 font-medium">{t('internship:attendance.value')}</th>
-                <th scope="col" className="px-3 py-2 font-medium">{t('internship:attendance.status')}</th>
-                <th scope="col" className="px-3 py-2 font-medium">{t('internship:attendance.notes')}</th>
-                <th scope="col" className="px-3 py-2 font-medium">
-                  <span className="sr-only">{t('internship:attendance.actionsHeader')}</span>
-                </th>
-              </tr>
-            </thead>
-            <tbody className="divide-y divide-border bg-surface">
-              {records.map((record) => (
-                <tr key={record.id}>
-                  <td className="px-3 py-2 text-foreground">{record.attendanceDate}</td>
-                  <td className="px-3 py-2 text-foreground">
-                    {t(`internship:attendance.valueValues.${record.attendanceValue}`)}
-                  </td>
-                  <td className="px-3 py-2">
-                    <StatusBadge tone={CONFIRMATION_TONE[record.confirmationStatus]}>
-                      {t(`internship:attendance.statusValues.${record.confirmationStatus}`)}
-                    </StatusBadge>
-                  </td>
-                  <td className="px-3 py-2 text-foreground-secondary">
-                    {record.disputeReason
-                      ? t('internship:attendance.disputedBecause', { reason: record.disputeReason })
-                      : (record.resolutionNote ?? record.notes ?? '—')}
-                  </td>
-                  <td className="px-3 py-2">
-                    <RowActions
-                      record={record}
-                      audience={audience}
-                      busy={busy}
-                      onConfirm={() => confirmMutation.mutate(record.id)}
-                      onResolve={() => resolveMutation.mutate(record.id)}
-                      onDispute={() => setDisputing(record.id)}
-                    />
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
+        // Phase 9: the shared table — rows on desktop, one stacked card per day on a phone — instead
+        // of a hand-built table that could only scroll sideways there.
+        <DataTable
+          caption={t('internship:attendance.tableCaption')}
+          rows={records}
+          rowKey={(record) => record.id}
+          density="dense"
+          columns={[
+            { key: 'date', header: t('internship:attendance.date'), primary: true, render: (record) => formatDate(record.attendanceDate) },
+            { key: 'value', header: t('internship:attendance.value'), render: (record) => t(`internship:attendance.valueValues.${record.attendanceValue}`) },
+            {
+              key: 'status',
+              header: t('internship:attendance.status'),
+              render: (record) => (
+                <StatusBadge tone={CONFIRMATION_TONE[record.confirmationStatus]}>{t(`internship:attendance.statusValues.${record.confirmationStatus}`)}</StatusBadge>
+              ),
+            },
+            { key: 'notes', header: t('internship:attendance.notes'), render: (record) => <span className="text-foreground-secondary">{recordNote(record)}</span> },
+            {
+              key: 'actions',
+              header: <span className="sr-only">{t('internship:attendance.actionsHeader')}</span>,
+              render: (record) => actions(record),
+            },
+          ]}
+          renderMobileRow={(record) => (
+            <div className="flex flex-col gap-1.5">
+              <div className="flex items-start justify-between gap-3">
+                <span className="font-semibold text-foreground">{formatDate(record.attendanceDate)}</span>
+                <StatusBadge tone={CONFIRMATION_TONE[record.confirmationStatus]}>{t(`internship:attendance.statusValues.${record.confirmationStatus}`)}</StatusBadge>
+              </div>
+              <span className="text-caption text-foreground-secondary">
+                {t(`internship:attendance.valueValues.${record.attendanceValue}`)} · {recordNote(record)}
+              </span>
+              {actions(record)}
+            </div>
+          )}
+        />
       )}
 
       {disputing && (
@@ -306,5 +313,83 @@ function RecordAttendanceForm({
         {t('internship:attendance.actions.record')}
       </Button>
     </form>
+  )
+}
+
+/**
+ * The student's attendance (Phase 5): a summary, then one row per recorded day — a list, not a
+ * table, so a phone never scrolls sideways through the student's own record.
+ *
+ * <p>The counts are computed here from the records the endpoint returned. That is reliable: the
+ * list endpoint returns EVERY record for this placement (it is not paginated), so nothing is
+ * estimated and no percentage of "expected days" is implied — FursadHub does not define one.
+ */
+function StudentAttendanceList({
+  records,
+  busy,
+  onConfirm,
+  onDispute,
+}: {
+  records: AttendanceResponse[]
+  busy: boolean
+  onConfirm: (recordId: string) => void
+  onDispute: (recordId: string) => void
+}) {
+  const { t } = useTranslation()
+  const count = (value: AttendanceValue) => records.filter((record) => record.attendanceValue === value).length
+  // RECORDED days wait on the SUPERVISOR (AttendanceService.confirm), not on the student.
+  const awaitingSupervisor = records.filter((record) => record.confirmationStatus === 'RECORDED').length
+
+  return (
+    <div className="flex flex-col gap-4">
+      <section aria-label={t('internship:attendance.summaryLabel')} className="flex flex-col gap-3 rounded-lg bg-surface-muted p-4">
+        <dl className="flex flex-wrap gap-x-8 gap-y-3">
+          {(['PRESENT', 'ABSENT', 'EXCUSED'] as const).map((value) => (
+            <div key={value}>
+              <dt className="text-caption text-foreground-secondary">{t(`internship:attendance.valueValues.${value}`)}</dt>
+              <dd className="font-display text-title-panel tabular-nums text-foreground">{count(value)}</dd>
+            </div>
+          ))}
+        </dl>
+        <p className="text-body text-foreground-secondary">
+          {awaitingSupervisor > 0
+            ? t('internship:attendance.awaitingSupervisor', { count: awaitingSupervisor })
+            : t('internship:attendance.allSettled')}
+        </p>
+      </section>
+
+      <ul className="divide-y divide-border rounded-lg border border-border bg-surface">
+        {records.map((record) => (
+          <li key={record.id} className="flex flex-col gap-2 p-4 sm:flex-row sm:items-center sm:gap-4">
+            <div className="min-w-0 flex-1">
+              <p className="flex flex-wrap items-center gap-x-3 gap-y-1">
+                <span className="font-semibold text-foreground">{formatDate(record.attendanceDate)}</span>
+                <span className="text-body text-foreground-secondary">{t(`internship:attendance.valueValues.${record.attendanceValue}`)}</span>
+              </p>
+              {(record.disputeReason || record.resolutionNote || record.notes) && (
+                <p className="mt-1 break-words text-caption text-foreground-secondary">
+                  {record.disputeReason
+                    ? t('internship:attendance.disputedBecause', { reason: record.disputeReason })
+                    : (record.resolutionNote ?? record.notes)}
+                </p>
+              )}
+            </div>
+            <div className="flex flex-wrap items-center gap-2">
+              <StatusBadge tone={CONFIRMATION_TONE[record.confirmationStatus]}>
+                {t(`internship:attendance.statusValues.${record.confirmationStatus}`)}
+              </StatusBadge>
+              <RowActions
+                record={record}
+                audience="student"
+                busy={busy}
+                onConfirm={() => onConfirm(record.id)}
+                onResolve={() => {}}
+                onDispute={() => onDispute(record.id)}
+              />
+            </div>
+          </li>
+        ))}
+      </ul>
+    </div>
   )
 }

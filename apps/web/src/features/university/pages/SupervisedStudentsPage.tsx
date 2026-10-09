@@ -2,7 +2,7 @@ import { useState } from 'react'
 import { useQuery } from '@tanstack/react-query'
 import { useTranslation } from 'react-i18next'
 import { Link } from 'react-router-dom'
-import * as placementsApi from '../../placements/api/placementsApi'
+import { universityQueries } from '../universityQueries'
 import { useUniversityMembership } from '../components/UniversityMembershipContext'
 import { supervisedStudents, type SupervisedStudent } from '../supervisionMetrics'
 import { PLACEMENT_STATUS_TONE } from '../../placements/components/statusTone'
@@ -11,7 +11,7 @@ import {
   EmptyState,
   ErrorState,
   FilterBar,
-  LoadingState,
+  SkeletonList,
   PageHeader,
   SearchInput,
   Select,
@@ -53,10 +53,7 @@ export function SupervisedStudentsPage() {
   const [search, setSearch] = useState('')
   const [status, setStatus] = useState('')
 
-  const placementsQuery = useQuery({
-    queryKey: ['placements', 'university', universityId],
-    queryFn: () => placementsApi.listUniversityPlacements(universityId),
-  })
+  const placementsQuery = useQuery(universityQueries.placements(universityId))
 
   const term = search.trim().toLowerCase()
   const rows = supervisedStudents(placementsQuery.data ?? []).filter((student) => {
@@ -78,7 +75,7 @@ export function SupervisedStudentsPage() {
               affordance the name already carries. */}
           <Link
             to={`/university/placements/${(student.currentPlacement ?? student.placements[0]).id}`}
-            className="block truncate font-medium text-foreground hover:text-link hover:underline focus-visible:outline-none focus-visible:underline"
+            className="block truncate font-medium text-foreground hover:text-link hover:underline rounded-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus-ring"
           >
             {student.fullName ?? student.email ?? student.studentUserId}
           </Link>
@@ -179,7 +176,7 @@ export function SupervisedStudentsPage() {
       </FilterBar>
 
       {placementsQuery.isLoading ? (
-        <LoadingState label={t('common:status.loading')} />
+        <SkeletonList rows={4} />
       ) : placementsQuery.isError ? (
         <ErrorState onRetry={() => void placementsQuery.refetch()} retryLabel={t('common:actions.retry')} />
       ) : (

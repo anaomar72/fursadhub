@@ -73,6 +73,27 @@ describe('public shell',()=>{
     expect(screen.getByRole('link',{name:'Terms and Conditions'})).toHaveAttribute('href','/legal/terms')
   })
 
+  it('links the footer privacy item to the public privacy policy, never to signed-in account pages', async () => {
+    render(<MemoryRouter><PublicFooter/></MemoryRouter>)
+    expect(screen.getByRole('link', { name: 'Privacy and data' })).toHaveAttribute('href', '/legal/privacy-policy')
+    // No public footer link may lead behind sign-in.
+    for (const link of screen.getAllByRole('link')) {
+      expect(link.getAttribute('href') ?? '').not.toMatch(/^\/(account|student|organization|university|admin)(\/|$)/)
+    }
+
+    await i18n.changeLanguage('so')
+    expect(await screen.findByRole('link', { name: 'Asturnaanta iyo xogta' })).toHaveAttribute('href', '/legal/privacy-policy')
+  })
+
+  it('groups the footer into named navigation and keeps every line at or above the 12px floor', () => {
+    const { container } = render(<MemoryRouter><PublicFooter/></MemoryRouter>)
+    expect(screen.getByRole('navigation', { name: 'Platform' })).toBeInTheDocument()
+    expect(screen.getByRole('navigation', { name: 'Support' })).toBeInTheDocument()
+    const legal = screen.getByRole('navigation', { name: 'Legal' })
+    expect(within(legal).getByRole('link', { name: 'Privacy Policy' })).toHaveAttribute('href', '/legal/privacy-policy')
+    expect(container.innerHTML).not.toMatch(/text-\[1[01]px\]|text-\[0\.6875rem\]/)
+  })
+
   /*
    * A signed-in visitor gets identity, not a call to action. The header used to hand them a large
    * navy "My portal" button — the loudest control in the bar, aimed at someone who is already a

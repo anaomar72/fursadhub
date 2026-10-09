@@ -88,14 +88,17 @@ describe('AppShell', () => {
     expect(screen.getAllByRole('link', { name: 'Staff' })[0]).toHaveAttribute('href', '/university/staff')
   })
 
-  it('marks the current destination active and shows it as the topbar page context', async () => {
+  it('marks the current destination active, and leaves naming the page to the page', async () => {
     renderShell('/university/staff')
 
     await screen.findByText('Staff page')
     expect(screen.getAllByRole('link', { name: 'Staff' })[0]).toHaveAttribute('aria-current', 'page')
     expect(screen.getAllByRole('link', { name: 'Dashboard' })[0]).not.toHaveAttribute('aria-current')
-    // The topbar title is derived from the active destination, so the two can never disagree.
-    expect(screen.getByRole('banner')).toHaveTextContent('Staff')
+    // The topbar carries global context (the portal), not a second copy of the page title — the
+    // page's own PageHeader is the single place it is named.
+    const banner = screen.getByRole('banner')
+    expect(banner).toHaveTextContent('University')
+    expect(banner).not.toHaveTextContent('Staff')
   })
 
   it('keeps a nested route pointing at its parent destination', async () => {

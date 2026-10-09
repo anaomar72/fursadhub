@@ -38,24 +38,30 @@ describe('CreateOpportunityPage', () => {
     )
   })
 
-  it('renders the mode selector with all three sourcing modes', () => {
+  it('offers all three sourcing modes as one explained choice', () => {
     renderPage()
 
-    const modeSelect = screen.getByLabelText(/sourcing mode/i)
-    const modeOptions = within(modeSelect).getAllByRole('option').map((option) => option.textContent)
+    // Phase 6: a radio group, not a bare select — each mode carries what it means.
+    const group = screen.getByRole('group', { name: /sourcing mode/i })
+    const modes = within(group).getAllByRole('radio').map((radio) => radio.getAttribute('value'))
 
-    expect(modeOptions).toEqual(['Public', 'University-targeted', 'Hybrid'])
+    expect(modes).toEqual(['PUBLIC', 'UNIVERSITY_TARGETED', 'HYBRID'])
+    expect(within(group).getByRole('radio', { name: 'Public' })).toBeChecked()
+    expect(within(group).getByText(/only nominated students/i)).toBeInTheDocument()
   })
 
-  it('explains the selected mode and updates the explanation when the mode changes', async () => {
+  it('says targets are chosen later, and relaxes the deadline only for a targeted internship', async () => {
     const user = userEvent.setup()
     renderPage()
 
-    expect(screen.getByText(/can apply directly once published/i)).toBeInTheDocument()
+    expect(screen.queryByText(/choose which universities and departments/i)).not.toBeInTheDocument()
+    expect(screen.getByLabelText(/application deadline/i)).toBeRequired()
 
-    await user.selectOptions(screen.getByLabelText(/sourcing mode/i), 'UNIVERSITY_TARGETED')
+    await user.click(screen.getByRole('radio', { name: 'University-targeted' }))
 
-    expect(await screen.findByText(/only nominated students/i)).toBeInTheDocument()
+    expect(screen.getByRole('radio', { name: 'University-targeted' })).toBeChecked()
+    expect(await screen.findByText(/choose which universities and departments/i)).toBeInTheDocument()
+    expect(screen.getByLabelText(/application deadline/i)).not.toBeRequired()
   })
 
   it('rejects an end date that is not after the start date', async () => {
@@ -144,7 +150,7 @@ describe('CreateOpportunityPage', () => {
     renderPage()
 
     expect(screen.getByRole('heading', { name: /tababar cusub/i })).toBeInTheDocument()
-    expect(screen.getByLabelText(/habka raadinta/i)).toBeInTheDocument()
+    expect(screen.getByRole('group', { name: /habka raadinta/i })).toBeInTheDocument()
 
     await i18n.changeLanguage('en')
   })

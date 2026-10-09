@@ -2,6 +2,7 @@ import { useTranslation } from 'react-i18next'
 import { PageHeader, StatusBadge } from '../../../components/ui'
 import { PLACEMENT_STATUS_TONE } from './statusTone'
 import type { PlacementResponse } from '../types'
+import { formatDate } from '../../../lib/utils/formatDate'
 
 interface PlacementSummaryProps {
   placement: PlacementResponse
@@ -22,7 +23,7 @@ export function PlacementSummary({ placement, audience }: PlacementSummaryProps)
   const heading =
     audience === 'student'
       ? (placement.opportunityTitle ?? t('placements:detail.untitledOpportunity'))
-      : (placement.studentFullName ?? placement.studentEmail ?? placement.studentUserId)
+      : (placement.studentFullName ?? placement.studentEmail ?? t('placements:detail.unknownStudent'))
 
   const subheading =
     audience === 'student'
@@ -32,7 +33,8 @@ export function PlacementSummary({ placement, audience }: PlacementSummaryProps)
   return (
     <div>
       <div className="flex flex-wrap items-start justify-between gap-3">
-        <div>
+        {/* min-w-0: an unbroken heading (a student's email) must wrap, not push past a phone's edge. */}
+        <div className="min-w-0 flex-1">
           <PageHeader title={heading} />
           {subheading && <p className="mt-1 text-sm text-foreground-secondary">{subheading}</p>}
         </div>
@@ -45,7 +47,7 @@ export function PlacementSummary({ placement, audience }: PlacementSummaryProps)
         <div>
           <dt className="text-foreground-secondary">{t('placements:detail.dates')}</dt>
           <dd className="mt-0.5 text-foreground">
-            {t('placements:detail.dateRange', { start: placement.startDate, end: placement.endDate })}
+            {t('placements:detail.dateRange', { start: formatDate(placement.startDate), end: formatDate(placement.endDate) })}
           </dd>
         </div>
 

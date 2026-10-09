@@ -15,18 +15,36 @@
     "title": "Tababarkayga",
     "empty": "Weli ma haysatid meelayn tababar. Marka aad aqbasho dalab, halkan ayuu ka soo muuqan doonaa.",
     "subtitle": "Tababarradaada hadda iyo kuwii hore.",
-    "resultsHeading": "Tababarradaada"
+    "resultsHeading": "Tababarradaada",
+    "emptyHint": "Marka aad aqbasho dalab tababar, tababarkaagu halkan ayuu ka muuqan doonaa oo ay la socdaan wax kasta oo aad u baahan tahay si aad u dhammaystirto."
   },
   "university": {
     "title": "Meelaynta ardayda",
     "description": "Tababarada ay ardaydaadu hadda qaadanayaan, gudaha xuduudkaaga.",
     "empty": "Weli meelayn ma jirto.",
-    "resultsHeading": "Meelaynta ardayda"
+    "resultsHeading": "Meelaynta ardayda",
+    "student": "Arday",
+    "internship": "Tababar",
+    "dates": "Taariikhaha",
+    "academicSupervisor": "Kormeeraha tacliinta",
+    "status": "Xaaladda",
+    "allStatuses": "Dhammaan xaaladaha",
+    "anySupervisor": "Kormeere kasta",
+    "supervisorMissing": "Kormeere tacliimeed ma jiro",
+    "supervisorAssigned": "La xilsaaray",
+    "searchLabel": "Raadi tababarrada",
+    "searchPlaceholder": "Arday, hay’ad ama tababar",
+    "resultCount_one": "{{count}} tababar",
+    "resultCount_other": "{{count}} tababar",
+    "noMatches": "Tababar ku habboon shaandhooyinkan ma jiro",
+    "emptyHint": "Tababarradu halkan ayay ka muuqan doonaan marka mid ka mid ah ardaydaadu aqbalo dalab.",
+    "emptySupervisorHint": "Tababarradu halkan ayay ka muuqan doonaan marka laguu xilsaaro kormeeraha tacliinta ee arday.",
+    "supervisorDescription": "Tababarrada laguu xilsaaray inaad kormeerto."
   },
   "organization": {
-    "title": "Meelaynta",
+    "title": "Tababarayaasha",
     "description": "Tababarlayaasha hay'addaadu hadda martigelinayso.",
-    "empty": "Weli meelayn ma jirto. Meelaynta waxaa la abuuraa marka musharraxu dalab aqbalo.",
+    "empty": "Weli tababarayaal ma jiraan. Tababarayaasha halkan ayaa lagu daraa marka musharraxu aqbalo dalab tababar.",
     "intern": "Tababaraha",
     "university": "Jaamacadda",
     "dates": "Taariikhaha",
@@ -43,7 +61,8 @@
     "evaluation": "Qiimeynta",
     "attendanceUnsettled_one": "{{count}} la xallinayo",
     "attendanceUnsettled_other": "{{count}} la xallinayo",
-    "attendanceSettled": "Waa cusub tahay"
+    "attendanceSettled": "Waa cusub tahay",
+    "emptyHint": "Tababartayaashu halkan ayay ka muuqdaan marka musharrax uu aqbalo dalab tababar."
   },
   "list": {
     "supervisorMissing": "Weli kormeere lama magacaabin."
@@ -61,7 +80,8 @@
     "terminationReason": "Goor hore la joojiyay: {{reason}}",
     "aboutTitle": "Faahfaahinta tababarka",
     "evaluationHint": "Qiimaynta ururka martida loo yahay halkan ayay ka muuqan doontaa marka ay dhammaystirto.",
-    "evaluationUnavailable": "Qiimeyntaada lama soo bandhigi karin. Taasi macnaheedu maaha inay maqan tahay."
+    "evaluationUnavailable": "Qiimeyntaada lama soo bandhigi karin. Taasi macnaheedu maaha inay maqan tahay.",
+    "unknownStudent": "Arday aan magac lahayn"
   },
   "supervisors": {
     "title": "Kormeerayaasha",

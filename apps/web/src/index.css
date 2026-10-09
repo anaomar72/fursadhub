@@ -65,6 +65,12 @@
   --color-chart-series: var(--color-chart-series);
   --color-chart-grid: var(--color-chart-grid);
 
+  --color-action-primary: var(--color-action-primary);
+  --color-action-primary-hover: var(--color-action-primary-hover);
+  --color-action-danger: var(--color-action-danger);
+  --color-action-danger-hover: var(--color-action-danger-hover);
+  --color-on-action: var(--color-on-action);
+
   --color-success: var(--color-success);
   --color-success-bg: var(--color-success-bg);
   --color-warning: var(--color-warning);
@@ -89,9 +95,8 @@
   --font-display: var(--font-display);
   --font-body: var(--font-body);
 
-  /* One-time confirmation sequence for <AnimatedCheck /> — see
-     docs/product/BRAND_AND_UI_GUIDELINES.md section 14. Reduced-motion users
-     get the motion-reduce:animate-none override applied in the component. */
+  /* One-time confirmation sequence for <AnimatedCheck /> (CLAUDE.md section 58). Reduced-motion
+     users get the motion-reduce:animate-none override applied in the component. */
   --animate-verified-circle: verified-circle-in var(--duration-slow) var(--ease-standard) both;
   --animate-verified-check: verified-check-draw var(--duration-slow) var(--ease-standard) 150ms both;
   --animate-verified-text: verified-text-in var(--duration-normal) var(--ease-standard) 350ms both;
@@ -99,7 +104,7 @@
   /* One-time invalid-code feedback for <OtpCodeInput /> — a subtle wiggle, not a loop. */
   --animate-otp-shake: otp-shake var(--duration-normal) var(--ease-standard);
 
-  /* One orchestrated hero entrance on the landing page (BRAND_AND_UI_GUIDELINES.md section 12) —
+  /* One orchestrated hero entrance on the landing page (CLAUDE.md section 58) —
      plays once on mount, never on re-render, and is skipped entirely under reduced motion via the
      motion-reduce:animate-none override applied where it's used. */
   --animate-hero-fade: hero-fade-up var(--duration-slow) var(--ease-enter) both;
@@ -129,6 +134,89 @@
   /* Route chunk in flight — see <RouteFallback />. Held at zero opacity for 160ms so a chunk that
      resolves quickly never flashes a spinner, and only a genuinely slow load announces itself. */
   --animate-fallback-in: fallback-in var(--duration-normal) var(--ease-enter) 160ms both;
+
+  /* <ToastProvider />. In from the edge it is stacked against, out by fading and settling — an
+     exit is acknowledged, not performed, so it takes the faster duration. */
+  --animate-toast-in: toast-in var(--duration-normal) var(--ease-enter) both;
+  --animate-toast-out: toast-out var(--duration-fast) var(--ease-exit) both;
+}
+
+/*
+ * TYPOGRAPHY — the one type scale. Each step is a ROLE, not a size: a page title is
+ * `text-title-page` wherever it appears, so the hierarchy is decided once here instead of being
+ * re-decided in every page's class string (the Phase 1 audit found 12 different <h2> treatments).
+ *
+ * Headings take Manrope from the base h1-h6 rule below; body roles inherit Public Sans. The three
+ * display/title steps are fluid between their mobile and desktop sizes, so a heading scales with
+ * the viewport rather than jumping at a breakpoint.
+ *
+ *   display-xl     34 → 48px   public hero only
+ *   display-lg     28 → 36px   public section titles
+ *   title-page     24 → 28px   the page h1 (PageHeader)
+ *   title-section  20px        a section within a page
+ *   title-panel    16px        a panel / card heading (SectionHeading, Panel)
+ *   body-lg        16px        public copy, student reading pages
+ *   body           14px        default application text
+ *   label          13px        form labels, table headers — sentence case, never forced caps
+ *   caption        12px        metadata. THE FLOOR: nothing a person reads goes below 12px.
+ *   metric         28px        KPI figures (pair with `tabular-nums`)
+ */
+@theme {
+  --text-display-xl: clamp(2.125rem, 1.6rem + 2.2vw, 3rem);
+  --text-display-xl--line-height: 1.08;
+  --text-display-xl--letter-spacing: -0.035em;
+  --text-display-xl--font-weight: 800;
+  --text-display-lg: clamp(1.75rem, 1.45rem + 1.25vw, 2.25rem);
+  --text-display-lg--line-height: 1.18;
+  --text-display-lg--letter-spacing: -0.03em;
+  --text-display-lg--font-weight: 800;
+  --text-title-page: clamp(1.5rem, 1.38rem + 0.5vw, 1.75rem);
+  --text-title-page--line-height: 1.22;
+  --text-title-page--letter-spacing: -0.02em;
+  --text-title-page--font-weight: 800;
+  --text-title-section: 1.25rem;
+  --text-title-section--line-height: 1.75rem;
+  --text-title-section--letter-spacing: -0.01em;
+  --text-title-section--font-weight: 700;
+  --text-title-panel: 1rem;
+  --text-title-panel--line-height: 1.5rem;
+  --text-title-panel--letter-spacing: -0.005em;
+  --text-title-panel--font-weight: 700;
+  --text-body-lg: 1rem;
+  --text-body-lg--line-height: 1.625rem;
+  --text-body: 0.875rem;
+  --text-body--line-height: 1.375rem;
+  --text-label: 0.8125rem;
+  --text-label--line-height: 1.125rem;
+  --text-label--font-weight: 600;
+  --text-caption: 0.75rem;
+  --text-caption--line-height: 1rem;
+  --text-metric: 1.75rem;
+  --text-metric--line-height: 2rem;
+  --text-metric--letter-spacing: -0.02em;
+  --text-metric--font-weight: 800;
+}
+
+@keyframes toast-in {
+  from {
+    opacity: 0;
+    transform: translateY(-8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes toast-out {
+  from {
+    opacity: 1;
+    transform: translateY(0);
+  }
+  to {
+    opacity: 0;
+    transform: translateY(-4px);
+  }
 }
 
 @keyframes verified-circle-in {
@@ -295,7 +383,9 @@
 [data-workspace='student'] {
   --workspace-page-y: 2rem;
   --workspace-gap: 1.5rem;
-  --workspace-radius: var(--radius-2xl);
+  /* The softest corner the scale allows (16px). It used to be 20px, which read as oversized pills
+     rather than as warmth once every panel on a page carried it. */
+  --workspace-radius: var(--radius-xl);
   --workspace-rule: color-mix(in srgb, var(--color-brand-accent) 32%, var(--color-border));
   --workspace-tint: color-mix(in srgb, var(--color-brand-accent) 3%, transparent);
 }
@@ -425,27 +515,4 @@
     outline: 2px solid var(--color-focus-ring);
     outline-offset: 2px;
   }
-}
-/*
- * Desktop composition for the public home page and its footer.
- *
- * WHAT THIS USED TO DO, AND WHY IT IS GONE. An earlier pass matched reference 01's proportions by
- * shrinking type: the featured-card metadata, every line of "How FursadHub Works", the testimonial
- * lead and the entire footer were forced to 10px on a 12-14px line-height, and section headings to
- * 14px. A mockup rendered at screenshot scale is not a type scale — copying its apparent size gave
- * the flagship page reading text smaller than any control sitting next to it, which is the opposite
- * of premium and the opposite of comfortable.
- *
- * WHAT REMAINS. The same compositional intent carried by the lever that actually carries it —
- * vertical rhythm. Sections close up at desktop width and the footer compacts; nothing a person is
- * expected to READ is shrunk below the size its own component chose.
- */
-@media (min-width: 1280px) {
-  .home-presentation > section:first-child { padding-top: 24px; padding-bottom: 12px; }
-  .home-presentation > section:first-child h1 { line-height: 1.05; }
-  .home-presentation > section:first-child h1 + p { margin-top: 12px; }
-  .home-presentation [aria-labelledby="organizations-heading"] > ul { margin-top: 12px; }
-  .home-presentation > section:last-child > section:first-child { padding-block: 16px; }
-  .public-site > footer > div { padding-block: 32px; }
-  .public-site > footer img { max-height: 58px; }
 }

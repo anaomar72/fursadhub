@@ -14,6 +14,7 @@ import {
   StatusBadge,
   Textarea,
   type DataTableColumn,
+  useToast,
 } from '../../../components/ui'
 import { apiErrorMessage } from '../../../lib/api/errorMessage'
 import { AdminTableSkeleton } from '../components/AdminSkeletons'
@@ -47,6 +48,7 @@ export function AdminEscalationsPage() {
   const { t } = useTranslation()
   const queryClient = useQueryClient()
   const [error, setError] = useState<string | null>(null)
+  const toast = useToast()
   const [openCaseId, setOpenCaseId] = useState<string | null>(null)
   const [prompting, setPrompting] = useState<EscalationAction | null>(null)
   const [note, setNote] = useState('')
@@ -76,7 +78,8 @@ export function AdminEscalationsPage() {
       })
     },
     // The row leaves the queue only once the API says the case is resolved.
-    onSuccess: () => {
+    onSuccess: (_result, { action }) => {
+      toast.success(t(`admin:escalations.done.${action}`))
       setPrompting(null)
       setNote('')
       setOpenCaseId(null)
@@ -169,6 +172,22 @@ export function AdminEscalationsPage() {
             columns={columns}
             rows={cases}
             rowKey={(item) => item.caseId}
+            density="dense"
+            // Phones: one stacked row per case with its Review button, instead of a six-column table.
+            renderMobileRow={(item) => (
+              <div className="flex flex-col gap-1.5">
+                <div className="flex items-start justify-between gap-3">
+                  <span className="min-w-0 break-all font-semibold text-foreground">{item.studentEmail ?? t('admin:escalations.unknownStudent')}</span>
+                  <StatusBadge tone={caseStatusTone(item.status)}>{t(`admin:statusLabels.${item.status}`, item.status)}</StatusBadge>
+                </div>
+                <span className="text-caption text-foreground-secondary">
+                  {item.studentNumber} · {item.program} · {formatDateTime(item.escalatedAt)}
+                </span>
+                <Button size="sm" variant="outline" className="self-start" onClick={() => setOpenCaseId(item.caseId)}>
+                  {t('admin:escalations.review')}
+                </Button>
+              </div>
+            )}
             empty={
               <EmptyState
                 title={t('admin:escalations.empty')}

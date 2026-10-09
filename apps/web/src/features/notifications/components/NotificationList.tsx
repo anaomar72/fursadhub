@@ -45,7 +45,7 @@ export function NotificationList({ notifications, onMarkRead, onNavigate, emptyL
           <li key={notification.id} className={cn('flex gap-3 px-4 py-3', unread && 'bg-surface-muted')}>
             {/*
               The dot is decorative. Unread state is also carried by the visible "New" label below,
-              so it is never communicated by colour alone (BRAND_AND_UI_GUIDELINES.md accessibility).
+              so it is never communicated by colour alone (WCAG 1.4.1).
             */}
             <span
               aria-hidden="true"

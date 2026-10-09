@@ -95,3 +95,20 @@ export function universityCapabilities(membership: MyMembershipResponse): Univer
     hasStudentDirectory: departmentScoped,
   }
 }
+
+/**
+ * The portal name under the university's brand in the sidebar. It read "University Portal" for
+ * every member, so a department coordinator or an academic supervisor was told they were in the
+ * institution's admin workspace. Wording only, never access; an unknown role falls back to the
+ * neutral university name.
+ */
+export function universityWorkspaceLabelKey(membership: MyMembershipResponse): string {
+  switch (membership.role) {
+    case 'DEPARTMENT_COORDINATOR':
+      return 'common:shell.portals.universityCoordinator'
+    case 'UNIVERSITY_SUPERVISOR':
+      return 'common:shell.portals.universitySupervisor'
+    default:
+      return 'common:shell.portals.university'
+  }
+}

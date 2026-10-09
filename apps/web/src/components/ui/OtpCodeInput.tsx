@@ -15,7 +15,7 @@ export interface OtpCodeInputProps {
 /**
  * Numeric one-time-code entry: one box per digit, digit-only input, paste of the full code,
  * backspace/arrow-key navigation between boxes, and an `onComplete` callback fired once per
- * completed value (BRAND_AND_UI_GUIDELINES.md section 12/19). The caller owns `value`/`onChange`
+ * completed value (CLAUDE.md section 57). The caller owns `value`/`onChange`
  * (controlled) so it can clear the boxes on error/resend without this component needing its own
  * notion of "submitted".
  */

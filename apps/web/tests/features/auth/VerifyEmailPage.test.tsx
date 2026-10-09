@@ -1,7 +1,8 @@
-import { render, screen } from '@testing-library/react'
+import { StrictMode } from 'react'
+import { render, screen, waitFor } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
-import { beforeEach, describe, expect, it, vi } from 'vitest'
-import { MemoryRouter, Route, Routes } from 'react-router-dom'
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
+import { MemoryRouter, Route, Routes, useLocation, type InitialEntry } from 'react-router-dom'
 import { AppProviders } from '../../../src/app/providers/AppProviders'
 import { VerifyEmailPage } from '../../../src/features/auth/pages/VerifyEmailPage'
 
@@ -10,29 +11,60 @@ function jsonResponse(body: unknown, status = 200) {
 }
 
 let verifyCallCount = 0
-let verifyBehavior: 'success' | 'wrong-code' | 'locked' | 'expired' = 'success'
+let verifyBodies: { email: string; code: string }[] = []
+let resendCallCount = 0
+let verifyBehavior: 'success' | 'wrong-code' | 'locked' | 'expired' | 'network' = 'success'
 
-function renderVerifyEmailPage(initialPath = '/verify-email?email=student%40example.com') {
-  return render(
-    <MemoryRouter initialEntries={[initialPath]}>
+/** The address bar and the history entry's state, as the page left them. */
+function LocationProbe() {
+  const location = useLocation()
+  return (
+    <output
+      data-testid="location"
+      data-search={location.search}
+      data-state-email={(location.state as { email?: string } | null)?.email ?? ''}
+    />
+  )
+}
+
+/** The page as RegisterPage now opens it: the email in navigation state, never in the URL. */
+const FROM_REGISTRATION: InitialEntry = { pathname: '/verify-email', search: '?role=student&registered=1', state: { email: 'student@example.com' } }
+
+function renderVerifyEmailPage(initialEntry: InitialEntry = FROM_REGISTRATION, { strict = false } = {}) {
+  const tree = (
+    <MemoryRouter initialEntries={[initialEntry]}>
       <AppProviders>
         <Routes>
-          <Route path="/verify-email" element={<VerifyEmailPage />} />
+          <Route
+            path="/verify-email"
+            element={
+              <>
+                <VerifyEmailPage />
+                <LocationProbe />
+              </>
+            }
+          />
           <Route path="/login" element={<div>Login page</div>} />
         </Routes>
       </AppProviders>
-    </MemoryRouter>,
+    </MemoryRouter>
   )
+  return render(strict ? <StrictMode>{tree}</StrictMode> : tree)
 }
+
+const codeBoxes = () => screen.getAllByLabelText(/verification code —/i) as HTMLInputElement[]
+const codeValue = () => codeBoxes().map((box) => box.value).join('')
 
 describe('VerifyEmailPage', () => {
   beforeEach(() => {
     verifyCallCount = 0
+    verifyBodies = []
+    resendCallCount = 0
     verifyBehavior = 'success'
 
     vi.stubGlobal(
       'fetch',
-      vi.fn((input: RequestInfo | URL) => {
+      vi.fn((input: RequestInfo | URL, init?: RequestInit) => {
         const url = String(input)
         if (url.includes('/auth/refresh')) {
           return jsonResponse(
@@ -42,6 +74,10 @@ describe('VerifyEmailPage', () => {
         }
         if (url.includes('/auth/email/verify')) {
           verifyCallCount++
+          verifyBodies.push(JSON.parse(String(init?.body)))
+          if (verifyBehavior === 'network') {
+            return Promise.reject(new TypeError('Failed to fetch'))
+          }
           if (verifyBehavior === 'success') {
             return jsonResponse({ message: 'Your email address has been verified.' }, 200)
           }
@@ -77,6 +113,7 @@ describe('VerifyEmailPage', () => {
           )
         }
         if (url.includes('/auth/email/resend')) {
+          resendCallCount++
           return jsonResponse({ message: 'ok' }, 200)
         }
         return jsonResponse({}, 200)
@@ -211,5 +248,149 @@ describe('VerifyEmailPage', () => {
 
     expect(await screen.findByRole('heading', { name: /verify your email/i })).toBeInTheDocument()
     expect(screen.getByText(/newcomer@example\.com/)).toBeInTheDocument()
+    // Adopted into navigation state — not written back into the address bar. The router applies a
+    // navigation as a transition, so it can commit after the heading's plain state update; waiting
+    // for that one commit is what made this assertion stop depending on machine load.
+    await waitFor(() => expect(screen.getByTestId('location')).toHaveAttribute('data-state-email', 'newcomer@example.com'))
+    expect(screen.getByTestId('location').getAttribute('data-search')).not.toMatch(/email=/)
+  })
+
+  describe('recovering from a rejected code', () => {
+    it('clears the boxes and puts focus back on the first one', async () => {
+      verifyBehavior = 'wrong-code'
+      const user = userEvent.setup()
+      renderVerifyEmailPage()
+
+      await user.type(codeBoxes()[0], '1111')
+      expect(await screen.findByRole('alert')).toHaveTextContent(/not right/i)
+
+      expect(codeValue()).toBe('')
+      await waitFor(() => expect(codeBoxes()[0]).toHaveFocus())
+    })
+
+    it('does not submit on the first digit of the next code, then submits the complete fresh code exactly once', async () => {
+      verifyBehavior = 'wrong-code'
+      const user = userEvent.setup()
+      renderVerifyEmailPage()
+
+      await user.type(codeBoxes()[0], '1111')
+      await screen.findByRole('alert')
+      expect(verifyCallCount).toBe(1)
+
+      verifyBehavior = 'success'
+      await user.keyboard('2')
+      // Previously the stale digits made "2111" a complete code and it was sent at once.
+      expect(codeValue()).toBe('2')
+      expect(verifyCallCount).toBe(1)
+      // Typing clears the previous error: the person is working on a new answer.
+      expect(screen.queryByRole('alert')).not.toBeInTheDocument()
+
+      await user.keyboard('940')
+      expect(await screen.findByRole('heading', { name: /email verified successfully/i })).toBeInTheDocument()
+      expect(verifyCallCount).toBe(2)
+      expect(verifyBodies[1]).toEqual({ email: 'student@example.com', code: '2940' })
+    })
+
+    it('shows the same error again, without spending an attempt, when a rejected code is retyped', async () => {
+      verifyBehavior = 'wrong-code'
+      const user = userEvent.setup()
+      renderVerifyEmailPage()
+
+      await user.type(codeBoxes()[0], '1111')
+      await screen.findByRole('alert')
+      await user.keyboard('1111')
+
+      expect(await screen.findByRole('alert')).toHaveTextContent(/not right/i)
+      expect(verifyCallCount).toBe(1)
+      expect(codeValue()).toBe('')
+    })
+
+    it('lets the same code be retried after a dropped connection, which is not a rejection', async () => {
+      verifyBehavior = 'network'
+      const user = userEvent.setup()
+      renderVerifyEmailPage()
+
+      await user.type(codeBoxes()[0], '2940')
+      await screen.findByRole('alert')
+      expect(codeValue()).toBe('')
+
+      verifyBehavior = 'success'
+      await user.keyboard('2940')
+      expect(await screen.findByRole('heading', { name: /email verified successfully/i })).toBeInTheDocument()
+      expect(verifyCallCount).toBe(2)
+    })
+  })
+
+  it('submits exactly once under StrictMode double rendering', async () => {
+    const user = userEvent.setup()
+    renderVerifyEmailPage(FROM_REGISTRATION, { strict: true })
+
+    await user.type(codeBoxes()[0], '2940')
+    expect(await screen.findByRole('heading', { name: /email verified successfully/i })).toBeInTheDocument()
+    expect(verifyCallCount).toBe(1)
+  })
+
+  it('submits a pasted complete code exactly once', async () => {
+    const user = userEvent.setup()
+    renderVerifyEmailPage()
+
+    await user.click(codeBoxes()[0])
+    await user.paste('2940')
+
+    expect(await screen.findByRole('heading', { name: /email verified successfully/i })).toBeInTheDocument()
+    expect(verifyCallCount).toBe(1)
+    expect(verifyBodies[0].code).toBe('2940')
+  })
+
+  describe('resend', () => {
+    beforeEach(() => {
+      vi.useFakeTimers({ shouldAdvanceTime: true })
+    })
+    afterEach(() => {
+      vi.useRealTimers()
+    })
+
+    it('clears stale digits and treats the new challenge as fresh — a previously rejected code may be tried again', async () => {
+      verifyBehavior = 'wrong-code'
+      const user = userEvent.setup({ advanceTimers: vi.advanceTimersByTime })
+      renderVerifyEmailPage()
+
+      await user.type(codeBoxes()[0], '1111')
+      await screen.findByRole('alert')
+
+      vi.advanceTimersByTime(61_000)
+      await user.click(await screen.findByRole('button', { name: /resend code/i }))
+      await waitFor(() => expect(resendCallCount).toBe(1))
+      // The server supersedes the old code when it issues a new one.
+      await waitFor(() => expect(screen.queryByRole('alert')).not.toBeInTheDocument())
+      expect(codeValue()).toBe('')
+
+      await user.type(codeBoxes()[0], '1111')
+      await waitFor(() => expect(verifyCallCount).toBe(2))
+    })
+  })
+
+  describe('the email address never sits in the URL', () => {
+    it('reads it from navigation state — which is what a refresh or back/forward restores', async () => {
+      renderVerifyEmailPage({ pathname: '/verify-email', search: '?role=organization', state: { email: 'founder@example.com' } })
+
+      expect(screen.getByText(/founder@example\.com/)).toBeInTheDocument()
+      expect(screen.queryByRole('heading', { name: /enter your email to continue/i })).not.toBeInTheDocument()
+      expect(screen.getByTestId('location')).toHaveAttribute('data-search', '?role=organization')
+      expect(screen.getByTestId('location')).toHaveAttribute('data-state-email', 'founder@example.com')
+    })
+
+    it('still accepts an older ?email= link but removes the address from the URL on arrival', async () => {
+      const user = userEvent.setup()
+      renderVerifyEmailPage('/verify-email?email=legacy%40example.com&role=student&registered=1')
+
+      await waitFor(() => expect(screen.getByTestId('location')).toHaveAttribute('data-search', '?role=student&registered=1'))
+      expect(screen.getByTestId('location')).toHaveAttribute('data-state-email', 'legacy@example.com')
+      expect(screen.getByText(/legacy@example\.com/)).toBeInTheDocument()
+
+      await user.type(codeBoxes()[0], '2940')
+      await screen.findByRole('heading', { name: /email verified successfully/i })
+      expect(verifyBodies[0]).toEqual({ email: 'legacy@example.com', code: '2940' })
+    })
   })
 })

@@ -1,4 +1,4 @@
-import { render, screen, waitFor } from '@testing-library/react'
+import { render, screen, waitFor, within } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import { MemoryRouter, Route, Routes } from 'react-router-dom'
@@ -153,22 +153,24 @@ describe('recruiter dashboard', () => {
     })
     renderAs('RECRUITER', <DashboardPage />)
 
-    expect((await screen.findByText('New applications')).closest('div')?.parentElement).toHaveTextContent('1')
-    // "Shortlisted" is both a stat-card label and a pipeline column; the card comes first in the DOM.
-    expect(screen.getAllByText('Shortlisted')[0].closest('div')?.parentElement).toHaveTextContent('1')
-    // OFFERED is the student's move, surfaced separately from the recruiter's own queue.
-    expect(screen.getAllByText('Awaiting candidate')[0].closest('div')?.parentElement).toHaveTextContent('1')
+    expect(await screen.findByText('1 new application to review')).toBeInTheDocument()
+    // OFFERED is the student's move: shown, but as information about an open offer.
+    expect(screen.getByText("1 offer waiting for the candidate's answer")).toBeInTheDocument()
+    // REJECTED is closed — it is in no queue and no stage.
+    const stages = screen.getByRole('heading', { name: 'Candidate pipeline' }).closest('section')!
+    expect(within(stages).getByRole('link', { name: /Shortlisted\s*1/ })).toBeInTheDocument()
   })
 
-  it('links its pipeline columns at the real stage filter', async () => {
+  it('links its pipeline stages at the real stage filter, never a drag-and-drop board', async () => {
     stubApi()
     renderAs('RECRUITER', <DashboardPage />)
 
-    const board = await screen.findByRole('list', { name: 'Candidate pipeline' })
-    const links = [...board.querySelectorAll('a')].map((a) => a.getAttribute('href'))
-
+    const stages = (await screen.findByRole('heading', { name: 'Candidate pipeline' })).closest('section')!
+    await waitFor(() => expect(stages.querySelectorAll('a').length).toBe(6))
+    const links = [...stages.querySelectorAll('a')].map((a) => a.getAttribute('href'))
     expect(links).toContain('/organization/candidates?stage=SHORTLISTED')
     expect(links).toContain('/organization/candidates?stage=OFFERED')
+    expect(stages.querySelector('[draggable="true"]')).toBeNull()
   })
 
   it('renders in Somali without falling back to English', async () => {

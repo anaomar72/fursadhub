@@ -19,6 +19,7 @@ import { RequireUniversityCapability } from '../../features/university/component
 const RegisterPage = lazy(() => authArea().then((m) => ({ default: m.RegisterPage })))
 const LoginPage = lazy(() => authArea().then((m) => ({ default: m.LoginPage })))
 const VerifyEmailPage = lazy(() => authArea().then((m) => ({ default: m.VerifyEmailPage })))
+const GetStartedPage = lazy(() => authArea().then((m) => ({ default: m.GetStartedPage })))
 const ForgotPasswordPage = lazy(() => authArea().then((m) => ({ default: m.ForgotPasswordPage })))
 const ResetPasswordPage = lazy(() => authArea().then((m) => ({ default: m.ResetPasswordPage })))
 const StudentAreaLayout = lazy(() => studentArea().then((m) => ({ default: m.StudentAreaLayout })))
@@ -77,7 +78,8 @@ const MyPlacementsPage = lazy(() => internshipArea().then((m) => ({ default: m.M
 const StudentPlacementDetailPage = lazy(() => internshipArea().then((m) => ({ default: m.StudentPlacementDetailPage })))
 const UniversityPlacementsPage = lazy(() => internshipArea().then((m) => ({ default: m.UniversityPlacementsPage })))
 const OrganizationPlacementsPage = lazy(() => internshipArea().then((m) => ({ default: m.OrganizationPlacementsPage })))
-const PlacementDetailPage = lazy(() => internshipArea().then((m) => ({ default: m.PlacementDetailPage })))
+const UniversityPlacementOverview = lazy(() => internshipArea().then((m) => ({ default: m.UniversityPlacementOverview })))
+const OrganizationPlacementOverview = lazy(() => internshipArea().then((m) => ({ default: m.OrganizationPlacementOverview })))
 // Phase 6 internship management. One placement is a workspace with sections; which sections exist
 // mirrors the backend's authorization split, and the backend enforces it regardless.
 const PlacementWorkspace = lazy(() => internshipArea().then((m) => ({ default: m.PlacementWorkspace })))
@@ -155,6 +157,16 @@ export const router = createBrowserRouter([
       { path: 'verify-email', element: <VerifyEmailPage /> },
       { path: 'forgot-password', element: <ForgotPasswordPage /> },
       { path: 'reset-password', element: <ResetPasswordPage /> },
+      // Signed-in, no workspace yet (see GetStartedPage). Inside the auth shell because it is the
+      // last step of getting an account going, not a page of any one portal.
+      {
+        path: 'get-started',
+        element: (
+          <RequireAuth>
+            <GetStartedPage />
+          </RequireAuth>
+        ),
+      },
     ],
   },
   {
@@ -273,7 +285,8 @@ export const router = createBrowserRouter([
             path: 'placements/:placementId',
             element: <PlacementWorkspace area="university" />,
             children: [
-              { index: true, element: <PlacementDetailPage area="university" /> },
+              // Phase 7: the university's own academic-supervision overview.
+              { index: true, element: <UniversityPlacementOverview /> },
               // Phase 6. Academic supervision: review logs, review the report, run the defense.
               { path: 'weekly-logs', element: <WeeklyLogsPage audience="reviewer" /> },
               { path: 'attendance', element: <AttendancePage audience="observer" /> },
@@ -349,7 +362,9 @@ export const router = createBrowserRouter([
             path: 'placements/:placementId',
             element: <PlacementWorkspace area="organization" />,
             children: [
-              { index: true, element: <PlacementDetailPage area="organization" /> },
+              // Phase 6: the organization's own supervision-first overview (the university has its
+              // own, UniversityPlacementOverview).
+              { index: true, element: <OrganizationPlacementOverview /> },
               // Phase 6. Workplace records only — weekly logs, the final report and the defense are
               // university-only academic content and have no route here.
               { path: 'attendance', element: <AttendancePage audience="supervisor" /> },

@@ -5,10 +5,15 @@ import { useTranslation } from 'react-i18next'
 import * as universityApi from '../api/universityApi'
 import { createUniversitySchema, type CreateUniversityFormValues } from '../schemas/universitySetupSchema'
 import { apiErrorMessage } from '../../../lib/api/errorMessage'
-import { Button, FormField, Input, PageHeader, Textarea } from '../../../components/ui'
+import { Alert, Button, FormField, FormSection, Icon, Input, PageHeader, Stepper, Textarea } from '../../../components/ui'
+import { PageContainer } from '../../../app/layouts/PageContainer'
 
-/** Shown inside UniversityAreaLayout when the caller has no active university membership yet
- * (mirrors OrganizationSetupPage). */
+/**
+ * Shown inside UniversityAreaLayout when the caller has no active university membership yet — the
+ * first screen a new university account sees after signing in. Same composition as
+ * OrganizationSetupPage (real onboarding progress, fields grouped by purpose, the next step said
+ * before the button), with the university's own fields and wording. The request body is unchanged.
+ */
 export function UniversitySetupPage() {
   const { t } = useTranslation()
   const queryClient = useQueryClient()
@@ -24,53 +29,89 @@ export function UniversitySetupPage() {
   })
 
   return (
-    <div className="mx-auto max-w-xl px-4 py-10 sm:px-6">
+    <PageContainer width="narrow" className="flex flex-col gap-8">
       <PageHeader title={t('university:setup.title')} description={t('university:setup.body')} />
 
-      <form
-        className="mt-6 flex flex-col gap-4 rounded-lg border border-border bg-surface p-4"
-        noValidate
-        onSubmit={form.handleSubmit((values) => createMutation.mutate(values))}
-      >
-        <FormField
-          label={t('university:setup.nameLabel')}
-          htmlFor="uni-name"
-          error={form.formState.errors.name && t(form.formState.errors.name.message ?? '')}
+      <Stepper
+        orientation="horizontal"
+        label={t('common:onboarding.progressLabel')}
+        currentStep={2}
+        steps={[
+          { label: t('common:onboarding.steps.account') },
+          { label: t('common:onboarding.steps.email') },
+          { label: t('university:setup.stepDetails') },
+          { label: t('common:onboarding.steps.verification') },
+        ]}
+      />
+
+      <form className="flex flex-col" noValidate onSubmit={form.handleSubmit((values) => createMutation.mutate(values))}>
+        <FormSection
+          layout="stacked"
+          title={t('university:setup.sections.identity.title')}
+          description={t('university:setup.sections.identity.description')}
         >
-          <Input id="uni-name" {...form.register('name')} />
-        </FormField>
+          <FormField
+            label={t('university:setup.nameLabel')}
+            htmlFor="uni-name"
+            required
+            error={form.formState.errors.name && t(form.formState.errors.name.message ?? '')}
+          >
+            <Input id="uni-name" autoComplete="organization" invalid={!!form.formState.errors.name} {...form.register('name')} />
+          </FormField>
 
-        <FormField label={t('university:setup.cityLabel')} htmlFor="uni-city">
-          <Input id="uni-city" {...form.register('city')} />
-        </FormField>
+          <FormField label={t('university:setup.cityLabel')} htmlFor="uni-city" optional>
+            <Input id="uni-city" autoComplete="address-level2" {...form.register('city')} />
+          </FormField>
+        </FormSection>
 
-        {/* Optional server-side (CreateUniversityRequest has no @NotBlank) and never public. */}
-        <FormField
-          label={t('university:setup.registrationNumberLabel')}
-          htmlFor="uni-registration"
-          hint={t('university:setup.registrationNumberHint')}
+        <FormSection
+          layout="stacked"
+          title={t('university:setup.sections.registration.title')}
+          description={t('university:setup.sections.registration.description')}
         >
-          <Input id="uni-registration" {...form.register('registrationNumber')} />
-        </FormField>
+          {/* Optional server-side (CreateUniversityRequest has no @NotBlank) and never public. */}
+          <FormField
+            label={t('university:setup.registrationNumberLabel')}
+            optional
+            htmlFor="uni-registration"
+            hint={t('university:setup.registrationNumberHint')}
+          >
+            <Input id="uni-registration" {...form.register('registrationNumber')} />
+          </FormField>
+        </FormSection>
 
-        <FormField label={t('university:setup.websiteLabel')} htmlFor="uni-website">
-          <Input id="uni-website" type="url" {...form.register('website')} />
-        </FormField>
+        <FormSection
+          layout="stacked"
+          title={t('university:setup.sections.public.title')}
+          description={t('university:setup.sections.public.description')}
+        >
+          <FormField label={t('university:setup.websiteLabel')} htmlFor="uni-website" optional>
+            <Input id="uni-website" type="url" autoComplete="url" placeholder="https://" {...form.register('website')} />
+          </FormField>
 
-        <FormField label={t('university:setup.descriptionLabel')} htmlFor="uni-description">
-          <Textarea id="uni-description" {...form.register('description')} />
-        </FormField>
+          <FormField label={t('university:setup.descriptionLabel')} htmlFor="uni-description" optional>
+            <Textarea id="uni-description" {...form.register('description')} />
+          </FormField>
+        </FormSection>
 
-        {createMutation.isError && (
-          <p className="text-sm text-danger" role="alert">
-            {apiErrorMessage(t, 'university', 'setup', createMutation.error)}
-          </p>
-        )}
+        <div className="mt-8 flex flex-col gap-4 border-t border-border pt-6">
+          <div className="flex items-start gap-3 rounded-lg bg-surface-muted p-4">
+            <Icon name="info" className="mt-0.5 size-5 shrink-0 text-info" />
+            <div className="min-w-0">
+              <p className="text-label text-foreground">{t('university:setup.nextTitle')}</p>
+              <p className="mt-1 text-body text-foreground-secondary">{t('university:setup.nextBody')}</p>
+            </div>
+          </div>
 
-        <Button type="submit" loading={createMutation.isPending} className="w-full sm:w-auto">
-          {t('university:setup.submit')}
-        </Button>
+          {createMutation.isError && (
+            <Alert tone="danger">{apiErrorMessage(t, 'university', 'setup', createMutation.error)}</Alert>
+          )}
+
+          <Button type="submit" size="lg" loading={createMutation.isPending} className="w-full sm:w-auto sm:self-start">
+            {t('university:setup.submit')}
+          </Button>
+        </div>
       </form>
-    </div>
+    </PageContainer>
   )
 }

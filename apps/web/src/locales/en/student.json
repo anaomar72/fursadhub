@@ -4,7 +4,11 @@
     "enrollment": "Enrollment",
     "profile": "Profile",
     "exploreInternships": "Explore internships",
-    "savedInternships": "Saved internships"
+    "savedInternships": "Saved internships",
+    "sections": {
+      "opportunities": "Opportunities",
+      "internship": "Internship"
+    }
   },
   "dashboard": {
     "title": "Your dashboard",
@@ -125,7 +129,25 @@
       "browse": "Browse internships",
       "profile": "Complete your profile"
     },
-    "studentNumberHint": "The student number your university issued you. University staff check it against their records."
+    "studentNumberHint": "The student number your university issued you. University staff check it against their records.",
+    "whyTitle": "Why your enrollment is verified",
+    "whyBody": "Only students confirmed by their own university can apply to internships or be nominated. Your university’s staff check these details against their records.",
+    "progressLabel": "Enrollment verification progress",
+    "steps": {
+      "details": "Enrollment details",
+      "evidence": "Student ID",
+      "submit": "Submit",
+      "review": "University review",
+      "verified": "Verified"
+    },
+    "statusMeaning": {
+      "DRAFT": "Your details are saved but not yet sent to your university. Upload your student ID, then submit.",
+      "NEEDS_MORE_EVIDENCE": "Your university needs more evidence before it can decide. Read the note below, upload a clearer or different document, then resubmit.",
+      "REJECTED": "Your university could not confirm this enrollment. Contact your university’s internship office if you think this is a mistake.",
+      "REVOKED": "Your university has withdrawn this verification. Contact your university’s internship office to resolve it."
+    },
+    "reviewerNote": "Note from your university",
+    "whileWaiting": "While you wait, you can complete your profile and browse internships. Applying opens once your enrollment is verified."
   },
   "documents": {
     "onFile": "On file",
@@ -177,5 +199,186 @@
     "error": "We could not load your saved internships.",
     "emptyNeedsProfile": "Saving an internship needs your student profile. Add your details once and your bookmarks will be kept here.",
     "completeProfile": "Complete your profile"
+  },
+  "journey": {
+    "eyebrow": "Where you are",
+    "stages": {
+      "placementActive": {
+        "title": "Your internship is active",
+        "body": "Keep your logs, attendance and report up to date — everything for this internship is in one place."
+      },
+      "placementPlanned": {
+        "title": "Your internship is confirmed",
+        "body": "It starts on {{date}}. Your host organization starts it in FursadHub on your first day."
+      },
+      "completionPending": {
+        "title": "Your internship is being reviewed for completion",
+        "body": "Your university is checking the completion requirements. You will be notified when it is complete."
+      },
+      "offerWaiting": {
+        "title": "You have an internship offer waiting",
+        "body": "Review the offer and respond before {{date}}. Only you can accept or decline it."
+      },
+      "nominationWaiting": {
+        "title": "Your university nominated you",
+        "body": "The organization sees your nomination only after you agree to be considered."
+      },
+      "enrollmentMissing": {
+        "title": "Start by claiming your university enrollment",
+        "body": "Your university confirms you are their student. Until then you can browse, but not apply or be nominated."
+      },
+      "enrollmentIncomplete": {
+        "title": "Finish your enrollment",
+        "body": "Add your student ID and submit it so your university can confirm your enrollment."
+      },
+      "enrollmentChangesRequested": {
+        "title": "Your university asked for more evidence",
+        "body": "Read their note, update your student ID, and submit again."
+      },
+      "enrollmentInReview": {
+        "title": "Your university is reviewing your enrollment",
+        "body": "There is nothing you need to do right now. You can browse internships while you wait; applying opens once you are verified."
+      },
+      "enrollmentClosed": {
+        "title": "Your enrollment is not verified",
+        "body": "Your university did not confirm your enrollment. Read their note on the enrollment page."
+      },
+      "applicationsInProgress": {
+        "title": "Your applications are in progress",
+        "body": "Organizations are reviewing them. You will be notified when something changes."
+      },
+      "completed": {
+        "title": "You completed your internship",
+        "body": "Congratulations. Your internship record stays available here."
+      },
+      "readyToApply": {
+        "title": "You're ready to apply",
+        "body": "Your enrollment is verified. Find an internship that fits you and apply."
+      }
+    },
+    "actions": {
+      "browse": "Browse internships",
+      "enrollment": "Continue enrollment",
+      "viewEnrollment": "View enrollment",
+      "applications": "View applications",
+      "openInternship": "Open internship",
+      "viewInternship": "View internship",
+      "reviewOffer": "Review offer",
+      "respondNomination": "Respond to nomination"
+    },
+    "placementMeta": "{{organization}} · {{start}} – {{end}}",
+    "attention": {
+      "title": "Needs your attention",
+      "clearTitle": "Nothing needs your attention",
+      "clearBody": "You're up to date. New requests from your university or organizations will appear here.",
+      "open": "Open",
+      "items": {
+        "offer": {
+          "title": "Respond to the offer for {{title}}",
+          "meta": "Respond by {{date}}",
+          "action": "Review offer"
+        },
+        "nomination": {
+          "title": "Agree to be considered for {{title}}",
+          "titleNoOpportunity": "Agree to be considered for a nomination",
+          "meta": "{{organization}}",
+          "action": "Respond"
+        },
+        "enrollment": {
+          "missing": {
+            "title": "Claim your university enrollment",
+            "meta": "Needed to apply or be nominated"
+          },
+          "incomplete": {
+            "title": "Submit your enrollment for verification",
+            "meta": "Add your student ID, then submit"
+          },
+          "changesRequested": {
+            "title": "Your university asked for more evidence",
+            "meta": "Update your student ID and submit again"
+          },
+          "action": "Open"
+        },
+        "weeklyLogReturned": {
+          "title": "Week {{week}} log was returned for changes",
+          "meta": "Read your supervisor's comment and resubmit",
+          "action": "Open log"
+        },
+        "finalReportRevision": {
+          "title": "Your final report needs revision",
+          "meta": "Read the reviewer's comment, update and resubmit",
+          "action": "Open report"
+        },
+        "defenseScheduled": {
+          "title": "Your defense is scheduled",
+          "meta": "{{date}}",
+          "metaWithLocation": "{{date}} · {{location}}",
+          "action": "Details"
+        }
+      }
+    },
+    "lifecycle": {
+      "title": "Your internship journey",
+      "label": "Internship progress",
+      "requirementsGroup": "Requirements — in any order",
+      "noRequirements": "Your university requires nothing beyond the internship itself.",
+      "unavailable": "Requirements could not be loaded. Open the internship to see them.",
+      "steps": {
+        "placement": "Placement confirmed",
+        "started": "Internship started",
+        "WEEKLY_LOGS": "Weekly logs",
+        "ATTENDANCE": "Attendance",
+        "ORGANIZATION_EVALUATION": "Organization evaluation",
+        "FINAL_REPORT": "Final report",
+        "DEFENSE": "Defense",
+        "completion": "Completion"
+      },
+      "details": {
+        "startsOn": "Starts {{date}}",
+        "startedOn": "Started {{date}}",
+        "notStarted": "Not started",
+        "weeklyLogs": "{{done}} of {{total}} weeks reviewed",
+        "attendance": "{{done}} of {{total}} days settled",
+        "evaluation": {
+          "MISSING": "Not started by your supervisor",
+          "DRAFT": "Your supervisor is writing it",
+          "SUBMITTED": "Submitted by your supervisor",
+          "FINAL": "Finalized"
+        },
+        "finalReport": {
+          "MISSING": "Not started",
+          "DRAFT": "Draft",
+          "SUBMITTED": "Submitted for review",
+          "NEEDS_REVISION": "Needs revision",
+          "APPROVED": "Approved"
+        },
+        "defense": {
+          "MISSING": "Not scheduled yet",
+          "NOT_PASSED": "Not passed yet",
+          "PASSED": "Passed"
+        },
+        "completionPending": "Your university is reviewing completion",
+        "completedOn": "Completed {{date}}",
+        "ended": "This internship ended early"
+      }
+    },
+    "road": {
+      "title": "Your road to an internship",
+      "label": "Steps to an internship",
+      "steps": {
+        "enrollment": "Verified enrollment",
+        "apply": "Apply, or accept a nomination",
+        "offer": "Receive and accept an offer",
+        "placement": "Start your internship"
+      }
+    },
+    "recruitment": {
+      "title": "Applications and nominations",
+      "empty": "No applications or nominations yet.",
+      "emptyHint": "Applications you submit, and nominations from your university, will appear here.",
+      "nominated": "Nomination",
+      "viewApplications": "All applications",
+      "viewNominations": "All nominations"
+    }
   }
 }
