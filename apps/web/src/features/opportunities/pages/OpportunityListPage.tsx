@@ -76,7 +76,7 @@ export function OpportunityListPage() {
         <span className="block min-w-0">
           <Link
             to={`/organization/opportunities/${opportunity.id}`}
-            className="block truncate font-medium text-foreground hover:text-link hover:underline focus-visible:outline-none focus-visible:underline"
+            className="block truncate font-medium text-foreground hover:text-link hover:underline rounded-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus-ring"
           >
             {opportunity.title}
           </Link>

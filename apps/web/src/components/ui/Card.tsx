@@ -50,6 +50,9 @@ export const Card = forwardRef<HTMLDivElement, CardProps>(
             cn(
               'shadow-xs transition-[border-color,box-shadow] duration-150 ease-in-out motion-reduce:transition-none',
               'hover:border-brand-accent hover:shadow-md',
+              // The whole tile is the control (a stretched link inside it), so keyboard focus is
+              // shown on the tile — not only as an underline on the name. Pointer clicks show nothing.
+              'has-[:focus-visible]:ring-2 has-[:focus-visible]:ring-focus-ring',
             ),
           className,
         )}

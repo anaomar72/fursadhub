@@ -83,6 +83,25 @@ describe('CandidateDetailPage', () => {
     expect(screen.getByText(/i want to learn backend engineering/i)).toBeInTheDocument()
   })
 
+  it('names an event that kept the status by what happened, and keeps real transitions as they were', async () => {
+    stubFetch({
+      ...candidate,
+      status: 'ACCEPTED',
+      history: [
+        { eventType: 'OFFER_ACCEPTED', fromStatus: 'OFFERED', toStatus: 'ACCEPTED', occurredAt: '2026-08-02T10:00:00Z' },
+        { eventType: 'PLACEMENT_CREATED', fromStatus: 'ACCEPTED', toStatus: 'ACCEPTED', occurredAt: '2026-08-02T10:00:01Z' },
+      ],
+    })
+    renderPage()
+
+    const history = await screen.findByRole('list', { name: 'History' })
+    expect(within(history).getByText('Added to your interns')).toBeInTheDocument()
+    expect(within(history).getByText('Status: Accepted')).toBeInTheDocument()
+    // The genuine change still says where it came from.
+    expect(within(history).getByText('from Offer sent')).toBeInTheDocument()
+    expect(within(history).queryByText('from Accepted')).not.toBeInTheDocument()
+  })
+
   it('leads back through the opportunity and its candidates, each crumb naming its destination', async () => {
     stubFetch(candidate)
     renderPage()

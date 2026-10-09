@@ -234,6 +234,11 @@
     "historyHint": "Every recorded change on this candidacy, newest first.",
     "noHistory": "No history recorded yet.",
     "transition": "from {{from}}",
+    "statusUnchanged": "Status: {{status}}",
+    "events": {
+      "PLACEMENT_CREATED": "Added to your interns",
+      "SOURCE_MERGED_TO_BOTH": "Also nominated by their university"
+    },
     "cvTitle": "CV",
     "cvHint": "Opens the CV this candidate uploaded, if they have one on file.",
     "openCv": "Open CV",

@@ -42,9 +42,9 @@
     "supervisorDescription": "The internships you are assigned to supervise."
   },
   "organization": {
-    "title": "Placements",
+    "title": "Interns",
     "description": "Interns your organization is currently hosting.",
-    "empty": "No placements yet. Placements are created when a candidate accepts an offer.",
+    "empty": "No interns yet. Interns are added here when a candidate accepts an internship offer.",
     "intern": "Intern",
     "university": "University",
     "dates": "Dates",

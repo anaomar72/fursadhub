@@ -75,7 +75,7 @@ export function SupervisedStudentsPage() {
               affordance the name already carries. */}
           <Link
             to={`/university/placements/${(student.currentPlacement ?? student.placements[0]).id}`}
-            className="block truncate font-medium text-foreground hover:text-link hover:underline focus-visible:outline-none focus-visible:underline"
+            className="block truncate font-medium text-foreground hover:text-link hover:underline rounded-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus-ring"
           >
             {student.fullName ?? student.email ?? student.studentUserId}
           </Link>

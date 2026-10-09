@@ -272,20 +272,29 @@ export function CandidateDetailPage() {
                 label={t('recruitment:candidate.historyTitle')}
                 items={[...candidate.history]
                   .sort((a, b) => b.occurredAt.localeCompare(a.occurredAt))
-                  .map((event, index) => ({
-                    id: `${event.eventType}-${event.occurredAt}-${index}`,
-                    title: event.toStatus
-                      ? t(`recruitment:candidacyStatusValues.${event.toStatus}`)
-                      : t(`recruitment:candidate.events.${event.eventType}`, { defaultValue: humanize(event.eventType) }),
-                    description: event.fromStatus
-                      ? t('recruitment:candidate.transition', {
-                          from: t(`recruitment:candidacyStatusValues.${event.fromStatus}`),
-                        })
-                      : undefined,
-                    time: formatDateTime(event.occurredAt),
-                    // Timeline has no `info` dot; the in-progress stages read as brand there.
-                    tone: event.toStatus ? TIMELINE_TONE[CANDIDACY_STATUS_TONE[event.toStatus]] : 'neutral',
-                  }))}
+                  .map((event, index) => {
+                    // Some events record the status without changing it (a placement being created
+                    // on an accepted candidacy). Those are named by what happened, never "Accepted
+                    // from Accepted"; a real change keeps its "from" line.
+                    const unchanged = !!event.toStatus && event.fromStatus === event.toStatus
+                    const eventLabel = t(`recruitment:candidate.events.${event.eventType}`, { defaultValue: humanize(event.eventType) })
+                    return {
+                      id: `${event.eventType}-${event.occurredAt}-${index}`,
+                      title: event.toStatus && !unchanged ? t(`recruitment:candidacyStatusValues.${event.toStatus}`) : eventLabel,
+                      description: unchanged
+                        ? t('recruitment:candidate.statusUnchanged', {
+                            status: t(`recruitment:candidacyStatusValues.${event.toStatus}`),
+                          })
+                        : event.fromStatus
+                          ? t('recruitment:candidate.transition', {
+                              from: t(`recruitment:candidacyStatusValues.${event.fromStatus}`),
+                            })
+                          : undefined,
+                      time: formatDateTime(event.occurredAt),
+                      // Timeline has no `info` dot; the in-progress stages read as brand there.
+                      tone: event.toStatus ? TIMELINE_TONE[CANDIDACY_STATUS_TONE[event.toStatus]] : 'neutral',
+                    }
+                  })}
               />
             </div>
             )}

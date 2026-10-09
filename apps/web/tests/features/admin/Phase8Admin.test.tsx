@@ -117,6 +117,16 @@ describe('institution decisions', () => {
     expect(within(dialog).getByRole('button', { name: 'Suspend' })).toBeDisabled()
     expect(posted('/suspend')).toBeUndefined()
   })
+
+  it('draws the separating rule only when review commands sit above the withdrawal ones', async () => {
+    stub([[/\/admin\/organizations\/org-1$/, verified]])
+    renderAt('/admin/organizations/org-1', '/admin/organizations/:organizationId', <AdminOrganizationDetailPage />)
+
+    const decision = await screen.findByRole('complementary', { name: 'Verification decision' })
+    // A verified institution has no review commands left, so nothing should be divided off.
+    expect(within(decision).queryByRole('button', { name: 'Verify' })).not.toBeInTheDocument()
+    expect(within(decision).getByText('Withdraw verification').parentElement).not.toHaveClass('border-t')
+  })
 })
 
 describe('accounts', () => {

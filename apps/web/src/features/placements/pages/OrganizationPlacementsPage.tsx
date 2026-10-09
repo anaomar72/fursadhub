@@ -87,7 +87,7 @@ export function OrganizationPlacementsPage() {
         <span className="block min-w-0">
           <Link
             to={`/organization/placements/${placement.id}`}
-            className="block truncate font-medium text-foreground hover:text-link hover:underline focus-visible:outline-none focus-visible:underline"
+            className="block truncate font-medium text-foreground hover:text-link hover:underline rounded-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus-ring"
           >
             {placement.studentFullName ?? placement.studentEmail ?? placement.studentUserId}
           </Link>
@@ -187,8 +187,9 @@ export function OrganizationPlacementsPage() {
 
   return (
     <PageContainer className="flex flex-col gap-6">
+      {/* The heading is the sidebar entry's own label, so the portal names this list one way. */}
       <PageHeader
-        title={t('placements:organization.title')}
+        title={t(can.scopedToAssignedPlacements ? 'organization:nav.myInterns' : 'organization:nav.interns')}
         description={
           can.scopedToAssignedPlacements
             ? t('placements:organization.supervisorDescription')

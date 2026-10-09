@@ -248,8 +248,10 @@ describe('VerifyEmailPage', () => {
 
     expect(await screen.findByRole('heading', { name: /verify your email/i })).toBeInTheDocument()
     expect(screen.getByText(/newcomer@example\.com/)).toBeInTheDocument()
-    // Adopted into navigation state — not written back into the address bar.
-    expect(screen.getByTestId('location')).toHaveAttribute('data-state-email', 'newcomer@example.com')
+    // Adopted into navigation state — not written back into the address bar. The router applies a
+    // navigation as a transition, so it can commit after the heading's plain state update; waiting
+    // for that one commit is what made this assertion stop depending on machine load.
+    await waitFor(() => expect(screen.getByTestId('location')).toHaveAttribute('data-state-email', 'newcomer@example.com'))
     expect(screen.getByTestId('location').getAttribute('data-search')).not.toMatch(/email=/)
   })
 

@@ -197,6 +197,8 @@ describe('supervision queue', () => {
 
     expect(await screen.findByText('1 day still to confirm')).toBeInTheDocument()
     expect(screen.getByText('Amina Yusuf')).toBeInTheDocument()
+    // The rows sit directly under the page heading, so they are the next level down — no gap.
+    expect(screen.getByRole('heading', { level: 2, name: 'Amina Yusuf' })).toBeInTheDocument()
   })
 
   it('opens the evaluations section straight from a URL', async () => {
@@ -261,6 +263,17 @@ describe('supervisor intern list', () => {
 
     expect(headers).toContain('Supervisor')
     expect(headers).not.toContain('Evaluation')
+  })
+
+  it('names the list exactly as the sidebar entry does for each role', async () => {
+    stubApi()
+    const admin = renderAs('ORGANIZATION_ADMIN', <OrganizationPlacementsPage />)
+    expect(await screen.findByRole('heading', { level: 1, name: 'Interns' })).toBeInTheDocument()
+    admin.unmount()
+
+    stubApi({ attendance: [RECORDED_DAY] })
+    renderAs('ORGANIZATION_SUPERVISOR', <OrganizationPlacementsPage />)
+    expect(await screen.findByRole('heading', { level: 1, name: 'My interns' })).toBeInTheDocument()
   })
 
   it('does not fan out per-placement records for a non-supervisor', async () => {

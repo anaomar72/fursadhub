@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import { cn } from '../../../lib/utils/cn'
 import { useTranslation } from 'react-i18next'
 import { Button, FormField, Modal, Textarea } from '../../../components/ui'
 import {
@@ -73,7 +74,9 @@ export function InstitutionReviewActions({ kind, status, pending, onRun }: Insti
         <>
           {review.length > 0 && <div className="flex flex-wrap gap-2">{review.map(button)}</div>}
           {withdraw.length > 0 && (
-            <div className="flex flex-col gap-2 border-t border-border pt-4">
+            // The rule separates withdrawal from review commands; with nothing above it, it would
+            // only draw an empty line.
+            <div className={cn('flex flex-col gap-2', review.length > 0 && 'border-t border-border pt-4')}>
               <p className="text-label text-foreground">{t('admin:verification.withdrawTitle')}</p>
               <p className="text-caption text-foreground-secondary">{t('admin:verification.withdrawHint')}</p>
               <div className="flex flex-wrap gap-2">{withdraw.map(button)}</div>

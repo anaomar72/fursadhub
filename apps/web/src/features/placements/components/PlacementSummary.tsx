@@ -33,7 +33,8 @@ export function PlacementSummary({ placement, audience }: PlacementSummaryProps)
   return (
     <div>
       <div className="flex flex-wrap items-start justify-between gap-3">
-        <div>
+        {/* min-w-0: an unbroken heading (a student's email) must wrap, not push past a phone's edge. */}
+        <div className="min-w-0 flex-1">
           <PageHeader title={heading} />
           {subheading && <p className="mt-1 text-sm text-foreground-secondary">{subheading}</p>}
         </div>

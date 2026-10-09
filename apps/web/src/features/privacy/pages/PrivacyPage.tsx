@@ -80,10 +80,12 @@ export function PrivacyPage() {
             retryLabel={t('common:actions.retry')}
           />
         ) : (
+          // One layout whatever a description's length: the text takes the room and wraps, and the
+          // control stays beside it rather than dropping under one row and not another.
           <ul className="divide-y divide-border overflow-hidden rounded-lg border border-border bg-surface">
             {(consentsQuery.data ?? []).map((consent) => (
-              <li key={consent.consentType} className="flex flex-wrap items-center justify-between gap-3 px-4 py-3">
-                <div className="min-w-0">
+              <li key={consent.consentType} className="flex items-start justify-between gap-4 px-4 py-3">
+                <div className="min-w-0 flex-1">
                   <p className="text-sm font-medium text-foreground">
                     {t(`privacy:consentTypes.${consent.consentType}.label`)}
                   </p>
@@ -93,7 +95,7 @@ export function PrivacyPage() {
                 </div>
                 <Checkbox
                   id={`consent-${consent.consentType}`}
-                  className="shrink-0"
+                  className="shrink-0 py-0.5"
                   checked={consent.granted}
                   disabled={consentMutation.isPending}
                   onChange={(event) =>

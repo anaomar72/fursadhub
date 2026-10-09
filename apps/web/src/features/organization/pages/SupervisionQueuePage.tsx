@@ -168,11 +168,12 @@ function QueueRow({
       <Card interactive padding="lg" className="relative">
         <div className="flex flex-wrap items-start justify-between gap-3">
           <div className="min-w-0">
-            <h3 className="truncate font-semibold text-foreground">
+            {/* h2: these rows sit straight under the page heading — no section heading between. */}
+            <h2 className="truncate font-semibold text-foreground">
               <Link to={to} className="focus-visible:outline-none focus-visible:underline after:absolute after:inset-0">
                 {placement.studentFullName ?? placement.studentEmail ?? placement.studentUserId}
               </Link>
-            </h3>
+            </h2>
             <p className="mt-1 truncate text-sm text-foreground-secondary">{headline}</p>
             <p className="mt-1 text-xs text-muted">{[context, trailing].filter(Boolean).join(' · ')}</p>
           </div>

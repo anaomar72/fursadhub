@@ -234,6 +234,11 @@
     "historyHint": "Isbeddel kasta oo la diiwaangeliyay, kii ugu dambeeyay horeba.",
     "noHistory": "Weli taariikh lama diiwaangelin.",
     "transition": "laga bilaabay {{from}}",
+    "statusUnchanged": "Xaaladda: {{status}}",
+    "events": {
+      "PLACEMENT_CREATED": "Waxaa lagu daray tababarayaashaada",
+      "SOURCE_MERGED_TO_BOTH": "Jaamacaddiisa ayaa sidoo kale u magacawday"
+    },
     "cvTitle": "CV-ga",
     "cvHint": "Wuxuu furayaa CV-ga uu musharraxu soo geliyay, haddii uu mid leeyahay.",
     "openCv": "Fur CV-ga",

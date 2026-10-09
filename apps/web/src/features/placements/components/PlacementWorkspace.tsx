@@ -1,4 +1,5 @@
 import { RouteSuspense } from '../../../app/router/RouteFallback'
+import { useContext } from 'react'
 import { useQuery } from '@tanstack/react-query'
 import { useTranslation } from 'react-i18next'
 import { Outlet, useParams } from 'react-router-dom'
@@ -7,6 +8,8 @@ import { PageContainer } from '../../../app/layouts/PageContainer'
 import * as placementsApi from '../api/placementsApi'
 import { InternshipNav, type InternshipArea } from './InternshipNav'
 import { PlacementSummary } from './PlacementSummary'
+import { OrganizationMembershipContext } from '../../organization/components/OrganizationMembershipContext'
+import { organizationCapabilities } from '../../organization/organizationCapabilities'
 
 /** What each area calls its placement list — the same label as its sidebar entry. */
 const LIST_LABEL: Record<InternshipArea, string> = {
@@ -33,6 +36,12 @@ interface PlacementWorkspaceProps {
 export function PlacementWorkspace({ area }: PlacementWorkspaceProps) {
   const { t } = useTranslation()
   const { placementId } = useParams<{ placementId: string }>()
+  // A supervisor's sidebar entry reads "My interns"; the way back uses the same words.
+  const organizationMembership = useContext(OrganizationMembershipContext)
+  const listLabel =
+    area === 'organization' && organizationMembership && organizationCapabilities(organizationMembership).scopedToAssignedPlacements
+      ? 'organization:nav.myInterns'
+      : LIST_LABEL[area]
 
   const placementQuery = useQuery({
     queryKey: area === 'student' ? ['placements', 'mine', placementId] : ['placements', placementId],
@@ -82,7 +91,7 @@ export function PlacementWorkspace({ area }: PlacementWorkspaceProps) {
       {/* Phase 9: placement → module is a nested hierarchy, so every placement page carries the way back. */}
       <Breadcrumbs
         items={[
-          { label: t(LIST_LABEL[area]), to: `/${area}/placements` },
+          { label: t(listLabel), to: `/${area}/placements` },
           {
             label:
               area === 'student'
