@@ -60,7 +60,13 @@ export function Topbar({ areaLabel, navigationOpen = false, navigationId, onOpen
         <Icon name="menu" className="size-5" />
       </IconButton>
 
-      <p className="min-w-0 truncate text-label text-foreground-secondary">{areaLabel}</p>
+      {/*
+        Phase 9: below 400px there is no room for the portal context beside the five controls, and
+        it used to truncate to "Stud…". It is secondary there — the drawer names the portal and the
+        page names itself in its h1 — so it steps aside instead of truncating. The controls, which
+        are the only way to change language, theme or sign out, are never the ones that shrink.
+      */}
+      <p className="hidden min-w-0 truncate text-label text-foreground-secondary min-[400px]:block">{areaLabel}</p>
 
       <div className="ml-auto flex shrink-0 items-center gap-1 sm:gap-2">
         {/* Always present: unlike PublicHeader, the mobile drawer here carries destinations only,

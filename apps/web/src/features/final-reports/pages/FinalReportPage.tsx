@@ -71,7 +71,7 @@ export function FinalReportPage({ audience }: FinalReportPageProps) {
     onSettled: () => setConfirmingApproval(false),
     onSuccess: () => {
       // A one-time confirmation, then the stable APPROVED state remains
-      // (BRAND_AND_UI_GUIDELINES.md section 14). Never replayed on re-render.
+      // (CLAUDE.md section 58). Never replayed on re-render.
       setJustApproved(true)
       invalidate()
     },

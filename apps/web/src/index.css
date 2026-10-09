@@ -104,7 +104,7 @@
   /* One-time invalid-code feedback for <OtpCodeInput /> — a subtle wiggle, not a loop. */
   --animate-otp-shake: otp-shake var(--duration-normal) var(--ease-standard);
 
-  /* One orchestrated hero entrance on the landing page (BRAND_AND_UI_GUIDELINES.md section 12) —
+  /* One orchestrated hero entrance on the landing page (CLAUDE.md section 58) —
      plays once on mount, never on re-render, and is skipped entirely under reduced motion via the
      motion-reduce:animate-none override applied where it's used. */
   --animate-hero-fade: hero-fade-up var(--duration-slow) var(--ease-enter) both;

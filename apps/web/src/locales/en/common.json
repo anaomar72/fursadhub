@@ -26,7 +26,8 @@
       "organizationSupervisor": "Supervisor Portal",
       "admin": "Super Admin Console",
       "verificationOfficer": "Verification Console"
-    }
+    },
+    "breadcrumb": "Breadcrumb"
   },
   "publicPages": {
     "about": {

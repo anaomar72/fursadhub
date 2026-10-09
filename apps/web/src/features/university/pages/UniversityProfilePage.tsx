@@ -187,7 +187,7 @@ export function UniversityProfilePage() {
             size="lg"
           />
           <div className="min-w-0 flex-1">
-            <h2 className="break-words font-display text-lg font-bold text-brand-navy dark:text-foreground">
+            <h2 className="break-words font-display text-title-section text-foreground">
               {university.name}
             </h2>
             {(university.city || university.countryCode) && (
@@ -312,7 +312,7 @@ export function UniversityProfilePage() {
             </div></div></form>
       ) : (
         <Card padding="lg">
-          <h2 className="font-display text-base font-bold text-brand-navy dark:text-foreground">
+          <h2 className="font-display text-title-panel text-foreground">
             {t('university:profile.detailsTitle')}
           </h2>
           <dl className="mt-4 grid gap-4 sm:grid-cols-2">

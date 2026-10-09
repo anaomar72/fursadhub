@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import { useSearchParams } from 'react-router-dom'
 import { useQuery } from '@tanstack/react-query'
 import { useTranslation } from 'react-i18next'
 import {
@@ -18,6 +19,7 @@ import {
   type DataTableColumn,
 } from '../../../components/ui'
 import { AdminDetailSkeleton, AdminTableSkeleton } from '../components/AdminSkeletons'
+import { useListParams } from '../hooks/useListParams'
 import * as adminApi from '../api/adminApi'
 import { statisticTone } from '../statusTone'
 import { formatDate } from '../../../lib/utils/formatDate'
@@ -47,9 +49,18 @@ export function AdminOpportunitiesPage() {
   const { t } = useTranslation()
   const [query, setQuery] = useState('')
   const [submittedQuery, setSubmittedQuery] = useState('')
-  const [status, setStatus] = useState<OpportunityStatus | ''>('')
-  const [mode, setMode] = useState<OpportunityMode | ''>('')
-  const [page, setPage] = useState(0)
+  // Status, sourcing mode and page live in the URL (Phase 9, as on the other console lists); the
+  // search text stays in component state.
+  const { status, page, setStatus, setPage, resetPage } = useListParams(FILTER_STATUSES, '')
+  const [params, setParams] = useSearchParams()
+  const mode = (FILTER_MODES as string[]).includes(params.get('mode') ?? '') ? (params.get('mode') as OpportunityMode) : ''
+  const setMode = (value: OpportunityMode | '') => {
+    const next = new URLSearchParams(params)
+    next.delete('page')
+    if (value) next.set('mode', value)
+    else next.delete('mode')
+    setParams(next, { replace: true })
+  }
   const [openId, setOpenId] = useState<string | null>(null)
 
   const opportunitiesQuery = useQuery({
@@ -137,7 +148,7 @@ export function AdminOpportunitiesPage() {
         onSubmit={(event) => {
           event.preventDefault()
           setSubmittedQuery(query)
-          setPage(0)
+          resetPage()
         }}
       >
         <FilterBar
@@ -156,7 +167,6 @@ export function AdminOpportunitiesPage() {
             value={status}
             onChange={(event) => {
               setStatus(event.target.value as OpportunityStatus | '')
-              setPage(0)
             }}
           >
             <option value="">{t('admin:opportunities.allStatuses')}</option>
@@ -172,7 +182,6 @@ export function AdminOpportunitiesPage() {
             value={mode}
             onChange={(event) => {
               setMode(event.target.value as OpportunityMode | '')
-              setPage(0)
             }}
           >
             <option value="">{t('admin:opportunities.allModes')}</option>
@@ -208,6 +217,24 @@ export function AdminOpportunitiesPage() {
             columns={columns}
             rows={data?.content ?? []}
             rowKey={(opportunity) => opportunity.id}
+            density="dense"
+            renderMobileRow={(opportunity) => (
+              <div className="flex flex-col gap-1.5">
+                <div className="flex items-start justify-between gap-3">
+                  <span className="min-w-0 break-words font-semibold text-foreground">{opportunity.title}</span>
+                  <StatusBadge tone={statisticTone('opportunities', opportunity.status)}>{t(`admin:statusLabels.${opportunity.status}`, opportunity.status)}</StatusBadge>
+                </div>
+                <span className="text-caption text-foreground-secondary">
+                  {opportunity.organizationName} · {t(`admin:opportunities.modes.${opportunity.mode}`, opportunity.mode)}
+                </span>
+                <span className="text-caption text-foreground-secondary">
+                  {opportunity.publiclyDiscoverable ? t('admin:opportunities.publiclyVisible') : t('admin:opportunities.notPubliclyVisible')}
+                </span>
+                <Button size="sm" variant="outline" className="self-start" onClick={() => setOpenId(opportunity.id)}>
+                  {t('admin:opportunities.view')}
+                </Button>
+              </div>
+            )}
             empty={
               <EmptyState
                 title={t('admin:opportunities.empty')}

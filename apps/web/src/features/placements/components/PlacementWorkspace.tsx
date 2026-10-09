@@ -2,11 +2,18 @@ import { RouteSuspense } from '../../../app/router/RouteFallback'
 import { useQuery } from '@tanstack/react-query'
 import { useTranslation } from 'react-i18next'
 import { Outlet, useParams } from 'react-router-dom'
-import { EmptyState, Skeleton, SkeletonList, SkeletonRegion } from '../../../components/ui'
+import { Breadcrumbs, EmptyState, Skeleton, SkeletonList, SkeletonRegion } from '../../../components/ui'
 import { PageContainer } from '../../../app/layouts/PageContainer'
 import * as placementsApi from '../api/placementsApi'
 import { InternshipNav, type InternshipArea } from './InternshipNav'
 import { PlacementSummary } from './PlacementSummary'
+
+/** What each area calls its placement list — the same label as its sidebar entry. */
+const LIST_LABEL: Record<InternshipArea, string> = {
+  student: 'placements:nav.myPlacements',
+  university: 'placements:nav.placements',
+  organization: 'organization:nav.interns',
+}
 
 interface PlacementWorkspaceProps {
   area: InternshipArea
@@ -72,6 +79,18 @@ export function PlacementWorkspace({ area }: PlacementWorkspaceProps) {
       columns, so `wide` is the right width for it as well as the consistent one.
     */
     <PageContainer className="flex flex-col gap-6">
+      {/* Phase 9: placement → module is a nested hierarchy, so every placement page carries the way back. */}
+      <Breadcrumbs
+        items={[
+          { label: t(LIST_LABEL[area]), to: `/${area}/placements` },
+          {
+            label:
+              area === 'student'
+                ? (placement.opportunityTitle ?? t('placements:detail.untitledOpportunity'))
+                : (placement.studentFullName ?? placement.studentEmail ?? t('placements:detail.unknownStudent')),
+          },
+        ]}
+      />
       <PlacementSummary placement={placement} audience={area === 'student' ? 'student' : 'staff'} />
       <InternshipNav area={area} basePath={basePath} />
       <RouteSuspense><Outlet context={placement} /></RouteSuspense>

@@ -1,5 +1,3 @@
-import type { ReactNode } from 'react'
-import { Icon, type IconName } from './Icon'
 import skyline from '../../assets/presentation/skyline.webp'
 
 /**
@@ -21,10 +19,3 @@ export function SkylineArtwork({ className = '' }: { className?: string }) {
  * illustrations were replaced by sections built from the shared type scale and `PublicContainer`.
  */
 
-/** A titled, bordered group of profile/opportunity form fields (portal forms; see FormSection for new work). */
-export function ProfileFormSection({ title, hint, icon, children }: { title: string; hint?: string; icon: IconName; children: ReactNode }) {
-  return <section className="overflow-hidden rounded-xl border border-border bg-surface shadow-xs">
-    <header className="flex items-start gap-3 border-b border-border px-5 py-4"><span className="rounded-lg bg-brand-blue-soft p-2 text-brand-blue"><Icon name={icon} className="size-5" /></span><div><h2 className="font-display text-base font-bold text-brand-navy dark:text-foreground">{title}</h2>{hint && <p className="mt-1 text-xs leading-5 text-foreground-secondary">{hint}</p>}</div></header>
-    <div className="grid gap-5 p-5 sm:grid-cols-2 [&>*:only-child]:col-span-full">{children}</div>
-  </section>
-}

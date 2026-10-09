@@ -80,7 +80,8 @@
     "terminationReason": "Goor hore la joojiyay: {{reason}}",
     "aboutTitle": "Faahfaahinta tababarka",
     "evaluationHint": "Qiimaynta ururka martida loo yahay halkan ayay ka muuqan doontaa marka ay dhammaystirto.",
-    "evaluationUnavailable": "Qiimeyntaada lama soo bandhigi karin. Taasi macnaheedu maaha inay maqan tahay."
+    "evaluationUnavailable": "Qiimeyntaada lama soo bandhigi karin. Taasi macnaheedu maaha inay maqan tahay.",
+    "unknownStudent": "Arday aan magac lahayn"
   },
   "supervisors": {
     "title": "Kormeerayaasha",

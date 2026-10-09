@@ -34,7 +34,7 @@ export function CompensationFields({ form, framed = true }: { form: UseFormRetur
 
   return (
     <fieldset className={framed ? 'rounded-lg border border-border p-4' : 'min-w-0'}>
-      <legend className={framed ? 'px-1.5 text-sm font-bold text-brand-navy dark:text-foreground' : 'sr-only'}>
+      <legend className={framed ? 'px-1.5 text-label font-bold text-foreground' : 'sr-only'}>
         {t('opportunities:form.compensationLegend')}
       </legend>
 

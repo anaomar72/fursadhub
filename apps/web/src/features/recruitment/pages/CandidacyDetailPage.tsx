@@ -9,10 +9,10 @@ import {
   Button,
   Card,
   ErrorState,
-  Icon,
-  LoadingState,
   PageHeader,
   StatusBadge,
+  SkeletonPanel,
+  Breadcrumbs,
 } from '../../../components/ui'
 import { PageContainer } from '../../../app/layouts/PageContainer'
 import { formatDate } from '../../../lib/utils/formatDate'
@@ -60,7 +60,7 @@ export function CandidacyDetailPage() {
   if (candidacyQuery.isLoading) {
     return (
       <PageContainer>
-        <LoadingState label={t('common:status.loading')} />
+        <SkeletonPanel rows={6} />
       </PageContainer>
     )
   }
@@ -81,15 +81,7 @@ export function CandidacyDetailPage() {
 
   return (
     <PageContainer width="narrow" className="flex flex-col gap-6">
-      <div>
-        <Link
-          to="/student/applications"
-          className="inline-flex items-center gap-1 text-sm font-medium text-foreground-secondary hover:text-foreground"
-        >
-          <Icon name="chevronLeft" className="size-4" />
-          {t('recruitment:applications.title')}
-        </Link>
-      </div>
+      <Breadcrumbs items={[{ label: t('recruitment:applications.title'), to: '/student/applications' }, { label: candidacy.opportunityTitle }]} />
 
       <PageHeader
         title={candidacy.opportunityTitle}
@@ -122,7 +114,7 @@ export function CandidacyDetailPage() {
       {offer && !acceptMutation.isSuccess && (
         <Card padding="lg">
           <div className="flex flex-wrap items-center justify-between gap-3">
-            <h2 className="font-display text-base font-bold text-brand-navy dark:text-foreground">
+            <h2 className="font-display text-title-panel text-foreground">
               {t('recruitment:detail.offerTitle')}
             </h2>
             <StatusBadge tone={OFFER_STATUS_TONE[offer.status]}>

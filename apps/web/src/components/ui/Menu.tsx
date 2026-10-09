@@ -19,7 +19,7 @@ export interface MenuProps {
 
 /**
  * Small popover menu — the account control in `Topbar` today, generic enough to reuse elsewhere
- * (BRAND_AND_UI_GUIDELINES.md section 4 lists Dropdown as a shared primitive). Deliberately minimal:
+ * (CLAUDE.md section 57 lists Dropdown as a shared primitive). Deliberately minimal:
  * no submenus, no portal — a fixed-position panel under the trigger closes on outside click, on
  * Escape, or after an item is chosen.
  */

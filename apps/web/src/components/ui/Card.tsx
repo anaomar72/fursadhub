@@ -22,7 +22,7 @@ const PADDING_CLASSES = {
  * <p>Roles, and the component each one uses:
  * <ul>
  *   <li><strong>interactive</strong> — a tile the whole of which is a control: `<Card interactive>`.</li>
- *   <li><strong>metric</strong> — a KPI tile: `StatCard` (boxed) or `Metric` (inside a panel).</li>
+ *   <li><strong>metric</strong> — a KPI figure: `Metric`, inside a panel or a figures list.</li>
  *   <li><strong>entity</strong> — an organization/university/person summary: `EntityCard`.</li>
  *   <li><strong>opportunity</strong> — an internship: `InternshipCard`.</li>
  * </ul>

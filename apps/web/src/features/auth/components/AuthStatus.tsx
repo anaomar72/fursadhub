@@ -63,7 +63,7 @@ export function AuthStatus({ tone, title, description, actions, children }: Auth
     <AuthCard title={title}>
       <div className="flex flex-col items-center text-center">
         {tone === 'success' ? (
-          // The approved VERIFIED sequence (BRAND_AND_UI_GUIDELINES.md section 14). Its own label
+          // The approved VERIFIED sequence (CLAUDE.md section 58). Its own label
           // is already announced, so the title above is not repeated into it.
           <AnimatedCheck label={title} />
         ) : (

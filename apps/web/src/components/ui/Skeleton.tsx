@@ -7,7 +7,7 @@ export interface SkeletonProps {
 }
 
 /**
- * Loading placeholder for cards/lists/tables — see BRAND_AND_UI_GUIDELINES.md section 19.
+ * Loading placeholder for cards/lists/tables — see CLAUDE.md section 57.
  *
  * <p>Deliberately silent to assistive technology. Each placeholder used to carry its own
  * `role="status"` and "Loading" label, so a table skeleton of a dozen bars announced "Loading"

@@ -10,9 +10,8 @@ import { authErrorMessage } from '../api/errorMessage'
 import { AuthCard } from '../components/AuthCard'
 import { PasswordRequirements } from '../components/PasswordRequirements'
 import type { VerifyEmailLocationState } from './VerifyEmailPage'
-import { Alert, Button, Checkbox, FormField, Icon, Input, PasswordInput } from '../../../components/ui'
+import { Alert, Button, Checkbox, FormField, Icon, Input, PasswordInput, RadioCard } from '../../../components/ui'
 import { ACCOUNT_TYPE_OPTIONS, type SelfServiceAccountType } from '../accountTypes'
-import { cn } from '../../../lib/utils/cn'
 import * as legalApi from '../../legal/api/legalApi'
 import { PENDING_TERMS_ACCEPTANCE_KEY } from '../../legal/pendingAcceptance'
 
@@ -34,7 +33,17 @@ export function RegisterPage() {
   const { t, i18n } = useTranslation()
   const navigate = useNavigate()
   const [searchParams, setSearchParams] = useSearchParams()
-  const role = readRole(searchParams.get('role'))
+  const urlRole = readRole(searchParams.get('role'))
+  // The radio's checked state must change in the same event as the keypress. Reading it straight
+  // from the URL made it wait for the route update, and React put the old option back in the
+  // meantime — so under quick arrow keys focus sat on one option while another was checked. The
+  // URL stays the record (and the source after Back/Forward or a link); this only answers at once.
+  const [role, setRole] = useState(urlRole)
+  const [adoptedUrlRole, setAdoptedUrlRole] = useState(urlRole)
+  if (urlRole !== adoptedUrlRole) {
+    setAdoptedUrlRole(urlRole)
+    setRole(urlRole)
+  }
   const locale = i18n.resolvedLanguage ?? 'en'
 
   const form = useForm<RegisterFormValues>({
@@ -46,6 +55,7 @@ export function RegisterPage() {
   const [termsError, setTermsError] = useState(false)
 
   function selectRole(next: RegisterRole) {
+    setRole(next)
     const params = new URLSearchParams(searchParams)
     params.set('role', next)
     setSearchParams(params, { replace: true })
@@ -102,45 +112,18 @@ export function RegisterPage() {
             {ACCOUNT_TYPE_OPTIONS.map(({ type: option, icon }) => {
               const selected = role === option
               return (
-                <label
+                <RadioCard
                   key={option}
-                  className={cn(
-                    'flex cursor-pointer items-start gap-3 rounded-lg border p-3.5 transition-colors duration-150 motion-reduce:transition-none',
-                    'focus-within:ring-2 focus-within:ring-focus-ring',
-                    selected ? 'border-action-primary bg-brand-accent-soft' : 'border-border-strong bg-surface hover:bg-control-hover',
-                  )}
-                >
-                  <input
-                    type="radio"
-                    name="account-type"
-                    value={option}
-                    checked={selected}
-                    onChange={() => selectRole(option)}
-                    // Named by the title only; the explanation is its description.
-                    aria-labelledby={`account-type-${option}-label`}
-                    aria-describedby={`account-type-${option}-hint`}
-                    className="sr-only"
-                  />
-                  {/* The visible radio mark: filled when chosen, so the state never rests on colour. */}
-                  <span
-                    aria-hidden="true"
-                    className={cn(
-                      'mt-0.5 flex size-5 shrink-0 items-center justify-center rounded-full border-2',
-                      selected ? 'border-action-primary' : 'border-border-strong',
-                    )}
-                  >
-                    {selected && <span className="size-2.5 rounded-full bg-action-primary" />}
-                  </span>
-                  <span className="min-w-0 flex-1">
-                    <span id={`account-type-${option}-label`} className="flex items-center gap-2 text-body font-semibold text-foreground">
-                      <Icon name={icon} className="size-4 shrink-0 text-foreground-secondary" />
-                      {t(`auth:register.roleSelector.${option}`)}
-                    </span>
-                    <span id={`account-type-${option}-hint`} className="mt-1 block text-caption text-foreground-secondary">
-                      {t(`auth:register.roleSelector.${option}Hint`)}
-                    </span>
-                  </span>
-                </label>
+                  idBase={`account-type-${option}`}
+                  name="account-type"
+                  value={option}
+                  checked={selected}
+                  selected={selected}
+                  onChange={() => selectRole(option)}
+                  icon={icon}
+                  title={t(`auth:register.roleSelector.${option}`)}
+                  description={t(`auth:register.roleSelector.${option}Hint`)}
+                />
               )
             })}
           </div>

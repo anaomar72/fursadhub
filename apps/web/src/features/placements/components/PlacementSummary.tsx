@@ -23,7 +23,7 @@ export function PlacementSummary({ placement, audience }: PlacementSummaryProps)
   const heading =
     audience === 'student'
       ? (placement.opportunityTitle ?? t('placements:detail.untitledOpportunity'))
-      : (placement.studentFullName ?? placement.studentEmail ?? placement.studentUserId)
+      : (placement.studentFullName ?? placement.studentEmail ?? t('placements:detail.unknownStudent'))
 
   const subheading =
     audience === 'student'

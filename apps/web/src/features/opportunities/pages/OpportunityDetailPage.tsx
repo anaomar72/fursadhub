@@ -303,7 +303,7 @@ export function OpportunityDetailPage() {
         <form noValidate onSubmit={form.handleSubmit((values) => updateMutation.mutate(values))}>
           <div className="flex flex-col gap-4">
             <div>
-              <h2 className="font-display text-base font-bold text-brand-navy dark:text-foreground">
+              <h2 className="font-display text-title-panel text-foreground">
                 {t('opportunities:detail.editTitle')}
               </h2>
               <p className="mt-1 text-sm text-foreground-secondary">{t('opportunities:detail.editHint')}</p>
@@ -484,7 +484,7 @@ function TargetingSection({
 
   return (
     <Card padding="lg">
-      <h2 className="font-display text-base font-bold text-brand-navy dark:text-foreground">
+      <h2 className="font-display text-title-panel text-foreground">
         {t('opportunities:targets.title')}
       </h2>
       <p className="mt-1 text-sm text-foreground-secondary">{t('opportunities:targets.hint')}</p>

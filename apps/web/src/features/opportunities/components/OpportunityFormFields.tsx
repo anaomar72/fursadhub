@@ -1,7 +1,6 @@
 import { Controller, type UseFormReturn } from 'react-hook-form'
 import { useTranslation } from 'react-i18next'
-import { FormField, FormSection, Icon, Input, Select, TagInput, Textarea, type IconName } from '../../../components/ui'
-import { cn } from '../../../lib/utils/cn'
+import { FormField, FormSection, Icon, Input, RadioCard, Select, TagInput, Textarea, type IconName } from '../../../components/ui'
 import {
   MAX_HOURS_PER_WEEK,
   MAX_PERKS,
@@ -94,41 +93,16 @@ export function OpportunityFormFields({ form }: { form: UseFormReturn<Opportunit
             {MODES.map(({ mode: option, icon }) => {
               const selected = mode === option
               return (
-                <label
+                <RadioCard
                   key={option}
-                  className={cn(
-                    'flex cursor-pointer items-start gap-3 rounded-lg border p-3.5 transition-colors duration-150 motion-reduce:transition-none',
-                    'focus-within:ring-2 focus-within:ring-focus-ring',
-                    selected ? 'border-action-primary bg-brand-accent-soft' : 'border-border-strong bg-surface hover:bg-control-hover',
-                  )}
-                >
-                  <input
-                    type="radio"
-                    value={option}
-                    className="sr-only"
-                    aria-labelledby={`opp-mode-${option}-label`}
-                    aria-describedby={`opp-mode-${option}-hint`}
-                    {...form.register('mode')}
-                  />
-                  <span
-                    aria-hidden="true"
-                    className={cn(
-                      'mt-0.5 flex size-5 shrink-0 items-center justify-center rounded-full border-2',
-                      selected ? 'border-action-primary' : 'border-border-strong',
-                    )}
-                  >
-                    {selected && <span className="size-2.5 rounded-full bg-action-primary" />}
-                  </span>
-                  <span className="min-w-0 flex-1">
-                    <span id={`opp-mode-${option}-label`} className="flex items-center gap-2 text-body font-semibold text-foreground">
-                      <Icon name={icon} className="size-4 shrink-0 text-foreground-secondary" />
-                      {t(`opportunities:modeValues.${option}`)}
-                    </span>
-                    <span id={`opp-mode-${option}-hint`} className="mt-1 block text-caption text-foreground-secondary">
-                      {t(`opportunities:form.modeHelp.${option}`)}
-                    </span>
-                  </span>
-                </label>
+                  idBase={`opp-mode-${option}`}
+                  value={option}
+                  selected={selected}
+                  icon={icon}
+                  title={t(`opportunities:modeValues.${option}`)}
+                  description={t(`opportunities:form.modeHelp.${option}`)}
+                  {...form.register('mode')}
+                />
               )
             })}
           </div>

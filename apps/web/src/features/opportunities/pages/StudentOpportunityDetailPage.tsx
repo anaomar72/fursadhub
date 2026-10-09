@@ -14,10 +14,10 @@ import {
   Badge,
   Card,
   ErrorState,
-  Icon,
-  LoadingState,
   PageHeader,
   VerifiedBadge,
+  SkeletonPanel,
+  Breadcrumbs,
 } from '../../../components/ui'
 import { PageContainer } from '../../../app/layouts/PageContainer'
 import { formatDate } from '../../../lib/utils/formatDate'
@@ -51,7 +51,7 @@ export function StudentOpportunityDetailPage() {
   if (opportunityQuery.isLoading) {
     return (
       <PageContainer>
-        <LoadingState label={t('opportunities:public.loading')} />
+        <SkeletonPanel rows={6} label={t('opportunities:public.loading')} />
       </PageContainer>
     )
   }
@@ -80,12 +80,7 @@ export function StudentOpportunityDetailPage() {
 
   return (
     <PageContainer className="flex flex-col gap-6">
-      <div>
-        <Link to="/student/opportunities" className="inline-flex items-center gap-1 text-sm font-medium text-foreground-secondary hover:text-foreground">
-          <Icon name="chevronLeft" className="size-4" />
-          {t('opportunities:browse.backToList')}
-        </Link>
-      </div>
+      <Breadcrumbs items={[{ label: t('student:nav.exploreInternships'), to: '/student/opportunities' }, { label: opportunity.title }]} />
 
       <div className="grid gap-6 lg:grid-cols-[1.6fr_1fr] lg:items-start">
         <div className="flex flex-col gap-6">
@@ -205,7 +200,7 @@ function Row({ label, value }: { label: string; value: string }) {
 function Section({ title, body }: { title: string; body: string }) {
   return (
     <section>
-      <h2 className="font-display text-base font-bold text-brand-navy dark:text-foreground">{title}</h2>
+      <h2 className="font-display text-title-panel text-foreground">{title}</h2>
       <p className="mt-2 whitespace-pre-line text-sm leading-6 text-foreground-secondary">{body}</p>
     </section>
   )

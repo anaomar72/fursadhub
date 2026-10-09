@@ -298,7 +298,12 @@
     "resultCount_one": "{{count}} case waiting",
     "resultCount_other": "{{count}} cases waiting",
     "emptyHint": "Nothing has been escalated to the platform for review.",
-    "noteHint": "The student is shown this, so say what they need to do."
+    "noteHint": "The student is shown this, so say what they need to do.",
+    "done": {
+      "verify": "Enrollment verified.",
+      "reject": "Enrollment rejected.",
+      "request-more-evidence": "More evidence requested from the student."
+    }
   },
   "verificationStatuses": {
     "DRAFT": "Draft",

@@ -9,9 +9,9 @@ import {
   EmptyState,
   ErrorState,
   Icon,
-  LoadingState,
   PageHeader,
   StatusBadge,
+  SkeletonCardGrid,
 } from '../../../components/ui'
 import { PageContainer } from '../../../app/layouts/PageContainer'
 
@@ -46,7 +46,7 @@ export function UniversityPartnersPage() {
       />
 
       {placementsQuery.isLoading ? (
-        <LoadingState label={t('common:status.loading')} />
+        <SkeletonCardGrid count={3} />
       ) : placementsQuery.isError ? (
         <ErrorState onRetry={() => void placementsQuery.refetch()} retryLabel={t('common:actions.retry')} />
       ) : partners.length === 0 ? (

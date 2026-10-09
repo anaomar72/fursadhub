@@ -50,7 +50,7 @@ export function isClosed(status: CandidacyStatus): boolean {
 /**
  * Column accents. These reuse the product's reserved STATUS palette rather than a categorical one,
  * and every column also carries its translated name and count as text — the reading never depends
- * on telling two hues apart (BRAND_AND_UI_GUIDELINES.md section 17).
+ * on telling two hues apart (WCAG 1.4.1).
  */
 /**
  * The candidacy tones are the registry's (Phase 6). This used to be a second map that coloured

@@ -38,7 +38,7 @@ function DefaultIcon() {
 }
 
 /**
- * Replaces a bare "No X match" line wherever a list can come back empty (BRAND_AND_UI_GUIDELINES.md
+ * Replaces a bare "No X match" line wherever a list can come back empty (CLAUDE.md section 57
  * section 4). Kept deliberately quiet — the landing page's doors already spend this product's one
  * bold visual move, so this stays a small muted glyph, never a second signature element.
  */

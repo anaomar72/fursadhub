@@ -298,7 +298,12 @@
     "resultCount_one": "{{count}} kiis oo sugaya",
     "resultCount_other": "{{count}} kiis oo sugaya",
     "emptyHint": "Waxba kor loogumaa qaadin nidaamka in la eego.",
-    "noteHint": "Ardayga wuu arki doonaa, sidaas darteed sheeg waxa uu samayn karo."
+    "noteHint": "Ardayga wuu arki doonaa, sidaas darteed sheeg waxa uu samayn karo.",
+    "done": {
+      "verify": "Diiwaangelinta waa la xaqiijiyay.",
+      "reject": "Diiwaangelinta waa la diiday.",
+      "request-more-evidence": "Caddayn dheeraad ah ayaa laga codsaday ardayga."
+    }
   },
   "verificationStatuses": {
     "DRAFT": "Qabyo",

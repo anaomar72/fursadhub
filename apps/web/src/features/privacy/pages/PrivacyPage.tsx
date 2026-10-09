@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { useTranslation } from 'react-i18next'
-import { Button, EmptyState, ErrorState, FormField, LoadingState, PageHeader, Select, StatusBadge, Textarea } from '../../../components/ui'
+import { Button, EmptyState, ErrorState, FormField, PageHeader, Select, StatusBadge, Textarea, SkeletonList, Checkbox } from '../../../components/ui'
 import { apiErrorMessage } from '../../../lib/api/errorMessage'
 import { formatDate } from '../../../lib/utils/formatDate'
 import * as privacyApi from '../api/privacyApi'
@@ -72,7 +72,7 @@ export function PrivacyPage() {
         </div>
 
         {consentsQuery.isLoading ? (
-          <LoadingState label={t('common:status.loading')} />
+          <SkeletonList rows={3} />
         ) : consentsQuery.isError ? (
           <ErrorState
             title={t('common:status.error')}
@@ -91,21 +91,19 @@ export function PrivacyPage() {
                     {t(`privacy:consentTypes.${consent.consentType}.description`)}
                   </p>
                 </div>
-                <label className="flex shrink-0 items-center gap-2 text-sm text-foreground">
-                  <input
-                    type="checkbox"
-                    checked={consent.granted}
-                    disabled={consentMutation.isPending}
-                    onChange={(event) =>
-                      consentMutation.mutate({
-                        consentType: consent.consentType,
-                        granted: event.target.checked,
-                      })
-                    }
-                    className="size-4 rounded border-border"
-                  />
-                  {consent.granted ? t('privacy:consents.granted') : t('privacy:consents.notGranted')}
-                </label>
+                <Checkbox
+                  id={`consent-${consent.consentType}`}
+                  className="shrink-0"
+                  checked={consent.granted}
+                  disabled={consentMutation.isPending}
+                  onChange={(event) =>
+                    consentMutation.mutate({
+                      consentType: consent.consentType,
+                      granted: event.target.checked,
+                    })
+                  }
+                  label={consent.granted ? t('privacy:consents.granted') : t('privacy:consents.notGranted')}
+                />
               </li>
             ))}
           </ul>
@@ -165,7 +163,7 @@ export function PrivacyPage() {
         </form>
 
         {requestsQuery.isLoading ? (
-          <LoadingState label={t('common:status.loading')} />
+          <SkeletonList rows={3} />
         ) : requestsQuery.isError ? (
           <ErrorState
             title={t('common:status.error')}

@@ -16,10 +16,10 @@ import {
   Card,
   EmptyState,
   ErrorState,
-  LoadingState,
   PageHeader,
   StatusBadge,
   Tabs,
+  SkeletonList,
 } from '../../../components/ui'
 import { PageContainer } from '../../../app/layouts/PageContainer'
 import { formatDate } from '../../../lib/utils/formatDate'
@@ -88,7 +88,7 @@ export function SupervisionQueuePage() {
       />
 
       {placementsQuery.isLoading ? (
-        <LoadingState label={t('common:status.loading')} />
+        <SkeletonList rows={4} />
       ) : placementsQuery.isError ? (
         <ErrorState onRetry={() => void placementsQuery.refetch()} retryLabel={t('common:actions.retry')} />
       ) : section === 'attendance' ? (
@@ -122,7 +122,7 @@ function QueueChrome({
   }
 
   if (records.isLoading) {
-    return <LoadingState label={t('common:status.loading')} />
+    return <SkeletonList rows={4} />
   }
 
   return (

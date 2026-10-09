@@ -6,7 +6,7 @@ import * as studentApi from '../api/studentApi'
 import * as recruitmentApi from '../../recruitment/api/recruitmentApi'
 import { SAVED_LIST_KEY } from '../hooks/useSavedOpportunities'
 import { StudentOpportunityCard } from '../components/StudentOpportunityCard'
-import { EmptyState, ErrorState, LoadingState, PageHeader, Pagination } from '../../../components/ui'
+import { EmptyState, ErrorState, PageHeader, Pagination, SkeletonCardGrid } from '../../../components/ui'
 import { PageContainer } from '../../../app/layouts/PageContainer'
 import { formatDate } from '../../../lib/utils/formatDate'
 import { ApiError } from '../../../lib/api/client'
@@ -65,7 +65,7 @@ export function SavedInternshipsPage() {
       <PageHeader title={t('student:saved.title')} description={t('student:saved.subtitle')} />
 
       {savedQuery.isLoading ? (
-        <LoadingState label={t('common:status.loading')} />
+        <SkeletonCardGrid count={3} />
       ) : savedQuery.isError && !noProfileYet ? (
         <ErrorState
           description={t('student:saved.error')}

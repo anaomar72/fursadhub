@@ -185,7 +185,7 @@ export function StaffPage() {
 
       {createOpen && (
         <Card padding="lg">
-          <h2 className="font-display text-base font-bold text-brand-navy dark:text-foreground">
+          <h2 className="font-display text-title-panel text-foreground">
             {t('organization:staff.createTitle')}
           </h2>
           <p className="mt-1 text-sm text-foreground-secondary">{t('organization:staff.createHint')}</p>

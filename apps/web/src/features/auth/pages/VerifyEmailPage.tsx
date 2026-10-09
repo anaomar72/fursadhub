@@ -35,7 +35,7 @@ function nextStepKey(role: string | null): string {
 }
 
 /**
- * FursadHub verification screen (CLAUDE.md section 13 / BRAND_AND_UI_GUIDELINES.md section 14):
+ * FursadHub verification screen (CLAUDE.md section 13 / CLAUDE.md section 58):
  * register -> 4-digit code emailed -> entered here -> auto-submits on the 4th digit -> the
  * approved one-time VERIFIED animation -> stable verified state.
  *

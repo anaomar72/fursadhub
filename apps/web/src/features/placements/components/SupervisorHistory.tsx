@@ -1,7 +1,7 @@
 import { useQuery } from '@tanstack/react-query'
 import { useTranslation } from 'react-i18next'
 import * as placementsApi from '../api/placementsApi'
-import { LoadingSpinner, StatusBadge } from '../../../components/ui'
+import { StatusBadge, SkeletonList, Panel } from '../../../components/ui'
 
 interface SupervisorHistoryProps {
   placementId: string
@@ -24,9 +24,7 @@ export function SupervisorHistory({ placementId }: SupervisorHistoryProps) {
 
   if (historyQuery.isLoading) {
     return (
-      <div className="flex justify-center py-6">
-        <LoadingSpinner label={t('common:status.loading')} />
-      </div>
+      <SkeletonList rows={2} />
     )
   }
 
@@ -36,8 +34,7 @@ export function SupervisorHistory({ placementId }: SupervisorHistoryProps) {
   }
 
   return (
-    <section className="rounded-lg border border-border bg-surface p-4">
-      <h2 className="text-sm font-semibold text-foreground">{t('placements:history.title')}</h2>
+    <Panel title={t('placements:history.title')} padding="compact">
       <p className="mt-1 text-xs text-foreground-secondary">{t('placements:history.description')}</p>
 
       <ul className="mt-4 flex flex-col gap-3">
@@ -67,6 +64,6 @@ export function SupervisorHistory({ placementId }: SupervisorHistoryProps) {
           </li>
         ))}
       </ul>
-    </section>
+    </Panel>
   )
 }

@@ -23,7 +23,7 @@ export interface MetricProps {
  * <p>Use it inside a surface that already exists — a row of figures in a {@link Panel}, an
  * attention strip, a detail page's summary — where wrapping each number in its own card would
  * create the card-inside-card stacking the redesign is removing. For a free-standing dashboard
- * tile, use `StatCard`, which shares this typography.
+ * tile, place it in a bordered figures list as the role dashboards do.
  */
 export function Metric({ label, value, context, to, className }: MetricProps) {
   const body = (

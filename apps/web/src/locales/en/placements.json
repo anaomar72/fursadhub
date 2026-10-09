@@ -80,7 +80,8 @@
     "terminationReason": "Ended early: {{reason}}",
     "aboutTitle": "Placement details",
     "evaluationHint": "Your host organization's assessment appears here once it is final.",
-    "evaluationUnavailable": "Your evaluation could not be loaded. This does not mean it is missing."
+    "evaluationUnavailable": "Your evaluation could not be loaded. This does not mean it is missing.",
+    "unknownStudent": "Unnamed student"
   },
   "supervisors": {
     "title": "Supervisors",

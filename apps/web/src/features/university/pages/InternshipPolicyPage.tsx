@@ -1,12 +1,13 @@
 import { useContext, useEffect, useState } from 'react'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { useTranslation } from 'react-i18next'
-import { Button, LoadingSpinner, PageHeader, Select, StatusBadge } from '../../../components/ui'
+import { Button, Checkbox, PageHeader, Select, StatusBadge, SkeletonPanel } from '../../../components/ui'
 import { apiErrorMessage } from '../../../lib/api/errorMessage'
 import * as placementsApi from '../../placements/api/placementsApi'
 import type { InternshipPolicyInput } from '../../placements/types'
 import { UniversityMembershipContext } from '../components/UniversityMembershipContext'
 import * as universityApi from '../api/universityApi'
+import { PageContainer } from '../../../app/layouts/PageContainer'
 
 /**
  * The five — and only five — completion requirements (CLAUDE.md section 41). This is a closed list
@@ -135,9 +136,9 @@ export function InternshipPolicyPage() {
 
   if (policyQuery.isLoading || !draft) {
     return (
-      <div className="flex justify-center py-16">
-        <LoadingSpinner size="lg" label={t('common:status.loading')} />
-      </div>
+      <PageContainer>
+        <SkeletonPanel rows={5} />
+      </PageContainer>
     )
   }
 
@@ -177,24 +178,18 @@ export function InternshipPolicyPage() {
         <fieldset className="mt-4 flex flex-col gap-3" disabled={!editable}>
           <legend className="sr-only">{t('internship:policy.requirements')}</legend>
           {REQUIREMENT_KEYS.map((key) => (
-            <label key={key} className="flex items-start gap-3 text-sm">
-              <input
-                type="checkbox"
-                className="mt-0.5 size-4 rounded border-border accent-brand-primary"
-                checked={draft[key]}
-                onChange={(event) =>
-                  setDraft((current) => (current ? { ...current, [key]: event.target.checked } : current))
-                }
-              />
-              <span>
-                <span className="font-medium text-foreground">
-                  {t(`internship:policy.fields.${key}.label`)}
-                </span>
-                <span className="block text-xs text-foreground-secondary">
-                  {t(`internship:policy.fields.${key}.hint`)}
-                </span>
-              </span>
-            </label>
+            <Checkbox
+              key={key}
+              id={`policy-${key}`}
+              checked={draft[key]}
+              onChange={(event) => setDraft((current) => (current ? { ...current, [key]: event.target.checked } : current))}
+              label={
+                <>
+                  <span className="font-medium text-foreground">{t(`internship:policy.fields.${key}.label`)}</span>
+                  <span className="block text-caption text-foreground-secondary">{t(`internship:policy.fields.${key}.hint`)}</span>
+                </>
+              }
+            />
           ))}
         </fieldset>
 

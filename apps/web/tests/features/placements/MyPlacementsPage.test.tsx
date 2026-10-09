@@ -136,7 +136,7 @@ describe('StudentPlacementDetailPage', () => {
       </MemoryRouter>,
     )
 
-    expect(await screen.findByText('Backend Engineering Intern')).toBeInTheDocument()
+    expect(await screen.findByRole('heading', { name: 'Backend Engineering Intern' })).toBeInTheDocument()
     expect(screen.getByText('supervisor@uni.test')).toBeInTheDocument()
     expect(screen.getByText('Not assigned yet')).toBeInTheDocument()
 

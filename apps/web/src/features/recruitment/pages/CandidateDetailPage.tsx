@@ -166,12 +166,14 @@ export function CandidateDetailPage() {
       <Breadcrumbs
         items={[
           { label: t('opportunities:list.title'), to: '/organization/opportunities' },
+          // Each crumb's label names its destination, as on the candidate pool one level up.
           ...(opportunityId
             ? [
                 {
                   label: opportunityQuery.data?.title ?? t('recruitment:pool.title'),
-                  to: `/organization/opportunities/${opportunityId}/candidates`,
+                  to: `/organization/opportunities/${opportunityId}`,
                 },
+                { label: t('recruitment:pool.title'), to: `/organization/opportunities/${opportunityId}/candidates` },
               ]
             : []),
           { label: candidate.studentFullName ?? candidate.studentEmail ?? t('recruitment:pool.candidate') },
@@ -201,7 +203,7 @@ export function CandidateDetailPage() {
         <div className="flex min-w-0 flex-col gap-6">
           <ProfessionalProfileSummary profile={candidate.professional} />
           <Card padding="lg">
-            <h2 className="font-display text-base font-bold text-brand-navy dark:text-foreground">
+            <h2 className="font-display text-title-panel text-foreground">
               {t('recruitment:candidate.answersTitle')}
             </h2>
             {candidate.answers.length === 0 ? (
@@ -219,7 +221,7 @@ export function CandidateDetailPage() {
           </Card>
 
           <Card padding="lg">
-            <h2 className="font-display text-base font-bold text-brand-navy dark:text-foreground">
+            <h2 className="font-display text-title-panel text-foreground">
               {t('recruitment:candidate.cvTitle')}
             </h2>
             <p className="mt-1 text-sm text-foreground-secondary">
@@ -258,7 +260,7 @@ export function CandidateDetailPage() {
           </Card>
 
           <Card padding="lg">
-            <h2 className="font-display text-base font-bold text-brand-navy dark:text-foreground">
+            <h2 className="font-display text-title-panel text-foreground">
               {t('recruitment:candidate.historyTitle')}
             </h2>
             <p className="mt-1 text-sm text-foreground-secondary">{t('recruitment:candidate.historyHint')}</p>
@@ -293,7 +295,7 @@ export function CandidateDetailPage() {
         <aside className="flex min-w-0 flex-col gap-6" aria-label={t('recruitment:candidate.actionsTitle')}>
           {commands.length > 0 && (
             <Card padding="lg">
-              <h2 className="font-display text-base font-bold text-brand-navy dark:text-foreground">
+              <h2 className="font-display text-title-panel text-foreground">
                 {t('recruitment:candidate.actionsTitle')}
               </h2>
               <p className="mt-1 text-sm text-foreground-secondary">{t('recruitment:candidate.actionsHint')}</p>
@@ -321,7 +323,7 @@ export function CandidateDetailPage() {
             </Card>
           )}
             <Card padding="lg">
-              <h2 className="font-display text-base font-bold text-brand-navy dark:text-foreground">
+              <h2 className="font-display text-title-panel text-foreground">
                 {t('recruitment:candidate.offersTitle')}
               </h2>
               {candidate.offers.length === 0 ? (
@@ -379,7 +381,7 @@ export function CandidateDetailPage() {
               <form noValidate onSubmit={offerForm.handleSubmit((values) => offerMutation.mutate(values))}>
                 <Card padding="lg" className="flex flex-col gap-4">
                   <div>
-                    <h2 className="font-display text-base font-bold text-brand-navy dark:text-foreground">
+                    <h2 className="font-display text-title-panel text-foreground">
                       {t('recruitment:candidate.sendOfferTitle')}
                     </h2>
                     <p className="mt-1 text-sm text-foreground-secondary">{t('recruitment:candidate.sendOfferHint')}</p>

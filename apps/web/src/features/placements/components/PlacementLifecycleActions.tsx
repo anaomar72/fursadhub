@@ -3,7 +3,7 @@ import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { useTranslation } from 'react-i18next'
 import * as placementsApi from '../api/placementsApi'
 import { apiErrorMessage } from '../../../lib/api/errorMessage'
-import { Button, FormField, Textarea } from '../../../components/ui'
+import { Button, FormField, Textarea, Panel } from '../../../components/ui'
 import type { PlacementResponse, PlacementStatus } from '../types'
 
 /** A lifecycle command that needs a written explanation before it is sent. */
@@ -62,18 +62,16 @@ export function PlacementLifecycleActions({ placement }: PlacementLifecycleActio
 
   if (actions.length === 0) {
     return (
-      <section className="rounded-lg border border-border bg-surface p-4">
-        <h2 className="text-sm font-semibold text-foreground">{t('placements:actions.title')}</h2>
+      <Panel title={t('placements:actions.title')} padding="compact">
         <p className="mt-2 text-sm text-foreground-secondary">
           {t(`placements:actions.terminalNote.${placement.status}`)}
         </p>
-      </section>
+      </Panel>
     )
   }
 
   return (
-    <section className="rounded-lg border border-border bg-surface p-4">
-      <h2 className="text-sm font-semibold text-foreground">{t('placements:actions.title')}</h2>
+    <Panel title={t('placements:actions.title')} padding="compact">
 
       <div className="mt-3 flex flex-wrap gap-2">
         {actions.includes('start') && (
@@ -153,7 +151,7 @@ export function PlacementLifecycleActions({ placement }: PlacementLifecycleActio
           {apiErrorMessage(t, 'placements', 'actions', error)}
         </p>
       )}
-    </section>
+    </Panel>
   )
 }
 

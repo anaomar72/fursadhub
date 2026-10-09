@@ -1,4 +1,5 @@
 import type { ReactNode } from 'react'
+import { useTranslation } from 'react-i18next'
 import { Link } from 'react-router-dom'
 import { Icon } from './Icon'
 
@@ -21,10 +22,17 @@ const LINK_CLASSES =
  * <p>`to` renders a router {@code Link}; a bare `href` renders an `<a>` and is for genuinely
  * external destinations only. Before this distinction existed every crumb was an `<a>`, which meant
  * clicking one dropped the SPA and reloaded the whole application.
+ *
+ * <p>Where to use it (Phase 9 rule): on authenticated pages nested under a list — a record opened
+ * from its list, and a sub-record under that record (opportunity → candidate, placement → module,
+ * queue → case). Not on top-level destinations the sidebar already names, and not on the public
+ * site, whose header carries orientation. Crumbs wrap rather than overflow on a phone.
  */
-export function Breadcrumbs({ items, label = 'Breadcrumb' }: { items: BreadcrumbItem[]; label?: string }) {
+export function Breadcrumbs({ items, label }: { items: BreadcrumbItem[]; label?: string }) {
+  const { t } = useTranslation()
   return (
-    <nav aria-label={label}>
+    // The landmark name used to be the hard-coded English word "Breadcrumb" in every language.
+    <nav aria-label={label ?? t('common:shell.breadcrumb')}>
       <ol className="flex min-w-0 flex-wrap items-center gap-1.5 text-sm">
         {items.map((item, i) => (
           <li key={i} className="flex min-w-0 items-center gap-1.5">
