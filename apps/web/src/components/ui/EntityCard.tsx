@@ -38,7 +38,7 @@ export function EntityCard({
   density = 'regular',
 }: EntityCardProps) {
   return (
-    <Card interactive padding="none" className={['flex h-full flex-col', className].filter(Boolean).join(' ')}>
+    <Card interactive padding="none" className={['fh-entity-card flex h-full flex-col', className].filter(Boolean).join(' ')}>
       <div className={density === 'compact' ? 'flex flex-1 flex-col p-3.5' : 'flex flex-1 flex-col p-5'}>
         <div className="flex min-w-0 items-start gap-3">
           <Avatar name={name} src={imageUrl} size="lg" shape="square" />

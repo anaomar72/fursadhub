@@ -48,7 +48,7 @@ export const Card = forwardRef<HTMLDivElement, CardProps>(
           // under the pointer. Border and shadow carry the same signal while the layout holds still.
           interactive &&
             cn(
-              'shadow-xs transition-[border-color,box-shadow] duration-150 ease-in-out motion-reduce:transition-none',
+              'shadow-xs transition-[border-color,box-shadow] duration-fast ease-ui motion-reduce:transition-none',
               'hover:border-brand-accent hover:shadow-md',
               // The whole tile is the control (a stretched link inside it), so keyboard focus is
               // shown on the tile — not only as an underline on the name. Pointer clicks show nothing.

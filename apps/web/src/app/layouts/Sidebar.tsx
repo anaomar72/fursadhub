@@ -87,7 +87,7 @@ export const Sidebar = forwardRef<HTMLDivElement, SidebarProps>(function Sidebar
         // destinations fit — and when one still does not, it wraps to a second line (below) rather
         // than being cut to an ellipsis. Never a truncated label a person has to hover to read.
         isRail ? 'w-20' : 'w-72',
-        'transition-[width] duration-200 ease-in-out motion-reduce:transition-none',
+        'transition-[width] duration-normal ease-ui motion-reduce:transition-none',
         className,
       )}
     >
@@ -122,7 +122,7 @@ export const Sidebar = forwardRef<HTMLDivElement, SidebarProps>(function Sidebar
                     className={cn(
                       'mt-1 block',
                       isTenantBranded
-                        ? 'text-caption font-bold uppercase tracking-wider text-brand-accent'
+                        ? 'text-caption font-semibold tracking-wide text-sidebar-foreground'
                         : 'text-caption font-semibold text-sidebar-foreground',
                     )}
                   >

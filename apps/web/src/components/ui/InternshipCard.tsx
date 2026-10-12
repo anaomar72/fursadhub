@@ -90,7 +90,7 @@ export function InternshipCard({
   const meta = candidates.filter((entry): entry is MetaEntry => entry !== null)
 
   return (
-    <Card interactive padding="none" className={cn('relative flex h-full flex-col', className)}>
+    <Card interactive padding="none" className={cn('fh-internship-card relative flex h-full flex-col', className)}>
       <div className={cn('flex flex-1 flex-col', compact ? 'p-4' : 'p-5')}>
         <div className="flex items-center gap-3">
           {/*

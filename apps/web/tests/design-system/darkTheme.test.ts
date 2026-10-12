@@ -149,3 +149,20 @@ describe('motion tokens', () => {
     }
   })
 })
+
+// Astra: readable body copy and visible control boundaries on light surfaces.
+describe('light theme accessibility', () => {
+  const light = block(':root {')
+  it('keeps all body text tones above 4.5:1 on reading surfaces', () => {
+    for (const text of ['primary', 'secondary', 'muted']) {
+      for (const surface of ['background', 'surface', 'surface-muted']) {
+        expect(contrast(light[`--color-text-${text}`], light[`--color-${surface}`])).toBeGreaterThanOrEqual(4.5)
+      }
+    }
+  })
+  it('keeps control boundaries above 3:1 on white and inset surfaces', () => {
+    for (const surface of ['surface', 'surface-muted']) {
+      expect(contrast(light['--color-border-strong'], light[`--color-${surface}`])).toBeGreaterThanOrEqual(3)
+    }
+  })
+})

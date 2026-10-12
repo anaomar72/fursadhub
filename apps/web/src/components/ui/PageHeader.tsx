@@ -39,7 +39,7 @@ export function PageHeader({ eyebrow, title, description, actions, back, classNa
     */
     <div
       style={{ borderBottomColor: 'var(--workspace-rule)' }}
-      className={cn('flex flex-col gap-4 border-b pb-5 sm:flex-row sm:items-end sm:justify-between', className)}
+      className={cn('flex flex-col gap-4 border-b pb-5 lg:flex-row lg:items-end lg:justify-between', className)}
     >
       {/* `min-w-0` + `break-words`: titles are often an email address or an institution name, which
           have no break opportunity and would otherwise push the whole page sideways on a phone. */}
@@ -57,13 +57,13 @@ export function PageHeader({ eyebrow, title, description, actions, back, classNa
         {eyebrow && (
           // One eyebrow colour in both themes. It used to switch from orange to blue in dark mode,
           // so the same label meant two different things depending on the theme.
-          <p className="text-caption font-semibold uppercase tracking-wide text-brand-accent-ink">{eyebrow}</p>
+          <p className="text-caption font-semibold tracking-wide text-brand-accent-ink">{eyebrow}</p>
         )}
         <h1 className={cn('break-words font-display text-title-page text-foreground', eyebrow && 'mt-1')}>{title}</h1>
         {description && <p className="mt-1.5 max-w-prose break-words text-body text-foreground-secondary">{description}</p>}
       </div>
       {actions && (
-        <div className="flex flex-wrap items-center gap-2 max-sm:w-full max-sm:[&>*]:flex-1 sm:shrink-0 sm:justify-end">
+        <div className="fh-page-actions flex flex-wrap items-center gap-2 max-sm:w-full max-sm:items-stretch max-sm:[&>*]:flex-1 lg:max-w-[50%] lg:justify-end">
           {actions}
         </div>
       )}

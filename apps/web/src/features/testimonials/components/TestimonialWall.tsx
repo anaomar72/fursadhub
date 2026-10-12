@@ -78,7 +78,7 @@ export function TestimonialWall() {
         )}
       >
         {visible.map((testimonial, index) => (
-          <Reveal as="li" key={testimonial.id} index={index} className="flex">
+          <Reveal as="li" key={testimonial.id} index={index} className="flex min-w-0">
             <TestimonialCard testimonial={testimonial} />
           </Reveal>
         ))}
@@ -108,7 +108,7 @@ function TestimonialCard({ testimonial }: { testimonial: PublicTestimonial }) {
   const platform = isPlatformRole(testimonial.authorRole)
 
   return (
-    <figure className="group relative flex flex-1 flex-col overflow-hidden rounded-xl border border-border bg-surface p-5 shadow-xs sm:p-7 transition-[color,background-color,border-color,box-shadow] duration-200 ease-out hover:border-border-strong hover:bg-surface-raised hover:shadow-md motion-reduce:transition-none">
+    <figure className="group relative flex min-w-0 flex-1 flex-col overflow-hidden rounded-xl border border-border bg-surface p-5 shadow-xs sm:p-7 transition-[color,background-color,border-color,box-shadow] duration-200 ease-out hover:border-border-strong hover:bg-surface-raised hover:shadow-md motion-reduce:transition-none">
       {/*
         Decorative quote mark. `aria-hidden` and positioned behind the text — a screen reader gets
         the <blockquote> semantics instead, and it is set low enough in contrast that it reads as
@@ -123,11 +123,11 @@ function TestimonialCard({ testimonial }: { testimonial: PublicTestimonial }) {
 
       <StarRating value={testimonial.rating} size="md" className="relative" />
 
-      <blockquote className="relative mt-5 flex-1 text-body-lg text-foreground">
+      <blockquote className="relative mt-5 flex-1 break-words text-body-lg text-foreground">
         &ldquo;{testimonial.body}&rdquo;
       </blockquote>
 
-      <figcaption className="relative mt-6 flex items-center gap-3 border-t border-border pt-5">
+      <figcaption className="relative mt-6 flex flex-wrap items-center gap-3 border-t border-border pt-5">
         {/*
           Initial rather than a photo: the public testimonial payload deliberately carries no avatar
           — it exposes only the attribution FursadHub is prepared to state. Inventing a face here

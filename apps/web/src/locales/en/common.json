@@ -695,5 +695,10 @@
       "upcoming": "not started",
       "notReached": "not reached"
     }
+  },
+  "astra": {
+    "cover": "{{name}} cover image",
+    "viewCover": "View full cover",
+    "sections": "On this page"
   }
 }

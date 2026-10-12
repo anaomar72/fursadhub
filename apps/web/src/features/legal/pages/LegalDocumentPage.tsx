@@ -57,9 +57,9 @@ export function LegalDocumentPage({ documentType }: LegalDocumentPageProps) {
   return (
     <div className="bg-background">
       {/* ------------------------------------------------------------ title band */}
-      <header className="border-b border-border bg-surface">
+      <header className="fh-directory-head border-b border-border bg-surface">
         <PublicContainer className="py-10 lg:py-14">
-          <p className="text-caption font-semibold uppercase tracking-wide text-brand-accent-ink">{t('legal:page.eyebrow')}</p>
+          <p className="text-label font-semibold tracking-wide text-brand-accent-ink">{t('legal:page.eyebrow')}</p>
           <h1 className="mt-3 max-w-3xl break-words font-display text-display-lg text-foreground">
             {document?.title ?? t(`legal:documentTypes.${documentType}`)}
           </h1>
@@ -76,7 +76,7 @@ export function LegalDocumentPage({ documentType }: LegalDocumentPageProps) {
 
       <PublicContainer className="grid gap-12 py-10 lg:grid-cols-[minmax(0,1fr)_16rem] lg:gap-16 lg:py-14">
         {/* ---------------------------------------------------------- document */}
-        <article className="min-w-0">
+        <article className="min-w-0 rounded-xl border border-border bg-surface p-5 sm:p-8 lg:p-10">
           {documentQuery.isLoading ? (
             <SkeletonRegion>
               <SkeletonText lines={8} className="max-w-prose" />
@@ -102,7 +102,7 @@ export function LegalDocumentPage({ documentType }: LegalDocumentPageProps) {
         </article>
 
         {/* ---------------------------------------------------------- sibling documents */}
-        <aside className="lg:sticky lg:top-24 lg:self-start">
+        <aside className="lg:sticky lg:top-40 lg:self-start">
           <nav aria-labelledby="legal-siblings" className="border-t border-border pt-6 lg:border-s lg:border-t-0 lg:ps-6 lg:pt-0">
             <h2 id="legal-siblings" className="text-label text-foreground-secondary">
               {t('legal:page.otherDocuments')}

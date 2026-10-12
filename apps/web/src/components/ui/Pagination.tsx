@@ -28,7 +28,7 @@ export function Pagination({ page, totalPages, onPageChange, className }: Pagina
       >
         {t('common:pagination.previous')}
       </Button>
-      <span className="text-sm text-foreground-secondary" aria-live="polite">
+      <span className="text-body tabular-nums text-foreground-secondary" aria-live="polite">
         {t('common:pagination.pageOf', { page: page + 1, totalPages })}
       </span>
       <Button

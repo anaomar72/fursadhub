@@ -84,7 +84,7 @@ export function PublicHeader() {
           className={({ isActive }) =>
             cn(
               'relative rounded-md px-3 py-2 text-body font-semibold transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus-ring motion-reduce:transition-none',
-              isActive ? 'text-foreground' : 'text-foreground-secondary hover:text-foreground',
+              isActive ? 'bg-brand-navy-soft text-foreground' : 'text-foreground-secondary hover:bg-surface-muted hover:text-foreground',
             )
           }
         >
@@ -93,7 +93,7 @@ export function PublicHeader() {
               {t(`common:nav.${link.key}`)}
               {/* The approved active marker: a short orange rule under the current destination. */}
               {isActive && (
-                <span aria-hidden="true" className="absolute inset-x-3 -bottom-3 hidden h-0.5 rounded-full bg-brand-accent xl:block" />
+                <span aria-hidden="true" className="absolute inset-x-3 bottom-0 hidden h-0.5 rounded-full bg-brand-accent xl:block" />
               )}
             </>
           )}
@@ -110,11 +110,11 @@ export function PublicHeader() {
     */
     <header
       className={cn(
-        'sticky top-0 z-40 border-b bg-surface transition-[border-color,box-shadow] duration-200 ease-out motion-reduce:transition-none',
+        'sticky top-0 z-40 border-b bg-surface transition-[border-color,box-shadow] duration-normal ease-ui motion-reduce:transition-none',
         scrolled ? 'border-border-strong shadow-sm' : 'border-border',
       )}
     >
-      <div className="mx-auto flex h-16 w-full max-w-7xl items-center gap-5 px-4 sm:px-6 lg:px-8">
+      <div className="mx-auto flex min-h-20 w-full max-w-7xl items-center gap-4 px-4 sm:px-6 lg:px-8">
         <Link
           to="/"
           aria-label={t('common:app.name')}
@@ -123,12 +123,7 @@ export function PublicHeader() {
           <BrandLogo />
         </Link>
 
-        <nav
-          className="mx-auto hidden items-center xl:flex"
-          aria-label={t('common:nav.publicNavigation')}
-        >
-          {navigation}
-        </nav>
+
 
         <div className="ml-auto hidden items-center gap-2 xl:flex">
           <LanguageToggle />
@@ -150,6 +145,8 @@ export function PublicHeader() {
           </IconButton>
         </div>
       </div>
+
+      <nav className="mx-auto hidden w-full max-w-7xl items-center gap-2 border-t border-border px-8 py-2 xl:flex" aria-label={t('common:nav.publicNavigation')}>{navigation}</nav>
 
       {open && (
         <dialog

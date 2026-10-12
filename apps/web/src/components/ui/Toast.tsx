@@ -51,7 +51,7 @@ export function Toast({ title, description, tone = 'info', action, onClose, leav
   return (
     <div
       className={cn(
-        'pointer-events-auto relative flex w-full items-start gap-3 overflow-hidden rounded-lg border border-border bg-surface-raised py-3.5 pe-2 ps-4 text-foreground shadow-md',
+        'pointer-events-auto relative flex w-full items-start gap-3 overflow-hidden rounded-xl border border-border bg-surface-raised py-3.5 pe-2 ps-4 text-foreground shadow-md',
         "before:absolute before:inset-y-0 before:start-0 before:w-1 before:content-['']",
         TONE_EDGE[tone],
         leaving ? 'motion-safe:animate-toast-out' : 'motion-safe:animate-toast-in',

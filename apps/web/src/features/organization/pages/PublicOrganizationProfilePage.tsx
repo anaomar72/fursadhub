@@ -1,3 +1,4 @@
+import { PublicProfileHeader, PublicProfileSkeleton } from '../../../components/ui/PublicProfileHeader'
 import { ShareLink } from '../../../components/ui/ShareLink'
 import { SocialIcon, type SocialPlatform } from '../../../components/ui/SocialIcon'
 import type { ReactNode } from 'react'
@@ -7,13 +8,11 @@ import { Link, useParams } from 'react-router-dom'
 import * as organizationApi from '../api/organizationApi'
 import * as publicOpportunityApi from '../../opportunities/api/publicOpportunityApi'
 import {
-  Avatar,
   ButtonLink,
   buttonClasses,
   CARD_GRID,
   EmptyState,
   Icon,
-  ProfileBanner,
   Reveal,
   Skeleton,
   SkeletonCardGrid,
@@ -113,7 +112,7 @@ export function PublicOrganizationProfilePage() {
     <PublicBookmarks ids={opportunities.map((item) => item.id)}>
     <div className="bg-background">
       {/* ------------------------------------------------------------------ identity band */}
-      <section className="border-b border-border bg-surface">
+      <section className="border-b border-border bg-background">
         <PublicContainer className="pb-8 pt-8 lg:pb-12">
           <Link
             to="/organizations"
@@ -123,42 +122,7 @@ export function PublicOrganizationProfilePage() {
             {t('organization:publicProfile.back')}
           </Link>
 
-          <ProfileBanner
-            coverUrl={organization.hasCover ? organizationApi.organizationCoverUrl(organization.id) : undefined}
-            className="mt-5"
-          />
-
-          <div className="relative -mt-10 flex flex-wrap items-end justify-between gap-x-6 gap-y-4 px-2 sm:px-6">
-            <div className="flex min-w-0 flex-1 basis-[18rem] items-end gap-4">
-              <Avatar
-                src={organization.hasLogo ? organizationApi.organizationLogoUrl(organization.id) : null}
-                name={organization.name}
-                size="lg"
-                shape="square"
-                className="size-24 shrink-0 border-4 border-surface shadow-sm sm:size-32"
-              />
-              <div className="min-w-0 pb-1">
-                <div className="flex min-w-0 flex-wrap items-center gap-2">
-                  <h1 className="break-words font-display text-title-page text-foreground">{organization.name}</h1>
-                  {organization.verified && <VerifiedBadge />}
-                </div>
-                <p className="mt-1 break-words text-body text-foreground-secondary">
-                  {[organization.industry || t(`organization:profile.types.${organization.type}`), organization.city].filter(Boolean).join(' • ')}
-                </p>
-              </div>
-            </div>
-
-            <div className="flex flex-wrap items-center gap-2">
-              <ButtonLink to={`/opportunities?organization=${organization.id}`}>{t('organization:publicProfile.viewOpportunities')}</ButtonLink>
-              {organization.website && (
-                <a href={organization.website} target="_blank" rel="noreferrer" className={buttonClasses('outline', 'md')}>
-                  {t('organization:publicProfile.visitWebsite')}
-                  <Icon name="arrowRight" className="size-4 -rotate-45 rtl:rotate-[225deg]" />
-                </a>
-              )}
-              <ShareLink />
-            </div>
-          </div>
+          <PublicProfileHeader name={organization.name} verified={organization.verified} coverUrl={organization.hasCover ? organizationApi.organizationCoverUrl(organization.id) : undefined} logoUrl={organization.hasLogo ? organizationApi.organizationLogoUrl(organization.id) : undefined} subtitle={[organization.industry || t(`organization:profile.types.${organization.type}`), organization.city].filter(Boolean).join(' · ')} description={organization.shortDescription} actions={<><ButtonLink to={`/opportunities?organization=${organization.id}`}>{t('organization:publicProfile.viewOpportunities')}</ButtonLink>{organization.website&&<a href={organization.website} target="_blank" rel="noreferrer" className={buttonClasses('outline','md')}>{t('organization:publicProfile.visitWebsite')}<Icon name="arrowRight" className="size-4 -rotate-45"/></a>}<ShareLink/></>} />
 
           {socialLinks.length > 0 && (
             <div className="mt-5 flex flex-wrap items-center gap-2 px-2 sm:px-6">
@@ -264,14 +228,7 @@ function ProfileSkeleton() {
     <SkeletonRegion className="border-b border-border bg-surface">
       <PublicContainer className="pb-10 pt-8">
         <Skeleton className="h-4 w-40" />
-        <Skeleton className="mt-5 aspect-[4/1] w-full rounded-xl" />
-        <div className="-mt-10 flex items-end gap-4 px-2 sm:px-6">
-          <Skeleton className="size-24 rounded-xl border-4 border-surface sm:size-32" />
-          <div className="flex-1 pb-1">
-            <Skeleton className="h-7 w-56 max-w-full" />
-            <Skeleton className="mt-2 h-4 w-40" />
-          </div>
-        </div>
+        <PublicProfileSkeleton />
       </PublicContainer>
     </SkeletonRegion>
   )

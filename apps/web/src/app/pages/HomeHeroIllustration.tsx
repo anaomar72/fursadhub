@@ -19,7 +19,7 @@ import heroPhotoSmall from '../../assets/presentation/hero-woman-800.webp'
 export function HomeHeroIllustration() {
   const { t } = useTranslation()
   return (
-    <div className="relative mx-auto aspect-[4/3] w-full overflow-hidden rounded-xl bg-surface-muted">
+    <div className="relative mx-auto aspect-[4/3] w-full overflow-hidden rounded-xl bg-surface-muted lg:aspect-[5/4]">
       <img
         src={heroPhoto}
         srcSet={`${heroPhotoSmall} 800w, ${heroPhoto} 1440w`}
@@ -31,11 +31,11 @@ export function HomeHeroIllustration() {
         height={810}
         className="absolute inset-0 size-full object-cover object-[62%_40%]"
       />
-      <div className="absolute bottom-4 start-4 flex max-w-[calc(100%-2rem)] items-center gap-3 rounded-lg bg-white/95 px-3.5 py-2.5 shadow-md">
+      <div className="absolute inset-x-0 bottom-0 flex items-center gap-3 border-t border-border bg-surface px-5 py-4">
         <VerifiedBadge size="sm" />
         <span className="min-w-0">
-          <span className="block text-label text-brand-navy">{t('common:landing.capabilities.entities.title')}</span>
-          <span className="block text-caption text-slate-600">{t('common:landing.capabilities.entities.body')}</span>
+          <span className="block text-label text-foreground">{t('common:landing.capabilities.entities.title')}</span>
+          <span className="block text-caption text-foreground-secondary">{t('common:landing.capabilities.entities.body')}</span>
         </span>
       </div>
     </div>

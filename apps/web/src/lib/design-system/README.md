@@ -8,14 +8,13 @@ numbers that could drift.
 Visual direction: **calm institutional SaaS**. Hierarchy comes from type, space, grouping and
 alignment, not from putting boxes around everything.
 
-Authority, in order: `design-reference/presentation-refresh-2026`, the approved implementation,
-then these tokens and primitives (CLAUDE.md §57).
+Astra Phase 1 establishes the current presentation foundation under the user-approved redesign scope. Preserve existing functional contracts; the previous Claude prototype is historical context, not a visual template.
 
 ## Brand and action colour
 
 | Token | Use |
 |---|---|
-| `brand-navy` `#0B2A5B` | Identity: headings (through `text-foreground`), navy rail, secondary button |
+| `brand-navy` `#0B2A5B` | Identity: navy rail, secondary button and brand marks |
 | `brand-accent` `#F97316` | Brand emphasis only: logo, illustration accents, active-navigation edge, large or non-text marks |
 | `action-primary` `#C2410C` | Any fill that carries **white text**: primary buttons, CTA links, count badges, step markers |
 | `action-danger` `#B42318` | Destructive buttons, in both themes |
@@ -120,7 +119,7 @@ from a map, never inline:
 - `FormField` marks optional fields with the translated word "Optional". Required fields are
   unmarked and get `aria-required` through the `required` prop.
 - Hint above the control, error below it (it replaces any success message).
-- All text controls share `controlClasses()` (40px high, strong border, shared focus ring).
+- All text controls share `controlClasses()` (40px desktop minimum, 44px below sm, strong border, shared focus ring).
 - Long forms are a sequence of `FormSection`s: title and description beside the fields from
   `lg` up, one column below that.
 
@@ -136,3 +135,13 @@ events in CLAUDE.md §58.
 Test at 360, 414, 768, 1024, 1280 and 1536px, in English and Somali, light and dark. Labels wrap
 rather than truncate, except user-generated names in a constrained cell. Action rows wrap. On
 phones the page's actions share the full width.
+
+## Astra Phase 1 decisions
+
+Cool neutral reading surfaces, navy identity, restrained orange actions, fluid Manrope headings and Public Sans body text. Preserve the existing dark surface ramp, semantic status colors and saved/OS theme selection.
+
+Tailwind spacing resolves to the four-pixel token scale; max-w-7xl and max-w-3xl resolve to content/form tokens. Existing breakpoint thresholds remain unchanged. Controls use radius-control; floating layers use raised surfaces. Long translated labels wrap, and page actions stack below the lg breakpoint. Mobile shared buttons and icon buttons use a 44px minimum target; text inputs use 16px text to avoid mobile focus zoom.
+
+Motion: fast 150ms feedback, normal 200ms, panel 240ms, skeleton 1800ms; reduced-motion declarations collapse all duration tokens and disable decorative skeleton movement. No routing or data behavior depends on these durations.
+
+Run the development server and open /phase1.html for isolated component QA. This fixture uses real primitives and translation loading, has no API calls, and is excluded from the default production entry. See docs/audits/astra-phase1-report.md for verification and limitations.

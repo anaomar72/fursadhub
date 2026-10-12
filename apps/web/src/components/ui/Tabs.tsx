@@ -89,11 +89,11 @@ export function Tabs({ items, value, onValueChange, label, className }: TabsProp
           disabled={item.disabled}
           onClick={() => onValueChange(item.id)}
           className={cn(
-            '-mb-px min-h-11 shrink-0 border-b-2 px-3 py-2 text-sm font-semibold',
-            'transition-[color,border-color] duration-150 ease-in-out focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus-ring disabled:opacity-50 motion-reduce:transition-none',
+            '-mb-px min-h-11 min-w-0 max-w-full break-words text-start border-b-2 px-3 py-2 text-sm font-semibold',
+            'transition-[color,border-color] duration-fast ease-ui focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus-ring disabled:opacity-50 motion-reduce:transition-none',
             value === item.id
-              ? 'border-brand-accent text-brand-accent-ink'
-              : 'border-transparent text-muted hover:text-foreground',
+              ? 'border-brand-accent text-foreground'
+              : 'border-transparent text-muted hover:bg-surface-muted hover:text-foreground',
           )}
         >
           {item.label}

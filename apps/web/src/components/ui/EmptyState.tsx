@@ -48,17 +48,17 @@ export function EmptyState({ title, description, action, icon, variant = 'block'
     <div
       className={cn(
         'flex flex-col items-center gap-3 text-center',
-        inline ? 'px-5 py-10' : 'rounded-lg border border-dashed border-border px-6 py-12',
+        inline ? 'px-5 py-10' : 'rounded-lg border border-border bg-surface px-6 py-12',
         className,
       )}
     >
       {!inline && (
-        <span className="flex size-12 items-center justify-center rounded-full bg-surface-muted text-foreground-secondary">
+        <span className="flex size-12 items-center justify-center rounded-xl bg-surface-muted text-foreground-secondary">
           {typeof icon === 'string' ? <Icon name={icon as IconName} className="size-6" /> : (icon ?? <DefaultIcon />)}
         </span>
       )}
       <div className="space-y-1">
-        <p className="text-body font-semibold text-foreground">{title}</p>
+        <p className="text-title-panel font-semibold text-foreground">{title}</p>
         {description && <p className="max-w-sm text-body text-foreground-secondary">{description}</p>}
       </div>
       {action}

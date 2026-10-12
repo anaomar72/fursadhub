@@ -214,7 +214,7 @@ export function DataTable<T>({
                       <Icon
                         name="chevronDown"
                         className={cn(
-                          'size-3.5 shrink-0 transition-transform duration-150 motion-reduce:transition-none',
+                          'size-3.5 shrink-0 transition-transform duration-fast motion-reduce:transition-none',
                           sorted === 'ascending' && 'rotate-180',
                           !sorted && 'opacity-40',
                         )}

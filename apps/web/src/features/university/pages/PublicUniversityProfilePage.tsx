@@ -1,15 +1,14 @@
+import { PublicProfileHeader, PublicProfileSkeleton } from '../../../components/ui/PublicProfileHeader'
 import type { ReactNode } from 'react'
 import { useQuery } from '@tanstack/react-query'
 import { useTranslation } from 'react-i18next'
 import { Link, useParams } from 'react-router-dom'
 import * as universityApi from '../api/universityApi'
 import {
-  Avatar,
   ButtonLink,
   buttonClasses,
   EmptyState,
   Icon,
-  ProfileBanner,
   Reveal,
   Skeleton,
   SkeletonRegion,
@@ -37,17 +36,10 @@ export function PublicUniversityProfilePage() {
 
   if (universityQuery.isLoading) {
     return (
-      <SkeletonRegion className="border-b border-border bg-surface">
+      <SkeletonRegion className="border-b border-border bg-background">
         <PublicContainer className="pb-10 pt-8">
           <Skeleton className="h-4 w-40" />
-          <Skeleton className="mt-5 aspect-[4/1] w-full rounded-xl" />
-          <div className="-mt-10 flex items-end gap-4 px-2 sm:px-6">
-            <Skeleton className="size-24 rounded-xl border-4 border-surface sm:size-32" />
-            <div className="flex-1 pb-1">
-              <Skeleton className="h-7 w-56 max-w-full" />
-              <Skeleton className="mt-2 h-4 w-32" />
-            </div>
-          </div>
+          <PublicProfileSkeleton />
         </PublicContainer>
       </SkeletonRegion>
     )
@@ -103,33 +95,8 @@ export function PublicUniversityProfilePage() {
             {t('university:publicProfile.back')}
           </Link>
 
-          <ProfileBanner coverUrl={university.hasCover ? universityApi.universityCoverUrl(university.id) : undefined} className="mt-5" />
+          <PublicProfileHeader name={university.name} verified={university.verified} coverUrl={university.hasCover ? universityApi.universityCoverUrl(university.id) : undefined} logoUrl={university.hasLogo ? universityApi.universityLogoUrl(university.id) : undefined} subtitle={university.city ?? undefined}  actions={university.website ? <a href={university.website} target="_blank" rel="noreferrer" className={buttonClasses('outline','md')}>{t('university:publicProfile.visitWebsite')}<Icon name="arrowRight" className="size-4 -rotate-45"/></a> : undefined} />
 
-          <div className="relative -mt-10 flex flex-wrap items-end justify-between gap-x-6 gap-y-4 px-2 sm:px-6">
-            <div className="flex min-w-0 flex-1 basis-[18rem] items-end gap-4">
-              <Avatar
-                src={university.hasLogo ? universityApi.universityLogoUrl(university.id) : null}
-                name={university.name}
-                size="lg"
-                shape="square"
-                className="size-24 shrink-0 border-4 border-surface shadow-sm sm:size-32"
-              />
-              <div className="min-w-0 pb-1">
-                <div className="flex min-w-0 flex-wrap items-center gap-2">
-                  <h1 className="break-words font-display text-title-page text-foreground">{university.name}</h1>
-                  {university.verified && <VerifiedBadge />}
-                </div>
-                {university.city && <p className="mt-1 break-words text-body text-foreground-secondary">{university.city}</p>}
-              </div>
-            </div>
-
-            {university.website && (
-              <a href={university.website} target="_blank" rel="noreferrer" className={buttonClasses('outline', 'md')}>
-                {t('university:publicProfile.visitWebsite')}
-                <Icon name="arrowRight" className="size-4 -rotate-45 rtl:rotate-[225deg]" />
-              </a>
-            )}
-          </div>
         </PublicContainer>
       </section>
 

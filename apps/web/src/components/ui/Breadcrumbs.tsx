@@ -13,7 +13,7 @@ export interface BreadcrumbItem {
 }
 
 const LINK_CLASSES =
-  'truncate text-foreground-secondary hover:text-link focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus-ring'
+  'break-words rounded-sm py-1 text-foreground-secondary hover:text-link focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus-ring'
 
 /**
  * "Where am I, and how do I get back" for pages nested under a list — create/edit forms, detail
@@ -35,7 +35,7 @@ export function Breadcrumbs({ items, label }: { items: BreadcrumbItem[]; label?:
     <nav aria-label={label ?? t('common:shell.breadcrumb')}>
       <ol className="flex min-w-0 flex-wrap items-center gap-1.5 text-sm">
         {items.map((item, i) => (
-          <li key={i} className="flex min-w-0 items-center gap-1.5">
+          <li key={i} className="flex min-w-0 max-w-full items-center gap-1.5">
             {i > 0 && <Icon name="chevronRight" className="size-4 shrink-0 text-muted" />}
             {item.to ? (
               <Link to={item.to} onClick={item.onClick} className={LINK_CLASSES}>
@@ -46,7 +46,7 @@ export function Breadcrumbs({ items, label }: { items: BreadcrumbItem[]; label?:
                 {item.label}
               </a>
             ) : (
-              <span aria-current={i === items.length - 1 ? 'page' : undefined} className="truncate font-medium text-foreground">
+              <span aria-current={i === items.length - 1 ? 'page' : undefined} className="break-words font-medium text-foreground">
                 {item.label}
               </span>
             )}

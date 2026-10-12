@@ -54,8 +54,8 @@ export function HomePage() {
     <PublicBookmarks ids={latest.data?.content.map((item) => item.id) ?? []}>
       <div className="bg-background">
         <Hero />
-        <TrustSection organizations={organizations.data?.content ?? []} />
         <LatestInternships query={latest} />
+        <TrustSection organizations={organizations.data?.content ?? []} />
         <JourneySection />
         <RolesSection />
         <LifecycleSection />
@@ -93,10 +93,10 @@ function Hero() {
 
   return (
     <section className="border-b border-border bg-surface">
-      <PublicContainer className="grid items-center gap-10 py-10 lg:grid-cols-[minmax(0,1.1fr)_minmax(0,1fr)] lg:gap-14 lg:py-20">
+      <PublicContainer className="fh-home-grid grid items-center gap-8 py-10 lg:grid-cols-2 lg:gap-x-16 lg:py-16">
         <div className="min-w-0 animate-hero-fade motion-reduce:animate-none">
-          <p className="inline-flex items-center gap-2 rounded-full border border-border bg-background px-3 py-1 text-caption font-semibold text-foreground-secondary">
-            <span aria-hidden="true" className="size-1.5 rounded-full bg-brand-accent" />
+          <p className="fh-eyebrow">
+            <span aria-hidden="true" className="h-0.5 w-6 bg-brand-accent" />
             {t('common:landing.eyebrow')}
           </p>
           <h1 className="mt-5 font-display text-display-xl text-foreground">
@@ -107,11 +107,24 @@ function Hero() {
           </h1>
           <p className="mt-5 max-w-xl text-body-lg text-foreground-secondary">{t('common:landing.subhead')}</p>
 
+
+          <a
+            href="#how-it-works"
+            className="mt-5 inline-flex items-center gap-1.5 rounded-sm text-body font-semibold text-foreground underline-offset-4 hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus-ring"
+          >
+            {t('common:landing.secondaryCta')}
+            <Icon name="arrowRight" className="size-4 rtl:rotate-180" />
+          </a>
+        </div>
+
+        <div className="min-w-0 animate-hero-fade motion-reduce:animate-none">
+          <HomeHeroIllustration />
+        </div>
           <form
             onSubmit={submit}
             role="search"
             aria-label={t('common:landing.hero2.searchLabel')}
-            className="mt-8 grid gap-2 rounded-xl border border-border bg-background p-2 shadow-sm sm:grid-cols-2 lg:grid-cols-[minmax(0,1fr)_minmax(0,1fr)_auto]"
+            className="fh-discovery-form grid gap-3 sm:grid-cols-2 lg:col-span-2 lg:grid-cols-[minmax(0,2fr)_minmax(0,1fr)_minmax(0,1fr)_auto]"
           >
             <SearchInput
               label={t('common:landing.hero2.searchLabel')}
@@ -121,7 +134,7 @@ function Hero() {
               className="h-12"
               // The keyword is the main query, so it always gets a row of its own — a 9rem field
               // truncated its own placeholder to "Search internsh…".
-              wrapperClassName="sm:col-span-2 lg:col-span-full"
+              wrapperClassName="sm:col-span-2 lg:col-span-1"
             />
             <Input
               aria-label={t('common:landing.hero2.locationLabel')}
@@ -149,18 +162,6 @@ function Hero() {
             </Button>
           </form>
 
-          <a
-            href="#how-it-works"
-            className="mt-5 inline-flex items-center gap-1.5 rounded-sm text-body font-semibold text-foreground underline-offset-4 hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus-ring"
-          >
-            {t('common:landing.secondaryCta')}
-            <Icon name="arrowRight" className="size-4 rtl:rotate-180" />
-          </a>
-        </div>
-
-        <div className="min-w-0 animate-hero-fade motion-reduce:animate-none">
-          <HomeHeroIllustration />
-        </div>
       </PublicContainer>
     </section>
   )
@@ -184,14 +185,14 @@ const TRUST_ITEMS: { key: string; icon: IconName }[] = [
 function TrustSection({ organizations }: { organizations: PublicOrganizationSummaryResponse[] }) {
   const { t } = useTranslation()
   return (
-    <section aria-labelledby="trust-heading" className="py-14 lg:py-20">
-      <PublicContainer>
+    <section aria-labelledby="trust-heading" className="fh-public-section">
+      <PublicContainer className="fh-trust-layout">
         <Reveal>
           <h2 id="trust-heading" className={`${SECTION_TITLE} max-w-2xl`}>
             {t('common:home.trust.title')}
           </h2>
         </Reveal>
-        <ul className="mt-10 grid gap-x-10 gap-y-8 sm:grid-cols-2 lg:grid-cols-4">
+        <ul className="mt-8 grid gap-8 sm:grid-cols-2 lg:mt-0">
           {TRUST_ITEMS.map((item, index) => (
             <Reveal as="li" key={item.key} index={index} className="min-w-0">
               <span className="flex size-11 items-center justify-center rounded-lg bg-brand-navy-soft text-brand-navy dark:text-foreground">
@@ -204,7 +205,7 @@ function TrustSection({ organizations }: { organizations: PublicOrganizationSumm
         </ul>
 
         {organizations.length > 0 && (
-          <div className="mt-12 border-t border-border pt-8">
+          <div className="mt-4 border-t border-border pt-8 lg:col-span-2">
             <div className="flex flex-wrap items-baseline justify-between gap-x-6 gap-y-2">
               <h3 className="text-label text-foreground-secondary">{t('common:home.organizations.title')}</h3>
               <Link to="/organizations" className="inline-flex items-center gap-1 rounded-sm text-label text-link hover:underline underline-offset-4 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus-ring">
@@ -245,7 +246,7 @@ function LatestInternships({ query }: { query: UseQueryResult<PageResponse<Publi
   const items = query.data?.content ?? []
 
   return (
-    <section aria-labelledby="latest-heading" className="border-y border-border bg-surface py-14 lg:py-20">
+    <section aria-labelledby="latest-heading" className="fh-public-section border-b border-border bg-surface">
       <PublicContainer>
         <div className="flex flex-wrap items-end justify-between gap-x-6 gap-y-3">
           <div className="min-w-0">
@@ -310,7 +311,7 @@ const JOURNEY_ICONS: Record<(typeof JOURNEY_STEPS)[number], IconName> = {
 function JourneySection() {
   const { t } = useTranslation()
   return (
-    <section id="how-it-works" aria-labelledby="journey-heading" className="scroll-mt-20 py-14 lg:py-20">
+    <section id="how-it-works" aria-labelledby="journey-heading" className="fh-public-section scroll-mt-36 bg-surface">
       <PublicContainer>
         <Reveal className="max-w-2xl">
           <h2 id="journey-heading" className={SECTION_TITLE}>
@@ -360,16 +361,16 @@ const ROLES = [
 function RolesSection() {
   const { t } = useTranslation()
   return (
-    <section aria-labelledby="roles-heading" className="border-y border-border bg-surface py-14 lg:py-20">
+    <section aria-labelledby="roles-heading" className="fh-public-section border-b border-border bg-surface">
       <PublicContainer>
         <Reveal>
           <h2 id="roles-heading" className={SECTION_TITLE}>
             {t('common:home.roles.title')}
           </h2>
         </Reveal>
-        <div className="mt-10 grid gap-10 lg:grid-cols-3 lg:gap-0 lg:divide-x lg:divide-border rtl:lg:divide-x-reverse">
+        <div className="mt-10 grid gap-5 lg:grid-cols-3">
           {ROLES.map((role, index) => (
-            <Reveal key={role.key} index={index} className="flex min-w-0 flex-col lg:px-8 lg:first:ps-0 lg:last:pe-0">
+            <Reveal key={role.key} index={index} className="fh-audience-panel flex min-w-0 flex-col rounded-xl border border-border bg-background p-6 lg:p-8">
               <span className="flex size-11 items-center justify-center rounded-lg bg-brand-accent-soft text-brand-accent-ink">
                 <Icon name={role.icon} className="size-5" />
               </span>
@@ -458,7 +459,7 @@ function ClosingCallToAction() {
   return (
     <section aria-labelledby="closing-heading" className="py-16 lg:py-24">
       <PublicContainer>
-        <Reveal className="mx-auto max-w-2xl text-center">
+        <Reveal className="mx-auto rounded-xl border border-border bg-surface p-8 text-center sm:p-12">
           <h2 id="closing-heading" className={SECTION_TITLE}>
             {t('common:landing.cta.title')}
           </h2>

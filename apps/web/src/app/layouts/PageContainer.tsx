@@ -18,7 +18,7 @@ export interface PageContainerProps {
 export function PageContainer({ children, width = 'wide', className }: PageContainerProps) {
   return (
     <div
-      style={{ paddingBlock: 'var(--workspace-page-y)' }}
+      style={{ paddingBlock: 'var(--workspace-page-y, var(--space-6))' }}
       className={cn(
         'mx-auto w-full px-4 sm:px-6 lg:px-8',
         width === 'narrow' ? 'max-w-3xl' : 'max-w-7xl',

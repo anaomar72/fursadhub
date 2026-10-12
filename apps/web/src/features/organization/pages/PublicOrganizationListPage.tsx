@@ -81,7 +81,7 @@ export function PublicOrganizationListPage() {
 
   return (
     <div className="bg-background">
-      <section className="border-b border-border bg-surface">
+      <section className="fh-directory-head border-b border-border bg-surface">
         <PublicContainer className="py-10 lg:py-14">
           <h1 className="max-w-3xl font-display text-display-lg text-foreground">
             {t('common:publicPages.organizations.heroLead')}{' '}
@@ -96,7 +96,7 @@ export function PublicOrganizationListPage() {
             onSubmit={applyFilters}
             role="search"
             aria-label={t('common:publicPages.organizations.searchLabel')}
-            className="mt-8 grid gap-2 rounded-xl border border-border bg-background p-2 shadow-sm sm:grid-cols-2 lg:grid-cols-[minmax(0,1fr)_minmax(0,11rem)_minmax(0,12rem)_auto]"
+            className="fh-discovery-form mt-8 grid gap-3 sm:grid-cols-2 lg:grid-cols-[minmax(0,1fr)_minmax(0,11rem)_minmax(0,12rem)_auto]"
           >
             <SearchInput
               label={t('common:publicPages.organizations.searchLabel')}
@@ -151,7 +151,7 @@ export function PublicOrganizationListPage() {
             )}
           </div>
           {result.data && (
-            <label className="flex items-center gap-2 text-body text-foreground-secondary">
+            <label className="flex min-w-0 flex-wrap items-center gap-2 text-body text-foreground-secondary">
               {t('common:publicPages.organizations.sortLabel')}
               <Select
                 value={appliedSort}
@@ -161,7 +161,7 @@ export function PublicOrganizationListPage() {
                   else next.set('sort', event.target.value)
                   setParams(next)
                 }}
-                className="w-48"
+                className="w-full sm:w-48"
               >
                 <option value="name">{t('common:publicPages.organizations.sortName')}</option>
                 <option value="nameDesc">{t('common:publicPages.organizations.sortNameDesc')}</option>

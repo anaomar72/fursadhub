@@ -87,7 +87,7 @@ export function PublicOpportunityListPage() {
   return (
     <PublicBookmarks ids={result.data?.content.map((item) => item.id) ?? []}>
       <div className="bg-background">
-        <section className="border-b border-border bg-surface">
+        <section className="fh-directory-head border-b border-border bg-surface">
           <PublicContainer className="py-10 lg:py-14">
             <h1 className="font-display text-display-lg text-foreground">{t('opportunities:public.browseTitle')}</h1>
             <p className="mt-2 max-w-2xl text-body-lg text-foreground-secondary">{t('opportunities:public.browseDescription')}</p>
@@ -96,7 +96,7 @@ export function PublicOpportunityListPage() {
               onSubmit={applyFilters}
               role="search"
               aria-label={t('opportunities:public.filtersLabel')}
-              className="mt-8 grid gap-2 rounded-xl border border-border bg-background p-2 shadow-sm sm:grid-cols-2 lg:grid-cols-[minmax(0,1fr)_minmax(0,11rem)_minmax(0,11rem)_auto]"
+              className="fh-discovery-form mt-8 grid gap-3 sm:grid-cols-2 lg:grid-cols-[minmax(0,1fr)_minmax(0,11rem)_minmax(0,11rem)_auto]"
             >
               <SearchInput
                 label={t('opportunities:public.searchLabel')}

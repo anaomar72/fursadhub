@@ -21,6 +21,13 @@
  * Maps runtime brand and semantic variables into Tailwind v4 utilities.
  */
 @theme inline {
+  --spacing: var(--space-1);
+  --container-7xl: var(--content-max);
+  --container-3xl: var(--form-max);
+  --radius-control: var(--radius-control);
+  --duration-fast: var(--duration-fast);
+  --duration-normal: var(--duration-normal);
+  --ease-ui: var(--ease-standard);
   --color-brand-primary: var(--color-brand-primary);
   --color-brand-secondary: var(--color-brand-secondary);
   --color-brand-accent: var(--color-brand-accent);
@@ -150,8 +157,8 @@
  * display/title steps are fluid between their mobile and desktop sizes, so a heading scales with
  * the viewport rather than jumping at a breakpoint.
  *
- *   display-xl     34 → 48px   public hero only
- *   display-lg     28 → 36px   public section titles
+ *   display-xl     34 → 56px   public hero only
+ *   display-lg     28 → 40px   public section titles
  *   title-page     24 → 28px   the page h1 (PageHeader)
  *   title-section  20px        a section within a page
  *   title-panel    16px        a panel / card heading (SectionHeading, Panel)
@@ -162,18 +169,18 @@
  *   metric         28px        KPI figures (pair with `tabular-nums`)
  */
 @theme {
-  --text-display-xl: clamp(2.125rem, 1.6rem + 2.2vw, 3rem);
+  --text-display-xl: clamp(2.125rem, 1.5rem + 2.8vw, 3.5rem);
   --text-display-xl--line-height: 1.08;
   --text-display-xl--letter-spacing: -0.035em;
   --text-display-xl--font-weight: 800;
-  --text-display-lg: clamp(1.75rem, 1.45rem + 1.25vw, 2.25rem);
+  --text-display-lg: clamp(1.75rem, 1.4rem + 1.4vw, 2.5rem);
   --text-display-lg--line-height: 1.18;
   --text-display-lg--letter-spacing: -0.03em;
-  --text-display-lg--font-weight: 800;
-  --text-title-page: clamp(1.5rem, 1.38rem + 0.5vw, 1.75rem);
+  --text-display-lg--font-weight: 700;
+  --text-title-page: clamp(1.5rem, 1.25rem + 0.75vw, 2rem);
   --text-title-page--line-height: 1.22;
   --text-title-page--letter-spacing: -0.02em;
-  --text-title-page--font-weight: 800;
+  --text-title-page--font-weight: 700;
   --text-title-section: 1.25rem;
   --text-title-section--line-height: 1.75rem;
   --text-title-section--letter-spacing: -0.01em;
@@ -515,4 +522,52 @@
     outline: 2px solid var(--color-focus-ring);
     outline-offset: 2px;
   }
+}
+
+/* Stable geometry and shared touch treatment; no business-state selectors. */
+@theme {
+  --breakpoint-sm: 40rem;
+  --breakpoint-md: 48rem;
+  --breakpoint-lg: 64rem;
+  --breakpoint-xl: 80rem;
+  --breakpoint-2xl: 96rem;
+}
+@layer components {
+  .fh-control { min-height: var(--control-height); }
+  .fh-button { min-height: var(--control-height); }
+  .fh-button-lg { min-height: var(--control-height-large); }
+  .fh-drawer { width: min(var(--drawer-width), calc(100vw - var(--gutter-mobile))); }
+  .fh-page-actions { max-width: 100%; }
+  .fh-page-actions > * { min-width: 0; max-width: 100%; }
+  .fh-section-action { max-width: 100%; overflow-wrap: anywhere; }
+  .fh-skeleton { animation-duration: var(--duration-loading); }
+}
+@layer utilities {
+  @media (max-width: 39.999rem) {
+    .fh-control { min-height: var(--control-height-touch); font-size: 1rem; }
+    .fh-button.fh-button { min-height: var(--control-height-touch); }
+    .fh-button-lg.fh-button-lg { min-height: var(--control-height-large); }
+    .fh-icon-button { min-width: var(--control-height-touch); min-height: var(--control-height-touch); }
+  }
+}
+
+/* Astra public composition; portal density remains governed by workspace tokens. */
+:root { --profile-cover-ratio: 3 / 1; --profile-cover-mobile-ratio: 2 / 1; --public-section-space: clamp(3rem, 6vw, 5.5rem); }
+@layer components {
+ .fh-profile-cover { aspect-ratio: var(--profile-cover-mobile-ratio); }
+ .fh-cover-fallback::after { content: ''; position: absolute; inset: 15% 7%; border: 1px solid rgb(255 255 255 / .16); border-radius: var(--radius-xl); transform: rotate(-8deg); }
+ .fh-cover-fallback::before { content: ''; position: absolute; width: 55%; height: 180%; right: -12%; top: -40%; border: 1px solid rgb(255 255 255 / .16); border-radius: 50%; }
+ .fh-public-section { padding-block: var(--public-section-space); }
+ .fh-eyebrow { display:flex; align-items:center; gap:var(--space-3); font-size:var(--font-size-sm); font-weight:600; color:var(--color-text-secondary); }
+ .fh-discovery-form { border:1px solid var(--color-border); border-radius:var(--radius-xl); background:var(--color-surface); padding:var(--space-4); box-shadow:var(--shadow-sm); }
+ .fh-directory-head { border-top:3px solid var(--color-brand-navy); }
+ .public-site .fh-internship-card > div:first-child, .public-site .fh-entity-card > div:first-child { padding:var(--space-6); }
+ .public-site .fh-internship-card h3 { font-size:var(--font-size-xl); line-height:1.4; }
+ .public-site .fh-internship-card h3, .public-site .fh-internship-card .truncate, .public-site .fh-entity-card .truncate { white-space:normal; overflow-wrap:anywhere; }
+ .public-site [id] { scroll-margin-top:9rem; }
+ .fh-audience-panel:first-child { border-top:3px solid var(--color-brand-accent); }
+ .fh-audience-panel:nth-child(2) { border-top:3px solid var(--color-brand-navy); }
+ .fh-audience-panel:nth-child(3) { border-top:3px solid var(--color-brand-blue); }
+ @media(min-width:40rem) { .fh-profile-cover { aspect-ratio:var(--profile-cover-ratio); } }
+ @media(min-width:64rem) { .fh-trust-layout { display:grid; grid-template-columns:minmax(0,1fr) minmax(0,1.5fr); gap:var(--space-12); } }
 }

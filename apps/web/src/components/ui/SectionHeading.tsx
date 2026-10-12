@@ -47,7 +47,7 @@ export function SectionHeading({
       style={panel ? { borderBottomColor: 'var(--workspace-rule, var(--color-border))' } : undefined}
       className={cn(
         'flex flex-wrap items-start justify-between gap-x-4 gap-y-2',
-        panel && 'border-b border-border px-5 py-4',
+        panel && 'border-b border-border px-6 py-4',
         className,
       )}
     >
@@ -63,7 +63,7 @@ export function SectionHeading({
         </Tag>
         {description && <p className="mt-0.5 break-words text-body text-foreground-secondary">{description}</p>}
       </div>
-      {action && <div className="shrink-0 text-body">{action}</div>}
+      {action && <div className="fh-section-action text-body">{action}</div>}
     </div>
   )
 }

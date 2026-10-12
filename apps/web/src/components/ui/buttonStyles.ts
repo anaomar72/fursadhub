@@ -1,20 +1,6 @@
 import { cn } from '../../lib/utils/cn'
 
-/**
- * The approved button family (design-reference/presentation-refresh-2026).
- *
- * <p>`primary` is the orange call to action — Search, Apply Now, Create Internship, Subscribe.
- * `secondary` is the navy action that sits beside it — Explore opportunities, Export Report.
- * `outline` is the white bordered control — Save for later, Get Started Now, View details.
- *
- * <p><strong>Primary fills with the ACTION orange, not the brand orange.</strong> White on the brand
- * #F97316 measures 2.80:1; on `--color-action-primary` (#C2410C) it measures 5.18:1, clearing WCAG
- * AA for the 14px label every button carries. See the action block in `tokens.css`.
- *
- * <p>`danger` fills with `--color-action-danger`, which is the same in both themes. It used to fill
- * with the STATUS colour `--color-danger`, which is a pale coral in dark mode — white text on it was
- * close to unreadable.
- */
+
 export const BUTTON_VARIANT_CLASSES = {
   primary: 'bg-action-primary text-on-action shadow-xs hover:bg-action-primary-hover',
   secondary: 'bg-brand-navy text-white shadow-xs hover:bg-brand-navy-strong',
@@ -23,27 +9,20 @@ export const BUTTON_VARIANT_CLASSES = {
   danger: 'bg-action-danger text-on-action shadow-xs hover:bg-action-danger-hover',
 } as const
 
-/** Control heights are read off the references: 40px standard, 48px for hero and sidebar actions. */
+
 export const BUTTON_SIZE_CLASSES = {
-  sm: 'h-9 px-3.5 text-sm',
-  md: 'h-10 px-4 text-sm',
-  lg: 'h-12 px-6 text-[15px]',
+  sm: 'min-h-9 px-3.5 py-2 text-label',
+  md: 'min-h-10 px-4 py-2.5 text-body',
+  lg: 'fh-button-lg min-h-12 px-6 py-3 text-body-lg',
 } as const
 
 export type ButtonVariant = keyof typeof BUTTON_VARIANT_CLASSES
 export type ButtonSize = keyof typeof BUTTON_SIZE_CLASSES
 
-/**
- * The one place FursadHub's button appearance is defined, so a `<button>` and a navigational
- * `<a>` that are meant to look identical actually are — previously a "primary button" link was
- * hand-written Tailwind that had already drifted from the real Button (`font-medium` against
- * `font-semibold`, no active/motion treatment).
- *
- * <p>Shared by {@link Button} and {@link ButtonLink}. Anything that changes here changes both.
- */
+
 export function buttonClasses(variant: ButtonVariant, size: ButtonSize, className?: string): string {
   return cn(
-    'inline-flex shrink-0 items-center justify-center gap-2 rounded-md font-semibold transition-[background-color,border-color,color,box-shadow,transform] duration-150 ease-in-out',
+    'fh-button inline-flex min-w-0 max-w-full break-words whitespace-normal text-center items-center justify-center gap-2 rounded-control font-semibold transition-[background-color,border-color,color,box-shadow,transform] duration-fast ease-ui',
     'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background active:translate-y-px disabled:pointer-events-none disabled:opacity-50 motion-reduce:transition-none motion-reduce:transform-none',
     BUTTON_VARIANT_CLASSES[variant],
     BUTTON_SIZE_CLASSES[size],

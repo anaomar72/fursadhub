@@ -43,8 +43,8 @@ export function AboutPage() {
       {/* ------------------------------------------------------------ hero */}
       <section className="surface-dark relative overflow-hidden bg-surface text-foreground">
         {/* Decorative silhouette, bottom-anchored under the copy — the same treatment as the footer. */}
-        <SkylineArtwork className="absolute inset-x-0 bottom-0 h-28 w-full object-cover object-bottom opacity-40 sm:h-36 lg:h-44" />
-        <PublicContainer className="relative pb-36 pt-16 sm:pb-44 lg:pb-52 lg:pt-24">
+        <SkylineArtwork className="absolute bottom-0 end-0 h-28 w-full object-contain object-bottom opacity-40 lg:h-48 lg:w-1/3" />
+        <PublicContainer className="relative pb-36 pt-12 lg:py-20">
           <p className="text-caption font-semibold uppercase tracking-wide text-brand-accent-ink">{t('common:publicPages.about.eyebrow')}</p>
           <h1 className="mt-4 max-w-3xl font-display text-display-xl text-foreground">
             {t('common:publicPages.about.titleStart')}{' '}
@@ -68,7 +68,7 @@ export function AboutPage() {
       </section>
 
       {/* ------------------------------------------------------------ mission and vision */}
-      <section className="py-14 lg:py-20">
+      <section className="fh-public-section">
         <PublicContainer className="grid gap-12 md:grid-cols-2 md:gap-16">
           {(['mission', 'vision'] as const).map((item, index) => (
             <Reveal key={item} index={index} className="min-w-0">
@@ -107,16 +107,16 @@ export function AboutPage() {
       </section>
 
       {/* ------------------------------------------------------------ audiences */}
-      <section aria-labelledby="about-audience" className="py-14 lg:py-20">
+      <section aria-labelledby="about-audience" className="fh-public-section">
         <PublicContainer>
           <Reveal>
             <h2 id="about-audience" className={SECTION_TITLE}>
               {t('common:publicPages.about.audienceTitle')}
             </h2>
           </Reveal>
-          <div className="mt-10 grid gap-10 lg:grid-cols-3 lg:gap-0 lg:divide-x lg:divide-border rtl:lg:divide-x-reverse">
+          <div className="mt-10 grid gap-6 lg:grid-cols-3">
             {AUDIENCES.map((audience, index) => (
-              <Reveal key={audience.key} index={index} className="flex min-w-0 flex-col lg:px-8 lg:first:ps-0 lg:last:pe-0">
+              <Reveal key={audience.key} index={index} className="fh-audience-panel flex min-w-0 flex-col rounded-xl border border-border bg-surface p-6">
                 <span className="flex size-11 items-center justify-center rounded-lg bg-brand-accent-soft text-brand-accent-ink">
                   <Icon name={audience.icon} className="size-5" />
                 </span>

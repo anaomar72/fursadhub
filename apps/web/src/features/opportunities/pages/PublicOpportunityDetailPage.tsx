@@ -5,7 +5,7 @@ import { Link, useParams } from 'react-router-dom'
 import * as publicOpportunityApi from '../api/publicOpportunityApi'
 import * as organizationApi from '../../organization/api/organizationApi'
 import { useStudentMarketplaceAccess } from '../../student/hooks/useStudentMarketplaceAccess'
-import { Avatar, ButtonLink, EmptyState, Icon, Reveal, Skeleton, SkeletonRegion, SkeletonText, VerifiedBadge, type IconName } from '../../../components/ui'
+import { ProfileBanner, Avatar, ButtonLink, EmptyState, Icon, Reveal, Skeleton, SkeletonRegion, SkeletonText, VerifiedBadge, type IconName } from '../../../components/ui'
 import { ShareLink } from '../../../components/ui/ShareLink'
 import { PublicContainer } from '../../../app/layouts/PublicContainer'
 import { PublicBookmarks, PublicBookmark } from '../../student/components/PublicBookmarks'
@@ -114,7 +114,7 @@ export function PublicOpportunityDetailPage() {
     <PublicBookmarks ids={[opportunity.id]}>
       <div className="bg-background">
         {/* ------------------------------------------------------------------ header band */}
-        <section className="border-b border-border bg-surface">
+        <section className="fh-directory-head border-b border-border bg-surface">
           <PublicContainer className="py-8 lg:py-12">
             <Link
               to="/opportunities"
@@ -177,12 +177,18 @@ export function PublicOpportunityDetailPage() {
                 </li>
               )}
             </ul>
+            <nav aria-label={t('common:astra.sections')} className="mt-8 flex flex-wrap overflow-x-auto gap-x-6 gap-y-2 border-t border-border pt-4">
+              <a className="inline-flex min-h-10 items-center rounded-sm text-label text-link hover:underline" href="#overview">{t('opportunities:public.aboutInternship')}</a>
+              {opportunity.responsibilities&&<a className="inline-flex min-h-10 items-center rounded-sm text-label text-link hover:underline" href="#responsibilities">{t('opportunities:form.responsibilitiesLabel')}</a>}
+              {opportunity.requirements&&<a className="inline-flex min-h-10 items-center rounded-sm text-label text-link hover:underline" href="#requirements">{t('opportunities:form.requirementsLabel')}</a>}
+              {organization&&<a className="inline-flex min-h-10 items-center rounded-sm text-label text-link hover:underline" href="#organization-info">{t('opportunities:public.aboutOrganization')}</a>}
+            </nav>
           </PublicContainer>
         </section>
 
         {/* ------------------------------------------------------------------ body */}
         <PublicContainer className="grid gap-10 py-10 lg:grid-cols-[minmax(0,1fr)_22rem] lg:gap-14 lg:py-14">
-          <aside className="min-w-0 lg:sticky lg:top-24 lg:col-start-2 lg:row-start-1 lg:self-start">
+          <aside className="min-w-0 lg:sticky lg:top-40 lg:col-start-2 lg:row-start-1 lg:self-start">
             <div className="rounded-xl border border-border bg-surface p-6">
               <h2 className="font-display text-title-panel text-foreground">{t('opportunities:public.applyPanelTitle')}</h2>
               {closed ? (
@@ -219,15 +225,9 @@ export function PublicOpportunityDetailPage() {
             </div>
           </aside>
 
-          <article className="min-w-0 lg:col-start-1 lg:row-start-1">
+          <article className="min-w-0 rounded-xl border border-border bg-surface p-5 sm:p-8 lg:col-start-1 lg:row-start-1">
             {organization?.hasCover && (
-              <img
-                src={organizationApi.organizationCoverUrl(organization.id)}
-                alt=""
-                loading="lazy"
-                decoding="async"
-                className="mb-10 aspect-[16/9] w-full rounded-xl border border-border bg-surface-muted object-cover sm:aspect-[2.5/1]"
-              />
+              <ProfileBanner coverUrl={organizationApi.organizationCoverUrl(organization.id)} variant="public" className="mb-8"/>
             )}
             <Reveal>
               <ContentSection id="overview" title={t('opportunities:public.aboutInternship')} body={opportunity.description} />

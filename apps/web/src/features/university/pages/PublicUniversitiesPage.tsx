@@ -87,7 +87,7 @@ export function PublicUniversitiesPage() {
 
   return (
     <div className="bg-background">
-      <section className="border-b border-border bg-surface">
+      <section className="fh-directory-head border-b border-border bg-surface">
         <PublicContainer className="py-10 lg:py-14">
           <h1 className="max-w-3xl font-display text-display-lg text-foreground">
             {t('common:publicPages.universities.heroLead')}{' '}
@@ -102,7 +102,7 @@ export function PublicUniversitiesPage() {
             onSubmit={applyFilters}
             role="search"
             aria-label={t('common:publicPages.universities.searchLabel')}
-            className="mt-8 grid gap-2 rounded-xl border border-border bg-background p-2 shadow-sm sm:grid-cols-2 lg:grid-cols-[minmax(0,1fr)_minmax(0,12rem)_auto]"
+            className="fh-discovery-form mt-8 grid gap-3 sm:grid-cols-2 lg:grid-cols-[minmax(0,1fr)_minmax(0,12rem)_auto]"
           >
             <SearchInput
               label={t('common:publicPages.universities.searchLabel')}
@@ -140,7 +140,7 @@ export function PublicUniversitiesPage() {
             )}
           </div>
           {result.data && (
-            <label className="flex items-center gap-2 text-body text-foreground-secondary">
+            <label className="flex min-w-0 flex-wrap items-center gap-2 text-body text-foreground-secondary">
               {t('common:publicPages.universities.sortLabel')}
               <Select
                 value={appliedSort}
@@ -150,7 +150,7 @@ export function PublicUniversitiesPage() {
                   else next.set('sort', event.target.value)
                   setParams(next)
                 }}
-                className="w-48"
+                className="w-full sm:w-48"
               >
                 <option value="name">{t('common:publicPages.universities.sortName')}</option>
                 <option value="nameDesc">{t('common:publicPages.universities.sortNameDesc')}</option>

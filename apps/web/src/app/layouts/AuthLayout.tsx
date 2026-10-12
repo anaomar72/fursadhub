@@ -23,7 +23,7 @@ import { AuthBrandPanel, AuthFooterLinks, BackToHomeLink } from '../../features/
 export function AuthLayout() {
   const { t } = useTranslation()
   return (
-    <div className="min-h-svh bg-background lg:grid lg:grid-cols-2 lg:bg-surface">
+    <div className="min-h-svh bg-background lg:grid lg:grid-cols-[minmax(0,2fr)_minmax(0,3fr)] lg:bg-surface">
       <AuthBrandPanel />
 
       {/*

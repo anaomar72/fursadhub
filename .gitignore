@@ -51,3 +51,18 @@ logs/
 
 # Local infra volumes
 infra/.data/
+
+# Astra local QA evidence and development-only previews (retained locally, not shipped)
+/apps/web/phase1.html
+/apps/web/phase2.html
+/apps/web/src/dev/Phase1Preview.tsx
+/apps/web/src/dev/Phase2Preview.tsx
+/apps/web/vite.astra-preview.config.ts
+/e2e/playwright.astra.config.ts
+/docs/audits/astra-baseline/
+/docs/audits/astra-phase1/
+/docs/audits/astra-phase2/
+/docs/audits/astra-phase1-build.txt
+/docs/audits/astra-phase1-lint.txt
+/docs/audits/astra-phase1-unit-results.json
+/docs/audits/astra-checkpoint-unit-results.json

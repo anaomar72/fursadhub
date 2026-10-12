@@ -49,9 +49,12 @@ describe('public detail pages use the shared reveal', () => {
     ['university', UNIVERSITY],
   ])('%s detail leaves the cover and overlapping identity row unanimated', (_name, path) => {
     const file = source(path)
-    const bannerAt = file.indexOf('<ProfileBanner')
+    const bannerAt = file.indexOf('<PublicProfileHeader')
     expect(bannerAt).toBeGreaterThan(-1)
     const firstReveal = file.indexOf('<Reveal')
     expect(firstReveal).toBeGreaterThan(bannerAt)
+    const identity = source('src/components/ui/PublicProfileHeader.tsx')
+    expect(identity).toContain('<ProfileBanner')
+    expect(identity).not.toContain('<Reveal')
   })
 })

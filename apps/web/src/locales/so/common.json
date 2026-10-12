@@ -695,5 +695,10 @@
       "upcoming": "lama bilaabin",
       "notReached": "lama gaarin"
     }
+  },
+  "astra": {
+    "cover": "Sawirka daboolka {{name}}",
+    "viewCover": "Eeg sawirka oo dhan",
+    "sections": "Boggan gudihiisa"
   }
 }

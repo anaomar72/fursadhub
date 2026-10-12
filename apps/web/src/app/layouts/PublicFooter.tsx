@@ -16,11 +16,11 @@ export function PublicFooter() {
   const { t } = useTranslation()
   return (
     <footer className="surface-dark relative overflow-hidden bg-surface text-foreground">
-      <SkylineArtwork className="absolute bottom-0 end-0 hidden h-40 w-auto opacity-40 lg:block" />
+
       <div className="relative mx-auto w-full max-w-7xl px-4 pt-14 sm:px-6 lg:px-8 lg:pt-16">
-        <div className="grid gap-10 sm:grid-cols-2 lg:grid-cols-[minmax(0,1.6fr)_repeat(3,minmax(0,1fr))] lg:gap-12">
-          <div className="sm:col-span-2 lg:col-span-1">
-            <BrandLogo surface="dark" />
+        <div className="grid gap-10 sm:grid-cols-3 lg:grid-cols-[minmax(0,1.6fr)_repeat(3,minmax(0,1fr))] lg:gap-12">
+          <div className="sm:col-span-3 lg:col-span-1">
+            <BrandLogo surface="dark" size="lg" />
             <p className="mt-4 max-w-sm text-body text-foreground-secondary">{t('common:footer.description')}</p>
             <p className="mt-4 text-body font-semibold text-brand-accent-ink">{t('common:footer.strapline')}</p>
           </div>
@@ -53,7 +53,8 @@ export function PublicFooter() {
             ]}
           />
         </div>
-        <p className="mt-12 border-t border-border py-6 text-caption text-foreground-secondary">
+        <SkylineArtwork className="ms-auto mt-8 h-16 w-48 object-contain opacity-40" />
+        <p className="mt-4 border-t border-border py-6 text-caption text-foreground-secondary">
           {t('common:footer.copyright', { year: new Date().getFullYear() })}
         </p>
       </div>
@@ -70,7 +71,7 @@ function FooterNav({ heading, links }: { heading: string; links: string[][] }) {
           <li key={`${to}-${label}`}>
             <Link
               to={to}
-              className="rounded-sm text-body text-foreground-secondary transition-colors hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus-ring motion-reduce:transition-none"
+              className="inline-flex min-h-9 items-center rounded-sm text-body text-foreground-secondary transition-colors hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus-ring motion-reduce:transition-none"
             >
               {label}
             </Link>
