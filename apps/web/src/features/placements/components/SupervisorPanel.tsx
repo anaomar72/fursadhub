@@ -3,7 +3,7 @@ import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { useTranslation } from 'react-i18next'
 import * as placementsApi from '../api/placementsApi'
 import { apiErrorMessage } from '../../../lib/api/errorMessage'
-import { Button, FormField, Select } from '../../../components/ui'
+import { Button, FormField, Select, Panel } from '../../../components/ui'
 import type { PlacementResponse, SupervisorAssignmentResponse, SupervisorType } from '../types'
 
 interface SupervisorPanelProps {
@@ -57,8 +57,7 @@ export function SupervisorPanel({ placement, type, canAssign }: SupervisorPanelP
   const titleKey = type === 'UNIVERSITY' ? 'universitySupervisor' : 'organizationSupervisor'
 
   return (
-    <section className="rounded-lg border border-border bg-surface p-4">
-      <h2 className="text-sm font-semibold text-foreground">{t(`placements:supervisors.${titleKey}`)}</h2>
+    <Panel title={t(`placements:supervisors.${titleKey}`)} padding="compact">
 
       {current ? (
         <p className="mt-2 text-sm text-foreground">
@@ -121,7 +120,7 @@ export function SupervisorPanel({ placement, type, canAssign }: SupervisorPanelP
           {apiErrorMessage(t, 'placements', 'supervisors', assignMutation.error)}
         </p>
       )}
-    </section>
+    </Panel>
   )
 }
 

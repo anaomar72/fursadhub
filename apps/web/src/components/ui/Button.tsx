@@ -11,7 +11,7 @@ export interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
 /**
  * Base interactive control for FursadHub. While `loading`, the button stays disabled and keeps its
  * width stable rather than collapsing to a spinner (see
- * docs/product/BRAND_AND_UI_GUIDELINES.md section 19).
+ * CLAUDE.md section 57).
  *
  * <p><strong>How the width is actually held.</strong> The spinner is overlaid on the centre of the
  * button and the label is hidden with `opacity-0` — it keeps its box, so it keeps reserving exactly

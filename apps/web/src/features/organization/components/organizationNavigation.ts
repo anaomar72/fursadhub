@@ -29,16 +29,20 @@ import { organizationCapabilities } from '../organizationCapabilities'
 export function buildOrganizationNav(t: TFunction, membership: MyOrganizationMembershipResponse): NavSection[] {
   const can = organizationCapabilities(membership)
 
-  const primary: NavItem[] = [{ to: '/organization/dashboard', label: t('organization:nav.dashboard'), icon: 'home' }]
+  // Phase 6: grouped by the work each destination is for — recruiting, then running internships,
+  // then the organization itself. Every gate is unchanged; a role simply gets fewer groups, and a
+  // group with nothing in it for that role is not drawn at all. Counts never move items around.
+  const overview: NavItem[] = [{ to: '/organization/dashboard', label: t('organization:nav.dashboard'), icon: 'home' }]
 
+  const recruitment: NavItem[] = []
   if (can.canManageOpportunities) {
-    primary.push({ to: '/organization/opportunities', label: t('organization:nav.opportunities'), icon: 'briefcase' })
+    recruitment.push({ to: '/organization/opportunities', label: t('organization:nav.opportunities'), icon: 'briefcase' })
   }
   if (can.canManageCandidates) {
-    primary.push({ to: '/organization/candidates', label: t('recruitment:nav.candidates'), icon: 'users', end: true })
+    recruitment.push({ to: '/organization/candidates', label: t('recruitment:nav.candidates'), icon: 'users', end: true })
     // Shortlist is not an entity — it is the SHORTLISTED candidacy status, so this is the same
     // pool with that stage pinned in the URL rather than a second list with its own state.
-    primary.push({
+    recruitment.push({
       to: '/organization/candidates?stage=SHORTLISTED',
       label: t('recruitment:nav.shortlist'),
       icon: 'userCheck',
@@ -46,33 +50,28 @@ export function buildOrganizationNav(t: TFunction, membership: MyOrganizationMem
   }
 
   // A supervisor's placement list IS their intern list — PlacementQueryService narrows it to their
-  // active assignments — so the same route is labelled for what it holds for them.
-  primary.push({
-    to: '/organization/placements',
-    label: can.scopedToAssignedPlacements ? t('organization:nav.myInterns') : t('organization:nav.interns'),
-    icon: 'badgeCheck',
-  })
-
-  // Attendance and the evaluation are the only two internship records this role may act on
-  // (AttendanceService and PlacementEvaluationService both require the ASSIGNED organization
-  // supervisor). Weekly logs, the final report and the defense are university-only, so there is
-  // nothing else to put here.
+  // active assignments — so the same route is labelled for what it holds for them. Attendance and
+  // the evaluation are the only two internship records that role may act on, which is the
+  // supervision queue; weekly logs, the final report and the defense are university-only.
+  const internships: NavItem[] = [
+    {
+      to: '/organization/placements',
+      label: can.scopedToAssignedPlacements ? t('organization:nav.myInterns') : t('organization:nav.interns'),
+      icon: 'badgeCheck',
+    },
+  ]
   if (can.scopedToAssignedPlacements) {
-    primary.push({ to: '/organization/supervision', label: t('organization:nav.supervision'), icon: 'clipboard' })
+    internships.push({ to: '/organization/supervision', label: t('organization:nav.supervision'), icon: 'clipboard' })
   }
 
-  // Partner universities read the organization-wide placement list to describe who the organization
-  // works with. That is an institution-relationship view, not recruitment and not supervision, so
-  // it belongs to the role that administers the organization.
+  // The organization itself — its record, its staff, and the universities it works with — belongs
+  // to the role that administers it.
+  const organization: NavItem[] = []
   if (can.canAdministerOrganization) {
-    primary.push({ to: '/organization/partners', label: t('organization:nav.partners'), icon: 'bank' })
-  }
-
-  const manage: NavItem[] = []
-  if (can.canAdministerOrganization) {
-    manage.push(
+    organization.push(
       { to: '/organization/profile', label: t('organization:nav.profile'), icon: 'building' },
       { to: '/organization/staff', label: t('organization:nav.staff'), icon: 'users' },
+      { to: '/organization/partners', label: t('organization:nav.partners'), icon: 'bank' },
     )
   }
 
@@ -91,8 +90,10 @@ export function buildOrganizationNav(t: TFunction, membership: MyOrganizationMem
   }
 
   return [
-    { items: primary },
-    ...(manage.length > 0 ? [{ label: t('common:shell.sections.manage'), items: manage }] : []),
+    { items: overview },
+    ...(recruitment.length > 0 ? [{ label: t('organization:nav.sections.recruitment'), items: recruitment }] : []),
+    { label: t('organization:nav.sections.internships'), items: internships },
+    ...(organization.length > 0 ? [{ label: t('organization:nav.sections.organization'), items: organization }] : []),
     { label: t('common:shell.sections.account'), items: account },
   ]
 }

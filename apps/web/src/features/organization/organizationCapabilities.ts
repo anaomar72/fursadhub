@@ -95,3 +95,15 @@ export function organizationCapabilities(membership: MyOrganizationMembershipRes
     canAdministerOrganization: isAdmin,
   }
 }
+
+/**
+ * The portal name under the organization's brand in the sidebar. It used to read "Recruiter
+ * Portal" for everyone, so an organization admin — and a supervisor with no recruiting authority
+ * at all — were told they were in a recruiter's workspace. Wording only, never access.
+ */
+export function organizationWorkspaceLabelKey(membership: MyOrganizationMembershipResponse): string {
+  const can = organizationCapabilities(membership)
+  if (can.isRecruiter) return 'common:shell.portals.organizationRecruiter'
+  if (can.scopedToAssignedPlacements) return 'common:shell.portals.organizationSupervisor'
+  return 'common:shell.portals.organization'
+}

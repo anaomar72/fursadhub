@@ -1,6 +1,7 @@
 import { beforeEach, describe, expect, it } from 'vitest'
 import i18n from '../../../src/lib/i18n'
 import { buildUniversityNav } from '../../../src/features/university/components/universityNavigation'
+import { universityWorkspaceLabelKey } from '../../../src/features/university/universityCapabilities'
 import type { MyMembershipResponse } from '../../../src/features/university/types'
 
 function membership(overrides: Partial<MyMembershipResponse> = {}): MyMembershipResponse {
@@ -146,5 +147,21 @@ describe('buildUniversityNav', () => {
     expect(labels).toContain('Kormeerka')
     expect(labels).not.toContain('My students')
     expect(labels).not.toContain('Supervision')
+  })
+})
+
+describe('the portal names the role the reader actually holds', () => {
+  // It used to read "University Portal" for every member, coordinators and supervisors included.
+  it('names the workspace after the member’s role, in English and Somali', () => {
+    const expected = {
+      UNIVERSITY_ADMIN: ['University Portal', 'Bogga Jaamacadda'],
+      DEPARTMENT_COORDINATOR: ['Coordinator Portal', 'Bogga Isku-duwaha'],
+      UNIVERSITY_SUPERVISOR: ['Supervisor Portal', 'Bogga Kormeeraha'],
+    } as const
+    for (const [role, [en, so]] of Object.entries(expected)) {
+      const key = universityWorkspaceLabelKey(membership({ role: role as MyMembershipResponse['role'], departmentIds: ['dept-1'] }))
+      expect(i18n.getFixedT('en')(key)).toBe(en)
+      expect(i18n.getFixedT('so')(key)).toBe(so)
+    }
   })
 })

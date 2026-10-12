@@ -1,4 +1,8 @@
 import { useTranslation } from 'react-i18next'
 import { cn } from '../../lib/utils/cn'
 import { Icon } from './Icon'
-export function LanguageToggle({className}:{className?:string}){const {i18n}=useTranslation();const language=i18n.resolvedLanguage?.startsWith('so')?'so':'en';const next=language==='en'?'so':'en';return <button type="button" onClick={()=>void i18n.changeLanguage(next)} aria-label={language==='en'?'Switch to Somali':'U beddel Ingiriisi'} className={cn('inline-flex h-10 items-center gap-2 rounded-md border border-border bg-surface px-3 text-sm font-semibold text-foreground transition-colors hover:bg-control-hover focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus-ring motion-reduce:transition-none',className)}><Icon name="globe" className="size-4"/><span>{language.toUpperCase()}</span></button>}
+export function LanguageToggle({className}:{className?:string}){const {i18n}=useTranslation()
+  // i18n.language (what was asked for), not resolvedLanguage: Somali is code-split, so at the moment of the switch
+  // i18next resolves 'so' to the 'en' fallback and the toggle stayed on "EN" — clicking it again then re-requested
+  // Somali, and there was no way back to English without a reload.
+  const language=i18n.language?.startsWith('so')?'so':'en';const next=language==='en'?'so':'en';return <button type="button" onClick={()=>void i18n.changeLanguage(next)} aria-label={language==='en'?'Switch to Somali':'U beddel Ingiriisi'} className={cn('inline-flex h-10 items-center gap-2 rounded-md border border-border bg-surface px-3 text-sm font-semibold text-foreground transition-colors hover:bg-control-hover focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus-ring motion-reduce:transition-none',className)}><Icon name="globe" className="size-4"/><span>{language.toUpperCase()}</span></button>}

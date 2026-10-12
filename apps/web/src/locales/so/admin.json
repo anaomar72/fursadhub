@@ -13,7 +13,8 @@
     "noAccess": "Ma haysatid gelitaan maamulka madasha.",
     "verification": "Xaqiijinta",
     "platform": "Nidaamka",
-    "testimonials": "Markhaatiyada"
+    "testimonials": "Markhaatiyada",
+    "operations": "Hawlgallada"
   },
   "dashboard": {
     "title": "Guudmarka madasha",
@@ -68,7 +69,51 @@
     "monitoring": "La eegayo",
     "publicVisibility": "{{discoverable}} ka mid ah {{published}} tababbar oo la daabacay ayaa hadda ka muuqda bogga dadweynaha.",
     "publicVisibilityHidden_one": "{{count}} baa qarsoon sababtoo ah waxaa loo qoondeeyay jaamacad ama hay’adiisa hadda lama xaqiijin.",
-    "publicVisibilityHidden_other": "{{count}} baa qarsoon sababtoo ah waxaa loo qoondeeyay jaamacado ama hay’adahooda hadda lama xaqiijin."
+    "publicVisibilityHidden_other": "{{count}} baa qarsoon sababtoo ah waxaa loo qoondeeyay jaamacado ama hay’adahooda hadda lama xaqiijin.",
+    "attention": {
+      "clearTitle": "Wax faragelin u baahan ma jiraan",
+      "clearBody": "Dib-u-eegista hay’adaha, kiisaska kor loo qaaday, codsiyada asturnaanta iyo markhaatiyada sugaya hubinta halkan ayay ka muuqan doonaan.",
+      "open": "Fur",
+      "items": {
+        "organizationReviews_one": "{{count}} hay’ad ayaa sugaysa dib-u-eegis xaqiijin",
+        "organizationReviews_other": "{{count}} hay’adood ayaa sugaya dib-u-eegis xaqiijin",
+        "universityReviews_one": "{{count}} jaamacad ayaa sugaysa dib-u-eegis xaqiijin",
+        "universityReviews_other": "{{count}} jaamacadood ayaa sugaya dib-u-eegis xaqiijin",
+        "escalatedCases_one": "{{count}} kiis xaqiijinta arday oo kor loo qaaday",
+        "escalatedCases_other": "{{count}} kiis xaqiijinta arday oo kor loo qaaday",
+        "openPrivacyRequests_one": "{{count}} codsi asturnaan oo furan",
+        "openPrivacyRequests_other": "{{count}} codsi asturnaan oo furan",
+        "pendingTestimonials_one": "{{count}} markhaati ayaa sugaya hubin",
+        "pendingTestimonials_other": "{{count}} markhaati ayaa sugaya hubin"
+      }
+    },
+    "health": {
+      "title": "Caafimaadka madasha",
+      "activeAccounts": "Akoonnada firfircoon",
+      "verifiedInstitutions": "Hay’adaha la xaqiijiyay",
+      "discoverableInternships": "Tababarrada dadweynuhu arki karo",
+      "ofPublished": "ka mid ah {{count}} la daabacay",
+      "activePlacements": "Meelaynta firfircoon"
+    },
+    "queue": {
+      "title": "Hay’adaha sugaya dib-u-eegis",
+      "description": "La soo gudbiyay iyo dib-u-eegis ku jira, dukumentiga ugu da’da weyn marka hore.",
+      "empty": "Kiis xaqiijin oo dib-u-eegis u baahan ma jiro.",
+      "partial": "Qayb ka mid ah safka lama soo qaadi karin; fur liiska hay’adaha ama jaamacadaha si aad wax walba u aragto.",
+      "kind": {
+        "organizations": "Hay’ad",
+        "universities": "Jaamacad"
+      }
+    },
+    "signals": {
+      "title": "Calaamadaha nidaamka",
+      "description": "Waa la daawadaa, lama shaqeeyo — midkoodna saf la nadiifiyo ma laha.",
+      "investigate": "Baar"
+    },
+    "records": {
+      "title": "Diiwaannada xaaladda",
+      "description": "Tiro kasta oo FursadHub tiriso, loo kala qaybiyay xaaladdeeda."
+    }
   },
   "organizations": {
     "title": "Xaqiijinta hay'adaha",
@@ -119,9 +164,24 @@
       "begin-review": "Tani waxay hay’adda u calaamadaynaysaa mid la eegayo.",
       "verify": "Tani way xaqiijinaysaa hay’adda oo waxay u oggolaanaysaa inay FursadHub ka shaqayso.",
       "request-changes": "Hay’adda waxaa laga codsanayaa inay wixii ay soo gudbisay saxdo.",
-      "reject": "Hay’adda waxaa loo sheegayaa in codsigeeda la diiday.",
-      "suspend": "Hay’ad la xaqiijiyay way lumin doontaa gelitaanka ilaa hakintu ka qaadmayso.",
-      "revoke": "Tani si joogto ah ayey uga qaadaysaa hay’adda xaqiijinteeda."
+      "reject": "Hay’adda waxaa loo sheegayaa in codsigeeda la diiday. Tani waa kama dambays — hay’ad la diiday dib looma eegi karo.",
+      "suspend": "Hay’addu isla markiiba way joojinaysaa ka shaqaynta FursadHub: tababarradeeda waa laga qarinayaa dadweynaha, mana qaadan karto musharrixiin cusub. Hakinta laga soo celin maayo — talaabada kaliya ee dambe waa ka-noqosho.",
+      "revoke": "Tani si joogto ah ayey uga qaadaysaa hay’adda xaqiijinteeda. Dib looma celin karo."
+    },
+    "confirmTitles": {
+      "verify": "Ma xaqiijinaysaa hay’adtan?",
+      "request-changes": "Ma codsanaysaa isbeddel?",
+      "reject": "Ma diidaysaa hay’adtan?",
+      "suspend": "Ma hakinaysaa hay’adtan?",
+      "revoke": "Ma ka noqonaysaa xaqiijintan?"
+    },
+    "done": {
+      "begin-review": "Dib-u-eegistii waa la bilaabay.",
+      "verify": "Hay’adda waa la xaqiijiyay.",
+      "request-changes": "Isbeddel ayaa la codsaday.",
+      "reject": "Hay’adda waa la diiday.",
+      "suspend": "Hay’adda waa la hakiyay.",
+      "revoke": "Xaqiijinta waa laga noqday."
     }
   },
   "universities": {
@@ -174,10 +234,26 @@
       "begin-review": "Tani waxay jaamacadda u calaamadaynaysaa mid la eegayo.",
       "verify": "Tani way xaqiijinaysaa jaamacadda oo waxay u oggolaanaysaa inay FursadHub ka shaqayso.",
       "request-changes": "Jaamacadda waxaa laga codsanayaa inay wixii ay soo gudbisay saxdo.",
-      "reject": "Jaamacadda waxaa loo sheegayaa in codsigeeda la diiday.",
-      "suspend": "Jaamacad la xaqiijiyay way lumin doontaa gelitaanka ilaa hakintu ka qaadmayso.",
-      "revoke": "Tani si joogto ah ayey uga qaadaysaa jaamacadda xaqiijinteeda."
-    }
+      "reject": "Jaamacadda waxaa loo sheegayaa in codsigeeda la diiday. Tani waa kama dambays — jaamacad la diiday dib looma eegi karo.",
+      "suspend": "Jaamacaddu isla markiiba way joojinaysaa ka shaqaynta FursadHub. Hakinta laga soo celin maayo — talaabada kaliya ee dambe waa ka-noqosho.",
+      "revoke": "Tani si joogto ah ayey uga qaadaysaa jaamacadda xaqiijinteeda. Dib looma celin karo."
+    },
+    "confirmTitles": {
+      "verify": "Ma xaqiijinaysaa jaamacadtan?",
+      "request-changes": "Ma codsanaysaa isbeddel?",
+      "reject": "Ma diidaysaa jaamacadtan?",
+      "suspend": "Ma hakinaysaa jaamacadtan?",
+      "revoke": "Ma ka noqonaysaa xaqiijintan?"
+    },
+    "done": {
+      "begin-review": "Dib-u-eegistii waa la bilaabay.",
+      "verify": "Jaamacadda waa la xaqiijiyay.",
+      "request-changes": "Isbeddel ayaa la codsaday.",
+      "reject": "Jaamacadda waa la diiday.",
+      "suspend": "Jaamacadda waa la hakiyay.",
+      "revoke": "Xaqiijinta waa laga noqday."
+    },
+    "viewDocument": "Fur dukumentiga diiwaangelinta"
   },
   "organizationTypes": {
     "COMPANY": "Shirkad",
@@ -222,7 +298,12 @@
     "resultCount_one": "{{count}} kiis oo sugaya",
     "resultCount_other": "{{count}} kiis oo sugaya",
     "emptyHint": "Waxba kor loogumaa qaadin nidaamka in la eego.",
-    "noteHint": "Ardayga wuu arki doonaa, sidaas darteed sheeg waxa uu samayn karo."
+    "noteHint": "Ardayga wuu arki doonaa, sidaas darteed sheeg waxa uu samayn karo.",
+    "done": {
+      "verify": "Diiwaangelinta waa la xaqiijiyay.",
+      "reject": "Diiwaangelinta waa la diiday.",
+      "request-more-evidence": "Caddayn dheeraad ah ayaa laga codsaday ardayga."
+    }
   },
   "verificationStatuses": {
     "DRAFT": "Qabyo",
@@ -320,6 +401,26 @@
       "title": "Waxa aan halkan lagu muujin",
       "body": "FursadHub weligeed maamule ma tuso furaha sirta ah, lambarka la qariyay, ama wax calaamad ah — sidaas awgeed midna boggan kama muuqdo.",
       "memberships": "Xubinnimada jaamacadda iyo hay’adda waxaa maamula maamulaha kooxda, oo lagama heli karo hal meel oo guud."
+    },
+    "stateTitle": "Xaaladda akoonka",
+    "dangerTitle": "Hakinta gelitaanka",
+    "done": {
+      "suspend": "Akoonka waa la hakiyay.",
+      "reactivate": "Akoonka dib ayaa loo hawlgeliyay."
+    },
+    "stateHelp": {
+      "PENDING_CONTACT_VERIFICATION": "Waa la diiwaangeliyay, laakiin ciwaanka iimaylka weli lama xaqiijin.",
+      "ACTIVE": "Wuu geli karaa oo isticmaali karaa FursadHub.",
+      "SUSPENDED": "Meel kasta waa laga saaray, mana geli karo ilaa dib loo hawlgeliyo.",
+      "CLOSED": "Waa la xiray. Lama hakin karo, dib loomana hawlgelin karo."
+    },
+    "platformRoles": {
+      "title": "Doorarka madasha",
+      "description": "Awoodda madasha ee akoonkani haysto ama hore u haystay.",
+      "manage": "Maamul doorarka madasha",
+      "none": "Akoonkan weligiis ma haysan door madasha.",
+      "since": "Laga bilaabo {{date}}",
+      "revokedOn": "La qaaday {{date}}"
     }
   },
   "privacyRequests": {
@@ -349,7 +450,18 @@
     "noteHint": "Waxaa loo diiwaangelinayaa natiijada codsigan.",
     "noActions": "Codsigan horey ayaa loo xalliyay.",
     "resultCount_one": "{{count}} codsi",
-    "resultCount_other": "{{count}} codsi"
+    "resultCount_other": "{{count}} codsi",
+    "reasonLabel": "Sababta diidmada",
+    "outcomeLabel": "Qoraalka natiijada",
+    "confirm": {
+      "complete": "Calaamadaynta codsiga mid la dhammeeyay waa kama dambays. Qor waxa qofka loo qabtay.",
+      "reject": "Diidmadu waa kama dambays. Qofka waxaa loo sheegayaa in codsiga la diiday, iyadoo la raacinayo sababtaada."
+    },
+    "done": {
+      "begin-review": "Dib-u-eegistii waa la bilaabay.",
+      "complete": "Codsiga waxaa loo calaamadeeyay mid la dhammeeyay.",
+      "reject": "Codsiga waa la diiday."
+    }
   },
   "legalDocuments": {
     "title": "Dukumentiyada sharciga",
@@ -373,7 +485,10 @@
       "generic": "Dukumentiga lama daabici karin. Fadlan mar kale isku day.",
       "LEGAL_DOCUMENT_VERSION_EXISTS": "Nooca ayaa hore ugu jira luqaddan. Isticmaal lambar nooc oo cusub.",
       "VALIDATION_FAILED": "Fadlan hubi meelaha aad buuxisay."
-    }
+    },
+    "confirmTitle": "Ma daabacaysaa noocan?",
+    "confirmBody": "{{type}} nooca {{version}} ({{locale}}), oo dhaqan gelaya {{date}}. Nooc la daabacay weligiis lama beddeli karo lamana tirtiri karo.",
+    "done": "Dukumentiga sharciga waa la daabacay."
   },
   "audit": {
     "title": "Raadraaca hanti-dhawrka",
@@ -432,6 +547,15 @@
     "roleMeaning": {
       "SUPER_ADMIN": "Awood nidaam oo buuxda: tirakoobka, xisaabaadka, doorarka nidaamka, hoggaaminta sharciga, raad-raaca, iyo saf kasta oo xaqiijin ah.",
       "VERIFICATION_OFFICER": "Xaqiijin oo kaliya: safafka hay’adaha iyo jaamacadaha iyo kiisaska ardayda ee kor loo qaaday. Ma leh gelitaan xisaabaad, doorar nidaam, hoggaamin sharci ama raad-raac."
+    },
+    "done": {
+      "grant": "Doorka {{role}} waa la siiyay.",
+      "revoke": "Doorka madasha waa laga qaaday."
+    },
+    "grantConfirm": {
+      "title": "Ma siinaysaa doorka {{role}}?",
+      "VERIFICATION_OFFICER": "Akoonka {{userId}} wuxuu awoodi doonaa inuu dib u eego xaqiijinta hay’adaha iyo kiisaska ardayda ee kor loo qaaday. Wax kale oo konsoolka ah looma furayo.",
+      "SUPER_ADMIN": "Akoonka {{userId}} wuxuu helayaa awoodda madasha oo dhan: akoon kasta, hay’ad kasta, doorarka madasha, codsiyada asturnaanta iyo raadraaca hanti-dhawrka. Sii kaliya qof ay waajib ku tahay inuu maamulo FursadHub."
     }
   },
   "verificationOfficers": {
@@ -508,7 +632,25 @@
     "NEEDS_MORE_EVIDENCE": "Caddayn dheeraad ah ayaa loo baahan yahay"
   },
   "verification": {
-    "eyebrow": "Xaqiijinta"
+    "eyebrow": "Xaqiijinta",
+    "statusTitle": "Xaaladda xaqiijinta",
+    "evidenceOnFile": "Dukumentiga diiwaanka ku jira",
+    "evidenceOn": "Dukumenti {{date}}",
+    "registeredOn": "La diiwaangeliyay {{date}}",
+    "evidenceAudited": "Furitaanka dukumentiga waxaa lagu diiwaangeliyaa raadraaca hanti-dhawrka.",
+    "noEvidenceAwaiting": "Dukumenti diiwaanka kuma jiro. La’aantiis wax lagu xaqiijiyo ma jiro — codso isbeddel halkii aad xaqiijin lahayd.",
+    "withdrawTitle": "Ka noqo xaqiijinta",
+    "withdrawHint": "Hay’ad aan mar dambe ka shaqayn karin FursadHub.",
+    "stateHelp": {
+      "DRAFT": "Weli lama soo gudbin. Wax madashu eegto ma jiraan.",
+      "SUBMITTED": "La soo gudbiyay, wuxuuna sugayaa dib-u-eege.",
+      "UNDER_REVIEW": "Dib-u-eegis ayuu ku jiraa. Xaqiiji, codso isbeddel, ama diid.",
+      "NEEDS_CHANGES": "Wuxuu sugayaa in hay’addu saxdo oo dib u soo gudbiso.",
+      "VERIFIED": "La xaqiijiyay, wuxuuna ka shaqaynayaa FursadHub.",
+      "REJECTED": "La diiday. Tani waa kama dambays.",
+      "SUSPENDED": "La hakiyay. Ma shaqayn karo; amarka kaliya ee haray waa ka-noqosho.",
+      "REVOKED": "Xaqiijinta waa laga noqday. Tani waa kama dambays."
+    }
   },
   "locales": {
     "en": "Ingiriisi",
@@ -539,6 +681,11 @@
       "VALIDATION_FAILED": "Sabab ayaa loo baahan yahay marka markhaati la diidayo.",
       "ACCESS_DENIED": "Uma lihid oggolaansho aad markhaatiyada ku maamusho.",
       "generic": "Markhaatigaas lama cusboonaysiin karin. Isku day mar kale."
+    },
+    "done": {
+      "publish": "Markhaatiga waa la daabacay.",
+      "unpublish": "Markhaatiga waa laga saaray bogga dadweynaha.",
+      "reject": "Markhaatiga waa la diiday."
     }
   }
 }

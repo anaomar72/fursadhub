@@ -6,7 +6,7 @@ import * as studentApi from '../api/studentApi'
 import * as recruitmentApi from '../../recruitment/api/recruitmentApi'
 import { SAVED_LIST_KEY } from '../hooks/useSavedOpportunities'
 import { StudentOpportunityCard } from '../components/StudentOpportunityCard'
-import { EmptyState, ErrorState, LoadingState, PageHeader, Pagination } from '../../../components/ui'
+import { EmptyState, ErrorState, PageHeader, Pagination, SkeletonCardGrid } from '../../../components/ui'
 import { PageContainer } from '../../../app/layouts/PageContainer'
 import { formatDate } from '../../../lib/utils/formatDate'
 import { ApiError } from '../../../lib/api/client'
@@ -65,7 +65,7 @@ export function SavedInternshipsPage() {
       <PageHeader title={t('student:saved.title')} description={t('student:saved.subtitle')} />
 
       {savedQuery.isLoading ? (
-        <LoadingState label={t('common:status.loading')} />
+        <SkeletonCardGrid count={3} />
       ) : savedQuery.isError && !noProfileYet ? (
         <ErrorState
           description={t('student:saved.error')}
@@ -79,7 +79,7 @@ export function SavedInternshipsPage() {
           action={
             <Link
               to="/student/profile"
-              className="inline-flex h-10 items-center rounded-lg bg-brand-primary px-4 text-sm font-semibold text-on-brand transition-colors hover:bg-brand-accent-strong focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus-ring motion-reduce:transition-none"
+              className="inline-flex h-10 items-center rounded-lg bg-action-primary px-4 text-sm font-semibold text-on-action transition-colors hover:bg-action-primary-hover focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus-ring motion-reduce:transition-none"
             >
               {t('student:saved.completeProfile')}
             </Link>
@@ -92,7 +92,7 @@ export function SavedInternshipsPage() {
           action={
             <Link
               to="/student/opportunities"
-              className="inline-flex h-10 items-center rounded-lg bg-brand-primary px-4 text-sm font-semibold text-on-brand transition-colors hover:bg-brand-accent-strong focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus-ring motion-reduce:transition-none"
+              className="inline-flex h-10 items-center rounded-lg bg-action-primary px-4 text-sm font-semibold text-on-action transition-colors hover:bg-action-primary-hover focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus-ring motion-reduce:transition-none"
             >
               {t('student:nav.exploreInternships')}
             </Link>

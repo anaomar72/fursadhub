@@ -4,7 +4,11 @@
     "enrollment": "Diiwaangelinta",
     "profile": "Astaanta",
     "exploreInternships": "Raadi tababarro",
-    "savedInternships": "Tababarrada la keydiyay"
+    "savedInternships": "Tababarrada la keydiyay",
+    "sections": {
+      "opportunities": "Fursadaha",
+      "internship": "Tababarka"
+    }
   },
   "dashboard": {
     "title": "Guddoomahaaga",
@@ -125,7 +129,25 @@
       "browse": "Fiiri tabobarrada",
       "profile": "Dhammaystir bogga"
     },
-    "studentNumberHint": "Lambarka ardayga ee jaamacaddaadu ku siisay. Shaqaalaha jaamacaddu waxay ku hubiyaan diiwaannadooda."
+    "studentNumberHint": "Lambarka ardayga ee jaamacaddaadu ku siisay. Shaqaalaha jaamacaddu waxay ku hubiyaan diiwaannadooda.",
+    "whyTitle": "Sababta diiwaangelintaada loo xaqiijiyo",
+    "whyBody": "Ardayda ay xaqiijisay jaamacaddoodu oo keliya ayaa codsan kara tababaro ama la magacaabi karaa. Shaqaalaha jaamacaddaadu waxay faahfaahintan la barbar dhigaan diiwaankooda.",
+    "progressLabel": "Horumarka xaqiijinta diiwaangelinta",
+    "steps": {
+      "details": "Faahfaahinta diiwaangelinta",
+      "evidence": "Kaarka ardayga",
+      "submit": "Gudbi",
+      "review": "Dib-u-eegista jaamacadda",
+      "verified": "La xaqiijiyay"
+    },
+    "statusMeaning": {
+      "DRAFT": "Faahfaahintaada waa la keydiyay laakiin weli looma dirin jaamacaddaada. Soo geli kaarka ardaygaaga, kadib gudbi.",
+      "NEEDS_MORE_EVIDENCE": "Jaamacaddaadu waxay u baahan tahay caddayn dheeraad ah ka hor inta aysan go’aan gaarin. Akhri qoraalka hoose, soo geli dukumeenti cad ama ka duwan, kadib dib u gudbi.",
+      "REJECTED": "Jaamacaddaadu ma xaqiijin karin diiwaangelintan. La xiriir xafiiska tababarka jaamacaddaada haddii aad u malaynayso inay khalad tahay.",
+      "REVOKED": "Jaamacaddaadu way kala noqotay xaqiijintan. La xiriir xafiiska tababarka jaamacaddaada si loo xalliyo."
+    },
+    "reviewerNote": "Qoraal ka yimid jaamacaddaada",
+    "whileWaiting": "Inta aad sugeyso, waad dhammaystiri kartaa astaantaada oo daalacan kartaa tababarada. Codsashadu waxay furantaa marka diiwaangelintaada la xaqiijiyo."
   },
   "documents": {
     "onFile": "Waa la keydiyay",
@@ -177,5 +199,186 @@
     "error": "Ma soo bandhigi karno tababarradaada la keydiyay.",
     "emptyNeedsProfile": "Keydinta tababar wuxuu u baahan yahay astaantaada arday. Hal mar geli faahfaahintaada, kadibna waxaa halkan lagu hayn doonaa keydkaaga.",
     "completeProfile": "Dhammaystir astaantaada"
+  },
+  "journey": {
+    "eyebrow": "Halka aad joogto",
+    "stages": {
+      "placementActive": {
+        "title": "Tababarkaagu waa socdaa",
+        "body": "Cusbooneysii diiwaannadaada, xaadirintaada iyo warbixintaada — wax kasta oo tababarkan ku saabsan hal meel ayay ku yaallaan."
+      },
+      "placementPlanned": {
+        "title": "Tababarkaaga waa la xaqiijiyay",
+        "body": "Wuxuu bilaabanayaa {{date}}. Hay'adda martigelisay ayaa ka bilaabaysa FursadHub maalintaada ugu horraysa."
+      },
+      "completionPending": {
+        "title": "Tababarkaaga waxaa loo eegayaa dhammaystirka",
+        "body": "Jaamacaddaadu waxay hubinaysaa shuruudaha dhammaystirka. Waa lagu wargelin doonaa marka uu dhammaado."
+      },
+      "offerWaiting": {
+        "title": "Dalab tababar ayaa ku sugaya",
+        "body": "Eeg dalabka oo ka jawaab ka hor {{date}}. Adiga oo keliya ayaa aqbali kara ama diidi kara."
+      },
+      "nominationWaiting": {
+        "title": "Jaamacaddaadu way ku magacaabtay",
+        "body": "Hay'addu ma arkayso magacaabistaada ilaa aad oggolaato in lagu tixgeliyo."
+      },
+      "enrollmentMissing": {
+        "title": "Ku bilow inaad sheegato diiwaangelintaada jaamacadeed",
+        "body": "Jaamacaddaadu waxay xaqiijisaa inaad ardaygeeda tahay. Ilaa markaas waad daalacan kartaa, laakiin ma codsan kartid lamana magacaabi karo."
+      },
+      "enrollmentIncomplete": {
+        "title": "Dhammaystir diiwaangelintaada",
+        "body": "Ku dar kaarka ardayga oo gudbi si jaamacaddaadu u xaqiijiso diiwaangelintaada."
+      },
+      "enrollmentChangesRequested": {
+        "title": "Jaamacaddaadu waxay codsatay caddayn dheeraad ah",
+        "body": "Akhri qoraalkooda, cusbooneysii kaarka ardayga, oo mar kale gudbi."
+      },
+      "enrollmentInReview": {
+        "title": "Jaamacaddaadu waxay eegaysaa diiwaangelintaada",
+        "body": "Hadda waxba lagaama rabo. Inta aad sugayso waad daalacan kartaa tababarrada; codsigu wuxuu furmayaa marka lagu xaqiijiyo."
+      },
+      "enrollmentClosed": {
+        "title": "Diiwaangelintaada lama xaqiijin",
+        "body": "Jaamacaddaadu ma xaqiijin diiwaangelintaada. Akhri qoraalkooda bogga diiwaangelinta."
+      },
+      "applicationsInProgress": {
+        "title": "Codsiyadaadu waa socdaan",
+        "body": "Hay'aduhu waa eegayaan. Waa lagu wargelin doonaa marka wax isbeddelaan."
+      },
+      "completed": {
+        "title": "Waad dhammaysay tababarkaaga",
+        "body": "Hambalyo. Diiwaanka tababarkaagu halkan ayuu ku sii jirayaa."
+      },
+      "readyToApply": {
+        "title": "Waad diyaar u tahay inaad codsato",
+        "body": "Diiwaangelintaada waa la xaqiijiyay. Hel tababar kugu habboon oo codso."
+      }
+    },
+    "actions": {
+      "browse": "Raadi tababarro",
+      "enrollment": "Sii wad diiwaangelinta",
+      "viewEnrollment": "Fiiri diiwaangelinta",
+      "applications": "Fiiri codsiyada",
+      "openInternship": "Fur tababarka",
+      "viewInternship": "Fiiri tababarka",
+      "reviewOffer": "Eeg dalabka",
+      "respondNomination": "Ka jawaab magacaabista"
+    },
+    "placementMeta": "{{organization}} · {{start}} – {{end}}",
+    "attention": {
+      "title": "Waxa u baahan feejignaantaada",
+      "clearTitle": "Waxba uma baahna feejignaantaada",
+      "clearBody": "Wax walba waa la cusbooneysiiyay. Codsiyada cusub ee jaamacaddaada ama hay'adaha halkan ayay ka muuqan doonaan.",
+      "open": "Fur",
+      "items": {
+        "offer": {
+          "title": "Ka jawaab dalabka {{title}}",
+          "meta": "Ka jawaab ka hor {{date}}",
+          "action": "Eeg dalabka"
+        },
+        "nomination": {
+          "title": "Oggolow in lagu tixgeliyo {{title}}",
+          "titleNoOpportunity": "Oggolow in lagu tixgeliyo magacaabis",
+          "meta": "{{organization}}",
+          "action": "Ka jawaab"
+        },
+        "enrollment": {
+          "missing": {
+            "title": "Sheego diiwaangelintaada jaamacadeed",
+            "meta": "Waxaa loo baahan yahay si aad u codsato ama laguu magacaabo"
+          },
+          "incomplete": {
+            "title": "U gudbi diiwaangelintaada xaqiijin",
+            "meta": "Ku dar kaarka ardayga, kadibna gudbi"
+          },
+          "changesRequested": {
+            "title": "Jaamacaddaadu waxay codsatay caddayn dheeraad ah",
+            "meta": "Cusbooneysii kaarka ardayga oo mar kale gudbi"
+          },
+          "action": "Fur"
+        },
+        "weeklyLogReturned": {
+          "title": "Diiwaanka toddobaadka {{week}} waa laguu soo celiyay si aad wax uga beddesho",
+          "meta": "Akhri faallada kormeerahaaga oo dib u gudbi",
+          "action": "Fur diiwaanka"
+        },
+        "finalReportRevision": {
+          "title": "Warbixintaada ugu dambaysa waxay u baahan tahay dib-u-eegis",
+          "meta": "Akhri faallada dib-u-eegaha, cusbooneysii oo dib u gudbi",
+          "action": "Fur warbixinta"
+        },
+        "defenseScheduled": {
+          "title": "Difaacaaga waa la qorsheeyay",
+          "meta": "{{date}}",
+          "metaWithLocation": "{{date}} · {{location}}",
+          "action": "Faahfaahin"
+        }
+      }
+    },
+    "lifecycle": {
+      "title": "Socdaalka tababarkaaga",
+      "label": "Horumarka tababarka",
+      "requirementsGroup": "Shuruudaha — siday doonto ha u kala horreeyaan",
+      "noRequirements": "Jaamacaddaadu wax kale kama rabto marka laga reebo tababarka laftiisa.",
+      "unavailable": "Shuruudaha lama soo rari karin. Fur tababarka si aad u aragto.",
+      "steps": {
+        "placement": "Meel dhigidda waa la xaqiijiyay",
+        "started": "Tababarku wuu bilaabmay",
+        "WEEKLY_LOGS": "Diiwaanka toddobaadka",
+        "ATTENDANCE": "Xaadirinta",
+        "ORGANIZATION_EVALUATION": "Qiimaynta hay'adda",
+        "FINAL_REPORT": "Warbixinta ugu dambaysa",
+        "DEFENSE": "Difaaca",
+        "completion": "Dhammaystirka"
+      },
+      "details": {
+        "startsOn": "Wuxuu bilaabanayaa {{date}}",
+        "startedOn": "Wuxuu bilaabmay {{date}}",
+        "notStarted": "Lama bilaabin",
+        "weeklyLogs": "{{done}} ka mid ah {{total}} toddobaad ayaa la eegay",
+        "attendance": "{{done}} ka mid ah {{total}} maalmood ayaa la xalliyay",
+        "evaluation": {
+          "MISSING": "Kormeerahaagu weli ma bilaabin",
+          "DRAFT": "Kormeerahaagu wuu qorayaa",
+          "SUBMITTED": "Kormeerahaagu wuu gudbiyay",
+          "FINAL": "Waa la dhammaystiray"
+        },
+        "finalReport": {
+          "MISSING": "Lama bilaabin",
+          "DRAFT": "Qabyo",
+          "SUBMITTED": "Waxaa loo gudbiyay dib-u-eegis",
+          "NEEDS_REVISION": "Dib-u-eegis ayaa la codsaday",
+          "APPROVED": "La ansixiyay"
+        },
+        "defense": {
+          "MISSING": "Weli lama qorsheyn",
+          "NOT_PASSED": "Weli lama gudbin",
+          "PASSED": "Waa la gudbay"
+        },
+        "completionPending": "Jaamacaddaadu waxay eegaysaa dhammaystirka",
+        "completedOn": "La dhammeeyay {{date}}",
+        "ended": "Tababarkani goor hore ayuu dhammaaday"
+      }
+    },
+    "road": {
+      "title": "Jidkaaga tababarka",
+      "label": "Tallaabooyinka tababarka",
+      "steps": {
+        "enrollment": "Diiwaangelin la xaqiijiyay",
+        "apply": "Codso, ama aqbal magacaabis",
+        "offer": "Hel oo aqbal dalab",
+        "placement": "Bilow tababarkaaga"
+      }
+    },
+    "recruitment": {
+      "title": "Codsiyada iyo magacaabisyada",
+      "empty": "Weli ma jiraan codsiyo ama magacaabisyo.",
+      "emptyHint": "Codsiyada aad gudbiso iyo magacaabisyada jaamacaddaada halkan ayay ka muuqan doonaan.",
+      "nominated": "Magacaabis",
+      "viewApplications": "Dhammaan codsiyada",
+      "viewNominations": "Dhammaan magacaabisyada"
+    }
   }
 }

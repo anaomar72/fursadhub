@@ -84,7 +84,21 @@
       "active": "In progress",
       "offers": "Offers",
       "closed": "Closed"
-    }
+    },
+    "statusGuidance": {
+      "SUBMITTED": "The organization has your application.",
+      "UNDER_REVIEW": "The organization is reviewing your application.",
+      "SHORTLISTED": "You're on the shortlist.",
+      "INTERVIEW": "You're at the interview stage. The organization will contact you.",
+      "OFFERED": "You have an offer.",
+      "OFFER_DECLINED": "You declined the offer.",
+      "OFFER_EXPIRED": "The offer expired before a response.",
+      "ACCEPTED": "You accepted. Your internship is set up.",
+      "REJECTED": "Not selected this time.",
+      "WITHDRAWN": "You withdrew this application."
+    },
+    "reviewOffer": "Review offer",
+    "viewInternship": "View internship"
   },
   "detail": {
     "notFound": "This application is no longer available.",
@@ -128,7 +142,19 @@
       "OPPORTUNITY_NOT_PUBLISHED": "This opportunity is no longer accepting candidates.",
       "generic": "Something went wrong. Please try again."
     },
-    "emptyUniversity": "No nominations yet."
+    "emptyUniversity": "No nominations yet.",
+    "subtitle": "Nominations from your university for internships it was asked to fill.",
+    "emptyHint": "When your university nominates you for an internship, it appears here for your consent. You do not need one to apply directly.",
+    "nominatedBy": "Nominated by your university",
+    "nominatedOn": "Nominated {{date}}",
+    "respondedOn": "Responded {{date}}",
+    "noteLabel": "Note from your university",
+    "statusGuidance": {
+      "ACCEPTED": "You agreed to be considered. It now appears in your applications.",
+      "DECLINED": "You declined. The organization was not shown your details.",
+      "WITHDRAWN": "Your university withdrew this nomination."
+    },
+    "viewApplications": "View applications"
   },
   "pool": {
     "title": "Candidates",
@@ -208,10 +234,24 @@
     "historyHint": "Every recorded change on this candidacy, newest first.",
     "noHistory": "No history recorded yet.",
     "transition": "from {{from}}",
+    "statusUnchanged": "Status: {{status}}",
+    "events": {
+      "PLACEMENT_CREATED": "Added to your interns",
+      "SOURCE_MERGED_TO_BOTH": "Also nominated by their university"
+    },
     "cvTitle": "CV",
     "cvHint": "Opens the CV this candidate uploaded, if they have one on file.",
     "openCv": "Open CV",
-    "cvApplicationHint": "Opens the CV this candidate attached to this application."
+    "cvApplicationHint": "Opens the CV this candidate attached to this application.",
+    "confirmReject": {
+      "title": "Reject this candidate?",
+      "body": "Rejecting ends their candidacy for this internship. The candidate will see that they were not selected."
+    },
+    "confirmWithdraw": {
+      "title": "Withdraw this offer?",
+      "body": "The candidate can no longer accept it. You can send a new offer afterwards if the candidacy allows it."
+    },
+    "confirmKeep": "Go back"
   },
   "screening": {
     "title": "Screening questions",
@@ -244,7 +284,32 @@
     "progress": "{{current}} of {{requested}} nominated",
     "deadline": "Nominate by {{deadline}}",
     "subtitle": "Organizations asking your university to nominate students.",
-    "emptyHint": "When an organization targets your university, its request appears here."
+    "emptyHint": "When an organization targets your university, its request appears here.",
+    "allDepartments": "All departments",
+    "deadlinePassed": "Nomination deadline passed {{date}}",
+    "remaining_one": "{{count}} more nominee requested",
+    "remaining_other": "{{count}} more nominees requested",
+    "resultCount_one": "{{count}} request",
+    "resultCount_other": "{{count}} requests",
+    "workflow": {
+      "label": "How nominations work",
+      "request": {
+        "title": "Request",
+        "body": "An organization targets your university and asks for nominees."
+      },
+      "nominate": {
+        "title": "Nominate",
+        "body": "You put forward verified students from eligible departments."
+      },
+      "consent": {
+        "title": "Student agrees",
+        "body": "Each student decides whether to be considered."
+      },
+      "recruit": {
+        "title": "Recruitment",
+        "body": "The organization reviews them alongside other candidates and decides on offers."
+      }
+    }
   },
   "nominate": {
     "eligibleTitle": "Eligible students",
@@ -265,7 +330,27 @@
       "generic": "Something went wrong. Please try again."
     },
     "viewProfile": "View professional profile",
-    "noProfile": "This student has not written a professional profile yet."
+    "noProfile": "This student has not written a professional profile yet.",
+    "subtitle": "Put forward verified students from the eligible departments.",
+    "emptyHint": "Only students with a verified enrollment in an eligible department, who are available, can be nominated.",
+    "closedTitle": "Nominations are closed for this request",
+    "closedDeadline": "The nomination deadline was {{date}}.",
+    "closedStatus": "This request is no longer accepting nominations.",
+    "nominateNamed": "Nominate {{name}}",
+    "skills": "Skills",
+    "requestTitle": "About this request",
+    "status": "Status",
+    "nominees": "Nominees",
+    "deadline": "Nomination deadline",
+    "dates": "Internship dates",
+    "mode": "Sourcing",
+    "departments": "Eligible departments",
+    "whatHappensTitle": "What happens after you nominate",
+    "whatHappens": {
+      "consent": "The student is asked whether they want to be considered. Nothing is shared with the organization until they agree.",
+      "pipeline": "If they agree, they join the organization’s candidate list for this internship. The organization decides on interviews and offers.",
+      "withdraw": "You can withdraw a nomination while the student has not answered yet."
+    }
   },
   "universityNominations": {
     "title": "Nominations",
@@ -276,6 +361,30 @@
       "NOMINATION_NOT_FOUND": "This nomination is no longer available.",
       "ACCESS_DENIED": "You do not have access to this nomination.",
       "generic": "Something went wrong. Please try again."
+    },
+    "subtitle": "Students your university has put forward, and whose move it is next.",
+    "searchLabel": "Search nominations",
+    "searchPlaceholder": "Student, internship or organization",
+    "statusLabel": "Nomination status",
+    "allStatuses": "All statuses",
+    "resultCount_one": "{{count}} nomination",
+    "resultCount_other": "{{count}} nominations",
+    "noMatches": "No nominations match these filters",
+    "emptyHint": "Nominations appear here once you put students forward for an internship request.",
+    "unknownStudent": "Unnamed student",
+    "nominatedOn": "Nominated {{date}}",
+    "respondedOn": "answered {{date}}",
+    "withdrawNamed": "Withdraw the nomination of {{name}}",
+    "next": {
+      "PENDING_STUDENT_CONSENT": "Waiting for the student to agree to be considered.",
+      "ACCEPTED": "The student agreed and is now a candidate with the organization.",
+      "DECLINED": "The student chose not to be considered.",
+      "WITHDRAWN": "Withdrawn by the university."
+    },
+    "confirmWithdraw": {
+      "title": "Withdraw this nomination?",
+      "body": "{{name}} will no longer be asked to be considered for {{opportunity}}.",
+      "keep": "Keep nomination"
     }
   },
   "targetStatusValues": {

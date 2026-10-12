@@ -35,7 +35,7 @@ export function VerifiedBadge({ variant = 'check', size = 'md', className }: Ver
     return (
       <span
         className={cn(
-          'inline-flex shrink-0 items-center gap-1 rounded bg-brand-blue-soft px-1.5 py-0.5 text-[11px] font-medium text-brand-blue',
+          'inline-flex shrink-0 items-center gap-1 rounded bg-brand-blue-soft px-1.5 py-0.5 text-caption font-medium text-brand-blue',
           className,
         )}
       >
@@ -46,7 +46,7 @@ export function VerifiedBadge({ variant = 'check', size = 'md', className }: Ver
   }
 
   // Colour alone never carries the meaning: the mark is labelled for assistive technology and
-  // titled for pointer users (BRAND_AND_UI_GUIDELINES.md section 9/17).
+  // titled for pointer users (WCAG 1.4.1).
   return (
     <span className={cn('inline-flex shrink-0 items-center', className)} title={label}>
       <CheckMark className={cn(CHECK_SIZE[size], 'text-brand-blue')} />

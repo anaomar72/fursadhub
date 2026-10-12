@@ -8,7 +8,7 @@ export interface AnimatedCheckProps {
 /**
  * Reusable one-time "VERIFIED" confirmation: circle scales/fades in, the
  * checkmark draws, then the label fades in — then the animation stops and a
- * stable verified state remains (BRAND_AND_UI_GUIDELINES.md section 14).
+ * stable verified state remains (CLAUDE.md section 58).
  *
  * Plays once per mount; it must never be re-triggered on ordinary re-renders,
  * and never continuously pulse. `motion-reduce:` disables the drawing

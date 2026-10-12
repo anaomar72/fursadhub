@@ -33,41 +33,45 @@ import { universityCapabilities } from '../universityCapabilities'
 export function buildUniversityNav(t: TFunction, membership: MyMembershipResponse): NavSection[] {
   const can = universityCapabilities(membership)
 
-  const primary: NavItem[] = [{ to: '/university/dashboard', label: t('university:nav.dashboard'), icon: 'home' }]
+  // Phase 7: grouped by the academic workflow — students, then nominations, then internships, then
+  // the university itself. Every group is built from the same capability flags as before, and a
+  // group with nothing in it for this role is omitted rather than shown empty. Order never depends
+  // on counts.
+  const overview: NavItem[] = [{ to: '/university/dashboard', label: t('university:nav.dashboard'), icon: 'home' }]
 
+  const students: NavItem[] = []
   if (can.hasStudentDirectory) {
-    primary.push({ to: '/university/students', label: t('university:nav.students'), icon: 'graduationCap' })
+    students.push({ to: '/university/students', label: t('university:nav.students'), icon: 'graduationCap' })
   } else if (can.scopedToAssignedPlacements) {
     // A supervisor cannot read the university roster at all, so their student list is the distinct
     // students on the placements they are assigned to — a different route with different content,
     // not the directory with rows hidden.
-    primary.push({ to: '/university/my-students', label: t('university:nav.myStudents'), icon: 'graduationCap' })
+    students.push({ to: '/university/my-students', label: t('university:nav.myStudents'), icon: 'graduationCap' })
+  }
+  if (can.canReviewStudents) {
+    students.push({ to: '/university/verification-cases', label: t('university:nav.verificationQueue'), icon: 'shield' })
   }
 
-  if (can.canReviewStudents) {
-    primary.push({ to: '/university/verification-cases', label: t('university:nav.verificationQueue'), icon: 'shield' })
-  }
+  const nominations: NavItem[] = []
   if (can.canNominate) {
-    primary.push(
+    nominations.push(
       { to: '/university/opportunity-requests', label: t('recruitment:nav.opportunityRequests'), icon: 'briefcase' },
       { to: '/university/nominations', label: t('recruitment:nav.nominations'), icon: 'userCheck' },
     )
   }
 
-  primary.push({ to: '/university/placements', label: t('placements:nav.placements'), icon: 'badgeCheck' })
-
+  const internships: NavItem[] = [{ to: '/university/placements', label: t('placements:nav.placements'), icon: 'badgeCheck' }]
   // Reviewing weekly logs, the final report and defense is open to all three roles, each confined to
   // its own scope by InternshipManagementAuthorization.requireUniversityAcademicAccess.
   if (can.canReviewAcademicRecords) {
-    primary.push({ to: '/university/supervision', label: t('university:nav.supervision'), icon: 'document' })
+    internships.push({ to: '/university/supervision', label: t('university:nav.supervision'), icon: 'document' })
   }
-
   // Partner organizations is an institution-wide read of who hosts this university's students.
   // A supervisor's placement list is their own two or three assignments, which is not a partner
   // directory — so this belongs with the roles whose placement list is institution- or
   // department-wide.
   if (!can.scopedToAssignedPlacements) {
-    primary.push({ to: '/university/partners', label: t('university:nav.partners'), icon: 'building' })
+    internships.push({ to: '/university/partners', label: t('university:nav.partners'), icon: 'building' })
   }
 
   const manage: NavItem[] = []
@@ -94,9 +98,14 @@ export function buildUniversityNav(t: TFunction, membership: MyMembershipRespons
     account.push({ to: '/university/profile', label: t('university:nav.university'), icon: 'bank' })
   }
 
+  const group = (label: string | undefined, items: NavItem[]): NavSection[] => (items.length > 0 ? [{ label, items }] : [])
+
   return [
-    { items: primary },
-    ...(manage.length > 0 ? [{ label: t('common:shell.sections.manage'), items: manage }] : []),
+    { items: overview },
+    ...group(t('university:nav.sections.students'), students),
+    ...group(t('university:nav.sections.nominations'), nominations),
+    ...group(t('university:nav.sections.internships'), internships),
+    ...group(t('university:nav.sections.university'), manage),
     { label: t('common:shell.sections.account'), items: account },
   ]
 }

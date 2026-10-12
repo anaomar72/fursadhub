@@ -28,27 +28,19 @@ import {
   FormField,
   Icon,
   Input,
-  LoadingState,
+  SkeletonList,
   PageHeader,
   PasswordInput,
   Select,
   StatusBadge,
 } from '../../../components/ui'
 import { PageContainer } from '../../../app/layouts/PageContainer'
-import type { StatusTone } from '../../../components/ui'
 import type {
   OrganizationMemberResponse,
   OrganizationRole,
   TemporaryCredentialResponse,
-  UserAccountStatus,
 } from '../types'
-
-const STATUS_TONE: Record<UserAccountStatus, StatusTone> = {
-  PENDING_CONTACT_VERIFICATION: 'warning',
-  ACTIVE: 'success',
-  SUSPENDED: 'danger',
-  CLOSED: 'neutral',
-}
+import { ACCOUNT_STATUS_TONE } from '../../../lib/status/statusTones'
 
 const ROLE_FILTERS: (OrganizationRole | '')[] = ['', 'ORGANIZATION_ADMIN', 'RECRUITER', 'ORGANIZATION_SUPERVISOR']
 
@@ -193,7 +185,7 @@ export function StaffPage() {
 
       {createOpen && (
         <Card padding="lg">
-          <h2 className="font-display text-base font-bold text-brand-navy dark:text-foreground">
+          <h2 className="font-display text-title-panel text-foreground">
             {t('organization:staff.createTitle')}
           </h2>
           <p className="mt-1 text-sm text-foreground-secondary">{t('organization:staff.createHint')}</p>
@@ -346,11 +338,12 @@ export function StaffPage() {
       </FilterBar>
 
       {membersQuery.isLoading ? (
-        <LoadingState label={t('common:status.loading')} />
+        <SkeletonList rows={4} />
       ) : members.length === 0 ? (
         <EmptyState title={t('organization:staff.empty')} description={t('organization:staff.emptyHint')} />
       ) : (
-        <ul className="flex flex-col gap-3">
+        // Phase 6: one roster surface, a row per member, instead of a bordered card each.
+        <ul className="divide-y divide-border rounded-lg border border-border bg-surface">
           {members.map((member) => (
             <li key={member.membershipId}>
               <MemberRow
@@ -450,7 +443,7 @@ function MemberRow({
   const isAdmin = member.role === 'ORGANIZATION_ADMIN'
 
   return (
-    <Card padding="lg">
+    <div className="p-4 sm:p-5">
       <div className="flex flex-wrap items-start justify-between gap-3">
         <div className="flex min-w-0 items-start gap-3">
           <span className="flex size-10 shrink-0 items-center justify-center rounded-full bg-brand-blue-soft text-brand-blue dark:bg-info-bg dark:text-info">
@@ -472,7 +465,7 @@ function MemberRow({
           </StaffIdentity>
         </div>
         {member.status && (
-          <StatusBadge tone={STATUS_TONE[member.status]}>
+          <StatusBadge tone={ACCOUNT_STATUS_TONE[member.status]}>
             {t(`organization:staff.statusValues.${member.status}`)}
           </StatusBadge>
         )}
@@ -558,6 +551,6 @@ function MemberRow({
           </div>
         </form>
       )}
-    </Card>
+    </div>
   )
 }

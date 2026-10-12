@@ -32,6 +32,8 @@ function stubFetch(account = user(), onCommand?: (url: string) => Promise<Respon
       return onCommand ? onCommand(url) : jsonResponse({ message: 'ok' })
     }
     if (url.includes('/admin/users/u-1')) return jsonResponse(account)
+    // The account page also lists this account's platform grants, from the platform-roles list.
+    if (url.includes('/admin/platform-roles')) return jsonResponse([])
     return jsonResponse({})
   })
   vi.stubGlobal('fetch', fetchMock)
@@ -98,7 +100,7 @@ describe('AdminUserDetailPage', () => {
     renderPage()
 
     expect(
-      await screen.findByText('A closed account cannot be suspended or reactivated.'),
+      await screen.findByText('Closed. It cannot be suspended or reactivated.'),
     ).toBeInTheDocument()
     expect(screen.queryByRole('button', { name: 'Suspend account' })).not.toBeInTheDocument()
     expect(screen.queryByRole('button', { name: 'Reactivate account' })).not.toBeInTheDocument()

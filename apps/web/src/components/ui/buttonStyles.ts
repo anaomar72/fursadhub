@@ -6,13 +6,21 @@ import { cn } from '../../lib/utils/cn'
  * <p>`primary` is the orange call to action — Search, Apply Now, Create Internship, Subscribe.
  * `secondary` is the navy action that sits beside it — Explore opportunities, Export Report.
  * `outline` is the white bordered control — Save for later, Get Started Now, View details.
+ *
+ * <p><strong>Primary fills with the ACTION orange, not the brand orange.</strong> White on the brand
+ * #F97316 measures 2.80:1; on `--color-action-primary` (#C2410C) it measures 5.18:1, clearing WCAG
+ * AA for the 14px label every button carries. See the action block in `tokens.css`.
+ *
+ * <p>`danger` fills with `--color-action-danger`, which is the same in both themes. It used to fill
+ * with the STATUS colour `--color-danger`, which is a pale coral in dark mode — white text on it was
+ * close to unreadable.
  */
 export const BUTTON_VARIANT_CLASSES = {
-  primary: 'bg-brand-accent text-white shadow-xs hover:bg-brand-accent-strong',
+  primary: 'bg-action-primary text-on-action shadow-xs hover:bg-action-primary-hover',
   secondary: 'bg-brand-navy text-white shadow-xs hover:bg-brand-navy-strong',
   outline: 'border border-border-strong bg-surface text-foreground shadow-xs hover:bg-control-hover',
   ghost: 'bg-transparent text-foreground hover:bg-surface-muted',
-  danger: 'bg-danger text-white hover:opacity-90',
+  danger: 'bg-action-danger text-on-action shadow-xs hover:bg-action-danger-hover',
 } as const
 
 /** Control heights are read off the references: 40px standard, 48px for hero and sidebar actions. */

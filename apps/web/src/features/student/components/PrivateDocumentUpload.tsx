@@ -90,10 +90,10 @@ export function PrivateDocumentUpload({
   const busy = disabled || uploadMutation.isPending || removeMutation.isPending || downloadMutation.isPending
 
   return (
-    <section className="flex flex-col gap-3 rounded-lg border border-border bg-surface p-4">
+    <section className="flex flex-col gap-4 rounded-lg border border-border bg-surface p-5">
       <div>
-        <h2 className="text-sm font-medium text-foreground">{title}</h2>
-        <p className="mt-1 text-sm text-foreground-secondary">{description}</p>
+        <h2 className="font-display text-title-panel text-foreground">{title}</h2>
+        <p className="mt-1 text-body text-foreground-secondary">{description}</p>
       </div>
 
       {/* State in words and an indicator — never colour alone. */}
@@ -118,8 +118,8 @@ export function PrivateDocumentUpload({
       />
 
       <div className="flex flex-wrap gap-2">
-        {present && <PrivateDocumentPreview load={onDownload} />}
-        {allowPhoto && <PhotoCapture disabled={busy} onUse={(file) => uploadMutation.mutate(file)} />}
+        {present && <PrivateDocumentPreview size="sm" load={onDownload} />}
+        {allowPhoto && <PhotoCapture size="sm" disabled={busy} onUse={(file) => uploadMutation.mutate(file)} />}
         <Button
           type="button"
           size="sm"

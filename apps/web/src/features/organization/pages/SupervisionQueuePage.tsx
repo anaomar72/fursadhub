@@ -16,22 +16,16 @@ import {
   Card,
   EmptyState,
   ErrorState,
-  LoadingState,
   PageHeader,
   StatusBadge,
   Tabs,
-  type StatusTone,
+  SkeletonList,
 } from '../../../components/ui'
 import { PageContainer } from '../../../app/layouts/PageContainer'
 import { formatDate } from '../../../lib/utils/formatDate'
-import type { EvaluationState } from '../../evaluations/types'
 import type { PlacementResponse } from '../../placements/types'
+import { EVALUATION_STATE_TONE } from '../../../lib/status/statusTones'
 
-const EVALUATION_STATE_TONE: Record<EvaluationState, StatusTone> = {
-  DRAFT: 'neutral',
-  SUBMITTED: 'info',
-  FINAL: 'success',
-}
 
 const SECTIONS = ['attendance', 'evaluation'] as const
 type Section = (typeof SECTIONS)[number]
@@ -94,7 +88,7 @@ export function SupervisionQueuePage() {
       />
 
       {placementsQuery.isLoading ? (
-        <LoadingState label={t('common:status.loading')} />
+        <SkeletonList rows={4} />
       ) : placementsQuery.isError ? (
         <ErrorState onRetry={() => void placementsQuery.refetch()} retryLabel={t('common:actions.retry')} />
       ) : section === 'attendance' ? (
@@ -128,7 +122,7 @@ function QueueChrome({
   }
 
   if (records.isLoading) {
-    return <LoadingState label={t('common:status.loading')} />
+    return <SkeletonList rows={4} />
   }
 
   return (
@@ -174,11 +168,12 @@ function QueueRow({
       <Card interactive padding="lg" className="relative">
         <div className="flex flex-wrap items-start justify-between gap-3">
           <div className="min-w-0">
-            <h3 className="truncate font-semibold text-foreground">
+            {/* h2: these rows sit straight under the page heading — no section heading between. */}
+            <h2 className="truncate font-semibold text-foreground">
               <Link to={to} className="focus-visible:outline-none focus-visible:underline after:absolute after:inset-0">
                 {placement.studentFullName ?? placement.studentEmail ?? placement.studentUserId}
               </Link>
-            </h3>
+            </h2>
             <p className="mt-1 truncate text-sm text-foreground-secondary">{headline}</p>
             <p className="mt-1 text-xs text-muted">{[context, trailing].filter(Boolean).join(' · ')}</p>
           </div>

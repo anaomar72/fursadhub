@@ -19,9 +19,9 @@ export function VerificationNextSteps({ namespace }: VerificationNextStepsProps)
   const steps = ['attach', 'review', 'notify'] as const
 
   return (
-    <div className="mb-4">
-      <h3 className="text-sm font-semibold text-foreground">{t(`${namespace}:profile.verificationNext.title`)}</h3>
-      <ol className="mt-2 flex list-decimal flex-col gap-1 ps-5 text-sm text-foreground-secondary">
+    <div>
+      <h3 className="text-label text-foreground">{t(`${namespace}:profile.verificationNext.title`)}</h3>
+      <ol className="mt-2 flex list-decimal flex-col gap-1.5 ps-5 text-body text-foreground-secondary marker:font-semibold marker:text-foreground">
         {steps.map((step) => (
           <li key={step}>{t(`${namespace}:profile.verificationNext.${step}`)}</li>
         ))}

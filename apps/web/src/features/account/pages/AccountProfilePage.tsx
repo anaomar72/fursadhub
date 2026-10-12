@@ -1,4 +1,4 @@
-import { useRef, useState } from 'react'
+import { useState } from 'react'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { useTranslation } from 'react-i18next'
 import { useNavigate } from 'react-router-dom'
@@ -14,8 +14,9 @@ import {
   Card,
   ConfirmationDialog,
   ErrorState,
-  LoadingState,
   PageHeader,
+  SkeletonPanel,
+  FileUpload,
 } from '../../../components/ui'
 import { PageContainer } from '../../../app/layouts/PageContainer'
 
@@ -39,7 +40,6 @@ export function AccountProfilePage() {
   const { signOut } = useAuth()
   const [error, setError] = useState<string | null>(null)
   const [confirmingSignOutAll, setConfirmingSignOutAll] = useState(false)
-  const inputRef = useRef<HTMLInputElement>(null)
 
   const meQuery = useQuery({ queryKey: ['me'], queryFn: authApi.getMe })
   const avatarSrc = useAvatarSrc(meQuery.data?.id, meQuery.data?.hasAvatar ?? false)
@@ -55,7 +55,6 @@ export function AccountProfilePage() {
     onSuccess: () => {
       void queryClient.invalidateQueries({ queryKey: ['me'] })
       void queryClient.invalidateQueries({ queryKey: ['avatar'] })
-      if (inputRef.current) inputRef.current.value = ''
     },
   })
 
@@ -76,7 +75,7 @@ export function AccountProfilePage() {
   if (meQuery.isLoading) {
     return (
       <PageContainer>
-        <LoadingState label={t('common:status.loading')} />
+        <SkeletonPanel rows={5} />
       </PageContainer>
     )
   }
@@ -103,28 +102,22 @@ export function AccountProfilePage() {
       <Card padding="lg">
         <div className="flex flex-col gap-4 sm:flex-row sm:items-center">
           <Avatar src={avatarSrc} name={me.email} size="lg" />
-          <div className="flex min-w-0 flex-col gap-2">
-            <p className="truncate font-medium text-foreground">{me.email}</p>
-            <div className="flex flex-wrap items-center gap-2">
-              <input
-                ref={inputRef}
-                type="file"
-                accept="image/jpeg,image/png"
-                aria-label={t('account:profile.changePicture')}
-                className="text-sm text-foreground-secondary file:mr-3 file:rounded-md file:border-0 file:bg-brand-primary file:px-3 file:py-1.5 file:text-sm file:font-medium file:text-on-brand"
-                onChange={(event) => {
-                  const file = event.target.files?.[0]
-                  if (file) uploadMutation.mutate(file)
-                }}
-                disabled={uploadMutation.isPending}
-              />
-              {uploadMutation.isPending && (
-                <span className="text-xs text-foreground-secondary">
-                  {t('account:profile.uploading')}
-                </span>
-              )}
-            </div>
-            <p className="text-xs text-muted">{t('account:profile.hint')}</p>
+          <div className="flex min-w-0 flex-1 flex-col gap-3">
+            <p className="break-all font-medium text-foreground">{me.email}</p>
+            {/* Phase 9: the shared dropzone (as on the student profile) instead of a styled native
+                file input — one media control across every profile editor. */}
+            <FileUpload
+              label={t('account:profile.changePicture')}
+              hint={t('account:profile.hint')}
+              accept="image/jpeg,image/png"
+              disabled={uploadMutation.isPending}
+              busy={uploadMutation.isPending}
+              busyLabel={t('account:profile.uploading')}
+              onFiles={(files) => {
+                const file = files[0]
+                if (file) uploadMutation.mutate(file)
+              }}
+            />
           </div>
         </div>
       </Card>

@@ -29,7 +29,19 @@ const STATISTICS: PlatformStatistics = {
   recentLoginFailures: 4,
 }
 
-function stubFetch(options: { statistics?: PlatformStatistics | null; types?: string[]; auditFails?: boolean } = {}) {
+interface QueueRecord {
+  kind: 'organizations' | 'universities'
+  id: string
+  name: string
+  verificationStatus: string
+  hasEvidence: boolean
+  evidenceUploadedAt: string | null
+  createdAt: string
+}
+
+function stubFetch(
+  options: { statistics?: PlatformStatistics | null; types?: string[]; auditFails?: boolean; pendingTestimonials?: number; queue?: QueueRecord[] } = {},
+) {
   const fetchMock = vi.fn((input: RequestInfo | URL) => {
     const url = String(input)
     if (url.includes('/admin/audit-events/types')) {
@@ -52,6 +64,15 @@ function stubFetch(options: { statistics?: PlatformStatistics | null; types?: st
         )
       }
       return jsonResponse(options.statistics ?? STATISTICS)
+    }
+    if (url.includes('/admin/testimonials')) {
+      return jsonResponse({ content: [], page: 0, size: 25, totalElements: options.pendingTestimonials ?? 0, totalPages: 1 })
+    }
+    if (url.includes('/admin/organizations?') || url.includes('/admin/universities?')) {
+      const kind = url.includes('/admin/organizations') ? 'organizations' : 'universities'
+      const status = new URL(url, 'http://x').searchParams.get('status')
+      const content = (options.queue ?? []).filter((row) => row.kind === kind && row.verificationStatus === status)
+      return jsonResponse({ content, page: 0, size: 25, totalElements: content.length, totalPages: 1 })
     }
     if (url.includes('/admin/users')) {
       return jsonResponse({
@@ -146,14 +167,54 @@ describe('AdminDashboardPage', () => {
     expect(screen.getByText(/3 are hidden/i)).toBeInTheDocument()
   })
 
-  it('surfaces the operational counts that mean somebody has work to do', async () => {
+  it('leads with real queues that need intervention, each linking to its list', async () => {
+    stubFetch({ pendingTestimonials: 2 })
+    renderPage()
+
+    // The skeleton shares the section's name while statistics load, so wait for the real list.
+    await screen.findByText('2 testimonials waiting for moderation')
+    const attention = screen.getByRole('region', { name: 'Needs attention' })
+    // 2 organizations + 1 university submitted, 1 privacy request, 2 testimonials — escalations is 0.
+    expect(within(attention).getByText('2 organizations waiting for verification review')).toBeInTheDocument()
+    expect(within(attention).getByText('1 university waiting for verification review')).toBeInTheDocument()
+    expect(within(attention).getByText('1 open privacy request')).toBeInTheDocument()
+    expect(within(attention).getByText('2 testimonials waiting for moderation')).toBeInTheDocument()
+    expect(within(attention).queryByText(/escalated/)).not.toBeInTheDocument()
+  })
+
+  it('keeps failed email and sign-in failures as watched signals, not work items', async () => {
     stubFetch()
     renderPage()
 
-    const attention = await screen.findByRole('region', { name: 'Needs attention' })
-    expect(within(attention).getByText('Open privacy requests')).toBeInTheDocument()
-    expect(within(attention).getByText('Failed email deliveries')).toBeInTheDocument()
-    expect(within(attention).getByText('Login failures (24h)')).toBeInTheDocument()
+    const signals = (await screen.findByRole('heading', { name: 'System signals' })).closest('section') as HTMLElement
+    await waitFor(() => expect(within(signals).getByText('Failed email deliveries')).toBeInTheDocument())
+    expect(within(signals).getByText('Login failures (24h)')).toBeInTheDocument()
+    expect(within(signals).getByText('Monitoring')).toBeInTheDocument()
+  })
+
+  it('makes the institution review queue the primary work, oldest document first across both kinds', async () => {
+    stubFetch({
+      queue: [
+        { kind: 'organizations', id: 'o-late', name: 'Late Org', verificationStatus: 'SUBMITTED', hasEvidence: true, evidenceUploadedAt: '2026-09-09T00:00:00Z', createdAt: '2026-09-01T00:00:00Z' },
+        { kind: 'universities', id: 'u-early', name: 'Early University', verificationStatus: 'UNDER_REVIEW', hasEvidence: true, evidenceUploadedAt: '2026-09-02T00:00:00Z', createdAt: '2026-09-01T00:00:00Z' },
+      ],
+    })
+    renderPage()
+
+    await screen.findByRole('link', { name: 'Late Org' })
+    const queue = screen.getByRole('heading', { name: 'Institutions waiting for review' }).closest('section') as HTMLElement
+    const records = within(queue).getAllByRole('link').filter((link) => ['/admin/organizations/', '/admin/universities/'].some((prefix) => (link.getAttribute('href') ?? '').startsWith(prefix)))
+    expect(records.map((link) => link.textContent)).toEqual(['Early University', 'Late Org'])
+    expect(records[0]).toHaveAttribute('href', '/admin/universities/u-early')
+  })
+
+  it('keeps the queue, chart and registrations when statistics fail', async () => {
+    stubFetch({ statistics: null })
+    renderPage()
+
+    expect(await screen.findByRole('link', { name: 'newest@example.test' })).toBeInTheDocument()
+    expect(screen.getByRole('heading', { name: 'Institutions waiting for review' })).toBeInTheDocument()
+    expect(await screen.findByLabelText('Event type')).toBeInTheDocument()
   })
 
   it('counts the activity chart from the audit endpoint one month at a time', async () => {

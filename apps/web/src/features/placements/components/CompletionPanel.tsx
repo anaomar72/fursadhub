@@ -44,7 +44,7 @@ export function CompletionPanel({ placement, canComplete }: CompletionPanelProps
       setUnmetCodes([])
       setError(null)
       // A one-time confirmation, then the stable COMPLETED state remains
-      // (BRAND_AND_UI_GUIDELINES.md section 14). It is never replayed on re-render.
+      // (CLAUDE.md section 58). It is never replayed on re-render.
       setJustCompleted(true)
       void queryClient.invalidateQueries({ queryKey: ['placements'] })
       void queryClient.invalidateQueries({ queryKey: ['placement-completion', placement.id] })

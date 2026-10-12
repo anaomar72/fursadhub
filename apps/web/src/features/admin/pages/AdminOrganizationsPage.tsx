@@ -1,7 +1,6 @@
 import { useState } from 'react'
 import { useQuery } from '@tanstack/react-query'
 import { useTranslation } from 'react-i18next'
-import { Link } from 'react-router-dom'
 import {
   DataTable,
   EmptyState,
@@ -15,11 +14,12 @@ import {
   type DataTableColumn,
 } from '../../../components/ui'
 import { AdminTableSkeleton } from '../components/AdminSkeletons'
-import * as adminApi from '../api/adminApi'
 import { INSTITUTION_FILTER_STATUSES } from '../institutionWorkflow'
 import { INSTITUTION_STATUS_TONE } from '../statusTone'
 import { formatDate } from '../../../lib/utils/formatDate'
 import type { AdminOrganization, InstitutionVerificationStatus } from '../types'
+import { useListParams } from '../hooks/useListParams'
+import { adminQueries } from '../adminQueries'
 
 /**
  * The organization verification queue (Phase 7, CLAUDE.md section 31).
@@ -36,33 +36,21 @@ import type { AdminOrganization, InstitutionVerificationStatus } from '../types'
  */
 export function AdminOrganizationsPage() {
   const { t } = useTranslation()
-  const [status, setStatus] = useState<InstitutionVerificationStatus | ''>('SUBMITTED')
+  // Status and page live in the URL, so the dashboard links straight into a filtered queue and a
+  // reload keeps the reviewer where they were. The queue still opens on SUBMITTED.
+  const { status, page, setStatus, setPage, resetPage } = useListParams(INSTITUTION_FILTER_STATUSES, 'SUBMITTED')
   const [query, setQuery] = useState('')
   const [submittedQuery, setSubmittedQuery] = useState('')
-  const [page, setPage] = useState(0)
 
-  const organizationsQuery = useQuery({
-    queryKey: ['admin', 'organizations', status, submittedQuery, page],
-    queryFn: () =>
-      adminApi.listOrganizations({
-        status: status === '' ? undefined : status,
-        query: submittedQuery || undefined,
-        page,
-      }),
-  })
+  const organizationsQuery = useQuery(adminQueries.organizations(status, submittedQuery, page))
 
   const columns: DataTableColumn<AdminOrganization>[] = [
     {
       key: 'name',
       header: t('admin:organizations.name'),
-      render: (organization) => (
-        <Link
-          to={`/admin/organizations/${organization.id}`}
-          className="rounded font-medium text-foreground hover:text-link hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus-ring"
-        >
-          {organization.name}
-        </Link>
-      ),
+      // The identifying column: DataTable makes it the row header and the row's link (rowHref).
+      primary: true,
+      render: (organization) => organization.name,
     },
     {
       key: 'type',
@@ -115,7 +103,7 @@ export function AdminOrganizationsPage() {
         onSubmit={(event) => {
           event.preventDefault()
           setSubmittedQuery(query)
-          setPage(0)
+          resetPage()
         }}
       >
         <FilterBar
@@ -134,7 +122,6 @@ export function AdminOrganizationsPage() {
             value={status}
             onChange={(event) => {
               setStatus(event.target.value as InstitutionVerificationStatus | '')
-              setPage(0)
             }}
           >
             <option value="">{t('admin:organizations.allStatuses')}</option>
@@ -166,6 +153,23 @@ export function AdminOrganizationsPage() {
             columns={columns}
             rows={data?.content ?? []}
             rowKey={(organization) => organization.id}
+            rowHref={(organization) => `/admin/organizations/${organization.id}`}
+            density="dense"
+            // Server-paginated, so nothing is sortable: sorting one page would present a partial
+            // order as the whole one. Phones get one stacked row per record instead of a wide table.
+            renderMobileRow={(organization) => (
+              <div className="flex flex-col gap-1.5">
+                <div className="flex items-start justify-between gap-3">
+                  <span className="min-w-0 break-words font-semibold text-foreground">{organization.name}</span>
+                  <StatusBadge tone={INSTITUTION_STATUS_TONE[organization.verificationStatus]}>{t(`admin:statusLabels.${organization.verificationStatus}`)}</StatusBadge>
+                </div>
+                <span className="flex flex-wrap gap-x-3 gap-y-1 text-caption text-foreground-secondary">
+                  {t(`admin:organizationTypes.${organization.type}`, organization.type) && <span>{t(`admin:organizationTypes.${organization.type}`, organization.type)}</span>}
+                  <span>{organization.hasEvidence ? t('admin:verification.evidenceOn', { date: formatDate(organization.evidenceUploadedAt) }) : t('admin:organizations.noEvidence')}</span>
+                  <span>{t('admin:verification.registeredOn', { date: formatDate(organization.createdAt) })}</span>
+                </span>
+              </div>
+            )}
             empty={
               <EmptyState
                 title={t('admin:organizations.empty')}

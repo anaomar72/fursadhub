@@ -18,11 +18,11 @@ export function NotFoundPage() {
       <div className="space-y-2">
         {/* Decorative: the digits repeat what the heading already says, so they are not announced
             twice. The <h1> carries the actual message. */}
-        <p aria-hidden="true" className="font-display text-6xl font-extrabold tracking-tight text-brand-navy dark:text-foreground">404</p>
-        <h1 className="text-xl font-bold text-foreground">{t('common:notFound.title')}</h1>
-        <p className="max-w-sm text-sm text-foreground-secondary">{t('common:notFound.description')}</p>
+        <p aria-hidden="true" className="font-display text-display-xl text-brand-accent-ink">404</p>
+        <h1 className="font-display text-title-page text-foreground">{t('common:notFound.title')}</h1>
+        <p className="mx-auto max-w-sm text-body-lg text-foreground-secondary">{t('common:notFound.description')}</p>
       </div>
-      <ButtonLink to="/">{t('common:notFound.action')}</ButtonLink>
+      <ButtonLink to="/" size="lg">{t('common:notFound.action')}</ButtonLink>
     </main>
   )
 }

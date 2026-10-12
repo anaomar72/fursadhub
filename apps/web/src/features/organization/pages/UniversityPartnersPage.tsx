@@ -9,9 +9,9 @@ import {
   EmptyState,
   ErrorState,
   Icon,
-  LoadingState,
   PageHeader,
   StatusBadge,
+  SkeletonCardGrid,
 } from '../../../components/ui'
 import { PageContainer } from '../../../app/layouts/PageContainer'
 
@@ -46,7 +46,7 @@ export function UniversityPartnersPage() {
       />
 
       {placementsQuery.isLoading ? (
-        <LoadingState label={t('common:status.loading')} />
+        <SkeletonCardGrid count={3} />
       ) : placementsQuery.isError ? (
         <ErrorState onRetry={() => void placementsQuery.refetch()} retryLabel={t('common:actions.retry')} />
       ) : partners.length === 0 ? (
@@ -56,7 +56,7 @@ export function UniversityPartnersPage() {
           <p className="text-sm text-foreground-secondary" aria-live="polite">
             {t('organization:partners.resultCount', { count: partners.length })}
           </p>
-          <ul className="grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
+          <ul className="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-3">
             {partners.map((partner) => (
               <li key={partner.id}>
                 <Card padding="lg" className="h-full">

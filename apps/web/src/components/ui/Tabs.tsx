@@ -30,6 +30,11 @@ export interface TabsProps {
  * <p>The active indicator is a border colour change rather than a sliding underline. A rule that
  * travels between tabs draws the eye to the rule; the point of the interaction is the content that
  * just changed underneath it.
+ *
+ * <p>Phase 9: the strip WRAPS instead of scrolling sideways. At 360px a three-tab strip in Somali
+ * ran past the edge, and an internally scrolling tablist gives no sign that more tabs exist. Every
+ * product use has a handful of short tabs, so a second row keeps all of them visible and tappable.
+ * Each tab is at least 44px tall (WCAG 2.5.8 target size, with margin).
  */
 export function Tabs({ items, value, onValueChange, label, className }: TabsProps) {
   const listRef = useRef<HTMLDivElement>(null)
@@ -71,7 +76,7 @@ export function Tabs({ items, value, onValueChange, label, className }: TabsProp
       role="tablist"
       aria-label={label}
       onKeyDown={handleKeyDown}
-      className={cn('flex max-w-full gap-1 overflow-x-auto border-b border-border', className)}
+      className={cn('flex max-w-full flex-wrap gap-x-1 border-b border-border', className)}
     >
       {items.map((item) => (
         <button
@@ -84,10 +89,10 @@ export function Tabs({ items, value, onValueChange, label, className }: TabsProp
           disabled={item.disabled}
           onClick={() => onValueChange(item.id)}
           className={cn(
-            'shrink-0 border-b-2 px-3 py-2 text-sm font-semibold',
+            '-mb-px min-h-11 shrink-0 border-b-2 px-3 py-2 text-sm font-semibold',
             'transition-[color,border-color] duration-150 ease-in-out focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus-ring disabled:opacity-50 motion-reduce:transition-none',
             value === item.id
-              ? 'border-brand-primary text-brand-accent-ink dark:border-info dark:text-info'
+              ? 'border-brand-accent text-brand-accent-ink'
               : 'border-transparent text-muted hover:text-foreground',
           )}
         >

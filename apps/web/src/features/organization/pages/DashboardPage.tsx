@@ -1,102 +1,67 @@
 import { useQuery } from '@tanstack/react-query'
 import { useTranslation } from 'react-i18next'
-import { Link } from 'react-router-dom'
 import * as opportunityApi from '../../opportunities/api/opportunityApi'
+import * as organizationApi from '../api/organizationApi'
 import * as placementsApi from '../../placements/api/placementsApi'
+import { InstitutionVerificationCue } from '../../../components/verification/InstitutionVerificationCue'
 import { useOrganizationMembership } from '../components/OrganizationMembershipContext'
 import { organizationCapabilities } from '../organizationCapabilities'
 import { RecruiterDashboardPage } from './RecruiterDashboardPage'
 import { SupervisorDashboardPage } from './SupervisorDashboardPage'
 import { useOrganizationCandidates } from '../hooks/useOrganizationCandidates'
+import { activeOpportunityCount, allCandidates, currentInternCount } from '../organizationMetrics'
+import { needsAttention, opportunityLoad } from '../recruiterMetrics'
+import { adminAttention } from '../organizationAttention'
 import {
-  PIPELINE_STAGE_TONE,
-  closedCount,
-  pipelineColumns,
-} from '../candidatePipeline'
-import {
-  OPPORTUNITY_STATUS_ORDER,
-  activeOpportunityCount,
-  allCandidates,
-  countByOpportunityStatus,
-  currentInternCount,
-  placementsMissingSupervisor,
-  recentApplications,
-} from '../organizationMetrics'
-import { OPPORTUNITY_STATUS_TONE } from '../../opportunities/components/statusTone'
-import { PLACEMENT_STATUS_TONE } from '../../placements/components/statusTone'
-import {
-  Alert,
-  ButtonLink,
-  Card,
-  DashboardActionCard,
-  EmptyState,
-  ErrorState,
-  Icon,
-  LoadingState,
-  StatusBadge,
-  StatusDistribution,
-  StatCard,
-  PageHeader,
-  SectionHeading,
-} from '../../../components/ui'
+  CandidateQueue,
+  InternshipLoad,
+  OrganizationAttentionQueue,
+  WorkspaceMetrics,
+} from '../components/workspace/OrganizationWorkspace'
+import { Alert, ButtonLink, ErrorState, Icon, PageHeader, SkeletonList } from '../../../components/ui'
 import { PageContainer } from '../../../app/layouts/PageContainer'
-import { formatDate } from '../../../lib/utils/formatDate'
 
-const RECENT_LIMIT = 5
+const QUEUE_LIMIT = 6
 
 /**
- * The organization's home, built to the approved design (11_organization_dashboard_clean.png):
- * four stat cards, recent applications beside the active internship posts, and the candidate
- * pipeline across the bottom.
- *
- * <p>Every figure is counted from a list endpoint the caller is already authorized to read — see
- * organizationMetrics.ts and useOrganizationCandidates.ts. The prototype's numbers are all
- * placeholders, and three of its four stat cards needed re-sourcing rather than re-labelling:
- *
- * <ul>
- *   <li><strong>Applications</strong> counts real candidacies across the opportunities actually
- *       being recruited for, not a global figure the API cannot produce.</li>
- *   <li><strong>Shortlisted</strong> is the real {@code SHORTLISTED} state.</li>
- *   <li><strong>Hired</strong> has no backing concept, so it counts interns actually on site —
- *       placements in {@code ACTIVE}/{@code COMPLETION_PENDING} — which is the number an
- *       organization would want from that tile anyway.</li>
- * </ul>
- *
- * <p>A supervisor never reaches the recruiting half of this page: {@code CandidacyAuthorization}
- * refuses the role outright, so those queries are not issued at all rather than rendered as zeros.
+ * The organization's home. Each role gets its own workspace rather than one page with controls
+ * hidden: a recruiter recruits, a supervisor supervises, and the admin runs the organization.
  */
 export function DashboardPage() {
   const membership = useOrganizationMembership()
-
-  // A recruiter gets their OWN dashboard rather than this one with tiles switched off. This page is
-  // built around how the organization is doing — its institution record, its staff, its partner
-  // universities — and a recruiter administers none of that. Theirs is a recruitment workspace
-  // (CLAUDE.md section 24: a role's portal reflects what the role can actually do).
   const can = organizationCapabilities(membership)
-  if (can.isRecruiter) {
-    return <RecruiterDashboardPage />
-  }
-  // A supervisor gets their own dashboard too. This page reads the organization's opportunities and
-  // candidate pools; a supervisor can read neither, so rendering it for them showed "Active
-  // internships: 0" and "Applications: 0" — zeros that look like facts but are really endpoints the
-  // role cannot reach (CLAUDE.md section 24: fail closed, never fabricate).
-  if (can.scopedToAssignedPlacements) {
-    return <SupervisorDashboardPage />
-  }
+  if (can.isRecruiter) return <RecruiterDashboardPage />
+  if (can.scopedToAssignedPlacements) return <SupervisorDashboardPage />
   return <AdminDashboard />
 }
 
-/** The organization admin's dashboard: the whole organization, not just its recruiting. */
+/**
+ * The organization admin's workspace (Phase 6): attention → recruiting at a glance → the one work
+ * list that matters most (candidates waiting on the organization) → secondary context.
+ *
+ * <p>Verification appears once, as the Phase 4 cue, and only while the organization is unverified.
+ *
+ * <p><strong>Loading.</strong> The header renders at once and each block loads on its own: the
+ * attention queue waits for the records it counts, each figure shows a dash until its own source
+ * arrives, and a failed source is an inline error in its own block — the verification cue and the
+ * header never depend on candidate data. Requests are the same ones the opportunity and candidate
+ * pages make, under the same keys.
+ */
 function AdminDashboard() {
   const { t } = useTranslation()
   const membership = useOrganizationMembership()
   const { organizationId } = membership
   const can = organizationCapabilities(membership)
 
+  const organizationQuery = useQuery({
+    queryKey: ['organization', 'detail', organizationId],
+    queryFn: () => organizationApi.getOrganization(organizationId),
+    enabled: can.canEditProfile,
+    retry: false,
+  })
   const opportunitiesQuery = useQuery({
     queryKey: ['opportunities', 'organization', organizationId],
     queryFn: () => opportunityApi.listOrganizationOpportunities(organizationId),
-    enabled: !can.scopedToAssignedPlacements,
     retry: false,
   })
   const placementsQuery = useQuery({
@@ -107,45 +72,16 @@ function AdminDashboard() {
 
   const opportunities = opportunitiesQuery.data ?? []
   const placements = placementsQuery.data ?? []
-
-  // Fanned out only once the opportunity list is in, and only for a role the pool admits.
-  const pools = useOrganizationCandidates(
-    opportunities,
-    can.canManageCandidates && !opportunitiesQuery.isLoading,
-  )
-
-  if (placementsQuery.isLoading || (can.canManageCandidates && opportunitiesQuery.isLoading)) {
-    return (
-      <PageContainer>
-        <LoadingState label={t('common:status.loading')} />
-      </PageContainer>
-    )
-  }
-
+  const pools = useOrganizationCandidates(opportunities, can.canManageCandidates && opportunitiesQuery.isSuccess)
   const candidates = allCandidates(pools.rows)
-  if (opportunitiesQuery.isError || placementsQuery.isError) {
-    return <PageContainer><ErrorState onRetry={() => {
-      void opportunitiesQuery.refetch()
-      void placementsQuery.refetch()
-    }} /></PageContainer>
-  }
-  const shortlisted = candidates.filter((candidate) => candidate.status === 'SHORTLISTED').length
-  const columns = pipelineColumns(candidates)
-  const recent = recentApplications(pools.rows, RECENT_LIMIT)
-  const unsupervised = placementsMissingSupervisor(placements)
-  const statusCounts = countByOpportunityStatus(opportunities)
-  const draftCount = statusCounts.DRAFT
+  const candidatesReady = opportunitiesQuery.isSuccess && !pools.isLoading
 
-  // Application counts per opportunity, for the "Active internship posts" panel.
-  const applicationsByOpportunity = new Map(pools.rows.map((row) => [row.opportunity.id, row.candidates.length]))
-  const activePosts = opportunities
-    .filter((opportunity) => opportunity.status === 'PUBLISHED')
-    .sort((a, b) => (applicationsByOpportunity.get(b.id) ?? 0) - (applicationsByOpportunity.get(a.id) ?? 0))
+  const attentionReady = candidatesReady && placementsQuery.isSuccess
+  const attentionFailed = opportunitiesQuery.isError || placementsQuery.isError
+  const verified = organizationQuery.data?.verificationStatus === 'VERIFIED'
 
   return (
-    <PageContainer className="flex flex-col gap-6">
-      {/* The same page header every other portal page uses, rather than a hand-rolled h1 that had
-          drifted a size larger than the shared one. */}
+    <PageContainer className="flex flex-col gap-8">
       <PageHeader
         title={t('organization:dashboard.title')}
         description={t('organization:dashboard.subtitle')}
@@ -159,288 +95,58 @@ function AdminDashboard() {
         }
       />
 
-      <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
-        <StatCard
-          icon="briefcase"
-          tone="brand"
-          label={t('organization:dashboard.activeInternships')}
-          value={activeOpportunityCount(opportunities)}
-          to="/organization/opportunities"
-        />
-        <StatCard
-          icon="users"
-          tone="violet"
-          label={t('organization:dashboard.applications')}
-          value={pools.isLoading ? '—' : candidates.length}
-          to="/organization/candidates"
-        />
-        <StatCard
-          icon="userCheck"
-          tone="teal"
-          label={t('organization:dashboard.shortlisted')}
-          value={pools.isLoading ? '—' : shortlisted}
-          to="/organization/candidates"
-        />
-        <StatCard
-          icon="badgeCheck"
-          tone="amber"
-          label={t('organization:dashboard.currentInterns')}
-          value={currentInternCount(placements)}
-          to="/organization/placements"
-        />
-      </div>
+      <InstitutionVerificationCue namespace="organization" status={organizationQuery.data?.verificationStatus} to="/organization/profile" />
 
-      {pools.hasErrors && <Alert tone="warning">{t('organization:dashboard.partialError')}</Alert>}
-
-      {/*
-        The things that are actually somebody's job today. These carry a heading now: when only one
-        of the two applies, an unlabelled card sat alone at half width between the metric row and the
-        panels and read as a layout accident rather than as a priority. Named, a single card is
-        obviously a section with one item in it — which is the honest thing to show.
-      */}
-      {(draftCount > 0 || unsupervised.length > 0) && (
-        <section className="flex flex-col gap-3">
-          <SectionHeading title={t('organization:dashboard.needsAttention')} />
-          <div className="grid gap-4 sm:grid-cols-2">
-          {draftCount > 0 && (
-            <DashboardActionCard
-              label={t('organization:dashboard.draftOpportunities')}
-              value={draftCount}
-              to="/organization/opportunities"
-              statusLabel={t('organization:dashboard.needsPublishing')}
-              tone="warning"
-            />
-          )}
-          {unsupervised.length > 0 && (
-            <DashboardActionCard
-              label={t('organization:dashboard.needsSupervisor')}
-              value={unsupervised.length}
-              to="/organization/placements"
-              statusLabel={t('organization:dashboard.needsAction')}
-              tone="warning"
-            />
-          )}
-          </div>
-        </section>
+      {attentionFailed ? (
+        <ErrorState
+          variant="inline"
+          onRetry={() => {
+            if (opportunitiesQuery.isError) void opportunitiesQuery.refetch()
+            if (placementsQuery.isError) void placementsQuery.refetch()
+          }}
+          retryLabel={t('common:actions.retry')}
+        />
+      ) : attentionReady ? (
+        <OrganizationAttentionQueue items={adminAttention({ candidates, placements, opportunities, verified })} />
+      ) : (
+        <SkeletonList rows={2} />
       )}
 
-      <div className="grid gap-5 xl:grid-cols-2">
-        {can.canManageCandidates && (
-          <Card padding="none" className="overflow-hidden">
-            <SectionHeading
-              panel
-              title={t('organization:dashboard.recentApplications')}
-              action={
-                <Link to="/organization/candidates" className="text-sm font-semibold text-link hover:underline">
-                  {t('organization:dashboard.viewAll')}
-                </Link>
-              }
-            />
-            {recent.length === 0 ? (
-              <EmptyState
-                variant="inline"
-                title={t('organization:dashboard.noApplications')}
-                description={t('organization:dashboard.noApplicationsHint')}
-              />
-            ) : (
-              <ul className="divide-y divide-border">
-                {recent.map(({ candidate, opportunity }) => (
-                  <li key={candidate.candidacyId} className="flex items-center gap-3 px-5 py-3.5">
-                    <span className="flex size-10 shrink-0 items-center justify-center rounded-full bg-brand-blue-soft text-brand-blue dark:bg-info-bg dark:text-info">
-                      <Icon name="user" className="size-5" />
-                    </span>
-                    <span className="min-w-0 flex-1">
-                      <Link
-                        to={`/organization/candidacies/${candidate.candidacyId}`}
-                        className="block truncate text-sm font-semibold text-foreground hover:underline"
-                      >
-                        {candidate.studentFullName ?? candidate.studentEmail ?? candidate.studentUserId}
-                      </Link>
-                      <span className="block truncate text-xs text-muted">
-                        {opportunity.title} · {formatDate(candidate.createdAt)}
-                      </span>
-                    </span>
-                    <StatusBadge tone={PIPELINE_STAGE_TONE[candidate.status]}>
-                      {t(`recruitment:candidacyStatusValues.${candidate.status}`)}
-                    </StatusBadge>
-                  </li>
-                ))}
-              </ul>
-            )}
-          </Card>
-        )}
+      <WorkspaceMetrics
+        metrics={[
+          {
+            id: 'recruiting',
+            label: t('organization:workspace.metrics.recruiting'),
+            value: opportunitiesQuery.isSuccess ? activeOpportunityCount(opportunities) : undefined,
+            to: '/organization/opportunities',
+          },
+          {
+            id: 'awaitingReview',
+            label: t('organization:workspace.metrics.awaitingReview'),
+            value: candidatesReady ? needsAttention(pools.rows, Number.MAX_SAFE_INTEGER).length : undefined,
+            to: '/organization/candidates',
+          },
+          {
+            id: 'offersOut',
+            label: t('organization:workspace.metrics.offersOut'),
+            value: candidatesReady ? candidates.filter((candidate) => candidate.status === 'OFFERED').length : undefined,
+            to: '/organization/candidates?stage=OFFERED',
+          },
+          {
+            id: 'currentInterns',
+            label: t('organization:workspace.metrics.currentInterns'),
+            value: placementsQuery.isSuccess ? currentInternCount(placements) : undefined,
+            to: '/organization/placements',
+          },
+        ]}
+      />
 
-        <Card padding="none" className="overflow-hidden">
-          <SectionHeading
-            panel
-            title={t('organization:dashboard.activePosts')}
-            action={
-              <Link to="/organization/opportunities" className="text-sm font-semibold text-link hover:underline">
-                {t('organization:dashboard.viewAll')}
-              </Link>
-            }
-          />
-          {activePosts.length === 0 ? (
-            <EmptyState
-                variant="inline"
-                title={t('organization:dashboard.noActivePosts')}
-                description={t('organization:dashboard.noActivePostsHint')}
-              />
-          ) : (
-            <ul className="divide-y divide-border">
-              {activePosts.slice(0, RECENT_LIMIT).map((opportunity) => (
-                <li key={opportunity.id} className="flex items-center gap-3 px-5 py-3.5">
-                  <span className="flex size-10 shrink-0 items-center justify-center rounded-lg bg-brand-blue-soft text-brand-blue dark:bg-info-bg dark:text-info">
-                    <Icon name="briefcase" className="size-5" />
-                  </span>
-                  <span className="min-w-0 flex-1">
-                    <Link
-                      to={`/organization/opportunities/${opportunity.id}`}
-                      className="block truncate text-sm font-semibold text-foreground hover:underline"
-                    >
-                      {opportunity.title}
-                    </Link>
-                    <span className="block truncate text-xs text-muted">
-                      {t(`opportunities:workModeValues.${opportunity.workMode}`)} ·{' '}
-                      {t(`opportunities:modeValues.${opportunity.mode}`)}
+      {pools.hasErrors && <Alert tone="warning">{t('organization:workspace.work.partialError')}</Alert>}
 
-                      {can.canManageCandidates && !pools.isLoading && (
-                        <>
-                          {' · '}
-                          {t('organization:dashboard.applicationCount', {
-                            count: applicationsByOpportunity.get(opportunity.id) ?? 0,
-                          })}
-                        </>
-                      )}
-                    </span>
-                  </span>
-                </li>
-              ))}
-            </ul>
-          )}
-        </Card>
+      <div className="grid items-start gap-8 lg:grid-cols-[minmax(0,1fr)_minmax(0,22rem)]">
+        <CandidateQueue rows={candidatesReady ? needsAttention(pools.rows, QUEUE_LIMIT) : []} loading={!candidatesReady && !opportunitiesQuery.isError} />
+        <InternshipLoad rows={candidatesReady ? opportunityLoad(pools.rows) : []} loading={!candidatesReady && !opportunitiesQuery.isError} />
       </div>
-
-      <div className="grid gap-5 xl:grid-cols-[minmax(0,1fr)_320px]"><div className="grid gap-5">
-        {can.canManageCandidates && !pools.isLoading && (
-          <Card padding="lg">
-            <div className="flex flex-wrap items-start justify-between gap-3">
-              <div>
-                <h2 className="font-display text-base font-bold text-brand-navy dark:text-foreground">
-                  {t('organization:dashboard.candidatePipeline')}
-                </h2>
-                <p className="mt-1 text-sm text-foreground-secondary">
-                  {pools.notScanned > 0
-                    ? t('organization:dashboard.pipelineHintPartial', {
-                      scanned: pools.rows.length,
-                      total: pools.totalInScope,
-                    })
-                    : t('organization:dashboard.pipelineHint', { count: pools.totalInScope })}
-                </p>
-              </div>
-              <Link to="/organization/candidates" className="shrink-0 text-sm font-semibold text-link hover:underline">
-                {t('organization:dashboard.viewAll')}
-              </Link>
-            </div>
-
-            {/* Horizontally scrollable rather than wrapping: six columns will not fit a phone, and the
-              longer Somali stage names must not push the page wider than the viewport. */}
-            <div className="-mx-5 mt-5 overflow-x-auto px-5">
-              <ul className="flex min-w-max gap-3" aria-label={t('organization:dashboard.candidatePipeline')}>
-                {columns.map((column) => (
-                  <li key={column.status} className="w-44 shrink-0 rounded-lg border border-border bg-surface-muted p-4">
-                    <div className="flex items-center gap-2">
-                      <StatusBadge tone={PIPELINE_STAGE_TONE[column.status]}>
-                        {t(`recruitment:candidacyStatusValues.${column.status}`)}
-                      </StatusBadge>
-                    </div>
-                    <p className="mt-3 text-2xl font-bold leading-none text-brand-navy dark:text-foreground">
-                      {column.candidates.length}
-                    </p>
-                    <p className="mt-1 text-xs text-muted">
-                      {t('organization:dashboard.candidateCount', { count: column.candidates.length })}
-                    </p>
-                  </li>
-                ))}
-              </ul>
-            </div>
-
-            <p className="mt-4 border-t border-border pt-4 text-xs text-muted">
-              {t('organization:dashboard.pipelineClosed', { count: closedCount(candidates) })}
-            </p>
-          </Card>
-        )}
-
-        <Card padding="lg">
-          <h2 className="font-display text-base font-bold text-brand-navy dark:text-foreground">
-            {t('organization:dashboard.internshipOverview')}
-          </h2>
-          <p className="mt-1 text-sm text-foreground-secondary">{t('organization:dashboard.internshipOverviewHint')}</p>
-          <StatusDistribution
-            className="mt-5"
-            label={t('organization:dashboard.internshipOverview')}
-            emptyLabel={t('organization:dashboard.noOpportunities')}
-            items={OPPORTUNITY_STATUS_ORDER.map((status) => ({
-              id: status,
-              label: t(`opportunities:statusValues.${status}`),
-              value: statusCounts[status],
-              tone: OPPORTUNITY_STATUS_TONE[status],
-            }))}
-          />
-        </Card>
-
-      </div><div className="grid gap-5">
-          <Card padding="lg"><h2 className="font-display text-base font-bold text-brand-navy dark:text-foreground">{t('common:remediation.quickActions')}</h2><div className="mt-4 grid gap-3">
-            {can.canManageOpportunities && <ButtonLink to="/organization/opportunities/new" variant="outline"><Icon name="plus" className="size-4" />{t('opportunities:list.create')}</ButtonLink>}
-            {can.canManageCandidates && <ButtonLink to="/organization/candidates" variant="outline"><Icon name="users" className="size-4" />{t('recruitment:nav.candidates')}</ButtonLink>}
-            <ButtonLink to="/opportunities" variant="outline"><Icon name="globe" className="size-4" />{t('common:nav.internships')}</ButtonLink>
-          </div></Card>
-          <Card padding="none" className="overflow-hidden">
-            <SectionHeading
-              panel
-              title={t('organization:dashboard.currentInternsTitle')}
-              action={
-                <Link to="/organization/placements" className="text-sm font-semibold text-link hover:underline">
-                  {t('organization:dashboard.viewAll')}
-                </Link>
-              }
-            />
-            {placements.length === 0 ? (
-              <EmptyState
-                variant="inline"
-                title={t('placements:organization.empty')}
-                description={t('organization:dashboard.noInternsHint')}
-              />
-            ) : (
-              <ul className="divide-y divide-border">
-                {placements.slice(0, RECENT_LIMIT).map((placement) => (
-                  <li key={placement.id} className="flex items-center gap-3 px-5 py-3.5">
-                    <span className="min-w-0 flex-1">
-                      <Link
-                        to={`/organization/placements/${placement.id}`}
-                        className="block truncate text-sm font-semibold text-foreground hover:underline"
-                      >
-                        {placement.studentFullName ?? placement.studentEmail ?? placement.studentUserId}
-                      </Link>
-                      <span className="block truncate text-xs text-muted">
-                        {placement.universityName ?? ''} ·{' '}
-                        {t('placements:detail.dateRange', {
-                          start: formatDate(placement.startDate),
-                          end: formatDate(placement.endDate),
-                        })}
-                      </span>
-                    </span>
-                    <StatusBadge tone={PLACEMENT_STATUS_TONE[placement.status]}>
-                      {t(`placements:statusValues.${placement.status}`)}
-                    </StatusBadge>
-                  </li>
-                ))}
-              </ul>
-            )}
-          </Card>
-        </div></div>
     </PageContainer>
   )
 }
-
-/** The same tile the university dashboards use — one product, one dashboard language. */

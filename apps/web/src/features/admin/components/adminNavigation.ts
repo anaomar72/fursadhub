@@ -29,13 +29,8 @@ export function buildAdminNav(t: TFunction, session: AdminSession): NavSection[]
   if (can.canAdministerAccounts) {
     primary.push({ to: '/admin/users', label: t('admin:nav.users'), icon: 'users' })
   }
-  // Backend Phase B6. Sits with the platform-wide reads rather than in the verification group: it is
-  // oversight of what organizations have posted, not a review queue anyone works through.
-  if (can.canOverseeOpportunities) {
-    primary.push({ to: '/admin/opportunities', label: t('admin:nav.opportunities'), icon: 'briefcase' })
-  }
-
-  const sections: NavSection[] = [{ items: primary }]
+  // A verification officer has no overview destinations, so their menu starts at their queue.
+  const sections: NavSection[] = primary.length > 0 ? [{ items: primary }] : []
 
   if (can.canReviewInstitutions || can.canReviewStudentCases) {
     const verification: NavItem[] = []
@@ -46,34 +41,37 @@ export function buildAdminNav(t: TFunction, session: AdminSession): NavSection[]
       )
     }
     if (can.canReviewStudentCases) {
-      verification.push({
-        to: '/admin/verification-escalations',
-        label: t('admin:nav.escalations'),
-        icon: 'shield',
-      })
+      verification.push({ to: '/admin/verification-escalations', label: t('admin:nav.escalations'), icon: 'shield' })
     }
     sections.push({ label: t('admin:nav.verification'), items: verification })
   }
 
-  // Everything that governs the platform itself rather than a record inside it. Super Admin only,
-  // and grouped so the console reads as "review work" above and "platform governance" below.
-  if (can.canManagePlatformRoles || can.canAdministerCompliance || can.canReadAuditTrail) {
-    const platform: NavItem[] = []
-    if (can.canManagePlatformRoles) {
-      platform.push({ to: '/admin/platform-roles', label: t('admin:nav.platformRoles'), icon: 'lock' })
-    }
-    if (can.canAdministerCompliance) {
-      platform.push(
-        { to: '/admin/privacy-requests', label: t('admin:nav.privacyRequests'), icon: 'document' },
-        { to: '/admin/legal-documents', label: t('admin:nav.legalDocuments'), icon: 'scale' },
-        { to: '/admin/testimonials', label: t('admin:nav.testimonials'), icon: 'sparkle' },
-      )
-    }
-    if (can.canReadAuditTrail) {
-      platform.push({ to: '/admin/audit', label: t('admin:nav.audit'), icon: 'chart' })
-    }
-    sections.push({ label: t('admin:nav.platform'), items: platform })
+  // Phase 8: day-to-day operational queues and oversight, apart from the settings that govern the
+  // platform itself. Every item is Super Admin only, exactly as before; only the grouping changed.
+  const operations: NavItem[] = []
+  if (can.canAdministerCompliance) {
+    operations.push(
+      { to: '/admin/privacy-requests', label: t('admin:nav.privacyRequests'), icon: 'document' },
+      { to: '/admin/testimonials', label: t('admin:nav.testimonials'), icon: 'sparkle' },
+    )
   }
+  // Backend Phase B6: read-only oversight of what organizations have posted, not a review queue.
+  if (can.canOverseeOpportunities) {
+    operations.push({ to: '/admin/opportunities', label: t('admin:nav.opportunities'), icon: 'briefcase' })
+  }
+  if (operations.length > 0) sections.push({ label: t('admin:nav.operations'), items: operations })
+
+  const platform: NavItem[] = []
+  if (can.canManagePlatformRoles) {
+    platform.push({ to: '/admin/platform-roles', label: t('admin:nav.platformRoles'), icon: 'lock' })
+  }
+  if (can.canAdministerCompliance) {
+    platform.push({ to: '/admin/legal-documents', label: t('admin:nav.legalDocuments'), icon: 'scale' })
+  }
+  if (can.canReadAuditTrail) {
+    platform.push({ to: '/admin/audit', label: t('admin:nav.audit'), icon: 'chart' })
+  }
+  if (platform.length > 0) sections.push({ label: t('admin:nav.platform'), items: platform })
 
   /*
    * One entry, not two. `/account/profile` used to sit here beside the account link, but it is a

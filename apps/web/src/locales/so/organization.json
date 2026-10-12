@@ -14,7 +14,12 @@
     "partners": "Jaamacadaha iskaashiga",
     "organization": "Ururka",
     "myInterns": "Tababarayaashayda",
-    "supervision": "Kormeerka"
+    "supervision": "Kormeerka",
+    "sections": {
+      "recruitment": "Shaqaalaysiinta",
+      "internships": "Tababarrada",
+      "organization": "Ururka"
+    }
   },
   "dashboard": {
     "title": "Guudmarka ururka",
@@ -62,7 +67,7 @@
     "body": "Abuur goobta shaqada ururkaaga — waxaad ku dari kartaa asxaabtaada marka la abuuro. Si aad u daabacdo tababarro, FursadHub waa inuu marka hore xaqiijiyaa ururkaaga: waxaad ka soo gelin doontaa dukumeentiga diiwaangelinta ururka profile-ka ururka, kadibna u gudbin doontaa dib-u-eegis.",
     "nameLabel": "Magaca ururka",
     "typeLabel": "Nooca ururka",
-    "registrationNumberLabel": "Lambarka diiwaangelinta ururka (ikhtiyaari)",
+    "registrationNumberLabel": "Lambarka diiwaangelinta ururka",
     "websiteLabel": "Websaydka",
     "descriptionLabel": "Ku saabsan ururka",
     "submit": "Abuur urur",
@@ -70,7 +75,24 @@
       "VALIDATION_FAILED": "Fadlan hubi foomka oo isku day mar kale.",
       "generic": "Hadda lama abuuri karin ururkaaga. Hubi xiriirkaaga oo isku day mar kale."
     },
-    "registrationNumberHint": "Lambarka rasmiga ah ee diiwaangelinta ama shatiga ee ku qoran dukumeentiga diiwaangelinta ururkaaga. Weligii laguma muujiyo profile-kaaga dadweynaha."
+    "registrationNumberHint": "Lambarka rasmiga ah ee diiwaangelinta ama shatiga ee ku qoran dukumeentiga diiwaangelinta ururkaaga. Weligii laguma muujiyo profile-kaaga dadweynaha.",
+    "stepDetails": "Faahfaahinta ururka",
+    "sections": {
+      "identity": {
+        "title": "Ku saabsan ururkaaga",
+        "description": "Sida ururkaaga loogu magacaabo FursadHub."
+      },
+      "registration": {
+        "title": "Faahfaahinta diiwaangelinta",
+        "description": "Waxaa loo isticmaalaa xaqiijinta oo keliya."
+      },
+      "public": {
+        "title": "Macluumaadka guud",
+        "description": "Mar dambe waad ku dari kartaa ama beddeli kartaa bogga ururka."
+      }
+    },
+    "nextTitle": "Marka aad samayso kadib",
+    "nextBody": "Goobta shaqada ururkaagu isla markiiba way furmaysaa. Bogga ururka ka soo geli dukumeentiga diiwaangelinta oo u gudbi xaqiijin — taasi ayaa furta daabacaadda tababarada."
   },
   "publicProfile": {
     "notFound": "Ururkan lama helin.",
@@ -177,6 +199,17 @@
       "attach": "Ku lifaaq dukumeentigaaga, kadibna dooro \"U gudbi xaqiijinta\".",
       "review": "Kooxda xaqiijinta FursadHub ayaa dib u eegaysa dukumeentigaaga iyo faahfaahinta ururkaaga.",
       "notify": "Waa lagu wargelin doonaa marka ururkaaga la xaqiijiyo, ama haddii kooxdu codsato isbeddello."
+    },
+    "verifiedBody": "Ururkaaga waa la xaqiijiyay. Waxaad daabici kartaa tababaro.",
+    "statusGuidance": {
+      "DRAFT": "Hoos ku lifaaq dukumeentiga diiwaangelinta kadibna u gudbi xaqiijinta.",
+      "SUBMITTED": "Codsigaagu wuxuu la joogaa FursadHub. Waa lagu wargelin doonaa marka dib-u-eegistu dhammaato.",
+      "UNDER_REVIEW": "FursadHub wuxuu dib u eegayaa codsigaaga. Waa lagu wargelin doonaa marka la dhammeeyo.",
+      "NEEDS_CHANGES": "FursadHub wuxuu codsaday isbeddello. Cusbooneysii faahfaahinta ururka ama dukumeentiga kadibna dib u gudbi.",
+      "REJECTED": "Xaqiijintaadii waa la diiday. La xiriir FursadHub ka hor inta aadan dib u gudbin.",
+      "SUSPENDED": "Xaqiijintaadu waa hakad. La xiriir FursadHub si loo xalliyo.",
+      "REVOKED": "Xaqiijintaadii waa la burburiyay. La xiriir FursadHub si loo xalliyo.",
+      "VERIFIED": ""
     }
   },
   "staff": {
@@ -356,6 +389,104 @@
       "SUSPENDED": "Xaqiijintaadu waa hakad. La xiriir FursadHub si loo xalliyo.",
       "REVOKED": "Xaqiijintaadii waa la burburiyay. La xiriir FursadHub si loo xalliyo.",
       "VERIFIED": ""
+    }
+  },
+  "workspace": {
+    "attention": {
+      "title": "Waxa u baahan feejignaan",
+      "clearTitle": "Waxba uma baahna feejignaan",
+      "clearBody": "Codsiyada cusub, dalabyada sugaya musharraxiinta iyo tababartayaasha aan kormeere lahayn halkan ayay ka muuqan doonaan.",
+      "supervisorClearBody": "Xaadirinta la xaqiijinayo, khilaafaadka la xallinayo iyo qiimaynta la dhammaystirayo halkan ayay ka muuqan doonaan.",
+      "items": {
+        "newApplications": {
+          "title_one": "{{count}} codsi cusub oo la eegayo",
+          "title_other": "{{count}} codsiyo cusub oo la eegayo",
+          "action": "Eeg"
+        },
+        "awaitingReview": {
+          "title_one": "{{count}} codsi oo dib-u-eegis ku jira",
+          "title_other": "{{count}} codsiyo oo dib-u-eegis ku jira",
+          "action": "Sii wad"
+        },
+        "interviews": {
+          "title_one": "{{count}} musharrax oo heerka wareysiga ku jira",
+          "title_other": "{{count}} musharraxiin oo heerka wareysiga ku jira",
+          "action": "Fur"
+        },
+        "offersAwaitingCandidate": {
+          "title_one": "{{count}} dalab oo sugaya jawaabta musharraxa",
+          "title_other": "{{count}} dalabyo oo sugaya jawaabaha musharraxiinta",
+          "action": "Fiiri"
+        },
+        "placementsWithoutSupervisor": {
+          "title_one": "{{count}} tababarte oo aan lahayn kormeere hay'adeed",
+          "title_other": "{{count}} tababartayaal oo aan lahayn kormeere hay'adeed",
+          "action": "Magacaab"
+        },
+        "draftsToPublish": {
+          "title_one": "{{count}} tababar qabyo ah oo aan weli la daabicin",
+          "title_other": "{{count}} tababarro qabyo ah oo aan weli la daabicin",
+          "action": "Eeg qabyada"
+        },
+        "attendanceToConfirm": {
+          "title_one": "{{count}} diiwaan xaadirin ah oo la xaqiijinayo",
+          "title_other": "{{count}} diiwaanno xaadirin ah oo la xaqiijinayo",
+          "action": "Xaqiiji"
+        },
+        "attendanceDisputed": {
+          "title_one": "{{count}} diiwaan xaadirin oo lagu muransan yahay oo la xallinayo",
+          "title_other": "{{count}} diiwaanno xaadirin oo lagu muransan yahay oo la xallinayo",
+          "action": "Xallii"
+        },
+        "evaluationsDue": {
+          "title_one": "{{count}} qiimayn oo la dhammaystirayo",
+          "title_other": "{{count}} qiimaynno oo la dhammaystirayo",
+          "action": "Fur"
+        }
+      }
+    },
+    "metrics": {
+      "title": "Hal jaleecada",
+      "recruiting": "Tababarrada shaqaalaysiinaya",
+      "awaitingReview": "Sugaya dib-u-eegistaada",
+      "offersOut": "Dalabyada la diray",
+      "currentInterns": "Tababartayaasha hadda jira",
+      "assignedInterns": "Tababartayaasha laguu xilsaaray",
+      "runningNow": "Hadda socda"
+    },
+    "work": {
+      "candidatesTitle": "Musharraxiinta ku sugaya",
+      "candidatesEmpty": "Hadda ma jiro musharrax sugaya hay'addaada.",
+      "offersTitle": "Dalabyada furan",
+      "offersEmpty": "Ma jiro dalab sugaya musharrax.",
+      "offerDeadline": "Jawaabta waxaa la rabaa {{date}}",
+      "internshipsTitle": "Tababarradaada",
+      "internshipsEmpty": "Hadda ma jiro tababar shaqaalaysiinaya.",
+      "applicants_one": "{{count}} codsade",
+      "applicants_other": "{{count}} codsadayaal",
+      "awaiting_one": "{{count}} sugaya",
+      "awaiting_other": "{{count}} sugaya",
+      "pipelineTitle": "Habka musharraxiinta",
+      "pipelineScope_one": "{{count}} tababar oo shaqaalaysiinaya.",
+      "pipelineScope_other": "{{count}} tababarro oo shaqaalaysiinaya.",
+      "internsTitle": "Tababartayaashaada",
+      "internsEmpty": "Weli laguuma xilsaarin tababarte. Tababartayaasha aad kormeerto halkan ayay ka muuqdaan marka meel-dhigid laguu xilsaaro.",
+      "internAttendance_one": "{{count}} diiwaan xaadirin oo ku sugaya",
+      "internAttendance_other": "{{count}} diiwaanno xaadirin oo ku sugaya",
+      "internEvaluation": "Qiimayntu weli ma dhammaystirna",
+      "internClear": "Waxba kuma sugayaan",
+      "notRunning": "Ma socdo",
+      "partialError": "Tirooyinka qaar lama soo rari karin, sidaa darteed waxay noqon karaan kuwo aan dhammaystirnayn."
+    },
+    "lifecycle": {
+      "title": "Horumarka tababarka",
+      "evaluation": {
+        "MISSING": "Lama bilaabin",
+        "DRAFT": "Qabyo socota",
+        "SUBMITTED": "La gudbiyay, weli ma dhammaystirna",
+        "FINAL": "Dhammaystiran"
+      },
+      "completionPending": "Waxay sugaysaa go’aanka dhammaystirka ee jaamacadda"
     }
   }
 }

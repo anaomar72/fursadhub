@@ -3,7 +3,7 @@ import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { useTranslation } from 'react-i18next'
 import * as recruitmentApi from '../api/recruitmentApi'
 import { apiErrorMessage } from '../../../lib/api/errorMessage'
-import { Button, FormField, Input, Select } from '../../../components/ui'
+import { Button, FormField, Input, Select, Textarea, Checkbox } from '../../../components/ui'
 import { MAX_SCREENING_QUESTIONS, type ScreeningQuestionType } from '../types'
 
 /**
@@ -126,25 +126,16 @@ export function ScreeningQuestionEditor({ opportunityId }: { opportunityId: stri
 
           {type === 'SINGLE_CHOICE' && (
             <FormField label={t('recruitment:screening.choicesLabel')} htmlFor="screening-choices">
-              <textarea
-                id="screening-choices"
-                rows={3}
-                className="w-full rounded-md border border-border bg-surface px-3 py-2 text-sm text-foreground"
-                value={choicesText}
-                onChange={(event) => setChoicesText(event.target.value)}
-              />
+              <Textarea id="screening-choices" rows={3} value={choicesText} onChange={(event) => setChoicesText(event.target.value)} />
             </FormField>
           )}
 
-          <label className="flex items-center gap-2 text-sm text-foreground">
-            <input
-              type="checkbox"
-              checked={required}
-              onChange={(event) => setRequired(event.target.checked)}
-              className="size-4 rounded border-border"
-            />
-            {t('recruitment:screening.requiredLabel')}
-          </label>
+          <Checkbox
+            id="screening-required"
+            checked={required}
+            onChange={(event) => setRequired(event.target.checked)}
+            label={t('recruitment:screening.requiredLabel')}
+          />
 
           {addMutation.isError && (
             <p className="text-sm text-danger" role="alert">

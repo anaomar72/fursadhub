@@ -5,6 +5,8 @@ export type IconName = 'alert' | 'check' | 'chevronDown' | 'chevronLeft' | 'chev
   | 'home' | 'briefcase' | 'clipboard' | 'users' | 'building' | 'bank' | 'graduationCap' | 'shield' | 'chart' | 'settings' | 'logout' | 'bell' | 'user' | 'userCheck' | 'badgeCheck' | 'layers' | 'scale' | 'lock'
   // Phase D portal interiors: saved internships (B4), opportunity enrichment (B3), staff identity (B5/B5.5).
   | 'bookmark' | 'bookmarkFilled' | 'plus' | 'trash' | 'coins' | 'clock' | 'sparkle' | 'idCard' | 'image' | 'link'
+  // Phase 3 public site: place, date and direction.
+  | 'mapPin' | 'calendar' | 'arrowRight'
 
 const paths: Record<IconName, React.ReactNode> = {
   alert: <><path d="M12 9v4"/><path d="M12 17h.01"/><path d="M10.3 3.7 2.5 17.2A2 2 0 0 0 4.2 20h15.6a2 2 0 0 0 1.7-2.8L13.7 3.7a2 2 0 0 0-3.4 0Z"/></>,
@@ -43,6 +45,10 @@ const paths: Record<IconName, React.ReactNode> = {
   sparkle: <path d="m12 3 1.9 5.1L19 10l-5.1 1.9L12 17l-1.9-5.1L5 10l5.1-1.9L12 3Z"/>,
   idCard: <><rect x="2.5" y="5" width="19" height="14" rx="2"/><circle cx="8.5" cy="11" r="2"/><path d="M5.5 16a3.2 3.2 0 0 1 6 0M14 10h4M14 14h3"/></>,
   image: <><rect x="3" y="4" width="18" height="16" rx="2"/><circle cx="8.5" cy="9.5" r="1.5"/><path d="m3.5 17 4.5-4.5 3.5 3.5L15 12l5.5 5.5"/></>,
+  mapPin: <><path d="M12 21s-7-6.2-7-11.5a7 7 0 0 1 14 0C19 14.8 12 21 12 21Z"/><circle cx="12" cy="9.5" r="2.5"/></>,
+  calendar: <><rect x="3.5" y="5" width="17" height="15.5" rx="2"/><path d="M3.5 10h17M8 3v4M16 3v4"/></>,
+  // Mirrors in right-to-left text through the caller's `rtl:rotate-180`.
+  arrowRight: <path d="M5 12h14M13 6l6 6-6 6"/>,
   link: <><path d="M10 13.5a3.5 3.5 0 0 0 5 0l3-3a3.5 3.5 0 0 0-5-5l-1.2 1.2"/><path d="M14 10.5a3.5 3.5 0 0 0-5 0l-3 3a3.5 3.5 0 0 0 5 5l1.2-1.2"/></>,
 }
 

@@ -40,22 +40,27 @@ describe('public testimonial wall', () => {
     expect(screen.queryByText('Awaiting approved testimonials')).not.toBeInTheDocument()
   })
 
-  it('shows the honest pending state rather than inventing quotes when none are published', async () => {
+  /*
+   * Nothing published, nothing shown — not even the heading. The section used to render three
+   * "Awaiting approved testimonials" placeholders, which told a first-time visitor that nobody had
+   * anything to say yet.
+   */
+  it('renders nothing at all — no placeholders, no heading — when none are published', async () => {
     vi.mocked(listPublishedTestimonials).mockResolvedValue([])
-    view()
-    await waitFor(() =>
-      expect(screen.getAllByText('Awaiting approved testimonials').length).toBeGreaterThan(0),
-    )
-    expect(screen.queryByRole('blockquote')).not.toBeInTheDocument()
+    const { container } = view()
+    await waitFor(() => expect(listPublishedTestimonials).toHaveBeenCalled())
+    await waitFor(() => expect(container).toBeEmptyDOMElement())
+    expect(screen.queryByText('Awaiting approved testimonials')).not.toBeInTheDocument()
+    expect(screen.queryByRole('heading')).not.toBeInTheDocument()
   })
 
-  it('does not invent quotes when the request fails', async () => {
+  it('does not invent quotes, or a placeholder section, when the request fails', async () => {
     vi.mocked(listPublishedTestimonials).mockRejectedValue(new Error('offline'))
-    view()
+    const { container } = view()
     // An unreachable API is not evidence that anyone said anything.
-    await waitFor(() =>
-      expect(screen.getAllByText('Awaiting approved testimonials').length).toBeGreaterThan(0),
-    )
+    await waitFor(() => expect(listPublishedTestimonials).toHaveBeenCalled())
+    await waitFor(() => expect(container).toBeEmptyDOMElement())
+    expect(screen.queryByRole('blockquote')).not.toBeInTheDocument()
   })
 })
 

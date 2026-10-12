@@ -49,7 +49,7 @@ interface InternshipNavProps {
  * Section navigation for one placement.
  *
  * <p>Horizontally scrollable rather than wrapping, so the longer Somali labels do not push the
- * layout wider than the viewport on a phone (BRAND_AND_UI_GUIDELINES.md — Somali text must not break
+ * layout wider than the viewport on a phone (CLAUDE.md section 56 — Somali text must not break
  * layout).
  */
 export function InternshipNav({ area, basePath }: InternshipNavProps) {

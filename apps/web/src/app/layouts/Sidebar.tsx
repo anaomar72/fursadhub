@@ -83,7 +83,10 @@ export const Sidebar = forwardRef<HTMLDivElement, SidebarProps>(function Sidebar
       className={cn(
         tone === 'navy' && 'sidebar-navy',
         'flex h-full flex-col border-e border-sidebar-border bg-sidebar text-sidebar-foreground',
-        isRail ? 'w-20' : 'w-[264px]',
+        // 18rem (288px): wide enough that "Codsiyada magacaabista" and the other long Somali
+        // destinations fit — and when one still does not, it wraps to a second line (below) rather
+        // than being cut to an ellipsis. Never a truncated label a person has to hover to read.
+        isRail ? 'w-20' : 'w-72',
         'transition-[width] duration-200 ease-in-out motion-reduce:transition-none',
         className,
       )}
@@ -103,7 +106,7 @@ export const Sidebar = forwardRef<HTMLDivElement, SidebarProps>(function Sidebar
             )}
             {!isRail && (
               <span className="min-w-0">
-                <span className={cn('block font-display font-extrabold leading-tight text-sidebar-strong', crestLayout ? 'text-xl' : 'text-[15px]')}>
+                <span className={cn('block break-words font-display font-extrabold leading-tight text-sidebar-strong', crestLayout ? 'text-title-section' : 'text-body-lg')}>
                   {isTenantBranded ? (
                     brand!.name
                   ) : (
@@ -119,8 +122,8 @@ export const Sidebar = forwardRef<HTMLDivElement, SidebarProps>(function Sidebar
                     className={cn(
                       'mt-1 block',
                       isTenantBranded
-                        ? 'text-[11px] font-bold uppercase tracking-wider text-brand-accent'
-                        : 'text-xs font-semibold text-sidebar-foreground',
+                        ? 'text-caption font-bold uppercase tracking-wider text-brand-accent'
+                        : 'text-caption font-semibold text-sidebar-foreground',
                     )}
                   >
                     {brand.portalLabel}
@@ -156,7 +159,7 @@ export const Sidebar = forwardRef<HTMLDivElement, SidebarProps>(function Sidebar
         {/* The references keep FursadHub attribution present but subordinate inside a tenant's own
             portal — reference 08's "powered by" strip. Only shown when a tenant owns the rail. */}
         {isTenantBranded && !isRail && (
-          <p className="mt-3 flex items-center gap-1.5 text-[11px] text-sidebar-heading">
+          <p className="mt-3 flex items-center gap-1.5 text-caption text-sidebar-heading">
             {t('common:shell.poweredBy')}
             <BrandLogo surface={tone === 'navy' ? 'dark' : 'light'} markOnly size="sm" className="size-4" />
             <span className="font-display font-bold text-sidebar-strong">
@@ -171,7 +174,7 @@ export const Sidebar = forwardRef<HTMLDivElement, SidebarProps>(function Sidebar
         {sections.map((section, index) => (
           <div key={section.label ?? `section-${index}`} className={index > 0 ? 'mt-6' : undefined}>
             {section.label && !isRail && (
-              <h2 className="px-3 pb-2 text-[11px] font-bold uppercase tracking-wider text-sidebar-heading">
+              <h2 className="px-3 pb-2 text-caption font-bold uppercase tracking-wider text-sidebar-heading">
                 {section.label}
               </h2>
             )}
@@ -185,11 +188,12 @@ export const Sidebar = forwardRef<HTMLDivElement, SidebarProps>(function Sidebar
                       to={item.to}
                       onClick={onNavigate}
                       aria-current={active ? 'page' : undefined}
-                      // Always titled: in the rail there is no visible label at all, and at full
-                      // width a long Somali label (e.g. "Codsiyada magacaabista") truncates.
-                      title={item.label}
+                      // Titled for the collapsed rail, where there is no visible label at all. At
+                      // full width the label is always fully visible (it wraps), so no tooltip.
+                      title={isRail ? item.label : undefined}
+                      aria-label={isRail ? item.label : undefined}
                       className={cn(
-                        'relative flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-semibold',
+                        'relative flex min-h-10 items-center gap-3 rounded-md px-3 py-2 text-body font-semibold',
                         'transition-colors duration-150 ease-in-out focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus-ring motion-reduce:transition-none',
                         isRail && 'justify-center px-0',
                         active
@@ -205,7 +209,7 @@ export const Sidebar = forwardRef<HTMLDivElement, SidebarProps>(function Sidebar
                         />
                       )}
                       <Icon name={item.icon} className={cn('size-5 shrink-0', active && 'text-brand-accent')} />
-                      {!isRail && <span className="truncate">{item.label}</span>}
+                      {!isRail && <span className="min-w-0 break-words leading-snug">{item.label}</span>}
                     </Link>
                   </li>
                 )
@@ -222,10 +226,10 @@ export const Sidebar = forwardRef<HTMLDivElement, SidebarProps>(function Sidebar
           onClick={onNavigate}
           title={t('common:nav.publicMarketplace')}
           aria-label={t('common:nav.publicMarketplace')}
-          className={cn('mb-1 flex items-center gap-3 rounded-lg border border-sidebar-border px-3 py-2.5 text-sm font-semibold text-sidebar-strong hover:bg-sidebar-hover focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus-ring', isRail && 'justify-center px-0')}
+          className={cn('mb-1 flex min-h-10 items-center gap-3 rounded-md border border-sidebar-border px-3 py-2 text-body font-semibold text-sidebar-strong transition-colors duration-150 hover:bg-sidebar-hover focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus-ring motion-reduce:transition-none', isRail && 'justify-center px-0')}
         >
           <Icon name="globe" className="size-5 shrink-0" />
-          {!isRail && <span>{t('common:nav.publicMarketplace')}</span>}
+          {!isRail && <span className="min-w-0 break-words leading-snug">{t('common:nav.publicMarketplace')}</span>}
         </Link>
         <button
           type="button"
@@ -233,13 +237,13 @@ export const Sidebar = forwardRef<HTMLDivElement, SidebarProps>(function Sidebar
           title={isRail ? t('auth:session.signOut') : undefined}
           aria-label={t('auth:session.signOut')}
           className={cn(
-            'flex w-full items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-semibold text-sidebar-foreground',
+            'flex min-h-10 w-full items-center gap-3 rounded-md px-3 py-2 text-body font-semibold text-sidebar-foreground',
             'transition-colors duration-150 ease-in-out hover:bg-sidebar-hover hover:text-sidebar-strong focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus-ring motion-reduce:transition-none',
             isRail && 'justify-center px-0',
           )}
         >
           <Icon name="logout" className="size-5 shrink-0" />
-          {!isRail && <span className="truncate">{t('auth:session.signOut')}</span>}
+          {!isRail && <span className="min-w-0 break-words text-start leading-snug">{t('auth:session.signOut')}</span>}
         </button>
       </div>
     </div>

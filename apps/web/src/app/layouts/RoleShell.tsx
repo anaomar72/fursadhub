@@ -10,7 +10,12 @@ import { buildAdminNav } from '../../features/admin/components/adminNavigation'
 import { buildOrganizationNav } from '../../features/organization/components/organizationNavigation'
 import { buildUniversityNav } from '../../features/university/components/universityNavigation'
 import { buildStudentNav } from '../../features/student/components/studentNavigation'
+import { isNotFound, studentQueries } from '../../features/student/studentQueries'
+import { GET_STARTED_PATH } from '../../features/auth/roleRedirect'
+import { accountSettingsNavItem } from './navigation'
 import { adminWorkspaceLabelKey } from '../../features/admin/adminCapabilities'
+import { organizationWorkspaceLabelKey } from '../../features/organization/organizationCapabilities'
+import { universityWorkspaceLabelKey } from '../../features/university/universityCapabilities'
 
 /**
  * Renders content inside the SIGNED-IN PERSON'S OWN PORTAL, whatever that portal is.
@@ -68,7 +73,22 @@ export function RoleShell({ children }: { children: ReactNode }) {
     retry: false,
   })
 
-  const resolving = adminQuery.isLoading || organizationQuery.isLoading || universityQuery.isLoading
+  /*
+   * No staff or platform membership: is this a STUDENT, or an account that has set nothing up yet?
+   * Registration stores no account type, so the answer is the student's own records — a claimed
+   * enrollment or a saved profile — read through the student area's own cache entries. Only a 404
+   * counts as absence (the same rule sign-in uses in resolveAccountWorkspace); any other failure keeps
+   * the student shell, so a network hiccup never strips a real student of their navigation. These
+   * two reads run only for accounts with no membership at all, never for staff.
+   */
+  const membershipsResolved = !adminQuery.isLoading && !organizationQuery.isLoading && !universityQuery.isLoading
+  const noMembership =
+    membershipsResolved && !adminQuery.data?.platformAdmin && !organizationQuery.data?.[0] && !universityQuery.data
+  const enrollmentQuery = useQuery({ ...studentQueries.enrollment(), enabled: noMembership })
+  const profileQuery = useQuery({ ...studentQueries.profile(), enabled: noMembership })
+
+  const resolving =
+    !membershipsResolved || (noMembership && (enrollmentQuery.isLoading || profileQuery.isLoading))
   if (resolving) {
     return (
       <div className="flex min-h-svh items-center justify-center">
@@ -101,7 +121,7 @@ export function RoleShell({ children }: { children: ReactNode }) {
         workspace="organization"
         areaLabel={t('common:nav.organization')}
         sections={buildOrganizationNav(t, organizationMembership)}
-        brand={{ portalLabel: t('common:shell.portals.organization') }}
+        brand={{ portalLabel: t(organizationWorkspaceLabelKey(organizationMembership)) }}
       >
         {children}
       </AppShell>
@@ -115,7 +135,27 @@ export function RoleShell({ children }: { children: ReactNode }) {
         areaLabel={t('common:nav.university')}
         tone="navy"
         sections={buildUniversityNav(t, universityMembership)}
-        brand={{ portalLabel: t('common:shell.portals.university') }}
+        brand={{ portalLabel: t(universityWorkspaceLabelKey(universityMembership)) }}
+      >
+        {children}
+      </AppShell>
+    )
+  }
+
+  const hasNoStudentRecord =
+    enrollmentQuery.isError && isNotFound(enrollmentQuery.error) && profileQuery.isError && isNotFound(profileQuery.error)
+  if (hasNoStudentRecord) {
+    // Signed in, nothing set up yet: a neutral account shell — the way into setup and the account's
+    // own settings — rather than Student navigation for someone who is not a student. Navigation
+    // only; nothing here grants or withholds access (CLAUDE.md section 24).
+    return (
+      <AppShell
+        workspace="neutral"
+        areaLabel={t('common:nav.account')}
+        sections={[
+          { items: [{ to: GET_STARTED_PATH, label: t('common:nav.getStarted'), icon: 'home' }] },
+          { label: t('common:shell.sections.account'), items: [accountSettingsNavItem(t)] },
+        ]}
       >
         {children}
       </AppShell>

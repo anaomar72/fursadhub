@@ -1,12 +1,12 @@
 import { useState } from 'react'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { useTranslation } from 'react-i18next'
-import { Button, EmptyState, ErrorState, FormField, LoadingState, PageHeader, Select, StatusBadge, Textarea } from '../../../components/ui'
-import type { StatusTone } from '../../../components/ui'
+import { Button, EmptyState, ErrorState, FormField, PageHeader, Select, StatusBadge, Textarea, SkeletonList, Checkbox } from '../../../components/ui'
 import { apiErrorMessage } from '../../../lib/api/errorMessage'
 import { formatDate } from '../../../lib/utils/formatDate'
 import * as privacyApi from '../api/privacyApi'
-import type { ConsentType, PrivacyRequestState, PrivacyRequestType } from '../types'
+import type { ConsentType, PrivacyRequestType } from '../types'
+import { PRIVACY_REQUEST_TONE } from '../../../lib/status/statusTones'
 
 const REQUEST_TYPES: PrivacyRequestType[] = [
   'ACCESS',
@@ -16,13 +16,6 @@ const REQUEST_TYPES: PrivacyRequestType[] = [
   'PORTABILITY',
   'OBJECTION',
 ]
-
-const STATE_TONE: Record<PrivacyRequestState, StatusTone> = {
-  SUBMITTED: 'info',
-  IN_REVIEW: 'warning',
-  COMPLETED: 'success',
-  REJECTED: 'danger',
-}
 
 /**
  * The user's own privacy surface: consents and data-subject requests
@@ -79,7 +72,7 @@ export function PrivacyPage() {
         </div>
 
         {consentsQuery.isLoading ? (
-          <LoadingState label={t('common:status.loading')} />
+          <SkeletonList rows={3} />
         ) : consentsQuery.isError ? (
           <ErrorState
             title={t('common:status.error')}
@@ -87,10 +80,12 @@ export function PrivacyPage() {
             retryLabel={t('common:actions.retry')}
           />
         ) : (
+          // One layout whatever a description's length: the text takes the room and wraps, and the
+          // control stays beside it rather than dropping under one row and not another.
           <ul className="divide-y divide-border overflow-hidden rounded-lg border border-border bg-surface">
             {(consentsQuery.data ?? []).map((consent) => (
-              <li key={consent.consentType} className="flex flex-wrap items-center justify-between gap-3 px-4 py-3">
-                <div className="min-w-0">
+              <li key={consent.consentType} className="flex items-start justify-between gap-4 px-4 py-3">
+                <div className="min-w-0 flex-1">
                   <p className="text-sm font-medium text-foreground">
                     {t(`privacy:consentTypes.${consent.consentType}.label`)}
                   </p>
@@ -98,21 +93,19 @@ export function PrivacyPage() {
                     {t(`privacy:consentTypes.${consent.consentType}.description`)}
                   </p>
                 </div>
-                <label className="flex shrink-0 items-center gap-2 text-sm text-foreground">
-                  <input
-                    type="checkbox"
-                    checked={consent.granted}
-                    disabled={consentMutation.isPending}
-                    onChange={(event) =>
-                      consentMutation.mutate({
-                        consentType: consent.consentType,
-                        granted: event.target.checked,
-                      })
-                    }
-                    className="size-4 rounded border-border"
-                  />
-                  {consent.granted ? t('privacy:consents.granted') : t('privacy:consents.notGranted')}
-                </label>
+                <Checkbox
+                  id={`consent-${consent.consentType}`}
+                  className="shrink-0 py-0.5"
+                  checked={consent.granted}
+                  disabled={consentMutation.isPending}
+                  onChange={(event) =>
+                    consentMutation.mutate({
+                      consentType: consent.consentType,
+                      granted: event.target.checked,
+                    })
+                  }
+                  label={consent.granted ? t('privacy:consents.granted') : t('privacy:consents.notGranted')}
+                />
               </li>
             ))}
           </ul>
@@ -172,7 +165,7 @@ export function PrivacyPage() {
         </form>
 
         {requestsQuery.isLoading ? (
-          <LoadingState label={t('common:status.loading')} />
+          <SkeletonList rows={3} />
         ) : requestsQuery.isError ? (
           <ErrorState
             title={t('common:status.error')}
@@ -189,7 +182,7 @@ export function PrivacyPage() {
                   <h3 className="text-sm font-medium text-foreground">
                     {t(`privacy:requestTypes.${request.requestType}`)}
                   </h3>
-                  <StatusBadge tone={STATE_TONE[request.state]}>
+                  <StatusBadge tone={PRIVACY_REQUEST_TONE[request.state]}>
                     {t(`privacy:requestStates.${request.state}`)}
                   </StatusBadge>
                 </div>

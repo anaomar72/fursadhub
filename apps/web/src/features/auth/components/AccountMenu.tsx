@@ -56,7 +56,7 @@ export function AccountMenu({ onNavigate }: { onNavigate?: () => void }) {
               {account.displayName}
             </span>
             {context && (
-              <span className="block max-w-[11rem] truncate text-[11px] text-foreground-secondary">{context}</span>
+              <span className="block max-w-[11rem] truncate text-caption text-foreground-secondary">{context}</span>
             )}
           </span>
           <Icon name="chevronDown" className="hidden size-4 shrink-0 text-foreground-secondary sm:block" />

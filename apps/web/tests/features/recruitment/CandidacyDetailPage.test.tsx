@@ -85,7 +85,7 @@ describe('CandidacyDetailPage', () => {
     stubFetch(candidacyWithOffer)
     renderPage()
 
-    expect(await screen.findByText('Backend Intern')).toBeInTheDocument()
+    expect(await screen.findByRole('heading', { name: 'Backend Intern' })).toBeInTheDocument()
     // Dates are rendered through the shared locale-aware formatter, not as raw ISO strings.
     expect(screen.getByText('Feb 15, 2027')).toBeInTheDocument()
     expect(screen.getByRole('button', { name: /accept offer/i })).toBeInTheDocument()
@@ -97,7 +97,7 @@ describe('CandidacyDetailPage', () => {
     const fetchMock = stubFetch(candidacyWithOffer)
     renderPage()
 
-    await screen.findByText('Backend Intern')
+    await screen.findByRole('heading', { name: 'Backend Intern' })
     await user.click(screen.getByRole('button', { name: /accept offer/i }))
 
     expect(await screen.findByText(/offer accepted/i)).toBeInTheDocument()
@@ -119,7 +119,7 @@ describe('CandidacyDetailPage', () => {
     )
     renderPage()
 
-    await screen.findByText('Backend Intern')
+    await screen.findByRole('heading', { name: 'Backend Intern' })
     const acceptButton = screen.getByRole('button', { name: /accept offer/i })
 
     await user.click(acceptButton)
@@ -150,7 +150,7 @@ describe('CandidacyDetailPage', () => {
     )
     renderPage()
 
-    await screen.findByText('Backend Intern')
+    await screen.findByRole('heading', { name: 'Backend Intern' })
     await user.click(screen.getByRole('button', { name: /accept offer/i }))
 
     expect(await screen.findByRole('alert')).toHaveTextContent(/no longer awaiting a response/i)
@@ -161,7 +161,7 @@ describe('CandidacyDetailPage', () => {
     stubFetch({ ...candidacyWithOffer, status: 'ACCEPTED', liveOffer: { ...pendingOffer, status: 'ACCEPTED' } })
     renderPage()
 
-    await screen.findByText('Backend Intern')
+    await screen.findByRole('heading', { name: 'Backend Intern' })
     expect(screen.queryByRole('button', { name: /withdraw application/i })).not.toBeInTheDocument()
   })
 
@@ -169,7 +169,7 @@ describe('CandidacyDetailPage', () => {
     stubFetch({ ...candidacyWithOffer, status: 'SUBMITTED', liveOffer: null })
     renderPage()
 
-    await screen.findByText('Backend Intern')
+    await screen.findByRole('heading', { name: 'Backend Intern' })
     expect(screen.getByRole('button', { name: /withdraw application/i })).toBeInTheDocument()
   })
 

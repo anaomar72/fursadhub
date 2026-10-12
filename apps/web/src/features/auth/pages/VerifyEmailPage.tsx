@@ -3,7 +3,7 @@ import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useMutation } from '@tanstack/react-query'
 import { useTranslation } from 'react-i18next'
-import { Link, useSearchParams } from 'react-router-dom'
+import { Link, useLocation, useNavigate, useSearchParams } from 'react-router-dom'
 import { emailOnlySchema, type EmailOnlyFormValues } from '../schemas/emailOnlySchema'
 import * as authApi from '../api/authApi'
 import { authErrorMessage } from '../api/errorMessage'
@@ -14,6 +14,11 @@ import { ApiError } from '../../../lib/api/client'
 
 const CODE_LENGTH = 4
 const RESEND_COOLDOWN_SECONDS = 60
+
+/** What RegisterPage hands this page: the address to verify, carried outside the URL. */
+export interface VerifyEmailLocationState {
+  email?: string
+}
 
 /**
  * The success line, chosen from the account kind this registration was started for.
@@ -30,23 +35,46 @@ function nextStepKey(role: string | null): string {
 }
 
 /**
- * FursadHub verification screen (CLAUDE.md section 13 / BRAND_AND_UI_GUIDELINES.md section 14):
+ * FursadHub verification screen (CLAUDE.md section 13 / CLAUDE.md section 58):
  * register -> 4-digit code emailed -> entered here -> auto-submits on the 4th digit -> the
- * approved one-time VERIFIED animation -> stable verified state. The email address arrives via
- * `?email=` from RegisterPage's redirect (or, if the page is opened directly, the mini form below
- * requests a fresh code and adopts that email).
+ * approved one-time VERIFIED animation -> stable verified state.
+ *
+ * <p><strong>Where the email address comes from.</strong> Router navigation state
+ * ({@link VerifyEmailLocationState}), never the address bar: an email in the URL ends up in browser
+ * history, copied links, screenshots and referrer/analytics logs. The state lives in this tab's
+ * history entry, so it survives a refresh and back/forward, and it is not an authentication secret.
+ * A visit without it — a new tab, a copied link, an old bookmark — gets the mini form below, which
+ * requests a fresh code and adopts that email, so the flow always has a way forward.
  */
 export function VerifyEmailPage() {
   const { t } = useTranslation()
-  const [searchParams, setSearchParams] = useSearchParams()
+  const navigate = useNavigate()
+  const location = useLocation()
+  const [searchParams] = useSearchParams()
   const role = searchParams.get('role')
   const justRegistered = searchParams.get('registered') === '1'
-  const [email, setEmail] = useState(searchParams.get('email') ?? '')
+  // `?email=` is still ACCEPTED (older links, a hand-typed address) but never kept: the effect below
+  // moves it into navigation state and removes it from the address bar on arrival.
+  const legacyEmail = searchParams.get('email')
+  const [email, setEmail] = useState((location.state as VerifyEmailLocationState | null)?.email ?? legacyEmail ?? '')
   const [code, setCode] = useState('')
   const [cooldownEndsAt, setCooldownEndsAt] = useState<number | null>(email ? Date.now() + RESEND_COOLDOWN_SECONDS * 1000 : null)
   const [secondsLeft, setSecondsLeft] = useState(0)
-  // The last code actually sent to the server — see the guard in `submit`.
+  // The last code actually sent to the server — see the guards in `submit`.
   const lastSubmittedCode = useRef<string | null>(null)
+  // Set synchronously before `mutate`, so two completions in the same tick cannot both pass —
+  // `verifyMutation.isPending` only flips on the next render.
+  const inFlight = useRef(false)
+  // Codes the server has REJECTED for the current challenge. Retyping one would only spend another
+  // of the server's attempts on an answer already known to be wrong. Cleared on resend, which
+  // issues a new challenge.
+  const rejectedCodes = useRef(new Set<string>())
+  // The server's own rejection, kept so a repeated code shows exactly the same message.
+  const lastRejection = useRef<unknown>(null)
+  // A rejected code was entered again: the same error is shown without a request being sent.
+  const [repeatedRejection, setRepeatedRejection] = useState<unknown>(null)
+  // Bumped on every rejection: remounting the field is what puts focus back on the first box.
+  const [attempt, setAttempt] = useState(0)
 
   const verifyMutation = useMutation({ mutationFn: authApi.verifyEmail })
   const resendMutation = useMutation({ mutationFn: authApi.resendVerification })
@@ -63,45 +91,101 @@ export function VerifyEmailPage() {
     return () => clearInterval(interval)
   }, [cooldownEndsAt])
 
+  useEffect(() => {
+    if (!legacyEmail) return
+    const remaining = new URLSearchParams(searchParams)
+    remaining.delete('email')
+    const search = remaining.toString()
+    navigate(
+      { pathname: location.pathname, search: search ? `?${search}` : '' },
+      { replace: true, state: { ...((location.state as object | null) ?? {}), email: legacyEmail } satisfies VerifyEmailLocationState },
+    )
+  }, [legacyEmail, searchParams, navigate, location.pathname, location.state])
+
   function startCooldown() {
     setCooldownEndsAt(Date.now() + RESEND_COOLDOWN_SECONDS * 1000)
   }
 
   function handleCodeChange(next: string) {
     setCode(next)
+    // Any edit is the person working on a new answer: the previous error has done its job.
     if (verifyMutation.isError) {
       verifyMutation.reset()
+    }
+    setRepeatedRejection(null)
+    // A field that is no longer full is being re-entered, so the NEXT completion is a fresh attempt.
+    if (next.length < CODE_LENGTH) {
+      lastSubmittedCode.current = null
     }
   }
 
   function submit(fullCode: string) {
-    if (verifyMutation.isPending || verifyMutation.isSuccess) {
+    if (fullCode.length !== CODE_LENGTH || inFlight.current || verifyMutation.isSuccess) {
       return
     }
     /*
-     * The same code is never sent twice. `OtpCodeInput` calls `onComplete` whenever the field is
-     * full, which includes re-fires that follow a keystroke's later events — so a rejected code
-     * would immediately be sent again, spending another of the server's five attempts on input the
-     * user has not touched since. The in-flight guard above did not catch that, because the second
-     * attempt starts after the first has already failed. Changing any digit clears this, since
-     * `handleCodeChange` resets the mutation and a different string no longer matches.
+     * The same full value is never sent twice. `OtpCodeInput` calls `onComplete` whenever the field
+     * is full, which includes re-fires after re-renders, focus changes and remounts — each of which
+     * would otherwise spend another of the server's five attempts on input nobody retyped. Only a
+     * field that has been emptied (see `handleCodeChange`) can produce a new attempt.
      */
     if (lastSubmittedCode.current === fullCode) {
       return
     }
     lastSubmittedCode.current = fullCode
-    verifyMutation.mutate({ email, code: fullCode })
+
+    if (rejectedCodes.current.has(fullCode)) {
+      // Already rejected for this challenge: say so again, clear the boxes, send nothing.
+      setRepeatedRejection(lastRejection.current)
+      clearAfterRejection()
+      return
+    }
+
+    inFlight.current = true
+    verifyMutation.mutate(
+      { email, code: fullCode },
+      {
+        onError: (error) => {
+          // Only a server REJECTION marks the code as wrong. A dropped connection says nothing about
+          // the digits, so that same code may be retried.
+          if (error instanceof ApiError && error.body.code === 'EMAIL_VERIFICATION_CODE_INVALID') {
+            rejectedCodes.current.add(fullCode)
+            lastRejection.current = error
+          }
+          clearAfterRejection()
+        },
+        onSettled: () => {
+          inFlight.current = false
+        },
+      },
+    )
+  }
+
+  /**
+   * After a failed attempt the boxes are emptied and focus returns to the first one. Leaving the
+   * rejected digits in place meant the first digit of the NEXT code completed a four-digit value
+   * again and auto-submitted it — one wasted attempt per keystroke, straight into the lockout.
+   */
+  function clearAfterRejection() {
+    setCode('')
+    lastSubmittedCode.current = null
+    setAttempt((n) => n + 1)
   }
 
   function handleResend() {
     resendMutation.mutate(email, {
       onSuccess: () => {
         startCooldown()
+        // The server invalidates the previous code when it issues a new one
+        // (IssueEmailVerificationTokenService), so any digits on screen are now stale.
         setCode('')
         verifyMutation.reset()
-        // A fresh challenge is on its way, so a code that was rejected against the OLD one is
-        // allowed to be tried again — the digits may legitimately repeat.
+        setRepeatedRejection(null)
         lastSubmittedCode.current = null
+        // A new challenge: codes rejected against the old one may legitimately repeat.
+        rejectedCodes.current.clear()
+        lastRejection.current = null
+        setAttempt((n) => n + 1)
       },
     })
   }
@@ -116,7 +200,8 @@ export function VerifyEmailPage() {
             resendMutation.mutate(values.email, {
               onSuccess: () => {
                 setEmail(values.email)
-                setSearchParams({ email: values.email })
+                // Into navigation state, not the URL — see the note on this component.
+                navigate({ pathname: location.pathname, search: location.search }, { replace: true, state: { email: values.email } satisfies VerifyEmailLocationState })
                 startCooldown()
               },
             }),
@@ -136,11 +221,11 @@ export function VerifyEmailPage() {
             />
           </FormField>
           {resendMutation.isError && (
-            <p className="text-sm text-danger" role="alert">
+            <p className="text-body text-danger" role="alert">
               {authErrorMessage(t, 'verifyEmail', resendMutation.error)}
             </p>
           )}
-          <Button type="submit" loading={resendMutation.isPending} className="w-full">
+          <Button type="submit" size="lg" loading={resendMutation.isPending} className="w-full">
             {t('auth:verifyEmail.sendCode')}
           </Button>
         </form>
@@ -177,6 +262,8 @@ export function VerifyEmailPage() {
 
   const errorCode = verifyMutation.error instanceof ApiError ? verifyMutation.error.body.code : null
   const isLocked = errorCode === 'EMAIL_VERIFICATION_CODE_LOCKED'
+  // The live failure, or — when a code already rejected was typed again — that same rejection.
+  const shownError = verifyMutation.error ?? repeatedRejection
 
   /*
    * Two failures END the attempt rather than inviting a retype: an expired challenge and a locked
@@ -219,7 +306,10 @@ export function VerifyEmailPage() {
   }
 
   return (
-    <AuthCard title={t('auth:verifyEmail.title')} subtitle={t('auth:verifyEmail.subtitle', { email })}>
+    <AuthCard
+      title={t('auth:verifyEmail.title')}
+      subtitle={t('auth:verifyEmail.subtitle', { email })}
+    >
       {/* Arriving straight from registration. It confirms the one thing that definitely happened —
           the account exists — and nothing beyond it: not that the address is valid, not that any
           institution has been approved. Someone who opens this URL later never sees it. */}
@@ -230,18 +320,23 @@ export function VerifyEmailPage() {
       )}
 
       <OtpCodeInput
+        key={attempt}
         length={CODE_LENGTH}
         value={code}
         onChange={handleCodeChange}
         onComplete={submit}
         disabled={verifyMutation.isPending}
-        invalid={verifyMutation.isError}
+        invalid={shownError != null}
         label={t('auth:verifyEmail.codeLabel')}
       />
+      {/* Says what the auto-submit will do BEFORE it does it, so the form disappearing on the
+          fourth digit is expected rather than startling. Presentation only — the submit rules
+          (whole code only, never the same code twice) live in `submit` above. */}
+      <p className="mt-3 text-center text-caption text-foreground-secondary">{t('auth:verifyEmail.autoHint')}</p>
 
-      {verifyMutation.isError && (
-        <p className="mt-4 text-center text-sm text-danger" role="alert">
-          {authErrorMessage(t, 'verifyEmail', verifyMutation.error)}
+      {shownError != null && (
+        <p className="mt-4 text-center text-body text-danger" role="alert">
+          {authErrorMessage(t, 'verifyEmail', shownError)}
         </p>
       )}
 
@@ -249,18 +344,19 @@ export function VerifyEmailPage() {
         onClick={() => submit(code)}
         loading={verifyMutation.isPending}
         disabled={code.length !== CODE_LENGTH || verifyMutation.isPending || isLocked}
+        size="lg"
         className="mt-6 w-full"
       >
         {t('auth:verifyEmail.verify')}
       </Button>
 
-      <div className="mt-6 text-center text-sm text-foreground-secondary">
+      <div className="mt-6 text-center text-body text-foreground-secondary">
         {secondsLeft > 0 ? (
           <span>{t('auth:verifyEmail.resendCooldown', { seconds: secondsLeft })}</span>
         ) : (
           <button
             type="button"
-            className="font-medium text-link hover:underline disabled:opacity-60"
+            className="rounded-sm font-semibold text-link underline-offset-4 hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus-ring disabled:opacity-60"
             onClick={handleResend}
             disabled={resendMutation.isPending}
           >
@@ -280,9 +376,9 @@ export function VerifyEmailPage() {
       {/* The route out for someone whose address is in fact already verified. The server cannot
           tell us that (see the comment above the expired/locked branch), so instead of guessing,
           the page simply keeps the door to sign-in visible from here. */}
-      <p className="mt-6 text-center text-sm text-foreground-secondary">
+      <p className="mt-8 border-t border-border pt-6 text-center text-body text-foreground-secondary">
         {t('auth:verifyEmail.alreadyVerifiedPrompt')}{' '}
-        <Link to={role ? `/login?role=${role}` : '/login'} className="font-medium text-link hover:underline">
+        <Link to={role ? `/login?role=${role}` : '/login'} className="rounded-sm font-semibold text-link underline-offset-4 hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus-ring">
           {t('auth:verifyEmail.backToLogin')}
         </Link>
       </p>

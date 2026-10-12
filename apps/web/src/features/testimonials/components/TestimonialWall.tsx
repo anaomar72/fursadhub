@@ -2,12 +2,9 @@ import { useQuery } from '@tanstack/react-query'
 import { useTranslation } from 'react-i18next'
 import { listPublishedTestimonials } from '../api/testimonialApi'
 import { isPlatformRole, testimonialAttribution, testimonialRoleLabel } from '../attribution'
-import { ExplanatoryArtwork } from '../../../components/ui/Presentation'
 import { Reveal, StarRating } from '../../../components/ui'
 import { cn } from '../../../lib/utils/cn'
 import type { PublicTestimonial } from '../types'
-
-const PENDING_KINDS = ['opportunity', 'learning', 'growth'] as const
 
 /**
  * The public testimonial row.
@@ -21,9 +18,11 @@ const PENDING_KINDS = ['opportunity', 'learning', 'growth'] as const
  * Ltd" and never as "Student" — see `attribution.ts`, which is the one place that wording is
  * decided.
  *
- * <p>When no testimonial has been published yet the row keeps its honest pending state rather than
- * filling itself with placeholder people. That state is also what a failed request shows: an
- * unreachable API is not evidence that anyone said anything.
+ * <p><strong>Nothing published, nothing shown.</strong> Until a moderator has published at least one
+ * story the section does not render at all — not even a heading. It used to show three "Awaiting
+ * approved testimonials" placeholders, which told a first-time visitor that nobody had anything to
+ * say yet. A failed or still-loading request renders nothing for the same reason: an unreachable API
+ * is not evidence that anyone said anything.
  *
  * <p><strong>No aggregate is displayed.</strong> A headline average would have to be computed from
  * real published rated testimonials, and with a handful of rows any average says more about the
@@ -38,67 +37,52 @@ export function TestimonialWall() {
   })
   /*
    * `Array.isArray` rather than a bare `?? []`: this row sits on the public home page, so an
-   * unexpected payload shape must degrade to the honest pending state rather than throw and take
+   * unexpected payload shape must degrade to rendering nothing rather than throw and take
    * the whole page down with it.
    */
   const testimonials = Array.isArray(query.data) ? query.data : []
   const visible = testimonials.slice(0, 3)
 
+  if (visible.length === 0) return null
+
   return (
-    <section className="mt-16" aria-labelledby="community-stories">
+    <section className="py-14 lg:py-20" aria-labelledby="community-stories">
       <div className="mx-auto max-w-2xl text-center">
-        <p className="font-display text-xs font-bold uppercase tracking-[0.18em] text-brand-accent-ink">
+        <p className="text-caption font-semibold uppercase tracking-wide text-brand-accent-ink">
           {t('common:remediation.storiesEyebrow')}
         </p>
         <h2
           id="community-stories"
-          className="mt-3 font-display text-3xl font-extrabold tracking-tight text-brand-navy dark:text-foreground sm:text-[2.125rem]"
+          className="mt-3 font-display text-display-lg text-foreground"
         >
           {t('common:remediation.stories')}
         </h2>
-        <p className="mt-3 text-base leading-7 text-foreground-secondary">
+        <p className="mt-3 text-body-lg text-foreground-secondary">
           {t('common:remediation.storiesLead')}
         </p>
       </div>
 
-      {testimonials.length > 0 ? (
-        // The grid adapts to how many quotes actually exist. A single published testimonial dropped
-        // into a fixed three-column grid sits in the left third with two empty columns beside it,
-        // which reads as a broken layout rather than as one story. Centring and capping the width
-        // for one or two makes a short row look deliberate, without ever padding it out with people
-        // who did not write anything.
-        <ul
-          className={cn(
-            'mt-10 grid items-stretch justify-center gap-6',
-            visible.length === 1 && 'mx-auto max-w-xl',
-            visible.length === 2 && 'mx-auto max-w-4xl sm:grid-cols-2',
-            visible.length >= 3 && 'md:grid-cols-2 lg:grid-cols-3',
-          )}
-        >
-          {visible.map((testimonial, index) => (
-            <Reveal as="li" key={testimonial.id} index={index} className="flex">
-              <TestimonialCard testimonial={testimonial} />
-            </Reveal>
-          ))}
-        </ul>
-      ) : (
-        <div className="mt-10 grid gap-5 md:grid-cols-3">
-          {PENDING_KINDS.map((kind) => (
-            <div
-              key={kind}
-              className="flex items-center gap-4 rounded-xl border border-border bg-surface p-5 shadow-xs"
-            >
-              <ExplanatoryArtwork kind={kind} className="w-20 shrink-0" />
-              <div>
-                <p className="text-sm font-bold text-foreground">{t('common:remediation.storiesPending')}</p>
-                <p className="mt-1 text-xs leading-5 text-foreground-secondary">
-                  {t('common:remediation.storiesBody')}
-                </p>
-              </div>
-            </div>
-          ))}
-        </div>
-      )}
+      {/*
+        The grid adapts to how many quotes actually exist. A single published testimonial dropped
+        into a fixed three-column grid sits in the left third with two empty columns beside it,
+        which reads as a broken layout rather than as one story. Centring and capping the width for
+        one or two makes a short row look deliberate, without ever padding it out with people who
+        did not write anything.
+      */}
+      <ul
+        className={cn(
+          'mt-10 grid items-stretch justify-center gap-6',
+          visible.length === 1 && 'mx-auto max-w-xl',
+          visible.length === 2 && 'mx-auto max-w-4xl sm:grid-cols-2',
+          visible.length >= 3 && 'md:grid-cols-2 lg:grid-cols-3',
+        )}
+      >
+        {visible.map((testimonial, index) => (
+          <Reveal as="li" key={testimonial.id} index={index} className="flex">
+            <TestimonialCard testimonial={testimonial} />
+          </Reveal>
+        ))}
+      </ul>
     </section>
   )
 }
@@ -124,7 +108,7 @@ function TestimonialCard({ testimonial }: { testimonial: PublicTestimonial }) {
   const platform = isPlatformRole(testimonial.authorRole)
 
   return (
-    <figure className="group relative flex flex-1 flex-col overflow-hidden rounded-2xl border border-border bg-surface p-5 shadow-xs sm:p-7 transition-[color,background-color,border-color,box-shadow] duration-200 ease-out hover:border-border-strong hover:bg-surface-raised hover:shadow-md motion-reduce:transition-none">
+    <figure className="group relative flex flex-1 flex-col overflow-hidden rounded-xl border border-border bg-surface p-5 shadow-xs sm:p-7 transition-[color,background-color,border-color,box-shadow] duration-200 ease-out hover:border-border-strong hover:bg-surface-raised hover:shadow-md motion-reduce:transition-none">
       {/*
         Decorative quote mark. `aria-hidden` and positioned behind the text — a screen reader gets
         the <blockquote> semantics instead, and it is set low enough in contrast that it reads as
@@ -139,7 +123,7 @@ function TestimonialCard({ testimonial }: { testimonial: PublicTestimonial }) {
 
       <StarRating value={testimonial.rating} size="md" className="relative" />
 
-      <blockquote className="relative mt-5 flex-1 text-[0.9375rem] leading-7 text-foreground">
+      <blockquote className="relative mt-5 flex-1 text-body-lg text-foreground">
         &ldquo;{testimonial.body}&rdquo;
       </blockquote>
 
@@ -162,20 +146,20 @@ function TestimonialCard({ testimonial }: { testimonial: PublicTestimonial }) {
           {testimonial.authorDisplayName.trim().charAt(0).toUpperCase()}
         </span>
         <span className="min-w-0">
-          <span className="block truncate text-sm font-bold text-brand-navy dark:text-foreground">
+          <span className="block truncate text-body font-bold text-foreground">
             {testimonial.authorDisplayName}
           </span>
           {/*
             The full attribution: role first, institution second. `title` carries the untruncated
             string so a long institution name is still readable on a narrow card.
           */}
-          <span className="mt-0.5 block truncate text-xs leading-5 text-foreground-secondary" title={attribution}>
+          <span className="mt-0.5 block truncate text-caption text-foreground-secondary" title={attribution}>
             {attribution}
           </span>
         </span>
         {platform && (
           // Said out loud as well as shown, so a FursadHub voice is never mistaken for a customer's.
-          <span className="ml-auto shrink-0 rounded-full border border-border bg-surface-muted px-2.5 py-1 text-[0.6875rem] font-bold uppercase tracking-wide text-foreground-secondary">
+          <span className="ml-auto shrink-0 rounded-full border border-border bg-surface-muted px-2.5 py-1 text-caption font-bold uppercase tracking-wide text-foreground-secondary">
             {testimonialRoleLabel(t, testimonial)}
           </span>
         )}

@@ -95,7 +95,11 @@ describe('Managed staff identity (Backend Phase B5 / B5.5)', () => {
       stubFetch([member({ displayName: 'Aisha Noor' })])
       renderPage()
 
-      await userEvent.click(await screen.findByRole('button', { name: 'Change name' }))
+      // Wait on the roster itself, then query the control synchronously. This is the file's first
+      // *ByRole query, and the first one in a worker is expensive (accessible-name and computed-style
+      // warm-up); inside findByRole's 1s polling budget it timed out under full-suite CPU load.
+      await screen.findByText('Aisha Noor')
+      await userEvent.click(screen.getByRole('button', { name: 'Change name' }))
       const field = screen.getByLabelText('Full name')
       await userEvent.clear(field)
       await userEvent.click(screen.getByRole('button', { name: 'Save name' }))

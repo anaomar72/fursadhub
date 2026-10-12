@@ -50,7 +50,7 @@ export function ForgotPasswordPage() {
             {...form.register('email')}
           />
         </FormField>
-        <Button type="submit" loading={mutation.isPending} className="w-full">
+        <Button type="submit" size="lg" loading={mutation.isPending} className="w-full">
           {t('auth:forgotPassword.submit')}
         </Button>
       </form>
@@ -62,9 +62,9 @@ export function ForgotPasswordPage() {
 export function BackToLogin() {
   const { t } = useTranslation()
   return (
-    <p className="mt-6 text-center text-sm text-foreground-secondary">
+    <p className="mt-8 border-t border-border pt-6 text-center text-body text-foreground-secondary">
       {t('auth:forgotPassword.backToLoginPrefix')}{' '}
-      <Link to="/login" className="font-medium text-link hover:underline">
+      <Link to="/login" className="rounded-sm font-semibold text-link underline-offset-4 hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus-ring">
         {t('auth:forgotPassword.backToLoginLink')}
       </Link>
     </p>

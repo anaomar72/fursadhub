@@ -1,9 +1,9 @@
 import { useEffect, useRef, useState } from 'react'
 import { useTranslation } from 'react-i18next'
-import { Button } from './Button'
+import { Button, type ButtonProps } from './Button'
 
 /** Fetches through an authorized business endpoint and releases the blob when the viewer closes. */
-export function PrivateDocumentPreview({ load }: { load: () => Promise<Blob> }) {
+export function PrivateDocumentPreview({ load, size }: { load: () => Promise<Blob>; size?: ButtonProps['size'] }) {
   const { t } = useTranslation()
   const dialog = useRef<HTMLDialogElement>(null)
   const urlRef = useRef<string | null>(null)
@@ -37,7 +37,7 @@ export function PrivateDocumentPreview({ load }: { load: () => Promise<Blob> }) 
     finally { if (attempt === generation.current) setBusy(false) }
   }
   return <>
-    <Button type="button" variant="outline" onClick={() => void open()}>{t('common:documentPreview.open')}</Button>
+    <Button type="button" variant="outline" size={size} onClick={() => void open()}>{t('common:documentPreview.open')}</Button>
     <dialog ref={dialog} onCancel={(event) => { event.preventDefault(); close() }} className="m-auto w-[min(95vw,60rem)] rounded-xl border border-border bg-surface p-5 text-foreground backdrop:bg-black/60" aria-label={t('common:documentPreview.open')}>
       <div className="mb-4 flex items-center justify-between gap-4"><h2 className="font-bold">{t('common:documentPreview.open')}</h2><Button type="button" variant="ghost" onClick={close}>{t('common:actions.close')}</Button></div>
       {busy && <p role="status">{t('common:status.loading')}</p>}

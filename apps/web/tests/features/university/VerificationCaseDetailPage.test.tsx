@@ -52,6 +52,8 @@ function stubFetch(record = verificationCase(), onCommand?: (url: string) => Pro
       return Promise.resolve(new Response(new Blob(['pdf']), { status: 200 }))
     }
     if (url.includes('/verification-cases/case-1')) return jsonResponse(record)
+    // The case shows its department by name, from the same department list the queue reads.
+    if (url.endsWith('/departments')) return jsonResponse([{ id: 'dep-1', universityId: 'uni-1', name: 'Information Technology', code: 'IT' }])
     return jsonResponse({})
   })
   vi.stubGlobal('fetch', fetchMock)

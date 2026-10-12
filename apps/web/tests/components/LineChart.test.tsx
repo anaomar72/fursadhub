@@ -23,6 +23,16 @@ function renderChart(points = POINTS) {
 }
 
 describe('LineChart', () => {
+  it('draws axis labels as undistorted 12px text, outside the stretched plot', () => {
+    const { container } = renderChart()
+
+    // SVG text would be stretched along with the plot (preserveAspectRatio="none").
+    expect(screen.getByRole('img', { name: 'Recorded events per month' }).querySelectorAll('text')).toHaveLength(0)
+    const layer = container.querySelector('[aria-hidden="true"]') as HTMLElement
+    expect(layer.style.fontSize).toBe('12px')
+    for (const label of ['Jan', 'Feb', 'Mar', '0']) expect(layer).toHaveTextContent(label)
+  })
+
   it('names the series through its caption rather than a legend', () => {
     renderChart()
 

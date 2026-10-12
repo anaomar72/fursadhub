@@ -5,20 +5,12 @@ import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { useTranslation } from 'react-i18next'
 import { Link } from 'react-router-dom'
 import * as universityApi from '../api/universityApi'
+import { universityQueries } from '../universityQueries'
 import { useUniversityMembership } from '../components/UniversityMembershipContext'
 import { studentsByDepartment } from '../universityMetrics'
 import { createDepartmentSchema, type CreateDepartmentFormValues } from '../schemas/departmentSchema'
 import { apiErrorMessage } from '../../../lib/api/errorMessage'
-import {
-  Button,
-  Card,
-  EmptyState,
-  FormField,
-  Icon,
-  Input,
-  LoadingState,
-  PageHeader,
-} from '../../../components/ui'
+import { Button, EmptyState, ErrorState, FormField, Input, PageHeader, Panel, SkeletonList } from '../../../components/ui'
 import { PageContainer } from '../../../app/layouts/PageContainer'
 import type { DepartmentResponse } from '../types'
 
@@ -37,15 +29,9 @@ export function DepartmentsPage() {
   const isAdmin = role === 'UNIVERSITY_ADMIN'
   const queryClient = useQueryClient()
 
-  const departmentsQuery = useQuery({
-    queryKey: ['departments', universityId],
-    queryFn: () => universityApi.listDepartments(universityId),
-  })
-  const studentsQuery = useQuery({
-    queryKey: ['university', 'students', universityId, ''],
-    queryFn: () => universityApi.listStudents(universityId),
-    retry: false,
-  })
+  const departmentsQuery = useQuery(universityQueries.departments(universityId))
+  // The same unfiltered directory the dashboards read — a cache hit, not a second request.
+  const studentsQuery = useQuery(universityQueries.students(universityId))
 
   const invalidate = () => queryClient.invalidateQueries({ queryKey: ['departments', universityId] })
 
@@ -83,93 +69,84 @@ export function DepartmentsPage() {
     <PageContainer className="flex flex-col gap-6">
       <PageHeader title={t('university:departments.title')} description={t('university:departments.subtitle')} />
 
+      {/*
+        Phase 7: a directory list rather than a grid of large cards — a department is a name, a code,
+        two figures and at most one action. The student figures come from the directory the caller
+        can already read; while it loads they show a dash rather than a zero.
+      */}
       {departmentsQuery.isLoading ? (
-        <LoadingState label={t('common:status.loading')} />
+        <SkeletonList rows={4} />
+      ) : departmentsQuery.isError ? (
+        <ErrorState onRetry={() => void departmentsQuery.refetch()} retryLabel={t('common:actions.retry')} />
       ) : departments.length === 0 ? (
         <EmptyState title={t('university:departments.empty')} description={isAdmin ? t('university:departments.emptyHint') : undefined} />
       ) : (
-        <ul className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
+        <ul className="divide-y divide-border rounded-lg border border-border bg-surface" aria-label={t('university:departments.title')}>
           {departments.map((department) => {
             const row = breakdown.get(department.id)
+            const figure = (value: number | undefined) => (studentsQuery.isSuccess ? value ?? 0 : '—')
             return (
-              <li key={department.id} className="flex">
-                <Card padding="lg" className="flex w-full flex-col">
-                  {editingId === department.id ? (
-                    <div className="flex flex-col gap-3">
-                      <FormField label={t('university:departments.nameLabel')} htmlFor={`rename-${department.id}`}>
-                        <Input
-                          id={`rename-${department.id}`}
-                          value={editName}
-                          onChange={(event) => setEditName(event.target.value)}
-                          autoFocus
-                        />
-                      </FormField>
-                      <div className="flex flex-wrap gap-2">
+              <li key={department.id} className="p-4 sm:px-5">
+                {editingId === department.id ? (
+                  <div className="flex flex-col gap-3 sm:flex-row sm:items-end">
+                    <FormField label={t('university:departments.nameLabel')} htmlFor={`rename-${department.id}`} className="flex-1">
+                      <Input id={`rename-${department.id}`} value={editName} onChange={(event) => setEditName(event.target.value)} autoFocus />
+                    </FormField>
+                    <div className="flex flex-wrap gap-2">
+                      <Button
+                        type="button"
+                        size="sm"
+                        loading={updateMutation.isPending}
+                        onClick={() => updateMutation.mutate({ departmentId: department.id, name: editName })}
+                      >
+                        {t('university:departments.save')}
+                      </Button>
+                      <Button type="button" size="sm" variant="ghost" onClick={() => setEditingId(null)}>
+                        {t('university:departments.cancel')}
+                      </Button>
+                    </div>
+                  </div>
+                ) : (
+                  <div className="flex flex-wrap items-center gap-x-6 gap-y-2">
+                    <div className="min-w-0 flex-1 basis-48">
+                      <h2 className="break-words text-body font-semibold text-foreground">{department.name}</h2>
+                      <p className="mt-0.5 text-caption uppercase tracking-wide text-foreground-secondary">{department.code}</p>
+                    </div>
+                    <dl className="flex gap-6 text-caption">
+                      <div>
+                        <dt className="text-foreground-secondary">{t('university:departments.students')}</dt>
+                        <dd className="mt-0.5 text-body font-semibold text-foreground">{figure(row?.studentCount)}</dd>
+                      </div>
+                      <div>
+                        <dt className="text-foreground-secondary">{t('university:dashboard.verified')}</dt>
+                        <dd className="mt-0.5 text-body font-semibold text-foreground">{figure(row?.verifiedCount)}</dd>
+                      </div>
+                    </dl>
+                    <div className="flex flex-wrap items-center gap-3">
+                      <Link
+                        to={`/university/students?department=${department.id}`}
+                        className="rounded-sm text-body font-semibold text-link underline-offset-4 hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus-ring"
+                      >
+                        {t('university:departments.viewStudents')}
+                        <span className="sr-only"> — {department.name}</span>
+                      </Link>
+                      {canManage(department) && (
                         <Button
                           type="button"
                           size="sm"
-                          loading={updateMutation.isPending}
-                          onClick={() => updateMutation.mutate({ departmentId: department.id, name: editName })}
+                          variant="ghost"
+                          aria-label={t('university:departments.renameNamed', { name: department.name })}
+                          onClick={() => {
+                            setEditingId(department.id)
+                            setEditName(department.name)
+                          }}
                         >
-                          {t('university:departments.save')}
+                          {t('university:departments.rename')}
                         </Button>
-                        <Button type="button" size="sm" variant="ghost" onClick={() => setEditingId(null)}>
-                          {t('university:departments.cancel')}
-                        </Button>
-                      </div>
+                      )}
                     </div>
-                  ) : (
-                    <>
-                      <div className="flex items-start gap-3">
-                        <span className="flex size-10 shrink-0 items-center justify-center rounded-lg bg-brand-blue-soft text-brand-blue dark:bg-info-bg dark:text-info">
-                          <Icon name="layers" className="size-5" />
-                        </span>
-                        <div className="min-w-0 flex-1">
-                          <h2 className="truncate font-semibold text-foreground">{department.name}</h2>
-                          <p className="mt-0.5 text-xs uppercase tracking-wide text-muted">{department.code}</p>
-                        </div>
-                      </div>
-
-                      <dl className="mt-4 grid grid-cols-2 gap-3 border-t border-border pt-4 text-sm">
-                        <div>
-                          <dt className="text-xs text-foreground-secondary">{t('university:departments.students')}</dt>
-                          <dd className="mt-0.5 text-lg font-bold text-brand-navy dark:text-foreground">
-                            {row?.studentCount ?? 0}
-                          </dd>
-                        </div>
-                        <div>
-                          <dt className="text-xs text-foreground-secondary">{t('university:dashboard.verified')}</dt>
-                          <dd className="mt-0.5 text-lg font-bold text-brand-navy dark:text-foreground">
-                            {row?.verifiedCount ?? 0}
-                          </dd>
-                        </div>
-                      </dl>
-
-                      <div className="mt-4 flex flex-wrap items-center gap-3">
-                        <Link
-                          to={`/university/students?department=${department.id}`}
-                          className="text-sm font-semibold text-link hover:underline"
-                        >
-                          {t('university:departments.viewStudents')}
-                        </Link>
-                        {canManage(department) && (
-                          <Button
-                            type="button"
-                            size="sm"
-                            variant="ghost"
-                            className="ml-auto"
-                            onClick={() => {
-                              setEditingId(department.id)
-                              setEditName(department.name)
-                            }}
-                          >
-                            {t('university:departments.rename')}
-                          </Button>
-                        )}
-                      </div>
-                    </>
-                  )}
-                </Card>
+                  </div>
+                )}
               </li>
             )
           })}
@@ -183,12 +160,9 @@ export function DepartmentsPage() {
       )}
 
       {isAdmin && (
-        <Card padding="lg">
-          <h2 className="font-display text-base font-bold text-brand-navy dark:text-foreground">
-            {t('university:departments.addTitle')}
-          </h2>
+        <Panel title={t('university:departments.addTitle')}>
           <form
-            className="mt-4 flex flex-col gap-3 sm:flex-row sm:items-end"
+            className="flex flex-col gap-3 sm:flex-row sm:items-end"
             noValidate
             onSubmit={form.handleSubmit((values) => createMutation.mutate(values))}
           >
@@ -217,7 +191,7 @@ export function DepartmentsPage() {
               {apiErrorMessage(t, 'university', 'departments', createMutation.error)}
             </p>
           )}
-        </Card>
+        </Panel>
       )}
     </PageContainer>
   )

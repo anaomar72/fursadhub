@@ -134,7 +134,8 @@ describe('AdminOrganizationDetailPage', () => {
     renderDetail()
 
     await userEvent.click(await screen.findByRole('button', { name: 'Verify' }))
-    await userEvent.click(within(screen.getByRole('dialog')).getByRole('button', { name: 'Confirm' }))
+    // Phase 8: the dialog's confirm button is named after the action, never a bare "Confirm".
+    await userEvent.click(within(screen.getByRole('dialog')).getByRole('button', { name: 'Verify' }))
 
     await waitFor(() => {
       const call = fetchMock.mock.calls.find(([url]) =>
@@ -150,8 +151,11 @@ describe('AdminOrganizationDetailPage', () => {
     renderDetail()
 
     await userEvent.click(await screen.findByRole('button', { name: 'Reject' }))
-    await userEvent.type(screen.getByLabelText('Note to the organization'), 'License expired')
-    await userEvent.click(within(screen.getByRole('dialog')).getByRole('button', { name: 'Confirm' }))
+    const dialog = screen.getByRole('dialog')
+    // A refusal cannot be sent without the reason the institution is given to act on.
+    expect(within(dialog).getByRole('button', { name: 'Reject' })).toBeDisabled()
+    await userEvent.type(within(dialog).getByLabelText(/Note to the organization/), 'License expired')
+    await userEvent.click(within(dialog).getByRole('button', { name: 'Reject' }))
 
     await waitFor(() => {
       const call = fetchMock.mock.calls.find(([url]) =>
@@ -179,7 +183,8 @@ describe('AdminOrganizationDetailPage', () => {
     renderDetail()
 
     await userEvent.click(await screen.findByRole('button', { name: 'Verify' }))
-    await userEvent.click(within(screen.getByRole('dialog')).getByRole('button', { name: 'Confirm' }))
+    // Phase 8: the dialog's confirm button is named after the action, never a bare "Confirm".
+    await userEvent.click(within(screen.getByRole('dialog')).getByRole('button', { name: 'Verify' }))
 
     // The badge must never show a state the backend did not grant.
     expect(await screen.findByRole('alert')).toBeInTheDocument()
@@ -217,7 +222,8 @@ describe('AdminOrganizationDetailPage', () => {
     stubFetch(organization({ hasEvidence: false, evidenceUploadedAt: null }))
     renderDetail()
 
-    expect(await screen.findByText('No license has been uploaded for this organization.')).toBeInTheDocument()
+    // Awaiting review with nothing on file: the reviewer is told there is nothing to verify against.
+    expect(await screen.findByText(/No document is on file/)).toBeInTheDocument()
     expect(screen.queryByRole('button', { name: 'View license' })).not.toBeInTheDocument()
   })
 
@@ -241,7 +247,8 @@ describe('AdminUniversityDetailPage', () => {
     renderDetail('universities')
 
     await userEvent.click(await screen.findByRole('button', { name: 'Verify' }))
-    await userEvent.click(within(screen.getByRole('dialog')).getByRole('button', { name: 'Confirm' }))
+    // Phase 8: the dialog's confirm button is named after the action, never a bare "Confirm".
+    await userEvent.click(within(screen.getByRole('dialog')).getByRole('button', { name: 'Verify' }))
 
     await waitFor(() => {
       expect(

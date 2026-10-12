@@ -4,6 +4,7 @@ import { useTranslation } from 'react-i18next'
 import { Link } from 'react-router-dom'
 import * as notificationsApi from '../api/notificationsApi'
 import { NotificationList } from './NotificationList'
+import { Icon } from '../../../components/ui'
 
 /** How often the unread badge refreshes. Long enough to be cheap, short enough to feel live. */
 const UNREAD_POLL_MS = 60_000
@@ -88,19 +89,11 @@ export function NotificationBell() {
             ? t('notifications:bell.labelWithCount', { count: unreadCount })
             : t('notifications:bell.label')
         }
-        className="relative rounded-md p-2 text-foreground-secondary transition-colors hover:bg-surface-muted hover:text-foreground"
+        className="relative flex size-10 items-center justify-center rounded-md text-foreground-secondary transition-colors hover:bg-surface-muted hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus-ring motion-reduce:transition-none"
       >
-        <svg width="20" height="20" viewBox="0 0 20 20" fill="none" aria-hidden="true">
-          <path
-            d="M10 2.5a5 5 0 0 0-5 5v3l-1.5 2.5h13L15 10.5v-3a5 5 0 0 0-5-5Z"
-            stroke="currentColor"
-            strokeWidth="1.5"
-            strokeLinejoin="round"
-          />
-          <path d="M8 15.5a2 2 0 0 0 4 0" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
-        </svg>
+        <Icon name="bell" className="size-5" />
         {unreadCount > 0 && (
-          <span className="absolute -right-0.5 -top-0.5 min-w-4 rounded-full bg-brand-primary px-1 text-[10px] font-semibold leading-4 text-on-brand">
+          <span className="absolute -right-0.5 -top-0.5 min-w-4 rounded-full bg-action-primary px-1 text-caption font-semibold leading-4 text-on-action">
             {unreadCount > 99 ? '99+' : unreadCount}
           </span>
         )}

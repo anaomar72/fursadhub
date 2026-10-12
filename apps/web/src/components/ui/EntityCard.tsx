@@ -44,16 +44,16 @@ export function EntityCard({
           <Avatar name={name} src={imageUrl} size="lg" shape="square" />
           <div className="min-w-0 flex-1">
             <div className="flex min-w-0 items-center gap-1.5">
-              <h3 className={`font-display font-extrabold tracking-tight text-brand-navy dark:text-foreground ${density === 'compact' ? 'text-sm leading-5 break-words' : 'text-base'}`}>
+              <h3 className={`break-words font-display text-foreground ${density === 'compact' ? 'text-body font-bold' : 'text-title-panel'}`}>
                 {name}
               </h3>
               {verified && <VerifiedBadge size="sm" />}
             </div>
-            {subtitle && <p className="mt-0.5 truncate text-xs text-foreground-secondary">{subtitle}</p>}
+            {subtitle && <p className="mt-0.5 truncate text-label font-normal text-foreground-secondary">{subtitle}</p>}
           </div>
         </div>
 
-        {description && <div className={`mt-4 text-foreground-secondary ${density === 'compact' ? 'line-clamp-4 text-xs leading-5' : 'line-clamp-3 text-sm leading-6'}`}>{description}</div>}
+        {description && <div className={`mt-4 text-foreground-secondary ${density === 'compact' ? 'line-clamp-4 text-caption' : 'line-clamp-3 text-body'}`}>{description}</div>}
         {children && <div className="mt-4">{children}</div>}
       </div>
 

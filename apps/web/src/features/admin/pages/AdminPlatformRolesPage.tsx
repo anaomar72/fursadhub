@@ -6,6 +6,7 @@ import {
   Button,
   Card,
   ConfirmationDialog,
+  useToast,
   DataTable,
   EmptyState,
   ErrorState,
@@ -22,6 +23,7 @@ import { AdminTableSkeleton } from '../components/AdminSkeletons'
 import * as adminApi from '../api/adminApi'
 import { formatDateTime } from '../../../lib/utils/formatDate'
 import type { PlatformAdminGrant, PlatformRole } from '../types'
+import { adminQueries } from '../adminQueries'
 
 /** The only two platform roles that exist (CLAUDE.md section 23). Not an editable list. */
 const ROLES: PlatformRole[] = ['SUPER_ADMIN', 'VERIFICATION_OFFICER']
@@ -51,11 +53,12 @@ export function AdminPlatformRolesPage() {
   const [role, setRole] = useState<PlatformRole>('VERIFICATION_OFFICER')
   const [error, setError] = useState<string | null>(null)
   const [revoking, setRevoking] = useState<PlatformAdminGrant | null>(null)
+  // Phase 8: granting platform authority is confirmed first, naming the account, the role and what
+  // that role can do. It is the most consequential command in the console.
+  const [confirmingGrant, setConfirmingGrant] = useState(false)
+  const toast = useToast()
 
-  const grantsQuery = useQuery({
-    queryKey: ['admin', 'platform-roles'],
-    queryFn: adminApi.listPlatformRoles,
-  })
+  const grantsQuery = useQuery(adminQueries.platformRoles())
 
   function invalidate() {
     void queryClient.invalidateQueries({ queryKey: ['admin', 'platform-roles'] })
@@ -71,9 +74,11 @@ export function AdminPlatformRolesPage() {
       })
     },
     onSuccess: () => {
+      toast.success(t('admin:platformRoles.done.grant', { role: t(`admin:platformRoles.roles.${role}`) }))
       setUserId('')
       invalidate()
     },
+    onSettled: () => setConfirmingGrant(false),
   })
 
   const revokeMutation = useMutation({
@@ -87,6 +92,7 @@ export function AdminPlatformRolesPage() {
     onSuccess: () => {
       setRevoking(null)
       invalidate()
+      toast.success(t('admin:platformRoles.done.revoke'))
     },
   })
 
@@ -181,7 +187,7 @@ export function AdminPlatformRolesPage() {
           onSubmit={(event) => {
             event.preventDefault()
             if (!userId.trim()) return
-            grantMutation.mutate()
+            setConfirmingGrant(true)
           }}
         >
           <FormField
@@ -233,6 +239,19 @@ export function AdminPlatformRolesPage() {
           empty={<EmptyState title={t('admin:platformRoles.empty')} />}
         />
       )}
+
+      <ConfirmationDialog
+        open={confirmingGrant}
+        onClose={() => setConfirmingGrant(false)}
+        onConfirm={() => grantMutation.mutate()}
+        closeLabel={t('common:actions.close')}
+        title={t('admin:platformRoles.grantConfirm.title', { role: t(`admin:platformRoles.roles.${role}`) })}
+        description={t(`admin:platformRoles.grantConfirm.${role}`, { userId: userId.trim() })}
+        confirmLabel={t('admin:platformRoles.grant')}
+        cancelLabel={t('common:actions.cancel')}
+        destructive={role === 'SUPER_ADMIN'}
+        loading={grantMutation.isPending}
+      />
 
       <ConfirmationDialog
         open={revoking !== null}

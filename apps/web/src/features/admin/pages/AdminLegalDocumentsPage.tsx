@@ -15,6 +15,8 @@ import {
   StatusBadge,
   Textarea,
   type DataTableColumn,
+  ConfirmationDialog,
+  useToast,
 } from '../../../components/ui'
 import { apiErrorMessage } from '../../../lib/api/errorMessage'
 import type { LegalDocument, LegalDocumentType } from '../../legal/types'
@@ -46,6 +48,10 @@ export function AdminLegalDocumentsPage() {
   const [title, setTitle] = useState('')
   const [body, setBody] = useState('')
   const [effectiveFrom, setEffectiveFrom] = useState(() => new Date().toISOString().slice(0, 10))
+  // A published version can never be edited or deleted, so publishing is confirmed with what will be
+  // published (Phase 8).
+  const [confirming, setConfirming] = useState(false)
+  const toast = useToast()
 
   const documentsQuery = useQuery({
     queryKey: ['admin', 'legal-documents'],
@@ -62,7 +68,9 @@ export function AdminLegalDocumentsPage() {
           throw cause
         })
     },
+    onSettled: () => setConfirming(false),
     onSuccess: () => {
+      toast.success(t('admin:legalDocuments.done'))
       setVersion('')
       setTitle('')
       setBody('')
@@ -134,7 +142,7 @@ export function AdminLegalDocumentsPage() {
           className="flex flex-col gap-4"
           onSubmit={(event) => {
             event.preventDefault()
-            publishMutation.mutate()
+            setConfirming(true)
           }}
         >
           <div>
@@ -238,6 +246,22 @@ export function AdminLegalDocumentsPage() {
           />
         )}
       </section>
+      <ConfirmationDialog
+        open={confirming}
+        onClose={() => setConfirming(false)}
+        onConfirm={() => publishMutation.mutate()}
+        closeLabel={t('common:actions.close')}
+        title={t('admin:legalDocuments.confirmTitle')}
+        description={t('admin:legalDocuments.confirmBody', {
+          type: t(`legal:documentTypes.${documentType}`),
+          version,
+          locale: locale.toUpperCase(),
+          date: effectiveFrom,
+        })}
+        confirmLabel={t('admin:legalDocuments.publish')}
+        cancelLabel={t('common:actions.cancel')}
+        loading={publishMutation.isPending}
+      />
     </div>
   )
 }

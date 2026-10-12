@@ -71,10 +71,10 @@ describe('FinalReportPage', () => {
     stubFetch(null)
     renderPage('student')
 
-    expect(await screen.findByLabelText('Report document')).toBeInTheDocument()
+    expect(await screen.findByLabelText(/^Report document/)).toBeInTheDocument()
     expect(screen.getByText('PDF only, up to 15 MB.')).toBeInTheDocument()
     // The picker itself is restricted, so the obvious wrong file is caught before any request.
-    expect(screen.getByLabelText('Report document')).toHaveAttribute('accept', 'application/pdf')
+    expect(screen.getByLabelText(/^Report document/)).toHaveAttribute('accept', 'application/pdf')
   })
 
   it('never renders a link to the document', async () => {
@@ -105,7 +105,7 @@ describe('FinalReportPage', () => {
 
     expect(await screen.findByText('Reviewer feedback: Expand the reflection.')).toBeInTheDocument()
     expect(screen.getByText('Revision requested')).toBeInTheDocument()
-    expect(screen.getByLabelText('Report document')).toBeInTheDocument()
+    expect(screen.getByLabelText(/^Report document/)).toBeInTheDocument()
   })
 
   it('offers a student no review controls', async () => {

@@ -1,5 +1,6 @@
 import type { StatusTone } from '../../components/ui'
 import type { CandidacyStatus, CandidateRowResponse } from '../recruitment/types'
+import { CANDIDACY_STATUS_TONE } from '../../lib/status/statusTones'
 
 /**
  * The approved dashboard's "Candidate Pipeline" board, mapped onto the REAL candidacy state
@@ -49,20 +50,14 @@ export function isClosed(status: CandidacyStatus): boolean {
 /**
  * Column accents. These reuse the product's reserved STATUS palette rather than a categorical one,
  * and every column also carries its translated name and count as text — the reading never depends
- * on telling two hues apart (BRAND_AND_UI_GUIDELINES.md section 17).
+ * on telling two hues apart (WCAG 1.4.1).
  */
-export const PIPELINE_STAGE_TONE: Record<CandidacyStatus, StatusTone> = {
-  SUBMITTED: 'neutral',
-  UNDER_REVIEW: 'info',
-  SHORTLISTED: 'info',
-  INTERVIEW: 'info',
-  OFFERED: 'warning',
-  ACCEPTED: 'success',
-  REJECTED: 'danger',
-  WITHDRAWN: 'neutral',
-  OFFER_DECLINED: 'neutral',
-  OFFER_EXPIRED: 'neutral',
-}
+/**
+ * The candidacy tones are the registry's (Phase 6). This used to be a second map that coloured
+ * SUBMITTED neutral while the student saw it as info — the same state reading differently to the
+ * two people looking at it.
+ */
+export const PIPELINE_STAGE_TONE: Record<CandidacyStatus, StatusTone> = CANDIDACY_STATUS_TONE
 
 export interface PipelineColumn {
   status: CandidacyStatus

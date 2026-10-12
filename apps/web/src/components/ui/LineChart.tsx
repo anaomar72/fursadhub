@@ -23,6 +23,8 @@ export interface LineChartProps {
   className?: string
 }
 
+/** The type-scale floor (12px): chart axis text is still text people read. */
+const CHART_LABEL_PX = 12
 const VIEW_W = 640
 const VIEW_H = 240
 const PAD_L = 44
@@ -109,15 +111,6 @@ export function LineChart({
                   strokeWidth={1}
                   strokeDasharray="3 3"
                 />
-                <text
-                  x={PAD_L - 8}
-                  y={y(value) + 4}
-                  textAnchor="end"
-                  className="fill-muted text-[11px]"
-                  style={{ fontSize: 11 }}
-                >
-                  {Math.round(value)}
-                </text>
               </g>
             ))}
 
@@ -164,20 +157,39 @@ export function LineChart({
                   fill="transparent"
                   onMouseEnter={() => setActive(index)}
                 />
-                {index % labelEvery === 0 && (
-                  <text
-                    x={x(index)}
-                    y={VIEW_H - 10}
-                    textAnchor="middle"
-                    className="fill-muted"
-                    style={{ fontSize: 11 }}
-                  >
-                    {point.label}
-                  </text>
-                )}
               </g>
             ))}
           </svg>
+
+          {/*
+            Axis text is HTML laid over the plot, not SVG text. The plot stretches to its box
+            (preserveAspectRatio="none"), which also stretched any glyph drawn inside it: squeezed
+            on a phone, smeared on a wide screen. Positioned by the same scale, in percent of the
+            viewBox, the labels follow the plot while keeping their true 12px shape. The figure is
+            already named and the numbers are in the table, so this layer is decorative to AT.
+          */}
+          <div aria-hidden="true" className="pointer-events-none absolute inset-0 text-muted" style={{ fontSize: CHART_LABEL_PX, lineHeight: 1 }}>
+            {gridValues.map((value) => (
+              <span
+                key={value}
+                className="absolute -translate-y-1/2 whitespace-nowrap"
+                style={{ right: `${100 - ((PAD_L - 8) / VIEW_W) * 100}%`, top: `${(y(value) / VIEW_H) * 100}%` }}
+              >
+                {Math.round(value)}
+              </span>
+            ))}
+            {points.map((point, index) =>
+              index % labelEvery === 0 ? (
+                <span
+                  key={point.label}
+                  className="absolute -translate-x-1/2 whitespace-nowrap"
+                  style={{ left: `${(x(index) / VIEW_W) * 100}%`, top: `${((VIEW_H - PAD_B + 10) / VIEW_H) * 100}%` }}
+                >
+                  {point.label}
+                </span>
+              ) : null,
+            )}
+          </div>
 
           {activePoint && (
             <div

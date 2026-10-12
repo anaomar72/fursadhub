@@ -58,7 +58,8 @@ export function Avatar({ src, name, size = 'md', shape = 'circle', className }: 
       className={cn(
         'flex items-center justify-center font-semibold',
         shape === 'square'
-          ? 'rounded-lg bg-brand-navy-soft text-brand-navy'
+          ? // Brand navy is a fixed colour, so on the dark-mode navy tint it needs the theme's foreground.
+            'rounded-lg bg-brand-navy-soft text-brand-navy dark:text-foreground'
           : 'rounded-full bg-brand-secondary text-on-brand',
         SIZE_CLASSES[size],
         className,

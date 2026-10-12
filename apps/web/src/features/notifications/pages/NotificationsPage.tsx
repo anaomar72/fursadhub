@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { useTranslation } from 'react-i18next'
-import { Button, ErrorState, LoadingState, PageHeader, Pagination } from '../../../components/ui'
+import { Button, ErrorState, PageHeader, Pagination, SkeletonList } from '../../../components/ui'
 import * as notificationsApi from '../api/notificationsApi'
 import { NotificationList } from '../components/NotificationList'
 
@@ -58,7 +58,7 @@ export function NotificationsPage() {
       </div>
 
       {listQuery.isLoading ? (
-        <LoadingState label={t('common:status.loading')} />
+        <SkeletonList rows={5} />
       ) : listQuery.isError ? (
         <ErrorState
           title={t('common:status.error')}

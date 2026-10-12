@@ -1,4 +1,4 @@
-import { useForm } from 'react-hook-form'
+import { useForm, useWatch } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useMutation } from '@tanstack/react-query'
 import { useTranslation } from 'react-i18next'
@@ -8,7 +8,8 @@ import * as authApi from '../api/authApi'
 import { authErrorMessage } from '../api/errorMessage'
 import { AuthCard } from '../components/AuthCard'
 import { AuthStatus } from '../components/AuthStatus'
-import { Button, ButtonLink, FormField, PasswordInput } from '../../../components/ui'
+import { Alert, Button, ButtonLink, FormField, PasswordInput } from '../../../components/ui'
+import { PasswordRequirements } from '../components/PasswordRequirements'
 import { ApiError } from '../../../lib/api/client'
 import { BackToLogin } from './ForgotPasswordPage'
 
@@ -21,6 +22,7 @@ export function ResetPasswordPage() {
     resolver: zodResolver(resetPasswordSchema),
     defaultValues: { newPassword: '', confirmPassword: '' },
   })
+  const newPassword = useWatch({ control: form.control, name: 'newPassword' })
 
   const mutation = useMutation({
     mutationFn: (values: ResetPasswordFormValues) => authApi.resetPassword({ token: token ?? '', newPassword: values.newPassword }),
@@ -85,22 +87,28 @@ export function ResetPasswordPage() {
 
   return (
     <AuthCard title={t('auth:resetPassword.title')} subtitle={t('auth:resetPassword.subtitle')}>
-      <form className="flex flex-col gap-4" noValidate onSubmit={form.handleSubmit((values) => mutation.mutate(values))}>
-        <FormField
-          label={t('auth:resetPassword.newPasswordLabel')}
-          htmlFor="newPassword"
-          error={form.formState.errors.newPassword && t(form.formState.errors.newPassword.message ?? '')}
-        >
-          <PasswordInput
-            id="newPassword"
-            autoComplete="new-password"
-            placeholder={t('auth:resetPassword.newPasswordPlaceholder')}
-            invalid={!!form.formState.errors.newPassword}
-            showLabel={t('common:password.show')}
-            hideLabel={t('common:password.hide')}
-            {...form.register('newPassword')}
-          />
-        </FormField>
+      <form className="flex flex-col gap-5" noValidate onSubmit={form.handleSubmit((values) => mutation.mutate(values))}>
+        <div className="flex flex-col gap-2">
+          <FormField
+            label={t('auth:resetPassword.newPasswordLabel')}
+            htmlFor="newPassword"
+            // The same policy as registration, stated before the first attempt (it used to appear
+            // only as an error after a rejected submit).
+            hint={t('auth:register.passwordHint')}
+            error={form.formState.errors.newPassword && t(form.formState.errors.newPassword.message ?? '')}
+          >
+            <PasswordInput
+              id="newPassword"
+              autoComplete="new-password"
+              placeholder={t('auth:resetPassword.newPasswordPlaceholder')}
+              invalid={!!form.formState.errors.newPassword}
+              showLabel={t('common:password.show')}
+              hideLabel={t('common:password.hide')}
+              {...form.register('newPassword')}
+            />
+          </FormField>
+          <PasswordRequirements id="new-password-requirements" value={newPassword ?? ''} />
+        </div>
 
         <FormField
           label={t('auth:resetPassword.confirmPasswordLabel')}
@@ -118,13 +126,9 @@ export function ResetPasswordPage() {
           />
         </FormField>
 
-        {mutation.isError && (
-          <p className="text-sm text-danger" role="alert">
-            {authErrorMessage(t, 'resetPassword', mutation.error)}
-          </p>
-        )}
+        {mutation.isError && <Alert tone="danger">{authErrorMessage(t, 'resetPassword', mutation.error)}</Alert>}
 
-        <Button type="submit" loading={mutation.isPending} className="w-full">
+        <Button type="submit" size="lg" loading={mutation.isPending} className="w-full">
           {t('auth:resetPassword.submit')}
         </Button>
       </form>

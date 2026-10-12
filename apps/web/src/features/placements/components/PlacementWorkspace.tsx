@@ -1,12 +1,22 @@
 import { RouteSuspense } from '../../../app/router/RouteFallback'
+import { useContext } from 'react'
 import { useQuery } from '@tanstack/react-query'
 import { useTranslation } from 'react-i18next'
 import { Outlet, useParams } from 'react-router-dom'
-import { EmptyState, LoadingState } from '../../../components/ui'
+import { Breadcrumbs, EmptyState, Skeleton, SkeletonList, SkeletonRegion } from '../../../components/ui'
 import { PageContainer } from '../../../app/layouts/PageContainer'
 import * as placementsApi from '../api/placementsApi'
 import { InternshipNav, type InternshipArea } from './InternshipNav'
 import { PlacementSummary } from './PlacementSummary'
+import { OrganizationMembershipContext } from '../../organization/components/OrganizationMembershipContext'
+import { organizationCapabilities } from '../../organization/organizationCapabilities'
+
+/** What each area calls its placement list — the same label as its sidebar entry. */
+const LIST_LABEL: Record<InternshipArea, string> = {
+  student: 'placements:nav.myPlacements',
+  university: 'placements:nav.placements',
+  organization: 'organization:nav.interns',
+}
 
 interface PlacementWorkspaceProps {
   area: InternshipArea
@@ -26,6 +36,12 @@ interface PlacementWorkspaceProps {
 export function PlacementWorkspace({ area }: PlacementWorkspaceProps) {
   const { t } = useTranslation()
   const { placementId } = useParams<{ placementId: string }>()
+  // A supervisor's sidebar entry reads "My interns"; the way back uses the same words.
+  const organizationMembership = useContext(OrganizationMembershipContext)
+  const listLabel =
+    area === 'organization' && organizationMembership && organizationCapabilities(organizationMembership).scopedToAssignedPlacements
+      ? 'organization:nav.myInterns'
+      : LIST_LABEL[area]
 
   const placementQuery = useQuery({
     queryKey: area === 'student' ? ['placements', 'mine', placementId] : ['placements', placementId],
@@ -41,7 +57,12 @@ export function PlacementWorkspace({ area }: PlacementWorkspaceProps) {
   if (placementQuery.isLoading) {
     return (
       <PageContainer>
-        <LoadingState label={t('common:status.loading')} />
+        <SkeletonRegion className="flex flex-col gap-6">
+          <Skeleton className="h-8 w-72 max-w-full" />
+          <Skeleton className="h-4 w-56 max-w-full" />
+          <Skeleton className="h-10 w-full" />
+          <SkeletonList rows={3} />
+        </SkeletonRegion>
       </PageContainer>
     )
   }
@@ -67,6 +88,18 @@ export function PlacementWorkspace({ area }: PlacementWorkspaceProps) {
       columns, so `wide` is the right width for it as well as the consistent one.
     */
     <PageContainer className="flex flex-col gap-6">
+      {/* Phase 9: placement → module is a nested hierarchy, so every placement page carries the way back. */}
+      <Breadcrumbs
+        items={[
+          { label: t(listLabel), to: `/${area}/placements` },
+          {
+            label:
+              area === 'student'
+                ? (placement.opportunityTitle ?? t('placements:detail.untitledOpportunity'))
+                : (placement.studentFullName ?? placement.studentEmail ?? t('placements:detail.unknownStudent')),
+          },
+        ]}
+      />
       <PlacementSummary placement={placement} audience={area === 'student' ? 'student' : 'staff'} />
       <InternshipNav area={area} basePath={basePath} />
       <RouteSuspense><Outlet context={placement} /></RouteSuspense>

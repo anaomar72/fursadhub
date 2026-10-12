@@ -219,6 +219,19 @@ export function AdminAuditPage() {
             columns={columns}
             rows={data?.content ?? []}
             rowKey={(event) => event.id}
+            density="dense"
+            // Phones: one stacked entry per event — when, the exact code, who — instead of a wide table.
+            renderMobileRow={(event) => (
+              <div className="flex flex-col gap-1">
+                <span className="break-all font-mono text-caption font-semibold text-foreground">{event.eventType}</span>
+                <span className="text-caption text-foreground-secondary">{formatDateTime(event.occurredAt)}</span>
+                <span className="break-all font-mono text-caption text-foreground-secondary">
+                  {event.userId ?? t('admin:audit.system')}
+                  {event.ipAddress ? ` · ${event.ipAddress}` : ''}
+                </span>
+                {event.metadata && <span className="break-all text-caption text-foreground-secondary">{event.metadata}</span>}
+              </div>
+            )}
             empty={
               <EmptyState title={t('admin:audit.empty')} description={t('admin:audit.emptyHint')} />
             }

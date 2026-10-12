@@ -4,6 +4,7 @@ import * as organizationApi from '../api/organizationApi'
 import { OrganizationMembershipContext } from './OrganizationMembershipContext'
 import { OrganizationSetupPage } from '../pages/OrganizationSetupPage'
 import { buildOrganizationNav } from './organizationNavigation'
+import { organizationWorkspaceLabelKey } from '../organizationCapabilities'
 import { LoadingSpinner } from '../../../components/ui'
 import { AppShell } from '../../../app/layouts/AppShell'
 import { accountSettingsNavItem } from '../../../app/layouts/navigation'
@@ -74,7 +75,7 @@ export function OrganizationAreaLayout() {
           // Only when the backend says a logo exists — an unconditional URL would render a broken
           // image for every organization that has not uploaded one.
           logoUrl: organization?.hasLogo ? organizationApi.organizationLogoUrl(organization.id) : undefined,
-          portalLabel: t('common:shell.portals.organization'),
+          portalLabel: t(organizationWorkspaceLabelKey(membership)),
         }}
       />
     </OrganizationMembershipContext.Provider>

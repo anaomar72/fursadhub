@@ -1,4 +1,4 @@
-import { render, screen, waitFor } from '@testing-library/react'
+import { render, screen, waitFor, within } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 import { MemoryRouter, Route, Routes } from 'react-router-dom'
@@ -81,6 +81,36 @@ describe('CandidateDetailPage', () => {
     expect(await screen.findByRole('heading', { name: 'Amina Yusuf' })).toBeInTheDocument()
     expect(screen.getByText('Applied and nominated')).toBeInTheDocument()
     expect(screen.getByText(/i want to learn backend engineering/i)).toBeInTheDocument()
+  })
+
+  it('names an event that kept the status by what happened, and keeps real transitions as they were', async () => {
+    stubFetch({
+      ...candidate,
+      status: 'ACCEPTED',
+      history: [
+        { eventType: 'OFFER_ACCEPTED', fromStatus: 'OFFERED', toStatus: 'ACCEPTED', occurredAt: '2026-08-02T10:00:00Z' },
+        { eventType: 'PLACEMENT_CREATED', fromStatus: 'ACCEPTED', toStatus: 'ACCEPTED', occurredAt: '2026-08-02T10:00:01Z' },
+      ],
+    })
+    renderPage()
+
+    const history = await screen.findByRole('list', { name: 'History' })
+    expect(within(history).getByText('Added to your interns')).toBeInTheDocument()
+    expect(within(history).getByText('Status: Accepted')).toBeInTheDocument()
+    // The genuine change still says where it came from.
+    expect(within(history).getByText('from Offer sent')).toBeInTheDocument()
+    expect(within(history).queryByText('from Accepted')).not.toBeInTheDocument()
+  })
+
+  it('leads back through the opportunity and its candidates, each crumb naming its destination', async () => {
+    stubFetch(candidate)
+    renderPage()
+
+    const trail = await screen.findByRole('navigation', { name: 'Breadcrumb' })
+    expect(await within(trail).findByRole('link', { name: 'Backend Intern' })).toHaveAttribute('href', '/organization/opportunities/opp-1')
+    expect(within(trail).getByRole('link', { name: 'Internships' })).toHaveAttribute('href', '/organization/opportunities')
+    expect(within(trail).getByRole('link', { name: 'Candidates' })).toHaveAttribute('href', '/organization/opportunities/opp-1/candidates')
+    expect(within(trail).getByText('Amina Yusuf')).toHaveAttribute('aria-current', 'page')
   })
 
   /** Commands are explicit business actions — there is deliberately no status dropdown. */

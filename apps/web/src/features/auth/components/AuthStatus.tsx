@@ -63,7 +63,7 @@ export function AuthStatus({ tone, title, description, actions, children }: Auth
     <AuthCard title={title}>
       <div className="flex flex-col items-center text-center">
         {tone === 'success' ? (
-          // The approved VERIFIED sequence (BRAND_AND_UI_GUIDELINES.md section 14). Its own label
+          // The approved VERIFIED sequence (CLAUDE.md section 58). Its own label
           // is already announced, so the title above is not repeated into it.
           <AnimatedCheck label={title} />
         ) : (
@@ -80,7 +80,7 @@ export function AuthStatus({ tone, title, description, actions, children }: Auth
 
         {description && (
           <p
-            className="mt-5 max-w-sm text-sm leading-6 text-foreground-secondary"
+            className="mt-5 max-w-sm text-body text-foreground-secondary"
             // A pending request and a failure are both things the user is waiting on an answer
             // about, so they are announced; a success already speaks through AnimatedCheck's own
             // live label, and announcing it twice is the duplicate-noise problem, not politeness.

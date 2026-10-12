@@ -78,6 +78,9 @@ export function VerificationOfficersPanel() {
   function invalidate() {
     void queryClient.invalidateQueries({ queryKey: ['admin', 'verification-officers'] })
     void queryClient.invalidateQueries({ queryKey: ['admin', 'platform-roles'] })
+    // A new officer is also a new account: the accounts list and the platform counts change too.
+    void queryClient.invalidateQueries({ queryKey: ['admin', 'users'] })
+    void queryClient.invalidateQueries({ queryKey: ['admin', 'statistics'] })
   }
 
   const createMutation = useMutation({

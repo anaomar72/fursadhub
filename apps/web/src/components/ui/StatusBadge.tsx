@@ -34,7 +34,7 @@ export interface StatusBadgeProps {
 }
 
 /**
- * Status must never be conveyed by color alone (BRAND_AND_UI_GUIDELINES.md
+ * Status must never be conveyed by color alone (CLAUDE.md section 57
  * section 9/17) — always pair the tone with an icon and explicit text.
  */
 export function StatusBadge({ tone, icon, children, className }: StatusBadgeProps) {

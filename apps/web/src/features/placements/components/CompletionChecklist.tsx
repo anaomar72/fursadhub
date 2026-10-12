@@ -1,5 +1,5 @@
 import { useTranslation } from 'react-i18next'
-import { StatusBadge } from '../../../components/ui'
+import { StatusBadge, Panel } from '../../../components/ui'
 import type { CompletionRequirementResponse, CompletionStatusResponse } from '../types'
 
 interface CompletionChecklistProps {
@@ -20,7 +20,7 @@ interface CompletionChecklistProps {
  * unmet. Showing a disabled requirement as missing would tell a student they owe work nobody asked
  * for.
  *
- * <p>State is never conveyed by colour alone (BRAND_AND_UI_GUIDELINES.md section 9): every row pairs
+ * <p>State is never conveyed by colour alone (WCAG 1.4.1): every row pairs
  * a tone with a glyph and translated text, and each item carries an accessible label naming both the
  * requirement and its state.
  */
@@ -30,15 +30,17 @@ export function CompletionChecklist({ status, children }: CompletionChecklistPro
   const applicable = status.requirements.filter((requirement) => requirement.required)
 
   return (
-    <section className="rounded-lg border border-border bg-surface p-4">
-      <div className="flex flex-wrap items-start justify-between gap-2">
-        <h2 className="text-sm font-semibold text-foreground">{t('internship:completion.title')}</h2>
+    <Panel
+      title={t('internship:completion.title')}
+      padding="compact"
+      action={
         <StatusBadge tone={status.canComplete ? 'success' : 'warning'}>
-          {status.canComplete
-            ? t('internship:completion.readyBadge')
-            : t('internship:completion.outstandingBadge', { count: applicable.filter((r) => !r.satisfied).length })}
-        </StatusBadge>
-      </div>
+              {status.canComplete
+                ? t('internship:completion.readyBadge')
+                : t('internship:completion.outstandingBadge', { count: applicable.filter((r) => !r.satisfied).length })}
+            </StatusBadge>
+      }
+    >
 
       {applicable.length === 0 ? (
         <p className="mt-3 text-sm text-foreground-secondary">{t('internship:completion.noRequirements')}</p>
@@ -51,7 +53,7 @@ export function CompletionChecklist({ status, children }: CompletionChecklistPro
       )}
 
       {children && <div className="mt-4 border-t border-border pt-4">{children}</div>}
-    </section>
+    </Panel>
   )
 }
 

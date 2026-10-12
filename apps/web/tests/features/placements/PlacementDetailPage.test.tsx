@@ -3,7 +3,8 @@ import userEvent from '@testing-library/user-event'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 import { MemoryRouter, Route, Routes } from 'react-router-dom'
 import { AppProviders } from '../../../src/app/providers/AppProviders'
-import { PlacementDetailPage } from '../../../src/features/placements/pages/PlacementDetailPage'
+import { OrganizationPlacementOverview } from '../../../src/features/placements/pages/OrganizationPlacementOverview'
+import { UniversityPlacementOverview } from '../../../src/features/placements/pages/UniversityPlacementOverview'
 import { PlacementWorkspace } from '../../../src/features/placements/components/PlacementWorkspace'
 import i18n from '../../../src/lib/i18n'
 import { OrganizationMembershipContext } from '../../../src/features/organization/components/OrganizationMembershipContext'
@@ -74,6 +75,13 @@ function stubFetch({ detail = placement(), onCommand, eligible = [], history = [
     if (url.endsWith('/completion')) {
       return jsonResponse({ canComplete: false, policySource: 'PLATFORM_DEFAULT', requirements: [] })
     }
+    // The organization overview reads attendance and the evaluation; both are nested here too.
+    if (url.endsWith('/attendance')) {
+      return jsonResponse([])
+    }
+    if (url.endsWith('/evaluation')) {
+      return Promise.resolve(new Response(null, { status: 204 }))
+    }
     if (url.includes('/placements/pl-1')) {
       return jsonResponse(detail)
     }
@@ -97,7 +105,7 @@ function renderPage(
   const page = (
     <Routes>
       <Route path={`/${area}/placements/:placementId`} element={<PlacementWorkspace area={area} />}>
-        <Route index element={<PlacementDetailPage area={area} />} />
+        <Route index element={area === 'organization' ? <OrganizationPlacementOverview /> : <UniversityPlacementOverview />} />
       </Route>
     </Routes>
   )
@@ -138,7 +146,7 @@ describe('PlacementDetailPage', () => {
     stubFetch()
     renderPage()
 
-    expect(await screen.findByText('Amina Yusuf')).toBeInTheDocument()
+    expect(await screen.findByRole('heading', { name: 'Amina Yusuf' })).toBeInTheDocument()
     expect(screen.getByText('Backend Engineering Intern')).toBeInTheDocument()
     expect(screen.getByText('Jamhuriya University')).toBeInTheDocument()
     expect(screen.getByText('Computer Science')).toBeInTheDocument()
@@ -239,7 +247,7 @@ describe('PlacementDetailPage', () => {
     stubFetch()
     renderPage('university')
 
-    expect(await screen.findByText('Amina Yusuf')).toBeInTheDocument()
+    expect(await screen.findByRole('heading', { name: 'Amina Yusuf' })).toBeInTheDocument()
     expect(screen.queryByRole('button', { name: 'Start internship' })).not.toBeInTheDocument()
     expect(screen.queryByRole('button', { name: 'Cancel placement' })).not.toBeInTheDocument()
   })
@@ -248,7 +256,7 @@ describe('PlacementDetailPage', () => {
     stubFetch({ eligible: [{ userId: 'sup-1', email: 'supervisor@uni.test' }] })
     renderPage('university')
 
-    await screen.findByText('Amina Yusuf')
+    await screen.findByRole('heading', { name: 'Amina Yusuf' })
     // One picker only: the organization post is shown, but not editable from here.
     await waitFor(() => expect(screen.getAllByRole('combobox')).toHaveLength(1))
     expect(screen.getByRole('button', { name: 'Assign' })).toBeInTheDocument()
@@ -258,7 +266,7 @@ describe('PlacementDetailPage', () => {
     stubFetch({ eligible: [{ userId: 'sup-2', email: 'mentor@org.test' }] })
     renderPage('organization')
 
-    await screen.findByText('Amina Yusuf')
+    await screen.findByRole('heading', { name: 'Amina Yusuf' })
     await waitFor(() => expect(screen.getAllByRole('combobox')).toHaveLength(1))
   })
 
@@ -271,7 +279,7 @@ describe('PlacementDetailPage', () => {
     stubFetch()
     renderPage('organization', 'ORGANIZATION_SUPERVISOR')
 
-    expect(await screen.findByText('Amina Yusuf')).toBeInTheDocument()
+    expect(await screen.findByRole('heading', { name: 'Amina Yusuf' })).toBeInTheDocument()
     expect(screen.queryByRole('button', { name: 'Start internship' })).not.toBeInTheDocument()
     expect(screen.queryByRole('button', { name: 'Cancel placement' })).not.toBeInTheDocument()
     expect(screen.queryByRole('combobox')).not.toBeInTheDocument()
@@ -281,7 +289,7 @@ describe('PlacementDetailPage', () => {
     stubFetch()
     renderPage('university', 'UNIVERSITY_SUPERVISOR')
 
-    expect(await screen.findByText('Amina Yusuf')).toBeInTheDocument()
+    expect(await screen.findByRole('heading', { name: 'Amina Yusuf' })).toBeInTheDocument()
     expect(screen.queryByRole('combobox')).not.toBeInTheDocument()
     // They still see who holds each post.
     expect(screen.getByText('University supervisor')).toBeInTheDocument()
@@ -291,7 +299,7 @@ describe('PlacementDetailPage', () => {
     stubFetch({ eligible: [{ userId: 'sup-1', email: 'supervisor@uni.test' }] })
     renderPage('university', 'DEPARTMENT_COORDINATOR')
 
-    await screen.findByText('Amina Yusuf')
+    await screen.findByRole('heading', { name: 'Amina Yusuf' })
     await waitFor(() => expect(screen.getAllByRole('combobox')).toHaveLength(1))
   })
 
@@ -315,7 +323,7 @@ describe('PlacementDetailPage', () => {
     })
     renderPage('university')
 
-    await screen.findByText('Amina Yusuf')
+    await screen.findByRole('heading', { name: 'Amina Yusuf' })
     await waitFor(() => expect(screen.getAllByRole('combobox')).toHaveLength(1))
 
     await userEvent.selectOptions(screen.getByRole('combobox'), 'sup-1')

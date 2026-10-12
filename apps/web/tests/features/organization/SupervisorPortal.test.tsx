@@ -156,13 +156,14 @@ describe('supervisor dashboard', () => {
     stubApi({ attendance: [RECORDED_DAY, { ...RECORDED_DAY, id: 'att-2', confirmationStatus: 'CONFIRMED' }] })
     renderAs('ORGANIZATION_SUPERVISOR', <DashboardPage />)
 
-    expect((await screen.findByText('Assigned interns')).closest('div')?.parentElement).toHaveTextContent('1')
-    // One RECORDED day is unsettled; the CONFIRMED one is done.
-    await waitFor(() => {
-      expect(screen.getAllByText('Attendance to settle')[0].closest('div')?.parentElement).toHaveTextContent('1')
-    })
-    // No evaluation row at all counts as outstanding — nobody has started writing it.
-    expect(screen.getAllByText('Evaluations to finish')[0].closest('div')?.parentElement).toHaveTextContent('1')
+    await waitFor(async () => expect((await screen.findByText('Assigned interns')).parentElement).toHaveTextContent('1'))
+    // One RECORDED day waits for the supervisor's confirmation; the CONFIRMED one is done.
+    expect(await screen.findByText('1 attendance record to confirm')).toBeInTheDocument()
+    // No evaluation yet (204 → null) is outstanding — nobody has started writing it.
+    expect(screen.getByText('1 evaluation to finish')).toBeInTheDocument()
+    // Supervision only: no recruiting anywhere on this page.
+    expect(screen.queryByRole('heading', { name: 'Candidate pipeline' })).not.toBeInTheDocument()
+    expect(screen.queryByRole('link', { name: /create internship/i })).not.toBeInTheDocument()
   })
 
   it('renders in Somali without falling back to English', async () => {
@@ -196,6 +197,8 @@ describe('supervision queue', () => {
 
     expect(await screen.findByText('1 day still to confirm')).toBeInTheDocument()
     expect(screen.getByText('Amina Yusuf')).toBeInTheDocument()
+    // The rows sit directly under the page heading, so they are the next level down — no gap.
+    expect(screen.getByRole('heading', { level: 2, name: 'Amina Yusuf' })).toBeInTheDocument()
   })
 
   it('opens the evaluations section straight from a URL', async () => {
@@ -260,6 +263,17 @@ describe('supervisor intern list', () => {
 
     expect(headers).toContain('Supervisor')
     expect(headers).not.toContain('Evaluation')
+  })
+
+  it('names the list exactly as the sidebar entry does for each role', async () => {
+    stubApi()
+    const admin = renderAs('ORGANIZATION_ADMIN', <OrganizationPlacementsPage />)
+    expect(await screen.findByRole('heading', { level: 1, name: 'Interns' })).toBeInTheDocument()
+    admin.unmount()
+
+    stubApi({ attendance: [RECORDED_DAY] })
+    renderAs('ORGANIZATION_SUPERVISOR', <OrganizationPlacementsPage />)
+    expect(await screen.findByRole('heading', { level: 1, name: 'My interns' })).toBeInTheDocument()
   })
 
   it('does not fan out per-placement records for a non-supervisor', async () => {

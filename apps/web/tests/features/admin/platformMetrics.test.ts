@@ -1,11 +1,13 @@
 import { describe, expect, it } from 'vitest'
 import {
-  attentionItems,
+  platformAttention,
+  systemSignals,
   headlineCounts,
   pendingInstitutionReviews,
   publiclyDiscoverable,
   total,
 } from '../../../src/features/admin/platformMetrics'
+import { statisticTone } from '../../../src/features/admin/statusTone'
 import type { PlatformStatistics } from '../../../src/features/admin/types'
 
 function statistics(overrides: Partial<PlatformStatistics> = {}): PlatformStatistics {
@@ -133,44 +135,55 @@ describe('headlineCounts', () => {
   })
 })
 
-describe('attentionItems', () => {
-  it('reads healthy when every queue is empty', () => {
-    const items = attentionItems(statistics())
-    const queues = items.filter((item) => !item.informational)
-
-    expect(queues.every((item) => item.tone === 'success')).toBe(true)
+describe('platformAttention', () => {
+  it('is empty — the calm caught-up state — when every queue is empty', () => {
+    const quiet = statistics({
+      openPrivacyRequests: 0,
+      escalatedVerificationCases: 0,
+      organizationsByVerificationStatus: { VERIFIED: 4 },
+      universitiesByVerificationStatus: { VERIFIED: 2 },
+    })
+    expect(platformAttention(quiet, 0)).toEqual([])
   })
 
-  it('never calls routine login failures an alarm', () => {
-    // Some failed sign-ins every day is normal. Flagging that would train an administrator to
-    // ignore this strip, which is the one place a real outage has to be visible.
-    const failures = attentionItems(statistics({ recentLoginFailures: 42 })).find(
-      (item) => item.id === 'recentLoginFailures',
-    )!
-
-    expect(failures.informational).toBe(true)
-    expect(failures.tone).toBe('info')
-  })
-
-  it('raises the tone as soon as something needs a person', () => {
-    const items = attentionItems(
-      statistics({ failedEmailDeliveries: 3, escalatedVerificationCases: 1 }),
+  it('lists only real queues with work in them, each linking to its screen', () => {
+    const items = platformAttention(
+      statistics({
+        organizationsByVerificationStatus: { SUBMITTED: 2, UNDER_REVIEW: 1, VERIFIED: 9 },
+        universitiesByVerificationStatus: { NEEDS_CHANGES: 3 },
+        escalatedVerificationCases: 1,
+        openPrivacyRequests: 0,
+      }),
+      4,
     )
-    const byId = Object.fromEntries(items.map((item) => [item.id, item]))
-
-    // A failing outbox means mail is not reaching people at all.
-    expect(byId.failedEmails.tone).toBe('danger')
-    expect(byId.escalatedCases.tone).toBe('warning')
-    expect(byId.openPrivacyRequests.tone).toBe('success')
+    expect(items).toEqual([
+      { kind: 'organizationReviews', count: 3, to: '/admin/organizations' },
+      { kind: 'escalatedCases', count: 1, to: '/admin/verification-escalations' },
+      { kind: 'pendingTestimonials', count: 4, to: '/admin/testimonials' },
+    ])
   })
 
-  it('links only the two that have a screen to work them on', () => {
-    const linked = attentionItems(statistics())
-      .filter((item) => item.to !== null)
-      .map((item) => item.id)
+  it('never turns signals with no screen behind them into work items', () => {
+    const kinds = platformAttention(statistics({ failedEmailDeliveries: 5, recentLoginFailures: 40 })).map((item) => item.kind)
+    expect(kinds).not.toContain('failedEmails')
+    expect(kinds).not.toContain('recentLoginFailures')
+  })
+})
 
-    // Failed email and login failures are indicators: no endpoint lists either.
-    expect(linked).toEqual(['escalatedCases', 'openPrivacyRequests'])
+describe('systemSignals', () => {
+  it('flags failed email delivery, and never calls routine sign-in failures an alarm', () => {
+    const [emails, logins] = systemSignals(statistics({ failedEmailDeliveries: 3, recentLoginFailures: 42 }))
+    expect(emails).toMatchObject({ id: 'failedEmails', value: 3, tone: 'danger' })
+    expect(logins).toMatchObject({ id: 'recentLoginFailures', value: 42, tone: 'info' })
+  })
+})
+
+describe('statisticTone', () => {
+  it('resolves each breakdown against its own state machine', () => {
+    // Phase 8 fix: a never-started placement is not a cancelled internship listing.
+    expect(statisticTone('placements', 'CANCELLED')).toBe('neutral')
+    expect(statisticTone('opportunities', 'CANCELLED')).toBe('danger')
+    expect(statisticTone('accounts', 'SOMETHING_NEW')).toBe('neutral')
   })
 })
 

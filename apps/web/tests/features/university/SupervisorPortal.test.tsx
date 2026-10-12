@@ -1,4 +1,4 @@
-import { render, screen, within } from '@testing-library/react'
+import { render, screen, waitFor, within } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import { MemoryRouter } from 'react-router-dom'
@@ -174,10 +174,12 @@ describe('university supervisor dashboard', () => {
     stubApi({ weeklyLogs: [SUBMITTED_LOG, { ...SUBMITTED_LOG, id: 'log-3', weekNumber: 3, state: 'REVIEWED' }] })
     renderAs('UNIVERSITY_SUPERVISOR', <DashboardPage />)
 
-    const tile = (await screen.findByText('Logs awaiting review')).closest('div')?.parentElement
-    // One SUBMITTED log; the REVIEWED one is finished and must not be counted.
-    expect(tile).toHaveTextContent('1')
-    expect((await screen.findByText('Assigned students')).closest('div')?.parentElement).toHaveTextContent('1')
+    // One SUBMITTED log; the REVIEWED one is finished and must not be counted. The attention queue
+    // and the figure both read it, once the per-placement records have settled.
+    expect(await screen.findByText('1 weekly log to review')).toBeInTheDocument()
+    const figures = screen.getByRole('region', { name: 'At a glance' })
+    await waitFor(() => expect(within(figures).getByText('Logs awaiting review').closest('li')).toHaveTextContent(/Logs awaiting reviews*1/))
+    expect(within(figures).getByText('Assigned students').closest('li')).toHaveTextContent(/Assigned studentss*1/)
   })
 
   it('keeps the admin dashboard for an admin', async () => {

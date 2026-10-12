@@ -1,7 +1,7 @@
 /**
  * Route destinations for the auth area.
  *
- * <p>Registration, login, email verification and password recovery.
+ * <p>Registration, login, email verification, password recovery and the signed-in get-started step.
  *
  * <p><strong>Why this barrel exists.</strong> The router reaches every page in this area through a
  * SINGLE dynamic import of this module, so the area is one chunk, fetched once, on the first
@@ -22,3 +22,4 @@ export { LoginPage } from '../../../features/auth/pages/LoginPage'
 export { VerifyEmailPage } from '../../../features/auth/pages/VerifyEmailPage'
 export { ForgotPasswordPage } from '../../../features/auth/pages/ForgotPasswordPage'
 export { ResetPasswordPage } from '../../../features/auth/pages/ResetPasswordPage'
+export { GetStartedPage } from '../../../features/auth/pages/GetStartedPage'

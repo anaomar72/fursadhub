@@ -1,8 +1,8 @@
-import { useState, type ReactNode } from 'react'
+import { type ReactNode } from 'react'
 import { useQuery } from '@tanstack/react-query'
 import { useTranslation } from 'react-i18next'
-import { Link } from 'react-router-dom'
-import * as placementsApi from '../../placements/api/placementsApi'
+import { Link, useSearchParams } from 'react-router-dom'
+import { universityQueries } from '../universityQueries'
 import { useUniversityMembership } from '../components/UniversityMembershipContext'
 import { useSupervisionRecords, type SupervisionRecords, type SupervisionSection } from '../hooks/useSupervisionRecords'
 import { disputedAttendance, logsAwaitingReview, reportAwaitingReview } from '../supervisionMetrics'
@@ -12,23 +12,17 @@ import {
   Card,
   EmptyState,
   ErrorState,
-  LoadingState,
+  SkeletonList,
   PageHeader,
   StatusBadge,
   Tabs,
-  type StatusTone,
 } from '../../../components/ui'
 import { PageContainer } from '../../../app/layouts/PageContainer'
 import { formatDate } from '../../../lib/utils/formatDate'
-import type { FinalReportState } from '../../final-reports/types'
 import type { PlacementResponse } from '../../placements/types'
+import { FINAL_REPORT_STATE_TONE } from '../../../lib/status/statusTones'
 
-const REPORT_STATE_TONE: Record<FinalReportState, StatusTone> = {
-  DRAFT: 'neutral',
-  SUBMITTED: 'info',
-  NEEDS_REVISION: 'warning',
-  APPROVED: 'success',
-}
+const REPORT_STATE_TONE = FINAL_REPORT_STATE_TONE
 
 const SECTIONS: SupervisionSection[] = ['weekly-logs', 'final-report', 'attendance']
 
@@ -51,12 +45,13 @@ const SECTIONS: SupervisionSection[] = ['weekly-logs', 'final-report', 'attendan
 export function SupervisionQueuePage() {
   const { t } = useTranslation()
   const { universityId } = useUniversityMembership()
-  const [section, setSection] = useState<SupervisionSection>('weekly-logs')
+  // The open tab lives in the URL so the dashboards can link straight to final reports.
+  const [params, setParams] = useSearchParams()
+  const requested = params.get('section') as SupervisionSection | null
+  const section: SupervisionSection = requested && SECTIONS.includes(requested) ? requested : 'weekly-logs'
+  const setSection = (next: SupervisionSection) => setParams(next === 'weekly-logs' ? {} : { section: next }, { replace: true })
 
-  const placementsQuery = useQuery({
-    queryKey: ['placements', 'university', universityId],
-    queryFn: () => placementsApi.listUniversityPlacements(universityId),
-  })
+  const placementsQuery = useQuery(universityQueries.placements(universityId))
 
   const placements = placementsQuery.data ?? []
 
@@ -76,7 +71,7 @@ export function SupervisionQueuePage() {
       />
 
       {placementsQuery.isLoading ? (
-        <LoadingState label={t('common:status.loading')} />
+        <SkeletonList rows={4} />
       ) : placementsQuery.isError ? (
         <ErrorState onRetry={() => void placementsQuery.refetch()} retryLabel={t('common:actions.retry')} />
       ) : section === 'weekly-logs' ? (
@@ -117,7 +112,7 @@ function QueueChrome({
   }
 
   if (records.isLoading) {
-    return <LoadingState label={t('common:status.loading')} />
+    return <SkeletonList rows={4} />
   }
 
   return (
@@ -162,11 +157,12 @@ function QueueRow({
       <Card interactive padding="lg" className="relative">
         <div className="flex flex-wrap items-start justify-between gap-3">
           <div className="min-w-0">
-            <h3 className="truncate font-semibold text-foreground">
+            {/* h2: these rows sit straight under the page heading — no section heading between. */}
+            <h2 className="truncate font-semibold text-foreground">
               <Link to={to} className="focus-visible:outline-none focus-visible:underline after:absolute after:inset-0">
                 {placement.studentFullName ?? placement.studentEmail ?? placement.studentUserId}
               </Link>
-            </h3>
+            </h2>
             <p className="mt-1 truncate text-sm text-foreground-secondary">{headline}</p>
             <p className="mt-1 text-xs text-muted">{[context, trailing].filter(Boolean).join(' · ')}</p>
           </div>

@@ -19,10 +19,15 @@
     "poweredBy": "Powered by",
     "portals": {
       "university": "University Portal",
-      "organization": "Recruiter Portal",
+      "universityCoordinator": "Coordinator Portal",
+      "universitySupervisor": "Supervisor Portal",
+      "organization": "Organization Portal",
+      "organizationRecruiter": "Recruiter Portal",
+      "organizationSupervisor": "Supervisor Portal",
       "admin": "Super Admin Console",
       "verificationOfficer": "Verification Console"
-    }
+    },
+    "breadcrumb": "Breadcrumb"
   },
   "publicPages": {
     "about": {
@@ -401,7 +406,8 @@
     "actionRequired": "Action required",
     "rejected": "Rejected",
     "notProvided": "Not provided",
-    "error": "Something went wrong"
+    "error": "Something went wrong",
+    "sectionError": "This section couldn't be loaded."
   },
   "language": {
     "en": "English",
@@ -419,7 +425,8 @@
     "confirm": "Confirm",
     "close": "Close",
     "apply": "Apply",
-    "clear": "Clear"
+    "clear": "Clear",
+    "back": "Back"
   },
   "a11y": {
     "skipToContent": "Skip to content",
@@ -429,7 +436,10 @@
     "closeDrawer": "Close drawer",
     "search": "Search",
     "progress": "Progress",
-    "timeline": "Timeline"
+    "timeline": "Timeline",
+    "stepCompleted": "completed",
+    "stepCurrent": "current step",
+    "stepUpcoming": "not started"
   },
   "notFound": {
     "title": "Page not found",
@@ -612,5 +622,78 @@
     "title": "You do not have access to this page",
     "description": "Your account does not have permission to open this part of FursadHub. If you think that is wrong, ask an administrator of your organization or university to check your role.",
     "back": "Go to your dashboard"
+  },
+  "form": {
+    "optional": "Optional"
+  },
+  "home": {
+    "trust": {
+      "title": "Built on verification, not just listings",
+      "items": {
+        "institutions": {
+          "title": "Verified institutions",
+          "body": "Organizations and universities go through FursadHub verification, and only verified organizations can publish internships."
+        },
+        "enrollment": {
+          "title": "Confirmed enrollment",
+          "body": "A student’s own university confirms their enrollment before they can apply or be nominated."
+        },
+        "pipeline": {
+          "title": "One candidate pipeline",
+          "body": "Public applications and university nominations are reviewed together by the organization that posted the role."
+        },
+        "completion": {
+          "title": "Followed to completion",
+          "body": "Placements can be supervised from both the university and the organization, through weekly logs, attendance and evaluation."
+        }
+      }
+    },
+    "organizations": {
+      "title": "Verified organizations on FursadHub"
+    },
+    "latest": {
+      "title": "Latest internships",
+      "description": "Recently published by organizations on FursadHub.",
+      "emptyTitle": "New internships are on their way",
+      "emptyBody": "Opportunities appear here as soon as verified organizations publish them."
+    },
+    "journey": {
+      "actors": "Who takes part"
+    },
+    "roles": {
+      "title": "One platform, three ways in"
+    },
+    "lifecycle": {
+      "eyebrow": "After the offer",
+      "finalReport": "Final report"
+    }
+  },
+  "onboarding": {
+    "progressLabel": "Account setup progress",
+    "steps": {
+      "account": "Account created",
+      "email": "Email verified",
+      "verification": "Verification"
+    }
+  },
+  "verification": {
+    "progressLabel": "Verification progress",
+    "steps": {
+      "upload": "Upload your document",
+      "submit": "Submit for review",
+      "review": "FursadHub reviews it",
+      "verified": "Verified"
+    },
+    "selectedFile": "Uploaded: {{name}}",
+    "statusHeading": "Status"
+  },
+  "lifecycle": {
+    "states": {
+      "complete": "completed",
+      "current": "in progress",
+      "attention": "needs attention",
+      "upcoming": "not started",
+      "notReached": "not reached"
+    }
   }
 }

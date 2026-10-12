@@ -1,7 +1,6 @@
 import { useState } from 'react'
 import { useQuery } from '@tanstack/react-query'
 import { useTranslation } from 'react-i18next'
-import { Link } from 'react-router-dom'
 import {
   DataTable,
   EmptyState,
@@ -15,11 +14,12 @@ import {
   type DataTableColumn,
 } from '../../../components/ui'
 import { AdminTableSkeleton } from '../components/AdminSkeletons'
-import * as adminApi from '../api/adminApi'
 import { INSTITUTION_FILTER_STATUSES } from '../institutionWorkflow'
 import { INSTITUTION_STATUS_TONE } from '../statusTone'
 import { formatDate } from '../../../lib/utils/formatDate'
 import type { AdminUniversity, InstitutionVerificationStatus } from '../types'
+import { useListParams } from '../hooks/useListParams'
+import { adminQueries } from '../adminQueries'
 
 /**
  * The university verification queue (Phase 7, CLAUDE.md section 31).
@@ -36,33 +36,21 @@ import type { AdminUniversity, InstitutionVerificationStatus } from '../types'
  */
 export function AdminUniversitiesPage() {
   const { t } = useTranslation()
-  const [status, setStatus] = useState<InstitutionVerificationStatus | ''>('SUBMITTED')
+  // Status and page live in the URL, so the dashboard links straight into a filtered queue and a
+  // reload keeps the reviewer where they were. The queue still opens on SUBMITTED.
+  const { status, page, setStatus, setPage, resetPage } = useListParams(INSTITUTION_FILTER_STATUSES, 'SUBMITTED')
   const [query, setQuery] = useState('')
   const [submittedQuery, setSubmittedQuery] = useState('')
-  const [page, setPage] = useState(0)
 
-  const universitiesQuery = useQuery({
-    queryKey: ['admin', 'universities', status, submittedQuery, page],
-    queryFn: () =>
-      adminApi.listUniversities({
-        status: status === '' ? undefined : status,
-        query: submittedQuery || undefined,
-        page,
-      }),
-  })
+  const universitiesQuery = useQuery(adminQueries.universities(status, submittedQuery, page))
 
   const columns: DataTableColumn<AdminUniversity>[] = [
     {
       key: 'name',
       header: t('admin:universities.name'),
-      render: (university) => (
-        <Link
-          to={`/admin/universities/${university.id}`}
-          className="rounded font-medium text-foreground hover:text-link hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus-ring"
-        >
-          {university.name}
-        </Link>
-      ),
+      // The identifying column: DataTable makes it the row header and the row's link (rowHref).
+      primary: true,
+      render: (university) => university.name,
     },
     {
       // Universities have no type; a city is what distinguishes two similarly-named institutions.
@@ -116,7 +104,7 @@ export function AdminUniversitiesPage() {
         onSubmit={(event) => {
           event.preventDefault()
           setSubmittedQuery(query)
-          setPage(0)
+          resetPage()
         }}
       >
         <FilterBar
@@ -135,7 +123,6 @@ export function AdminUniversitiesPage() {
             value={status}
             onChange={(event) => {
               setStatus(event.target.value as InstitutionVerificationStatus | '')
-              setPage(0)
             }}
           >
             <option value="">{t('admin:universities.allStatuses')}</option>
@@ -167,6 +154,23 @@ export function AdminUniversitiesPage() {
             columns={columns}
             rows={data?.content ?? []}
             rowKey={(university) => university.id}
+            rowHref={(university) => `/admin/universities/${university.id}`}
+            density="dense"
+            // Server-paginated, so nothing is sortable: sorting one page would present a partial
+            // order as the whole one. Phones get one stacked row per record instead of a wide table.
+            renderMobileRow={(university) => (
+              <div className="flex flex-col gap-1.5">
+                <div className="flex items-start justify-between gap-3">
+                  <span className="min-w-0 break-words font-semibold text-foreground">{university.name}</span>
+                  <StatusBadge tone={INSTITUTION_STATUS_TONE[university.verificationStatus]}>{t(`admin:statusLabels.${university.verificationStatus}`)}</StatusBadge>
+                </div>
+                <span className="flex flex-wrap gap-x-3 gap-y-1 text-caption text-foreground-secondary">
+                  {university.city && <span>{university.city}</span>}
+                  <span>{university.hasEvidence ? t('admin:verification.evidenceOn', { date: formatDate(university.evidenceUploadedAt) }) : t('admin:universities.noEvidence')}</span>
+                  <span>{t('admin:verification.registeredOn', { date: formatDate(university.createdAt) })}</span>
+                </span>
+              </div>
+            )}
             empty={
               <EmptyState
                 title={t('admin:universities.empty')}

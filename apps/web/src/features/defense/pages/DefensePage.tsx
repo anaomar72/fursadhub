@@ -2,27 +2,17 @@ import { useState } from 'react'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { useTranslation } from 'react-i18next'
 import { useParams } from 'react-router-dom'
-import { Button, ErrorState, FormField, Input, LoadingState, Select, StatusBadge, Textarea, EmptyState } from '../../../components/ui'
-import type { StatusTone } from '../../../components/ui'
+import { Button, ConfirmationDialog, ErrorState, FormField, Icon, Input, SkeletonList, Select, StatusBadge, Textarea, EmptyState } from '../../../components/ui'
 import { apiErrorMessage } from '../../../lib/api/errorMessage'
 import { formatDateTime } from '../../../lib/utils/formatDate'
 import * as defenseApi from '../api/defenseApi'
-import type { DefenseAttemptResponse, DefenseAttemptState, DefenseResult } from '../types'
+import type { DefenseAttemptResponse, DefenseResult } from '../types'
+import { DEFENSE_ATTEMPT_TONE, DEFENSE_RESULT_TONE } from '../../../lib/status/statusTones'
 
 const RESULTS: DefenseResult[] = ['PASSED', 'FAILED', 'RETAKE_REQUIRED']
 
-const STATE_TONE: Record<DefenseAttemptState, StatusTone> = {
-  SCHEDULED: 'info',
-  COMPLETED: 'neutral',
-  CANCELLED: 'neutral',
-}
-
-/** The result carries the meaning once an attempt is completed, so it overrides the state tone. */
-const RESULT_TONE: Record<DefenseResult, StatusTone> = {
-  PASSED: 'success',
-  FAILED: 'danger',
-  RETAKE_REQUIRED: 'warning',
-}
+const STATE_TONE = DEFENSE_ATTEMPT_TONE
+const RESULT_TONE = DEFENSE_RESULT_TONE
 
 interface DefensePageProps {
   /** University staff manage attempts; the student reads their own history. */
@@ -43,6 +33,8 @@ export function DefensePage({ audience }: DefensePageProps) {
   const [error, setError] = useState<string | null>(null)
   const [scheduling, setScheduling] = useState(false)
   const [recordingFor, setRecordingFor] = useState<string | null>(null)
+  // A cancelled attempt stays in the history for good, so cancelling is confirmed first.
+  const [cancellingId, setCancellingId] = useState<string | null>(null)
 
   const attemptsQuery = useQuery({
     queryKey: ['defense-attempts', placementId],
@@ -85,7 +77,7 @@ export function DefensePage({ audience }: DefensePageProps) {
   })
 
   if (attemptsQuery.isLoading) {
-    return <LoadingState label={t('common:status.loading')} />
+    return <SkeletonList rows={3} />
   }
 
   if (attemptsQuery.isError) {
@@ -99,7 +91,8 @@ export function DefensePage({ audience }: DefensePageProps) {
   }
 
   const attempts = attemptsQuery.data ?? []
-  const hasOpenAttempt = attempts.some((attempt) => attempt.state === 'SCHEDULED')
+  const upcoming = attempts.find((attempt) => attempt.state === 'SCHEDULED') ?? null
+  const hasOpenAttempt = upcoming !== null
   const busy = scheduleMutation.isPending || cancelMutation.isPending || resultMutation.isPending
 
   return (
@@ -117,6 +110,21 @@ export function DefensePage({ audience }: DefensePageProps) {
           </Button>
         )}
       </div>
+
+      {audience === 'student' && upcoming && (
+        // Phase 5: the one thing a student needs from this page first — when and where.
+        <p className="flex items-start gap-3 rounded-lg bg-info-bg p-4 text-body text-foreground">
+          <Icon name="info" className="mt-0.5 size-5 shrink-0 text-info" />
+          <span className="min-w-0">
+            <span className="block font-semibold">{t('student:journey.attention.items.defenseScheduled.title')}</span>
+            <span className="mt-0.5 block break-words text-foreground-secondary">
+              {upcoming.locationDetails
+                ? t('student:journey.attention.items.defenseScheduled.metaWithLocation', { date: formatDateTime(upcoming.scheduledAt), location: upcoming.locationDetails })
+                : t('student:journey.attention.items.defenseScheduled.meta', { date: formatDateTime(upcoming.scheduledAt) })}
+            </span>
+          </span>
+        </p>
+      )}
 
       {scheduling && (
         <ScheduleForm
@@ -148,7 +156,7 @@ export function DefensePage({ audience }: DefensePageProps) {
                 recording={recordingFor === attempt.id}
                 onStartRecording={() => setRecordingFor(attempt.id)}
                 onStopRecording={() => setRecordingFor(null)}
-                onCancel={() => cancelMutation.mutate(attempt.id)}
+                onCancel={() => setCancellingId(attempt.id)}
                 onRecord={(result, notes) =>
                   resultMutation.mutate({ attemptId: attempt.id, result, notes })
                 }
@@ -157,6 +165,18 @@ export function DefensePage({ audience }: DefensePageProps) {
           ))}
         </ol>
       )}
+
+      <ConfirmationDialog
+        open={cancellingId !== null}
+        onClose={() => setCancellingId(null)}
+        destructive
+        loading={cancelMutation.isPending}
+        title={t('internship:defense.confirmCancel.title')}
+        description={t('internship:defense.confirmCancel.body')}
+        confirmLabel={t('internship:defense.actions.cancelAttempt')}
+        cancelLabel={t('internship:defense.confirmCancel.keep')}
+        onConfirm={() => cancellingId && cancelMutation.mutate(cancellingId, { onSettled: () => setCancellingId(null) })}
+      />
     </div>
   )
 }
