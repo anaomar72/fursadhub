@@ -1,4 +1,4 @@
-\# FursadHub Engineering Source of Truth
+# FursadHub Engineering Source of Truth
 
 This file is the primary engineering contract for FursadHub.
 
@@ -8,79 +8,83 @@ If another prompt conflicts with this file, stop and report the conflict instead
 
 Do not change frozen product states, authorization rules, authentication strategy, repository boundaries, or data-protection rules unless the FursadHub team explicitly requests that change.
 
-\---
+Historical planning and progress documents (`CLAUDE_FIRST_PROMPT.md`, `docs/CLAUDE_IMPLEMENTATION_PHASES.md`, `docs/PHASE_*.md`) record past work. They are not authoritative where they conflict with this file. `docs/architecture/DEPLOYMENT.md` is the operator reference for configuration.
 
-\# 1. Product
+---
+
+# 1. Product
 
 FursadHub is an internship-management SaaS platform initially focused on Somalia.
 
 It connects:
 
-\- Students
+- Students
 
-\- Universities
+- Universities
 
-\- University departments
+- University departments
 
-\- Companies
+- Companies
 
-\- NGOs
+- NGOs
 
-\- Government organizations
+- Government organizations
 
-\- University coordinators
+- University coordinators
 
-\- University supervisors
+- University supervisors
 
-\- Organization recruiters
+- Organization recruiters
 
-\- Organization supervisors
+- Organization supervisors
 
-\- FursadHub administrators
+- FursadHub administrators
 
 Initial pilot university:
 
-\- Jamhuriya University
+- Jamhuriya University
+
+No university or organization is seeded. Every institution self-registers and is verified (V39).
 
 Initial market:
 
-\- Somalia
+- Somalia
 
 Supported product UI languages:
 
-\- English
+- English
 
-\- Somali
+- Somali
 
 Pilot commercial model:
 
-\- Free pilot
+- Free pilot
 
-\- Billing-ready architecture
+- Billing-ready architecture
 
-\- No real payment processing until explicitly requested
+- No real payment processing until explicitly requested
 
 Primary product outcome:
 
-\- Successful internship placements that are managed through to completion
+- Successful internship placements that are managed through to completion
 
 FursadHub is not only a public internship board. It supports sourcing, recruitment, placement, internship supervision, reporting, evaluation, defense, and completion.
 
-\---
+---
 
-\# 2. Product Workflow
+# 2. Product Workflow
 
 FursadHub supports one InternshipOpportunity model with three sourcing modes:
 
-\- \`PUBLIC\`
+- `PUBLIC`
 
-\- \`UNIVERSITY_TARGETED\`
+- `UNIVERSITY_TARGETED`
 
-\- \`HYBRID\`
+- `HYBRID`
 
 Conceptually:
 
-\`\`\`text
+```text
 
 Organization creates opportunity
 
@@ -152,27 +156,27 @@ Placement
 
 Completion
 
-\`\`\`
+```
 
 Public applications and university nominations MUST feed one candidate pipeline.
 
-\---
+---
 
-\# 3. Architecture
+# 3. Architecture
 
 FursadHub MUST remain a MODULAR MONOLITH during the pilot.
 
 Use:
 
-\- one React application
+- one React application
 
-\- one Spring Boot application
+- one Spring Boot application
 
-\- one PostgreSQL database
+- one PostgreSQL database
 
 Architecture:
 
-\`\`\`text
+```text
 
 React Web Application
 
@@ -196,143 +200,143 @@ Spring Boot API
 
         +---- Email / Notification Provider
 
-\`\`\`
+```
 
 Do NOT introduce without explicit approval:
 
-\- Microservices
+- Microservices
 
-\- Kafka
+- Kafka
 
-\- RabbitMQ
+- RabbitMQ
 
-\- Kubernetes
+- Kubernetes
 
-\- Redis
+- Redis
 
-\- GraphQL
+- GraphQL
 
-\- Elasticsearch
+- Elasticsearch
 
-\- WebSockets
+- WebSockets
 
-\- Generic workflow engines
+- Generic workflow engines
 
-\- Generic permission builders
+- Generic permission builders
 
-\- Generic dynamic form builders
+- Generic dynamic form builders
 
 Do not solve hypothetical scale problems before FursadHub actually has them.
 
-\---
+---
 
-\# 4. Technology Stack
+# 4. Technology Stack
 
-\## Frontend
+## Frontend
 
 Use:
 
-\- React
+- React
 
-\- TypeScript
+- TypeScript
 
-\- Vite
+- Vite
 
-\- Tailwind CSS
+- Tailwind CSS
 
-\- React Router
+- React Router
 
-\- TanStack Query
+- TanStack Query
 
-\- React Hook Form
+- React Hook Form
 
-\- Zod
+- Zod
 
-\- react-i18next or equivalent
+- react-i18next or equivalent
 
 Package manager:
 
-\- npm
+- npm
 
 Commit:
 
-\- \`package-lock.json\`
+- `package-lock.json`
 
 Do not introduce Redux unless explicitly approved.
 
-\## Backend
+## Backend
 
 Use:
 
-\- Java 21
+- Java 21
 
-\- Spring Boot
+- Spring Boot
 
-\- Spring Web
+- Spring Web
 
-\- Spring Security
+- Spring Security
 
-\- Spring Security OAuth2 Resource Server
+- Spring Security OAuth2 Resource Server
 
-\- Spring Data JPA
+- Spring Data JPA
 
-\- PostgreSQL
+- PostgreSQL
 
-\- Flyway
+- Flyway
 
-\- Bean Validation
+- Bean Validation
 
-\- Spring Boot Actuator
+- Spring Boot Actuator
 
-\- Springdoc OpenAPI
+- Springdoc OpenAPI
 
-\- Maven
+- Maven
 
 Testing:
 
-\- JUnit
+- JUnit
 
-\- Spring Boot Test
+- Spring Boot Test
 
-\- Testcontainers with PostgreSQL
+- Testcontainers with PostgreSQL
 
 Do not use H2 as the primary integration-test database.
 
-\## Infrastructure
+## Infrastructure
 
 Use:
 
-\- Docker
+- Docker
 
-\- Docker Compose
+- Docker Compose
 
-\- GitHub Actions
+- GitHub Actions
 
-\- PostgreSQL
+- PostgreSQL
 
-\- private S3-compatible object storage
+- private S3-compatible object storage
 
-\- SMTP / transactional email provider
+- SMTP / transactional email provider
 
-\- Spring Boot Actuator
+- Spring Boot Actuator
 
-\- centralized production error monitoring when production infrastructure exists
+- centralized production error monitoring when production infrastructure exists
 
 Do not introduce Kubernetes for the pilot.
 
-\---
+---
 
-\# 5. Repository
+# 5. Repository
 
 The repository is a single monorepo.
 
 Read:
 
-\- \`docs/architecture/REPOSITORY_STRUCTURE.md\`
+- `docs/architecture/REPOSITORY_STRUCTURE.md`
 
 The high-level structure is:
 
-\`\`\`text
+```text
 
 fursadhub/
 
@@ -362,19 +366,19 @@ fursadhub/
 
 └── .gitignore
 
-\`\`\`
+```
 
 Do not create empty fake business classes only to populate future directories.
 
 Create code when its implementation phase begins.
 
-\---
+---
 
-\# 6. Backend Module Convention
+# 6. Backend Module Convention
 
 Every meaningful backend module should follow:
 
-\`\`\`text
+```text
 
 feature/
 
@@ -386,65 +390,65 @@ feature/
 
 └── infrastructure/
 
-\`\`\`
+```
 
-\## \`api\`
+## `api`
 
 Contains:
 
-\- REST controllers
+- REST controllers
 
-\- request DTOs
+- request DTOs
 
-\- response DTOs
+- response DTOs
 
 HTTP concerns only.
 
-\## \`application\`
+## `application`
 
 Contains:
 
-\- use cases
+- use cases
 
-\- transaction orchestration
+- transaction orchestration
 
-\- coordination between domain objects and repositories
+- coordination between domain objects and repositories
 
-\## \`domain\`
-
-Contains:
-
-\- entities
-
-\- value objects
-
-\- enums
-
-\- state-transition rules
-
-\- business invariants
-
-\- repository interfaces
-
-\## \`infrastructure\`
+## `domain`
 
 Contains:
 
-\- JPA implementations
+- entities
 
-\- persistence adapters
+- value objects
 
-\- object storage adapters
+- enums
 
-\- email adapters
+- state-transition rules
 
-\- external-provider integrations
+- business invariants
+
+- repository interfaces
+
+## `infrastructure`
+
+Contains:
+
+- JPA implementations
+
+- persistence adapters
+
+- object storage adapters
+
+- email adapters
+
+- external-provider integrations
 
 Never expose JPA entities directly through REST.
 
 Do not organize the whole backend as one global:
 
-\`\`\`text
+```text
 
 controller/
 
@@ -454,17 +458,17 @@ repository/
 
 entity/
 
-\`\`\`
+```
 
 tree.
 
-\---
+---
 
-\# 7. Backend Modules
+# 7. Backend Modules
 
 Expected bounded modules include:
 
-\`\`\`text
+```text
 
 common
 
@@ -494,29 +498,31 @@ compliance
 
 administration
 
-\`\`\`
+testimonial
+
+```
 
 Future billing may become:
 
-\`\`\`text
+```text
 
 billing
 
-\`\`\`
+```
 
 but do not create unnecessary billing implementation during the free pilot.
 
-\---
+---
 
-\# 8. Frontend Architecture
+# 8. Frontend Architecture
 
-For visual authority see section 57. Do NOT read \`docs/product/BRAND_AND_UI_GUIDELINES.md\` — it is deprecated and non-authoritative.
+For visual authority see section 57. Do NOT read `docs/product/BRAND_AND_UI_GUIDELINES.md` — it is deprecated and non-authoritative.
 
 Use feature-oriented React structure.
 
 Substantial features should follow approximately:
 
-\`\`\`text
+```text
 
 features/example/
 
@@ -532,19 +538,19 @@ features/example/
 
 └── types/
 
-\`\`\`
+```
 
 Only genuinely generic UI belongs in:
 
-\`\`\`text
+```text
 
 components/ui/
 
-\`\`\`
+```
 
 Examples:
 
-\`\`\`text
+```text
 
 Button                 -> components/ui/
 
@@ -558,59 +564,59 @@ CandidateTable         -> features/candidacies/
 
 VerificationStatusCard -> features/verification/
 
-\`\`\`
+```
 
 Use TanStack Query for server state.
 
 Do not unnecessarily duplicate API state in global client state.
 
-\---
+---
 
-\# 9. React Layouts
+# 9. React Layouts
 
 Use one React application with layouts such as:
 
-\- \`PublicLayout\`
+- `PublicLayout`
 
-\- \`StudentLayout\`
+- `StudentLayout`
 
-\- \`UniversityLayout\`
+- `UniversityLayout`
 
-\- \`OrganizationLayout\`
+- `OrganizationLayout`
 
-\- \`AdminLayout\`
+- `AdminLayout`
 
 Do not create separate React applications for each role.
 
-\---
+---
 
-\# 10. API Contract
+# 10. API Contract
 
 Base prefix:
 
-\`\`\`text
+```text
 
 /api/v1
 
-\`\`\`
+```
 
 Use:
 
-\- REST
+- REST
 
-\- JSON
+- JSON
 
-\- request DTOs
+- request DTOs
 
-\- response DTOs
+- response DTOs
 
-\- OpenAPI
+- OpenAPI
 
 Important business transitions should use explicit command endpoints.
 
 Examples:
 
-\`\`\`http
+```http
 
 POST /api/v1/opportunities/{id}/publish
 
@@ -620,13 +626,13 @@ POST /api/v1/candidacies/{id}/offer
 
 POST /api/v1/candidacies/{id}/accept-offer
 
-\`\`\`
+```
 
 Avoid generic status mutation when a status represents an important business command.
 
 Bad:
 
-\`\`\`http
+```http
 
 PATCH /api/v1/candidacies/{id}
 
@@ -636,17 +642,17 @@ PATCH /api/v1/candidacies/{id}
 
 }
 
-\`\`\`
+```
 
-\---
+---
 
-\# 11. API Error Format
+# 11. API Error Format
 
 Use stable machine-readable error codes.
 
 Example:
 
-\`\`\`json
+```json
 
 {
 
@@ -664,11 +670,11 @@ Example:
 
 }
 
-\`\`\`
+```
 
 Examples:
 
-\`\`\`text
+```text
 
 ACCOUNT_SUSPENDED
 
@@ -702,27 +708,27 @@ VALIDATION_FAILED
 
 VERIFICATION_CASE_ALREADY_RESOLVED
 
-\`\`\`
+```
 
 Frontend logic must never depend on parsing English error messages.
 
-\---
+---
 
-\# 12. Self-Service API Rule
+# 12. Self-Service API Rule
 
 When authentication already identifies the actor, do not accept that user's ID from the browser.
 
 Good:
 
-\`\`\`http
+```http
 
 POST /api/v1/opportunities/{id}/applications
 
-\`\`\`
+```
 
 Bad:
 
-\`\`\`json
+```json
 
 {
 
@@ -730,11 +736,11 @@ Bad:
 
 }
 
-\`\`\`
+```
 
-\---
+---
 
-\# 13. Account Registration and Email Verification
+# 13. Account Registration and Email Verification
 
 Every PUBLIC SELF-SERVICE account registration begins with email/password registration.
 
@@ -746,7 +752,7 @@ Admin-provisioned staff accounts are governed by Section 26A, Managed Staff Prov
 
 Expected account flow:
 
-\`\`\`text
+```text
 
 User enters email + password
 
@@ -788,11 +794,11 @@ Email becomes verified
 
 Account becomes ACTIVE
 
-\`\`\`
+```
 
 Email verification and university-student verification are DIFFERENT concepts.
 
-\`\`\`text
+```text
 
 EMAIL VERIFIED
 
@@ -800,13 +806,13 @@ EMAIL VERIFIED
 
 VERIFIED UNIVERSITY ENROLLMENT
 
-\`\`\`
+```
 
 A user may have an active email-verified account but still be blocked from student internship participation until their university enrollment is verified.
 
 Expected endpoints:
 
-\`\`\`http
+```http
 
 POST /api/v1/auth/register
 
@@ -814,79 +820,81 @@ POST /api/v1/auth/email/verify
 
 POST /api/v1/auth/email/resend
 
-\`\`\`
+```
 
-Email-verification tokens:
+Required invariant: a `PENDING_CONTACT_VERIFICATION` account MUST NOT obtain a usable authenticated session (access token or refresh token). Only `ACTIVE` accounts may authenticate. Managed staff are created `ACTIVE` (Section 26A). Compliance of the current login, refresh and session-restoration paths must be verified, not assumed.
 
-\- are not JWT
+Email verification uses a 4-digit numeric code delivered by email. Requirements:
 
-\- are cryptographically secure opaque random tokens
+- not JWT
 
-\- are stored only as hashes in PostgreSQL
+- generated with a cryptographically secure RNG
 
-\- expire
+- stored only as an HMAC hash keyed by `EMAIL_VERIFICATION_CODE_SECRET`
 
-\- are one-time use
+- short-lived, one-time use, and must fail on replay
 
-\- must fail on replay
+- resend is rate-limited
 
-\---
+A 4-digit code has only 10,000 values. Its security depends on a short TTL plus server-side limits on failed attempts per code and per account, not on entropy.
 
-\# 14. Authentication Architecture
+---
+
+# 14. Authentication Architecture
 
 FursadHub uses:
 
-\`\`\`text
+```text
 
 Short-Lived JWT Access Token
 
-\+
++
 
 Rotating Opaque Refresh Token
 
-\`\`\`
+```
 
 Do not use server-side session authentication.
 
 Do not store access tokens in persistent browser storage.
 
-\---
+---
 
-\# 15. JWT Access Token
+# 15. JWT Access Token
 
 Requirements:
 
-\- JWT
+- JWT
 
-\- approximately 10-minute lifetime
+- approximately 10-minute lifetime
 
-\- asymmetric signing
+- asymmetric signing
 
-\- prefer RS256
+- prefer RS256
 
-\- stored in React application memory only
+- stored in React application memory only
 
-\- sent as:
+- sent as:
 
-\`\`\`http
+```http
 
-Authorization: Bearer \<access-token>
+Authorization: Bearer <access-token>
 
-\`\`\`
+```
 
 Do NOT store access JWTs in:
 
-\- localStorage
+- localStorage
 
-\- sessionStorage
+- sessionStorage
 
-\- IndexedDB
+- IndexedDB
 
-\- cookies
+- cookies
 
 Recommended minimal claims:
 
-\`\`\`text
+```text
 
 sub
 
@@ -900,7 +908,7 @@ exp
 
 jti
 
-\`\`\`
+```
 
 Do not put sensitive student information in JWTs.
 
@@ -910,9 +918,9 @@ Current resource authorization must use current PostgreSQL data.
 
 Do not rely only on JWT claims for current university, department, organization, or membership access.
 
-\---
+---
 
-\# 16. JWT Validation
+# 16. JWT Validation
 
 Use Spring Security OAuth2 Resource Server.
 
@@ -920,17 +928,17 @@ Do not create unnecessary custom JWT filters and parsers when Spring Security al
 
 Validate:
 
-\- signature
+- signature
 
-\- issuer
+- issuer
 
-\- audience
+- audience
 
-\- expiration
+- expiration
 
 Configuration concept:
 
-\`\`\`text
+```text
 
 JWT_PRIVATE_KEY
 
@@ -942,47 +950,47 @@ JWT_AUDIENCE=fursadhub-api
 
 JWT_ACCESS_TOKEN_TTL=10m
 
-\`\`\`
+```
 
 Private signing keys must never be committed.
 
 Use separate keys for:
 
-\- local
+- local
 
-\- staging
+- staging
 
-\- production
+- production
 
-\---
+---
 
-\# 17. Refresh Tokens
+# 17. Refresh Tokens
 
 Refresh tokens:
 
-\- are NOT JWT
+- are NOT JWT
 
-\- are secure opaque random values
+- are secure opaque random values
 
-\- have approximately a 30-day lifetime
+- have approximately a 30-day lifetime
 
-\- are stored in an HttpOnly browser cookie
+- are stored in an HttpOnly browser cookie
 
-\- are Secure in production
+- are Secure in production
 
-\- use an appropriate SameSite policy
+- use an appropriate SameSite policy
 
-\- are stored only as hashes in PostgreSQL
+- are stored only as hashes in PostgreSQL
 
 Never store raw refresh tokens in PostgreSQL or logs.
 
 Conceptual model:
 
-\`\`\`text
+```text
 
 refresh_tokens
 
-\-----------------------------
+-----------------------------
 
 id UUID
 
@@ -1006,15 +1014,15 @@ user_agent
 
 created_ip
 
-\`\`\`
+```
 
-\---
+---
 
-\# 18. Refresh Rotation and Replay Detection
+# 18. Refresh Rotation and Replay Detection
 
 Every successful refresh MUST rotate the refresh token.
 
-\`\`\`text
+```text
 
 Token A
 
@@ -1036,27 +1044,27 @@ POST /api/v1/auth/refresh
 
    +---- set B cookie
 
-\`\`\`
+```
 
 A used token must not remain valid.
 
 If a previously used/revoked refresh token is replayed:
 
-1\. reject the request
+1. reject the request
 
-2\. revoke the token family
+2. revoke the token family
 
-3\. create a security audit event
+3. create a security audit event
 
-4\. require login again
+4. require login again
 
-\---
+---
 
-\# 19. Authentication Endpoints
+# 19. Authentication Endpoints
 
 Expected:
 
-\`\`\`http
+```http
 
 POST /api/v1/auth/register
 
@@ -1078,37 +1086,37 @@ POST /api/v1/auth/password/reset
 
 GET /api/v1/me
 
-\`\`\`
+```
 
-\---
+---
 
-\# 20. Password Reset
+# 20. Password Reset
 
 Password-reset tokens are not JWT.
 
 Use:
 
-\- secure opaque random token
+- secure opaque random token
 
-\- only hash stored in PostgreSQL
+- only hash stored in PostgreSQL
 
-\- expiration
+- expiration
 
-\- one-time use
+- one-time use
 
 Successful password reset must:
 
-\- update password securely
+- update password securely
 
-\- consume token
+- consume token
 
-\- revoke active refresh sessions
+- revoke active refresh sessions
 
 Avoid unnecessary account-existence leakage from forgot-password endpoints.
 
-\---
+---
 
-\# 21. Browser Security
+# 21. Browser Security
 
 Do not blindly disable CSRF.
 
@@ -1118,25 +1126,25 @@ Refresh/logout use cookies and therefore need deliberate protection.
 
 Use:
 
-\- controlled CORS
+- controlled CORS
 
-\- trusted origins
+- trusted origins
 
-\- appropriate SameSite policy
+- appropriate SameSite policy
 
-\- Origin validation where appropriate
+- Origin validation where appropriate
 
-\- appropriate CSRF protection for cookie-authenticated operations
+- appropriate CSRF protection for cookie-authenticated operations
 
 Never disable CSRF merely because a tutorial did so.
 
-\---
+---
 
-\# 22. Account States
+# 22. Account States
 
 Use exactly:
 
-\`\`\`text
+```text
 
 PENDING_CONTACT_VERIFICATION
 
@@ -1146,27 +1154,27 @@ SUSPENDED
 
 CLOSED
 
-\`\`\`
+```
 
 Do not invent additional states without explicit approval.
 
-\---
+---
 
-\# 23. Roles
+# 23. Roles
 
-\## Platform
+## Platform
 
-\`\`\`text
+```text
 
 SUPER_ADMIN
 
 VERIFICATION_OFFICER
 
-\`\`\`
+```
 
-\## University
+## University
 
-\`\`\`text
+```text
 
 UNIVERSITY_ADMIN
 
@@ -1174,11 +1182,11 @@ DEPARTMENT_COORDINATOR
 
 UNIVERSITY_SUPERVISOR
 
-\`\`\`
+```
 
-\## Organization
+## Organization
 
-\`\`\`text
+```text
 
 ORGANIZATION_ADMIN
 
@@ -1186,15 +1194,17 @@ RECRUITER
 
 ORGANIZATION_SUPERVISOR
 
-\`\`\`
+```
 
-\## Student
+## Student
 
-\`\`\`text
+```text
 
 STUDENT
 
-\`\`\`
+```
+
+Platform roles are granted only by an existing `SUPER_ADMIN` and are never obtainable through self-registration or any tenant role. The first `SUPER_ADMIN` is granted once via `BOOTSTRAP_SUPER_ADMIN_EMAIL` (see DEPLOYMENT.md). The seeded `admin@fursadhub.local` account is `@Profile("local")` only. Granting, changing and revoking platform roles MUST be audited.
 
 Roles are contextual.
 
@@ -1202,7 +1212,7 @@ Internal managed staff roles are NOT public self-registration roles.
 
 Tenant-admin assignability is intentionally narrow:
 
-\```text
+```text
 
 UNIVERSITY_ADMIN
 -> DEPARTMENT_COORDINATOR
@@ -1212,80 +1222,81 @@ ORGANIZATION_ADMIN
 -> RECRUITER
 -> ORGANIZATION_SUPERVISOR
 
-\```
+```
 
 University/organization admins MUST NOT assign:
 
-\- `SUPER_ADMIN`
-\- `VERIFICATION_OFFICER`
-\- another tenant's admin role
-\- cross-domain staff roles
-\- their own parent admin role
+- `SUPER_ADMIN`
+- `VERIFICATION_OFFICER`
+- another tenant's admin role
+- cross-domain staff roles
+- their own parent admin role
 
 The creator/manager relationship does NOT imply permission inheritance.
 
 A staff member receives only the explicitly assigned current membership/role and resource scope.
-\---
 
-\# 24. Authorization
+---
+
+# 24. Authorization
 
 Authorization requires:
 
-\`\`\`text
+```text
 
 Authenticated
 
-\+
++
 
 Current Membership / Role
 
-\+
++
 
 Resource Scope
 
-\`\`\`
+```
 
 Never authorize only from a role string.
 
 Example:
 
-\`\`\`text
+```text
 
 RECRUITER
 
-\`\`\`
+```
 
 does not mean:
 
-\`\`\`text
+```text
 
 may access every organization's candidates
 
-\`\`\`
+```
 
 Spring Boot must enforce the organization membership.
 
 Similarly:
 
-\`\`\`text
+```text
 
 DEPARTMENT_COORDINATOR
 
-\`\`\`
+```
 
 does not mean:
 
-\`\`\`text
+```text
 
 may access every department
 
-\`\`\`
+```
 
 Spring Boot must verify assigned department scope.
 
 Prefer dedicated components such as:
 
-\`\`\`text
+```text
 
 OrganizationAuthorization
 
@@ -1297,7 +1308,7 @@ PlacementAuthorization
 
 FileAuthorization
 
-\`\`\`
+```
 
 Authorization asks:
 
@@ -1311,13 +1322,13 @@ Keep those separate.
 
 Frontend route guards are UX only, not security.
 
-\---
+---
 
-\# 25. University Structure
+# 25. University Structure
 
 Model:
 
-\`\`\`text
+```text
 
 University
 
@@ -1329,29 +1340,29 @@ University
 
    +---- UniversityMemberships
 
-\`\`\`
+```
 
 University Admin:
 
-\- entire university scope
+- entire university scope
 
 Department Coordinator:
 
-\- assigned departments only
+- assigned departments only
 
 University Supervisor:
 
-\- assigned placements only unless explicitly authorized otherwise
+- assigned placements only unless explicitly authorized otherwise
 
 Department isolation is a critical backend security boundary.
 
-\---
+---
 
-\# 26. Organization Structure
+# 26. Organization Structure
 
 Organization types:
 
-\`\`\`text
+```text
 
 COMPANY
 
@@ -1361,55 +1372,55 @@ GOVERNMENT
 
 OTHER
 
-\`\`\`
+```
 
 Organization isolation is a critical backend security boundary.
 
 A member of Organization A must never access Organization B private resources by changing an ID in a URL/request.
 
-\---
+---
 
-\# 26A. Managed Staff Provisioning
+# 26A. Managed Staff Provisioning
 
 Managed staff provisioning is a real production feature.
 
 It MUST work consistently in:
 
-\```text
+```text
 
 LOCAL
 CI
 STAGING
 PRODUCTION
 
-\```
+```
 
 Do not implement managed staff as:
 
-\- seed data
-\- localhost-only logic
-\- demo users
-\- development authentication bypasses
-\- hardcoded credentials
-\- a second authentication system
+- seed data
+- localhost-only logic
+- demo users
+- development authentication bypasses
+- hardcoded credentials
+- a second authentication system
 
 The only environment-specific seeded administrator account, if one exists for development, is a separate concern and MUST NOT be reused as the managed-staff mechanism.
 
-\## Problem Being Solved
+## Problem Being Solved
 
 University and organization staff are internal managed accounts.
 
 They MUST NOT need to first self-register as:
 
-\- `STUDENT`
-\- a university account
-\- an organization account
+- `STUDENT`
+- a university account
+- an organization account
 
 before a tenant admin can assign an internal staff role.
 
 The old conceptual flow:
 
-\```text
+```text
 
 existing FursadHub user
 |
@@ -1419,13 +1430,13 @@ admin enters existing email
 v
 assign role + scope
 
-\```
+```
 
 is insufficient for internal staff.
 
 The required flow is:
 
-\```text
+```text
 
 authorized tenant admin
 |
@@ -1452,15 +1463,15 @@ staff uses normal FursadHub authentication
 v
 backend authorizes from current PostgreSQL membership + role + resource scope
 
-\```
+```
 
-\## Identity Model
+## Identity Model
 
 Managed staff MUST remain part of the existing FursadHub identity model.
 
 Prefer:
 
-\```text
+```text
 
 User
 
@@ -1468,18 +1479,18 @@ User
 - Role
 - Resource Scope
 
-\```
+```
 
 Do NOT introduce a parallel:
 
-\```text
+```text
 
 StaffUser
 StaffLogin
 StaffPassword
 StaffSession
 
-\```
+```
 
 authentication system.
 
@@ -1491,17 +1502,17 @@ Do NOT invent a new account state for managed staff.
 
 Use only the account states defined in Section 22.
 
-\## Staff Account Creation
+## Staff Account Creation
 
 An authorized University Admin or Organization Admin may create a managed staff account for their own tenant.
 
 The admin supplies only the identity, credential, and assignment data required by the existing domain model, such as:
 
-\- email
-\- initial password + confirmation (see "Initial Credentials" below)
-\- display/name fields already required by `User`, if any
-\- assignable staff role
-\- required scope
+- email
+- initial password + confirmation (see "Initial Credentials" below)
+- display/name fields already required by `User`, if any
+- assignable staff role
+- required scope
 
 The staff email does NOT need to belong to an already registered FursadHub user.
 
@@ -1513,21 +1524,21 @@ Otherwise reject with a stable conflict error.
 
 Never guess or silently replace an existing account type.
 
-\## Initial Credentials
+## Initial Credentials
 
 The creating University/Organization Admin supplies the initial staff password directly in the account-creation form, confirmed by re-entry (Password + Confirm Password).
 
 The server MUST still:
 
-\- enforce the current password policy on the submitted password
-\- reject the request with a stable error code if the password and confirmation do not match
-\- be hashed using the same production password hashing mechanism as normal authentication
-\- be stored only as a hash
-\- never be written to logs
-\- never be written to audit-event metadata
-\- never be put in JWT claims
-\- never be returned in the account-creation response — the admin already knows it, since they typed it
-\- never be returned by later staff list/detail endpoints
+- enforce the current password policy on the submitted password
+- reject the request with a stable error code if the password and confirmation do not match
+- be hashed using the same production password hashing mechanism as normal authentication
+- be stored only as a hash
+- never be written to logs
+- never be written to audit-event metadata
+- never be put in JWT claims
+- never be returned in the account-creation response — the admin already knows it, since they typed it
+- never be returned by later staff list/detail endpoints
 
 A dedicated credential-reset action (see "Staff Management" below) remains server-generated: an admin resetting an existing staff member's password does not choose the new value. Use cryptographically secure randomness appropriate to Java/Spring for it. That action's plaintext MAY be returned exactly once in the successful reset response to the authorized resetting admin. After that response, the server MUST NOT provide a password-retrieval operation for it.
 
@@ -1535,7 +1546,7 @@ If the existing product supports a first-login/temporary-password rotation mecha
 
 Do not invent an additional account state merely to represent a temporary password.
 
-\## Contact Verification
+## Contact Verification
 
 Managed staff are the one deliberate, explicitly authorized exception to the contact-verification requirement in Section 13 — approved by the FursadHub team specifically for this feature, not a general precedent.
 
@@ -1545,34 +1556,34 @@ The reasoning: the creating University/Organization Admin is vouching for this s
 
 This exception is narrow and must stay narrow:
 
-\- it applies ONLY to accounts created through the managed-staff-provisioning endpoints
-\- it does NOT change Section 13's requirement for public self-service registration (student/university/organization founder accounts still register with email + password and MUST verify their email before becoming `ACTIVE`)
-\- it does NOT change Section 22's account states — `PENDING_CONTACT_VERIFICATION` still exists and still applies to everyone else
-\- do not extend this bypass to any other account-creation path without the same explicit team approval
+- it applies ONLY to accounts created through the managed-staff-provisioning endpoints
+- it does NOT change Section 13's requirement for public self-service registration (student/university/organization founder accounts still register with email + password and MUST verify their email before becoming `ACTIVE`)
+- it does NOT change Section 22's account states — `PENDING_CONTACT_VERIFICATION` still exists and still applies to everyone else
+- do not extend this bypass to any other account-creation path without the same explicit team approval
 
-\## University Staff
+## University Staff
 
 `UNIVERSITY_ADMIN` may create/manage only staff memberships belonging to the admin's own university.
 
 Assignable university staff roles are exactly:
 
-\```text
+```text
 
 DEPARTMENT_COORDINATOR
 UNIVERSITY_SUPERVISOR
 
-\```
+```
 
 A University Admin MUST NOT create or assign:
 
-\- `SUPER_ADMIN`
-\- `VERIFICATION_OFFICER`
-\- `ORGANIZATION_ADMIN`
-\- `RECRUITER`
-\- `ORGANIZATION_SUPERVISOR`
-\- another `UNIVERSITY_ADMIN`
+- `SUPER_ADMIN`
+- `VERIFICATION_OFFICER`
+- `ORGANIZATION_ADMIN`
+- `RECRUITER`
+- `ORGANIZATION_SUPERVISOR`
+- another `UNIVERSITY_ADMIN`
 
-\### Department Coordinator Scope
+### Department Coordinator Scope
 
 `DEPARTMENT_COORDINATOR` requires explicit department scope.
 
@@ -1580,18 +1591,18 @@ The scope is one or more assigned departments belonging to the same university.
 
 Example:
 
-\```text
+```text
 
 Jamhuriya University
 
 Assigned:
-\- IT
+- IT
 
 Not assigned:
-\- Medicine
-\- Engineering
+- Medicine
+- Engineering
 
-\```
+```
 
 The coordinator may access authorized coordinator functionality for IT only.
 
@@ -1599,7 +1610,7 @@ Being a member of Jamhuriya University is NOT sufficient to access Medicine or E
 
 Required authorization is:
 
-\```text
+```text
 
 authenticated
 AND
@@ -1611,13 +1622,13 @@ requested department is in assigned department scope
 AND
 required permission for the operation
 
-\```
+```
 
 A request outside the assigned department set MUST fail even when the target department belongs to the same university.
 
 Department isolation remains a critical backend security boundary.
 
-\### University Supervisor Scope
+### University Supervisor Scope
 
 `UNIVERSITY_SUPERVISOR` uses the existing supervisor semantics.
 
@@ -1629,29 +1640,29 @@ Placement assignment remains part of the existing placement/supervision workflow
 
 Do not invent university-wide supervisor access during staff provisioning.
 
-\## Organization Staff
+## Organization Staff
 
 `ORGANIZATION_ADMIN` may create/manage only staff memberships belonging to the admin's own organization.
 
 Assignable organization staff roles are exactly:
 
-\```text
+```text
 
 RECRUITER
 ORGANIZATION_SUPERVISOR
 
-\```
+```
 
 An Organization Admin MUST NOT create or assign:
 
-\- `SUPER_ADMIN`
-\- `VERIFICATION_OFFICER`
-\- `UNIVERSITY_ADMIN`
-\- `DEPARTMENT_COORDINATOR`
-\- `UNIVERSITY_SUPERVISOR`
-\- another `ORGANIZATION_ADMIN`
+- `SUPER_ADMIN`
+- `VERIFICATION_OFFICER`
+- `UNIVERSITY_ADMIN`
+- `DEPARTMENT_COORDINATOR`
+- `UNIVERSITY_SUPERVISOR`
+- another `ORGANIZATION_ADMIN`
 
-\### Recruiter Scope
+### Recruiter Scope
 
 `RECRUITER` is scoped to the current organization and only the recruitment capabilities authorized by the existing domain rules.
 
@@ -1659,13 +1670,13 @@ Organization membership alone does NOT grant Organization Admin capabilities.
 
 A Recruiter MUST NOT access:
 
-\- organization administration/settings
-\- staff provisioning
-\- staff role management
-\- another organization's candidates
-\- another organization's private resources
+- organization administration/settings
+- staff provisioning
+- staff role management
+- another organization's candidates
+- another organization's private resources
 
-\### Organization Supervisor Scope
+### Organization Supervisor Scope
 
 `ORGANIZATION_SUPERVISOR` uses the existing placement-supervisor semantics.
 
@@ -1673,7 +1684,7 @@ Supervisor access MUST be limited to placements/resources explicitly authorized 
 
 Creating an Organization Supervisor account does NOT grant Organization Admin scope.
 
-\## Tenant Ownership
+## Tenant Ownership
 
 The authoritative ownership relationship is the University/Organization membership.
 
@@ -1687,22 +1698,22 @@ The backend MUST derive or verify tenant ownership from current PostgreSQL membe
 
 University A MUST NOT:
 
-\- create staff for University B
-\- list University B staff
-\- change University B staff roles
-\- change University B staff scope
-\- reset University B staff credentials
-\- suspend/reactivate University B staff
+- create staff for University B
+- list University B staff
+- change University B staff roles
+- change University B staff scope
+- reset University B staff credentials
+- suspend/reactivate University B staff
 
 Organization A has the equivalent restrictions against Organization B.
 
-\## Role + Scope Authorization
+## Role + Scope Authorization
 
 Managed staff authorization follows Section 24.
 
 Always evaluate:
 
-\```text
+```text
 
 Authenticated
 
@@ -1711,7 +1722,7 @@ Authenticated
 - Current Resource Scope
 - Required Permission
 
-\```
+```
 
 Never authorize from role string alone.
 
@@ -1727,16 +1738,16 @@ Unknown, missing, inconsistent, orphaned, or invalid role/scope data MUST fail c
 
 Never fall back to:
 
-\- full university scope
-\- full organization scope
-\- admin scope
-\- `SUPER_ADMIN`
+- full university scope
+- full organization scope
+- admin scope
+- `SUPER_ADMIN`
 
-\## No Permission Inheritance
+## No Permission Inheritance
 
 The admin who creates a staff account manages the account but does not donate their permissions.
 
-\```text
+```text
 
 UNIVERSITY_ADMIN creates DEPARTMENT_COORDINATOR
 !=
@@ -1746,23 +1757,23 @@ ORGANIZATION_ADMIN creates RECRUITER
 !=
 RECRUITER inherits ORGANIZATION_ADMIN
 
-\```
+```
 
 Staff must not access the parent admin console or admin-only APIs unless an explicit existing permission authorizes the exact operation.
 
 Backend authorization is mandatory even if frontend navigation is hidden.
 
-\## Staff Management
+## Staff Management
 
 A tenant admin may manage only managed staff within their own tenant.
 
 The supported management surface should reuse existing account/membership conventions and may include:
 
-\- list/view managed staff
-\- change to another role that the same tenant admin is allowed to assign
-\- change valid scope
-\- suspend/reactivate using existing `SUSPENDED` / `ACTIVE` account-state rules where the current architecture permits
-\- issue a new temporary password through a dedicated server-generated credential-reset action
+- list/view managed staff
+- change to another role that the same tenant admin is allowed to assign
+- change valid scope
+- suspend/reactivate using existing `SUSPENDED` / `ACTIVE` account-state rules where the current architecture permits
+- issue a new temporary password through a dedicated server-generated credential-reset action
 
 Do not expose or recover the existing password.
 
@@ -1780,22 +1791,22 @@ Staff updates MUST enforce the same assignable-role and tenant/scope checks as s
 
 This attack must fail:
 
-\```text
+```text
 
 create RECRUITER
 |
 v
 update role to SUPER_ADMIN
 
-\```
+```
 
-\## Transaction and Concurrency Rules
+## Transaction and Concurrency Rules
 
 Managed staff creation is security-sensitive and MUST be atomic.
 
 If account creation requires:
 
-\```text
+```text
 
 User
 
@@ -1804,7 +1815,7 @@ User
 - Scope assignment
 - Audit event
 
-\```
+```
 
 the operation must complete as one transaction where appropriate.
 
@@ -1814,13 +1825,13 @@ Database/current identity constraints MUST prevent duplicate identities under co
 
 Do not rely only on frontend duplicate-email validation.
 
-\## Stable Errors
+## Stable Errors
 
 Use the standard API error contract from Section 11.
 
 Add stable error codes only when needed, for example:
 
-\```text
+```text
 
 STAFF_EMAIL_ALREADY_EXISTS
 STAFF_ROLE_NOT_ASSIGNABLE
@@ -1828,13 +1839,13 @@ STAFF_SCOPE_REQUIRED
 STAFF_SCOPE_INVALID
 STAFF_NOT_IN_TENANT
 
-\```
+```
 
 Do not make frontend behavior depend on English message parsing.
 
 Do not expose whether a cross-tenant staff resource exists when the existing authorization convention intentionally uses scoped `404`.
 
-\## API Design
+## API Design
 
 Managed staff provisioning belongs to the relevant University/Organization application modules, not to public registration.
 
@@ -1844,21 +1855,21 @@ When the authenticated admin already identifies the owning tenant, do not requir
 
 Use explicit operations for security-sensitive changes such as:
 
-\- create managed staff
-\- change staff role
-\- change staff scope
-\- reset staff credentials
-\- suspend/reactivate staff
+- create managed staff
+- change staff role
+- change staff scope
+- reset staff credentials
+- suspend/reactivate staff
 
 Do not use a generic endpoint that accepts arbitrary role/tenant/state mutation from the client.
 
 OpenAPI must document the new production API contract.
 
-\## Frontend Staff Management
+## Frontend Staff Management
 
 The existing University/Organization Staff UI MUST evolve from:
 
-\```text
+```text
 
 existing user email
 
@@ -1866,11 +1877,11 @@ existing user email
 - scope
 - Assign staff role
 
-\```
+```
 
 to:
 
-\```text
+```text
 
 new staff email
 
@@ -1879,50 +1890,50 @@ new staff email
 - required scope
 - Create staff account
 
-\```
+```
 
 Do not redesign the surrounding dashboard.
 
 Reuse existing components, tokens, layouts, forms, modals, query patterns, and i18n.
 
-\### University Admin UI
+### University Admin UI
 
 Show only:
 
-\- `DEPARTMENT_COORDINATOR`
-\- `UNIVERSITY_SUPERVISOR`
+- `DEPARTMENT_COORDINATOR`
+- `UNIVERSITY_SUPERVISOR`
 
 when those roles are assignable in the current context.
 
 For `DEPARTMENT_COORDINATOR`:
 
-\- department scope is required
-\- department options must come from the current University
-\- one or more assigned departments may be selected according to the existing domain model
+- department scope is required
+- department options must come from the current University
+- one or more assigned departments may be selected according to the existing domain model
 
 Do not show organization roles or `SUPER_ADMIN`.
 
-\### Organization Admin UI
+### Organization Admin UI
 
 Show only:
 
-\- `RECRUITER`
-\- `ORGANIZATION_SUPERVISOR`
+- `RECRUITER`
+- `ORGANIZATION_SUPERVISOR`
 
 Do not show university roles or `SUPER_ADMIN`.
 
 Do not invent a department selector for organization roles.
 
-\### One-Time Credential UI
+### One-Time Credential UI
 
 Account creation does NOT display a generated credential: the admin already typed and confirmed the password themselves. Discard the typed password/confirmation from browser form state immediately after a successful create — do not persist it anywhere.
 
 The credential-reset action (server-generated) still requires a one-time display. After a successful reset, show:
 
-\- staff email
-\- generated temporary password
-\- role
-\- scope summary
+- staff email
+- generated temporary password
+- role
+- scope summary
 
 State clearly that the password is shown only once.
 
@@ -1932,56 +1943,56 @@ Do not automatically copy credentials.
 
 Do not persist the plaintext password in:
 
-\- localStorage
-\- sessionStorage
-\- IndexedDB
-\- long-lived query cache data
-\- URL/query string
-\- application logs
+- localStorage
+- sessionStorage
+- IndexedDB
+- long-lived query cache data
+- URL/query string
+- application logs
 
 Discard plaintext credential state when the success surface is dismissed.
 
-\### Staff List
+### Staff List
 
 Tenant admins may see only their own managed staff.
 
 Show non-secret information such as:
 
-\- name/email
-\- role
-\- scope
-\- account status
+- name/email
+- role
+- scope
+- account status
 
 Never render:
 
-\- password
-\- password hash
-\- access/refresh tokens
+- password
+- password hash
+- access/refresh tokens
 
-\### Staff Login
+### Staff Login
 
-Managed staff use the existing FursadHub email/password login endpoint and login UI.
+Managed staff use the existing login endpoint and UI, signing in with their email or their tenant-assigned username (V46).
 
 Do NOT create a separate staff login page or authentication pipeline.
 
 Existing Student, University, Organization, platform-admin, and other authentication behavior must remain compatible.
 
-\### Staff Navigation and Routes
+### Staff Navigation and Routes
 
 Frontend role/route guards are UX only.
 
 They should reflect current server-authorized role/scope:
 
-\- Department Coordinator does not receive University Admin navigation
-\- University Supervisor does not inherit University Admin navigation
-\- Recruiter does not receive Organization Admin navigation
-\- Organization Supervisor does not inherit Organization Admin navigation
+- Department Coordinator does not receive University Admin navigation
+- University Supervisor does not inherit University Admin navigation
+- Recruiter does not receive Organization Admin navigation
+- Organization Supervisor does not inherit Organization Admin navigation
 
 A Department Coordinator's UI must not offer unauthorized departments as switchable scope.
 
 Direct navigation to an admin URL must still be rejected by the backend.
 
-\### Internationalization and Design
+### Internationalization and Design
 
 All new production-visible UI strings MUST use English/Somali translation keys.
 
@@ -1989,7 +2000,7 @@ Follow Sections 56-58 and the current shared design tokens/primitives (see secti
 
 Do not redesign the existing dashboard visual language for this feature.
 
-\## Super Admin Visibility
+## Super Admin Visibility
 
 Managed staff remain normal FursadHub identities.
 
@@ -2001,24 +2012,24 @@ Super Admin may inspect permitted identity/membership/role/status metadata accor
 
 Super Admin MUST never be shown:
 
-\- plaintext staff passwords
-\- password hashes
-\- refresh tokens
-\- reset tokens
+- plaintext staff passwords
+- password hashes
+- refresh tokens
+- reset tokens
 
 This feature MUST NOT alter Super Admin seeding or platform-wide Super Admin authorization.
 
-\## Production Readiness
+## Production Readiness
 
 Managed staff provisioning is NOT a local-only feature.
 
 It MUST be deployable without:
 
-\- development credentials
-\- localhost assumptions
-\- seed dependencies
-\- authentication bypasses
-\- environment-specific role logic
+- development credentials
+- localhost assumptions
+- seed dependencies
+- authentication bypasses
+- environment-specific role logic
 
 Any required schema change MUST use Flyway and be safe for an existing non-empty production PostgreSQL database.
 
@@ -2026,45 +2037,45 @@ Do not reset or destroy existing user data.
 
 Production secrets and credential material follow Sections 64 and 68.
 
-\---
+---
 
-\# 27. Student Verification
+# 27. Student Verification
 
 Do NOT implement for V1:
 
-\- Face++
+- Face++
 
-\- facial recognition
+- facial recognition
 
-\- biometric identity verification
+- biometric identity verification
 
-\- biometric attendance
+- biometric attendance
 
 Student verification means:
 
-\`\`\`text
+```text
 
 VERIFIED UNIVERSITY ENROLLMENT
 
-\`\`\`
+```
 
 Students may register and verify email before enrollment verification.
 
 However, a student without verified enrollment cannot:
 
-\- apply to internships
+- apply to internships
 
-\- be nominated
+- be nominated
 
-\- accept/start a placement as a verified student
+- accept/start a placement as a verified student
 
-\---
+---
 
-\# 28. Student Enrollment
+# 28. Student Enrollment
 
 Model:
 
-\`\`\`text
+```text
 
 User
 
@@ -2088,71 +2099,71 @@ StudentEnrollment
 
   +---- Department
 
-\`\`\`
+```
 
 Enrollment includes:
 
-\- university
+- university
 
-\- department
+- department
 
-\- student number
+- student number
 
-\- program
+- program
 
-\- academic year
+- academic year
 
-\- verification status
+- verification status
 
 Critical invariant:
 
-\`\`\`text
+```text
 
 UNIQUE(university_id, student_number)
 
-\`\`\`
+```
 
 Implement the exact database constraint carefully if historical/revoked enrollment handling later requires a partial/conditional constraint.
 
-\---
+---
 
-\# 29. University Attestation
+# 29. University Attestation
 
 Initial verification workflow:
 
-1\. student claims enrollment
+1. student claims enrollment
 
-2\. authorized university staff checks the university's own source of truth
+2. authorized university staff checks the university's own source of truth
 
-3\. staff verifies student identity/enrollment
+3. staff verifies student identity/enrollment
 
-4\. where required, account binding occurs through a short-lived QR/OTP challenge
+4. where required, account binding occurs through a short-lived QR/OTP challenge
 
-5\. enrollment becomes VERIFIED
+5. enrollment becomes VERIFIED
 
 FursadHub does not need direct access to the university student database.
 
 QR/OTP challenges:
 
-\- securely random
+- securely random
 
-\- short-lived
+- short-lived
 
-\- hash stored where appropriate
+- hash stored where appropriate
 
-\- one-time use
+- one-time use
 
-\- replay resistant
+- replay resistant
 
-\- consumption performed safely/transactionally
+- consumption performed safely/transactionally
 
-\---
+---
 
-\# 30. Student Verification States
+# 30. Student Verification States
 
 Use exactly:
 
-\`\`\`text
+```text
 
 DRAFT
 
@@ -2168,15 +2179,15 @@ REJECTED
 
 REVOKED
 
-\`\`\`
+```
 
-\---
+---
 
-\# 31. Institution Verification
+# 31. Institution Verification
 
 University/organization verification states:
 
-\`\`\`text
+```text
 
 DRAFT
 
@@ -2194,19 +2205,21 @@ SUSPENDED
 
 REVOKED
 
-\`\`\`
+```
+
+Transitions between these states, and in particular any path out of `SUSPENDED` or `REVOKED`, are a product-policy decision. Do not implement reinstatement until the team approves the transition rules.
 
 Verification evidence must remain private.
 
-\---
+---
 
-\# 32. Internship Opportunity
+# 32. Internship Opportunity
 
 One opportunity model.
 
 Modes:
 
-\`\`\`text
+```text
 
 PUBLIC
 
@@ -2214,29 +2227,29 @@ UNIVERSITY_TARGETED
 
 HYBRID
 
-\`\`\`
+```
 
-\## PUBLIC
+## PUBLIC
 
 Eligible verified students may apply directly.
 
-\## UNIVERSITY_TARGETED
+## UNIVERSITY_TARGETED
 
 Organization targets one or more universities/departments and requests nominees.
 
-\## HYBRID
+## HYBRID
 
 Both public applications and nominations are permitted.
 
 Never build separate recruitment systems for public and targeted internships.
 
-\---
+---
 
-\# 33. Opportunity States
+# 33. Opportunity States
 
 Use exactly:
 
-\`\`\`text
+```text
 
 DRAFT
 
@@ -2248,11 +2261,11 @@ CLOSED
 
 CANCELLED
 
-\`\`\`
+```
 
 Important transitions should be explicit operations:
 
-\`\`\`text
+```text
 
 publish()
 
@@ -2264,41 +2277,41 @@ close()
 
 cancel()
 
-\`\`\`
+```
 
 Do not allow arbitrary status mutation.
 
-\---
+---
 
-\# 34. Opportunity Targets
+# 34. Opportunity Targets
 
 Targeted/hybrid opportunities can target multiple universities.
 
 Each target may define:
 
-\- university
+- university
 
-\- eligible departments
+- eligible departments
 
-\- requested nominees
+- requested nominees
 
-\- nomination deadline
+- nomination deadline
 
-\`number_of_openings\` and \`requested_nominees\` are different concepts.
+`number_of_openings` and `requested_nominees` are different concepts.
 
 Example:
 
-\`\`\`text
+```text
 
 Openings: 5
 
 Requested nominees from university: 10
 
-\`\`\`
+```
 
 Target states:
 
-\`\`\`text
+```text
 
 REQUESTED
 
@@ -2312,31 +2325,31 @@ DECLINED
 
 EXPIRED
 
-\`\`\`
+```
 
-\---
+---
 
-\# 35. Student Nominations
+# 35. Student Nominations
 
 Authorized university staff may nominate a student only when:
 
-\- target university matches
+- target university matches
 
-\- target department matches
+- target department matches
 
-\- coordinator has proper scope
+- coordinator has proper scope
 
-\- student enrollment is VERIFIED
+- student enrollment is VERIFIED
 
-\- deadline is valid
+- deadline is valid
 
-\- student satisfies availability/eligibility rules
+- student satisfies availability/eligibility rules
 
 Student consent is mandatory.
 
 Nomination states:
 
-\`\`\`text
+```text
 
 PENDING_STUDENT_CONSENT
 
@@ -2346,37 +2359,37 @@ DECLINED
 
 WITHDRAWN
 
-\`\`\`
+```
 
-Nomination \`ACCEPTED\` means:
+Nomination `ACCEPTED` means:
 
 _> student agrees to be considered_
 
 It does not mean the student accepted an internship offer.
 
-\---
+---
 
-\# 36. Unified Candidacy
+# 36. Unified Candidacy
 
 Exactly one candidacy per:
 
-\`\`\`text
+```text
 
 opportunity + student
 
-\`\`\`
+```
 
 Critical constraint:
 
-\`\`\`text
+```text
 
 UNIQUE(opportunity_id, student_id)
 
-\`\`\`
+```
 
 Source:
 
-\`\`\`text
+```text
 
 SELF_APPLICATION
 
@@ -2384,23 +2397,23 @@ UNIVERSITY_NOMINATION
 
 BOTH
 
-\`\`\`
+```
 
 If a student applies and is later nominated:
 
-\- do not create a second candidacy
+- do not create a second candidacy
 
-\- merge source to BOTH
+- merge source to BOTH
 
-\- preserve event/history information
+- preserve event/history information
 
-\---
+---
 
-\# 37. Candidacy States
+# 37. Candidacy States
 
 Use exactly:
 
-\`\`\`text
+```text
 
 SUBMITTED
 
@@ -2422,9 +2435,9 @@ REJECTED
 
 WITHDRAWN
 
-\`\`\`
+```
 
-\`INTERVIEW\` is optional.
+`INTERVIEW` is optional.
 
 Valid workflows may skip intermediate recruitment stages.
 
@@ -2432,29 +2445,29 @@ Only authorized organization staff sends offers.
 
 Only the candidate student accepts/declines the offer.
 
-\---
+---
 
-\# 38. Internship Offer
+# 38. Internship Offer
 
-Use a separate \`InternshipOffer\` domain object.
+Use a separate `InternshipOffer` domain object.
 
 Offer may contain:
 
-\- candidacy
+- candidacy
 
-\- start date
+- start date
 
-\- end date
+- end date
 
-\- response deadline
+- response deadline
 
-\- location
+- location
 
-\- relevant offer details
+- relevant offer details
 
 Offer states:
 
-\`\`\`text
+```text
 
 PENDING
 
@@ -2466,31 +2479,31 @@ EXPIRED
 
 WITHDRAWN
 
-\`\`\`
+```
 
 Offer acceptance MUST happen transactionally:
 
-1\. accept offer
+1. accept offer
 
-2\. mark candidacy ACCEPTED
+2. mark candidacy ACCEPTED
 
-3\. create exactly one placement
+3. create exactly one placement
 
-4\. update student availability
+4. update student availability
 
-5\. create audit history
+5. create audit history
 
 No partial accepted-without-placement state is allowed.
 
 Repeated acceptance requests must not create duplicate placements.
 
-\---
+---
 
-\# 39. Placement
+# 39. Placement
 
 States:
 
-\`\`\`text
+```text
 
 PLANNED
 
@@ -2504,49 +2517,49 @@ CANCELLED
 
 TERMINATED
 
-\`\`\`
+```
 
-\`CANCELLED\`:
+`CANCELLED`:
 
-\- placement never properly started
+- placement never properly started
 
-\`TERMINATED\`:
+`TERMINATED`:
 
-\- placement started but ended early
+- placement started but ended early
 
 Keep university/department reference/snapshot so historical placement remains tied to the correct academic context.
 
-\---
+---
 
-\# 40. Supervisors
+# 40. Supervisors
 
 Placement may have:
 
-\- university supervisor
+- university supervisor
 
-\- organization supervisor
+- organization supervisor
 
 Preserve assignment history.
 
 Track:
 
-\`\`\`text
+```text
 
 assigned_at
 
 removed_at
 
-\`\`\`
+```
 
 Do not simply overwrite previous supervisor IDs.
 
-\---
+---
 
-\# 41. Internship Policy
+# 41. Internship Policy
 
 Controlled configuration only:
 
-\`\`\`text
+```text
 
 weekly_logs_required
 
@@ -2558,19 +2571,19 @@ final_report_required
 
 defense_required
 
-\`\`\`
+```
 
 May be university-level or department-specific.
 
 Do not build a generic workflow/rules engine.
 
-\---
+---
 
-\# 42. Weekly Logs
+# 42. Weekly Logs
 
 States:
 
-\`\`\`text
+```text
 
 DRAFT
 
@@ -2580,19 +2593,19 @@ RETURNED_FOR_CHANGES
 
 REVIEWED
 
-\`\`\`
+```
 
 Student submits.
 
 Authorized supervisor reviews/returns.
 
-\---
+---
 
-\# 43. Attendance
+# 43. Attendance
 
 Attendance:
 
-\`\`\`text
+```text
 
 PRESENT
 
@@ -2600,11 +2613,11 @@ ABSENT
 
 EXCUSED
 
-\`\`\`
+```
 
 Confirmation:
 
-\`\`\`text
+```text
 
 RECORDED
 
@@ -2614,17 +2627,17 @@ DISPUTED
 
 RESOLVED
 
-\`\`\`
+```
 
 Do not build GPS, biometric, facial, or geofenced attendance for V1.
 
-\---
+---
 
-\# 44. Evaluation
+# 44. Evaluation
 
 States:
 
-\`\`\`text
+```text
 
 DRAFT
 
@@ -2632,17 +2645,17 @@ SUBMITTED
 
 FINAL
 
-\`\`\`
+```
 
 Do not build a generic rubric builder during V1.
 
-\---
+---
 
-\# 45. Final Report
+# 45. Final Report
 
 States:
 
-\`\`\`text
+```text
 
 DRAFT
 
@@ -2652,19 +2665,19 @@ NEEDS_REVISION
 
 APPROVED
 
-\`\`\`
+```
 
 Final report files are private.
 
-\---
+---
 
-\# 46. Defense
+# 46. Defense
 
 Every attempt is preserved separately.
 
 Attempt state:
 
-\`\`\`text
+```text
 
 SCHEDULED
 
@@ -2672,11 +2685,11 @@ COMPLETED
 
 CANCELLED
 
-\`\`\`
+```
 
 Result:
 
-\`\`\`text
+```text
 
 PASSED
 
@@ -2684,15 +2697,15 @@ FAILED
 
 RETAKE_REQUIRED
 
-\`\`\`
+```
 
 A retake creates a new DefenseAttempt.
 
 Never overwrite previous attempts.
 
-\---
+---
 
-\# 47. Files
+# 47. Files
 
 Use private S3-compatible object storage.
 
@@ -2700,33 +2713,33 @@ Do not store document bytes directly in PostgreSQL.
 
 PostgreSQL stores metadata such as:
 
-\- file UUID
+- file UUID
 
-\- storage key
+- storage key
 
-\- original filename
+- original filename
 
-\- MIME type
+- MIME type
 
-\- size
+- size
 
-\- classification
+- classification
 
-\- uploader
+- uploader
 
-\- ownership context
+- ownership context
 
-\- retention metadata
+- retention metadata
 
 Examples:
 
-\- CV
+- CV
 
-\- final report
+- final report
 
-\- university verification evidence
+- university verification evidence
 
-\- organization verification evidence
+- organization verification evidence
 
 Storage keys must be random.
 
@@ -2736,23 +2749,23 @@ Download must pass backend authorization.
 
 Sensitive file access should be auditable.
 
-\---
+---
 
-\# 48. File Upload Security
+# 48. File Upload Security
 
 Validate:
 
-\- intended file purpose
+- intended file purpose
 
-\- file size
+- file size
 
-\- permitted MIME type
+- permitted MIME type
 
-\- safe filename handling
+- safe filename handling
 
 Initial policy may include:
 
-\`\`\`text
+```text
 
 CV:
 
@@ -2772,49 +2785,49 @@ PDF or approved image types
 
 reasonable max size
 
-\`\`\`
+```
 
 Do not accept arbitrary executable or archive uploads merely for convenience.
 
-\---
+---
 
-\# 49. Privacy and Compliance
+# 49. Privacy and Compliance
 
 FursadHub must support:
 
-\- Privacy Policy
+- Privacy Policy
 
-\- Terms and Conditions
+- Terms and Conditions
 
-\- Cookie Notice where applicable
+- Cookie Notice where applicable
 
-\- Data Retention Policy
+- Data Retention Policy
 
-\- versioned legal documents
+- versioned legal documents
 
-\- terms acceptance records
+- terms acceptance records
 
-\- separate consent records where consent is actually needed
+- separate consent records where consent is actually needed
 
-\- data-subject/privacy requests
+- data-subject/privacy requests
 
-\- audit history
+- audit history
 
 Legal documents support:
 
-\- EN
+- EN
 
-\- SO
+- SO
 
 Do not treat Terms acceptance as consent for all possible personal-data processing.
 
-\---
+---
 
-\# 50. Data-Subject Requests
+# 50. Data-Subject Requests
 
 Support:
 
-\`\`\`text
+```text
 
 ACCESS
 
@@ -2828,11 +2841,11 @@ PORTABILITY
 
 OBJECTION
 
-\`\`\`
+```
 
 States:
 
-\`\`\`text
+```text
 
 SUBMITTED
 
@@ -2842,19 +2855,19 @@ COMPLETED
 
 REJECTED
 
-\`\`\`
+```
 
 Manual admin processing is acceptable for the pilot.
 
-\---
+---
 
-\# 51. Audit Logging
+# 51. Audit Logging
 
 Important security/business actions should create append-only audit history.
 
 Examples:
 
-\`\`\`text
+```text
 
 LOGIN_SUCCESS
 
@@ -2908,13 +2921,13 @@ DEFENSE_RESULT_RECORDED
 
 PRIVATE_FILE_ACCESSED
 
-\`\`\`
+```
 
 Never silently overwrite meaningful history.
 
-\---
+---
 
-\# 52. PostgreSQL and Flyway
+# 52. PostgreSQL and Flyway
 
 Use PostgreSQL as source of truth.
 
@@ -2922,15 +2935,15 @@ Use UUID identifiers.
 
 Every schema change must use Flyway.
 
-Do not use \`ddl-auto=update\` in staging or production.
+Do not use `ddl-auto=update` in staging or production.
 
 Prefer:
 
-\`\`\`text
+```text
 
 spring.jpa.hibernate.ddl-auto=validate
 
-\`\`\`
+```
 
 once migrations establish the schema.
 
@@ -2938,7 +2951,7 @@ Critical invariants must have PostgreSQL constraints in addition to Java checks.
 
 Important constraints include:
 
-\`\`\`text
+```text
 
 UNIQUE(university_id, student_number)
 
@@ -2952,103 +2965,107 @@ UNIQUE(placement_id, week_number)
 
 UNIQUE(placement_id, attendance_date)
 
-\`\`\`
+```
 
 Use foreign keys appropriately.
 
 Add indexes for real query patterns, not blindly.
 
-\---
+Applied migrations are immutable: never edit or renumber one. Add a new forward migration. There are no down-migrations; rollback means restoring a backup.
 
-\# 53. Time
+Data-modifying migrations must be checked against the foreign-key graph of a non-empty database, not only a fresh Testcontainers database.
+
+---
+
+# 53. Time
 
 Use:
 
-\- \`Instant\` for event timestamps
+- `Instant` for event timestamps
 
-\- \`LocalDate\` for date-only business concepts
+- `LocalDate` for date-only business concepts
 
 Store timestamp events in UTC.
 
-\---
+---
 
-\# 54. Transactions and Concurrency
+# 54. Transactions and Concurrency
 
 Critical workflows must be atomic.
 
-\## Nomination acceptance
+## Nomination acceptance
 
 One transaction:
 
-\`\`\`text
+```text
 
 Accept nomination
 
-\+
++
 
 Create/Merge candidacy
 
-\`\`\`
+```
 
-\## Offer acceptance
+## Offer acceptance
 
 One transaction:
 
-\`\`\`text
+```text
 
 Accept offer
 
-\+
++
 
 Accept candidacy
 
-\+
++
 
 Create placement
 
-\+
++
 
 Update availability
 
-\+
++
 
 Audit
 
-\`\`\`
+```
 
-\## Placement completion
+## Placement completion
 
 One transaction:
 
-\`\`\`text
+```text
 
 Validate requirements
 
-\+
++
 
 Complete placement
 
-\+
++
 
 Update availability
 
-\+
++
 
 Audit
 
-\`\`\`
+```
 
 Handle repeated/concurrent requests so impossible duplicates cannot be created.
 
-\---
+---
 
-\# 55. Notifications
+# 55. Notifications
 
 Support:
 
-\- in-app notifications
+- in-app notifications
 
-\- transactional email
+- transactional email
 
 Critical business transactions must not depend on SMTP being immediately available.
 
@@ -3058,15 +3075,15 @@ Do not introduce Kafka or RabbitMQ.
 
 Retry email delivery safely.
 
-\---
+---
 
-\# 56. Internationalization
+# 56. Internationalization
 
 System UI supports:
 
-\- English
+- English
 
-\- Somali
+- Somali
 
 Do not hardcode visible production UI strings in React.
 
@@ -3078,18 +3095,18 @@ Design components so longer Somali text does not break layout.
 
 User-generated internship content does not need mandatory translation into both languages during the pilot.
 
-\---
+---
 
-\# 57. Brand and Frontend UI
+# 57. Brand and Frontend UI
 
 Canonical presentation authority is, in order:
 
-1. \`design-reference/presentation-refresh-2026\`
+1. `design-reference/presentation-refresh-2026`
 2. the current approved FursadHub implementation
 3. the approved reference screenshots/mockups
-4. the current shared design tokens and primitives (\`apps/web/src/lib/design-system/tokens.css\`, \`apps/web/src/components/ui\`)
+4. the current shared design tokens and primitives (`apps/web/src/lib/design-system/tokens.css`, `apps/web/src/components/ui`)
 
-\`docs/product/BRAND_AND_UI_GUIDELINES.md\` is DEPRECATED and NON-AUTHORITATIVE. It is stale and conflicts with the approved implementation. Do NOT read it as a source for palette, spacing, typography, component styling, page composition or motion. It is retained only until the documentation cleanup decides its fate.
+`docs/product/BRAND_AND_UI_GUIDELINES.md` is DEPRECATED and NON-AUTHORITATIVE. It is stale and conflicts with the approved implementation. Do NOT read it as a source for palette, spacing, typography, component styling, page composition or motion. It is retained only until the documentation cleanup decides its fate.
 
 Claude must not invent FursadHub's permanent visual identity.
 
@@ -3097,31 +3114,31 @@ The latest approved branding direction uses the FursadHub bridge-based logo conc
 
 Do not:
 
-\- redraw the official logo
+- redraw the official logo
 
-\- recolor it without instruction
+- recolor it without instruction
 
-\- distort it
+- distort it
 
-\- replace it with a generic icon
+- replace it with a generic icon
 
-\- use random colors throughout pages
+- use random colors throughout pages
 
 All UI must use centralized design tokens.
 
 Additional approved branding facts:
 
-\- The exact approved FursadHub logo reference sheet is located at:
+- The approved FursadHub logo assets are located at:
 
-\`\`\`text
+```text
 
-/mnt/data/ghostwriter_images/context/c22b974b-b966-528c-bdfb-e42ea180a75e.png
+apps/web/src/assets/brand/
 
-\`\`\`
+```
 
-\- The approved logo concept contains:
+- The approved logo concept contains:
 
-  - \`FH\` monogram
+  - `FH` monogram
 
   - arched doorway
 
@@ -3129,13 +3146,13 @@ Additional approved branding facts:
 
   - roadway/path extending from the opened door
 
-  - \`FursadHub\` wordmark
+  - `FursadHub` wordmark
 
-  - exact tagline: \`Opening doors to your future.\`
+  - exact tagline: `Opening doors to your future.`
 
-\- The approved working brand palette is:
+- The approved working brand palette is:
 
-\`\`\`text
+```text
 
 Brand dark / navy:   #091423
 
@@ -3147,13 +3164,15 @@ Off-white / cream:   #FBF6EE
 
 Warm beige support:  #EDCFAE
 
-\`\`\`
+```
 
-\- The main UI should use the supplied light-logo variant on light surfaces and the supplied dark-logo variant on dark surfaces.
+- The main UI should use the supplied light-logo variant on light surfaces and the supplied dark-logo variant on dark surfaces.
 
-\---
+The modern production UI merged in PR #14 is the current approved implementation. Make only targeted fixes; do not redesign it. The Astra premium redesign is postponed and lives on its own branch and worktree.
 
-\# 58. Motion and Status Feedback
+---
+
+# 58. Motion and Status Feedback
 
 FursadHub should use purposeful micro-interactions and transitions.
 
@@ -3161,7 +3180,7 @@ Important states may use one-time animations.
 
 Example VERIFIED state:
 
-\`\`\`text
+```text
 
 circle appears/scales
 
@@ -3181,141 +3200,141 @@ animation stops
 
 stable verified state remains
 
-\`\`\`
+```
 
 Use this pattern for meaningful confirmations such as:
 
-\- email verified
+- email verified
 
-\- university enrollment verified
+- university enrollment verified
 
-\- organization verified
+- organization verified
 
-\- university verified
+- university verified
 
-\- application submitted
+- application submitted
 
-\- nomination accepted
+- nomination accepted
 
-\- offer accepted
+- offer accepted
 
-\- final report approved
+- final report approved
 
-\- internship completed
+- internship completed
 
 Do not continuously bounce/glow verified badges.
 
-Respect \`prefers-reduced-motion\`.
+Respect `prefers-reduced-motion`.
 
 Prefer transform/opacity animations.
 
 Use one motion language across student, university, organization, and admin areas.
 
-The motion rules live in the shared duration/easing tokens and the motion utilities in \`apps/web/src/lib/design-system/tokens.css\` and \`apps/web/src/index.css\`, not in the deprecated brand guide.
+The motion rules live in the shared duration/easing tokens and the motion utilities in `apps/web/src/lib/design-system/tokens.css` and `apps/web/src/index.css`, not in the deprecated brand guide.
 
-\---
+---
 
-\# 59. Testing
+# 59. Testing
 
 Backend:
 
-\- JUnit
+- JUnit
 
-\- Spring Boot Test
+- Spring Boot Test
 
-\- Testcontainers PostgreSQL
+- Testcontainers PostgreSQL
 
 Frontend:
 
-\- Vitest
+- Vitest
 
-\- React Testing Library where useful
+- React Testing Library where useful
 
 End-to-end:
 
-\- Playwright
+- Playwright
 
 Prioritize business-critical and security-critical testing over arbitrary coverage percentages.
 
-\---
+---
 
-\# 60. Mandatory Security Tests
+# 60. Mandatory Security Tests
 
 Tests MUST prove at least:
 
-\- University Admin can provision an allowed University staff account without requiring prior public self-registration.
+- University Admin can provision an allowed University staff account without requiring prior public self-registration.
 
-\- Organization Admin can provision an allowed Organization staff account without requiring prior public self-registration.
+- Organization Admin can provision an allowed Organization staff account without requiring prior public self-registration.
 
-\- University Admin cannot provision `SUPER_ADMIN`, Organization roles, or another `UNIVERSITY_ADMIN`.
+- University Admin cannot provision `SUPER_ADMIN`, Organization roles, or another `UNIVERSITY_ADMIN`.
 
-\- Organization Admin cannot provision `SUPER_ADMIN`, University roles, or another `ORGANIZATION_ADMIN`.
+- Organization Admin cannot provision `SUPER_ADMIN`, University roles, or another `ORGANIZATION_ADMIN`.
 
-\- Internal managed staff roles cannot be obtained through public self-registration.
+- Internal managed staff roles cannot be obtained through public self-registration.
 
-\- Managed staff can authenticate through the normal email/password authentication flow after satisfying required account/contact-verification state.
+- Managed staff can authenticate through the normal login flow (managed staff are created `ACTIVE`).
 
-\- Staff creation stores only a password hash; list/detail APIs never return plaintext or password hash.
+- Staff creation stores only a password hash; list/detail APIs never return plaintext or password hash.
 
-\- Tenant Admin A cannot list, mutate, reset credentials for, suspend, or re-scope Tenant B staff.
+- Tenant Admin A cannot list, mutate, reset credentials for, suspend, or re-scope Tenant B staff.
 
-\- Department coordinator cannot access another department, including another department inside the same university.
+- Department coordinator cannot access another department, including another department inside the same university.
 
-\- Department coordinator cannot access University Admin-only APIs.
+- Department coordinator cannot access University Admin-only APIs.
 
-\- University Supervisor cannot inherit University Admin scope.
+- University Supervisor cannot inherit University Admin scope.
 
-\- Recruiter cannot access Organization Admin-only APIs.
+- Recruiter cannot access Organization Admin-only APIs.
 
-\- Organization Supervisor cannot inherit Organization Admin scope.
+- Organization Supervisor cannot inherit Organization Admin scope.
 
-\- Role-update APIs cannot escalate managed staff to `SUPER_ADMIN` or a cross-domain role.
+- Role-update APIs cannot escalate managed staff to `SUPER_ADMIN` or a cross-domain role.
 
-\- University A cannot access University B restricted records.
+- University A cannot access University B restricted records.
 
-\- Recruiter cannot access another organization's candidates.
+- Recruiter cannot access another organization's candidates.
 
-\- Student cannot download another student's private file.
+- Student cannot download another student's private file.
 
-\- Recruiter cannot access student verification evidence.
+- Recruiter cannot access student verification evidence.
 
-\- Unverified student cannot apply.
+- Unverified student cannot apply.
 
-\- Unverified student cannot be nominated.
+- Unverified student cannot be nominated.
 
-\- Duplicate university/student-number identity is blocked.
+- Duplicate university/student-number identity is blocked.
 
-\- Duplicate candidacy is blocked.
+- Duplicate candidacy is blocked.
 
-\- Expired verification challenge fails.
+- Expired verification challenge fails.
 
-\- Consumed verification challenge cannot be reused.
+- Consumed verification challenge cannot be reused.
 
-\- Targeted-only opportunity rejects self-application.
+- Targeted-only opportunity rejects self-application.
 
-\- Only correct organization can manage a candidate.
+- Only correct organization can manage a candidate.
 
-\- Only candidate student can accept their offer.
+- Only candidate student can accept their offer.
 
-\- Offer acceptance creates exactly one placement.
+- Offer acceptance creates exactly one placement.
 
-\- Repeated offer acceptance does not create another placement.
+- Repeated offer acceptance does not create another placement.
 
-\- Revoked refresh token cannot refresh.
+- Revoked refresh token cannot refresh.
 
-\- Refresh-token replay triggers family revocation.
+- Refresh-token replay triggers family revocation.
 
-\- Suspended account cannot authenticate/use refresh flow.
+- Suspended account cannot authenticate/use refresh flow.
 
-\---
+---
 
-\# 61. CI/CD
+# 61. CI/CD
 
 Every pull request must run required checks.
 
 Backend:
 
-\`\`\`text
+```text
 
 compile
 
@@ -3327,11 +3346,11 @@ Flyway/database verification
 
 package/build
 
-\`\`\`
+```
 
 Frontend:
 
-\`\`\`text
+```text
 
 npm ci
 
@@ -3343,19 +3362,19 @@ unit tests
 
 production build
 
-\`\`\`
+```
 
 Broken CI blocks merge.
 
-\---
+---
 
-\# 62. Git Workflow
+# 62. Git Workflow
 
-\`main\` is protected.
+`main` is protected.
 
 Normal feature work uses branches such as:
 
-\`\`\`text
+```text
 
 feat/student-verification
 
@@ -3365,27 +3384,35 @@ fix/department-authorization
 
 chore/dependency-upgrade
 
-\`\`\`
+```
 
 Require:
 
-\- pull request
+- pull request
 
-\- at least one review
+- at least one review
 
-\- successful CI
+- successful CI
 
-\- resolved review discussions
+- resolved review discussions
 
-Do not directly push normal feature work to \`main\`.
+Do not directly push normal feature work to `main`.
 
-\---
+Unless the current task explicitly asks for it, Claude MUST NOT commit, push, merge, rebase, reset, stash, or deploy, and MUST NOT run destructive Git operations.
 
-\# 63. Environments
+Never modify `main` directly. Never touch other worktrees or branches, including `feat/astra-premium-ui-redesign` and `backup/*`.
+
+At the start of a task, verify the branch, HEAD and working-tree state. Report any discrepancy instead of switching or resetting.
+
+The stash stack is shared across worktrees: never use bare `git stash` / `git stash pop`.
+
+---
+
+# 63. Environments
 
 Use:
 
-\`\`\`text
+```text
 
 LOCAL
 
@@ -3395,61 +3422,61 @@ STAGING
 
 PRODUCTION
 
-\`\`\`
+```
 
 Never copy real production student data into staging.
 
 Staging uses synthetic data.
 
-\`main\` may deploy automatically to staging.
+`main` may deploy automatically to staging.
 
 Production requires explicit human approval.
 
-\---
+---
 
-\# 64. Secrets
+# 64. Secrets
 
 Never commit:
 
-\- production DB credentials
+- production DB credentials
 
-\- SMTP passwords
+- SMTP passwords
 
-\- storage credentials
+- storage credentials
 
-\- JWT private keys
+- JWT private keys
 
-\- raw access/refresh tokens
+- raw access/refresh tokens
 
-\- reset tokens
+- reset tokens
 
-\- verification tokens
+- verification tokens
 
-\- admin credentials
+- admin credentials
 
 Commit:
 
-\`\`\`text
+```text
 
 .env.example
 
-\`\`\`
+```
 
 Ignore:
 
-\`\`\`text
+```text
 
 .env
 
-\`\`\`
+```
 
-\---
+---
 
-\# 65. Local Development
+# 65. Local Development
 
 Default ports unless conflict exists:
 
-\`\`\`text
+```text
 
 Frontend:   5173
 
@@ -3457,55 +3484,55 @@ Backend:    8080
 
 PostgreSQL: 5432
 
-\`\`\`
+```
 
 API:
 
-\`\`\`text
+```text
 
-http\://localhost:8080/api/v1
+http://localhost:8080/api/v1
 
-\`\`\`
+```
 
 Docker Compose should provide local dependencies such as:
 
-\- PostgreSQL
+- PostgreSQL
 
-\- S3-compatible object storage
+- S3-compatible object storage
 
-\- local mail catcher
+- local mail catcher
 
 React and Spring Boot development servers may run on the host for fast reload.
 
-\---
+---
 
-\# 66. Docker and Deployment
+# 66. Docker and Deployment
 
 Create production images for:
 
-\`\`\`text
+```text
 
 fursadhub-api
 
 fursadhub-web
 
-\`\`\`
+```
 
 Use immutable tags such as a Git commit SHA.
 
-Do not rely only on \`latest\`.
+Do not rely only on `latest`.
 
 Pilot infrastructure does not require Kubernetes.
 
-\---
+---
 
-\# 67. Backup and Restore
+# 67. Backup and Restore
 
 Production PostgreSQL must have automated backups.
 
 Initial retention target:
 
-\`\`\`text
+```text
 
 7 daily
 
@@ -3513,7 +3540,7 @@ Initial retention target:
 
 3 monthly
 
-\`\`\`
+```
 
 Backups must exist outside the primary host failure domain.
 
@@ -3521,73 +3548,73 @@ Periodically restore a backup into a temporary PostgreSQL instance and verify it
 
 A backup is not considered proven until restoration has succeeded.
 
-\---
+---
 
-\# 68. Monitoring and Logging
+# 68. Monitoring and Logging
 
 Use Spring Boot Actuator.
 
 Monitor:
 
-\- application availability
+- application availability
 
-\- API health
+- API health
 
-\- repeated HTTP 500 failures
+- repeated HTTP 500 failures
 
-\- database availability
+- database availability
 
-\- backup failures
+- backup failures
 
-\- email delivery failures
+- email delivery failures
 
-\- resource exhaustion
+- resource exhaustion
 
 Do not publicly expose sensitive Actuator endpoints.
 
 Use structured logs with appropriate:
 
-\- timestamp
+- timestamp
 
-\- level
+- level
 
-\- request ID
+- request ID
 
-\- method/path
+- method/path
 
-\- status
+- status
 
-\- duration
+- duration
 
-\- safe identifiers
+- safe identifiers
 
-\- event name
+- event name
 
 Never log:
 
-\- passwords
+- passwords
 
-\- access JWTs
+- access JWTs
 
-\- refresh tokens
+- refresh tokens
 
-\- reset tokens
+- reset tokens
 
-\- verification tokens
+- verification tokens
 
-\- Authorization headers
+- Authorization headers
 
-\- document contents
+- document contents
 
-\- private signing keys
+- private signing keys
 
-\- DB/storage secrets
+- DB/storage secrets
 
 Use request/correlation IDs.
 
-\---
+---
 
-\# 69. Billing Readiness
+# 69. Billing Readiness
 
 The pilot is FREE.
 
@@ -3595,23 +3622,23 @@ Do NOT implement real billing until explicitly instructed.
 
 Do NOT implement now:
 
-\- Stripe
+- Stripe
 
-\- PayPal
+- PayPal
 
-\- mobile-money charging
+- mobile-money charging
 
-\- payment cards
+- payment cards
 
-\- checkout
+- checkout
 
-\- invoices
+- invoices
 
-\- paid subscriptions
+- paid subscriptions
 
-\- payment webhooks
+- payment webhooks
 
-\- payment retries
+- payment retries
 
 The code must nevertheless remain billing-ready.
 
@@ -3619,7 +3646,7 @@ Future billing is a separate bounded domain.
 
 Possible future concepts:
 
-\`\`\`text
+```text
 
 BillingAccount
 
@@ -3635,19 +3662,19 @@ InvoiceReference
 
 BillingEvent
 
-\`\`\`
+```
 
 Potential billed account types:
 
-\- organization
+- organization
 
-\- university
+- university
 
 Do not assume students must pay for core internship participation.
 
-\---
+---
 
-\# 70. Authorization vs Entitlement
+# 70. Authorization vs Entitlement
 
 Keep these separate.
 
@@ -3661,7 +3688,7 @@ _> Does this organization's/university's plan include this commercial feature?_
 
 Never create roles such as:
 
-\`\`\`text
+```text
 
 PRO_RECRUITER
 
@@ -3669,11 +3696,11 @@ PREMIUM_UNIVERSITY_ADMIN
 
 PAID_ORGANIZATION_ADMIN
 
-\`\`\`
+```
 
 Do not scatter checks like:
 
-\`\`\`java
+```java
 
 if (organization.getPlan().equals("PRO")) {
 
@@ -3681,41 +3708,41 @@ if (organization.getPlan().equals("PRO")) {
 
 }
 
-\`\`\`
+```
 
 through core business code.
 
 Future commercial access should use centralized abstractions such as:
 
-\`\`\`text
+```text
 
 EntitlementService
 
 UsageLimitService
 
-\`\`\`
+```
 
 Do not activate commercial restrictions during the free pilot unless explicitly instructed.
 
-\---
+---
 
-\# 71. Billing Provider Independence
+# 71. Billing Provider Independence
 
 When billing eventually exists:
 
-\- core domains must not depend directly on Stripe/another provider
+- core domains must not depend directly on Stripe/another provider
 
-\- provider SDK code belongs inside billing infrastructure
+- provider SDK code belongs inside billing infrastructure
 
-\- use generic provider IDs internally where needed
+- use generic provider IDs internally where needed
 
-\- payment webhooks must be idempotent and signature-validated
+- payment webhooks must be idempotent and signature-validated
 
 Do not implement a billing provider now.
 
-\---
+---
 
-\# 72. Feature Flags
+# 72. Feature Flags
 
 Feature flags and billing entitlements are different.
 
@@ -3731,15 +3758,15 @@ Keep them separate.
 
 Do not build a complex feature-flag platform for V1.
 
-\---
+---
 
-\# 73. ADRs
+# 73. ADRs
 
 Maintain Architecture Decision Records.
 
 Initial ADRs:
 
-\`\`\`text
+```text
 
 ADR-001-modular-monolith.md
 
@@ -3755,183 +3782,193 @@ ADR-006-billing-ready-architecture.md
 
 ADR-007-frontend-design-system.md
 
-\`\`\`
+```
 
-\---
+---
 
-\# 74. Definition of Done
+# 74. Definition of Done
 
 A feature is not complete because Claude generated code.
 
 A feature is done when:
 
-\- requirements are satisfied
+- requirements are satisfied
 
-\- authorization is correct
+- authorization is correct
 
-\- business validation exists
+- business validation exists
 
-\- database constraints are considered
+- database constraints are considered
 
-\- migrations exist where required
+- migrations exist where required
 
-\- backend tests pass
+- backend tests pass
 
-\- security-sensitive integration tests exist
+- security-sensitive integration tests exist
 
-\- frontend tests exist where valuable
+- frontend tests exist where valuable
 
-\- API contract is documented
+- API contract is documented
 
-\- standard errors are used
+- standard errors are used
 
-\- English/Somali UI is handled
+- English/Somali UI is handled
 
-\- brand/design-system rules are followed
+- brand/design-system rules are followed
 
-\- reduced-motion/accessibility is considered
+- reduced-motion/accessibility is considered
 
-\- audit implications are considered
+- audit implications are considered
 
-\- privacy implications are considered
+- privacy implications are considered
 
-\- CI passes
+- CI passes
 
-\- human code review happens
+- human code review happens
 
-\- staging validation occurs where applicable
+- staging validation occurs where applicable
 
-\---
+- every confirmed defect has a regression test that fails without the fix
 
-\# 75. Claude Rules
+- no meaningful test was deleted, skipped or weakened to get green; a changed expectation is explained
+
+- auth/authorization changes visible in the UI are verified in the browser for each affected role
+
+- a frontend-only change never counts as a fix for a backend authorization defect
+
+- reports state only commands actually run and their real results
+
+---
+
+# 75. Claude Rules
 
 Claude MUST NOT:
 
-\- invent new domain states
+- invent new domain states
 
-\- redesign frozen state machines
+- redesign frozen state machines
 
-\- introduce microservices
+- introduce microservices
 
-\- introduce unnecessary infrastructure
+- introduce unnecessary infrastructure
 
-\- disable tests to make CI pass
+- disable tests to make CI pass
 
-\- weaken authorization to satisfy tests
+- weaken authorization to satisfy tests
 
-\- bypass Flyway
+- bypass Flyway
 
-\- expose JPA entities through REST
+- expose JPA entities through REST
 
-\- store access JWTs in localStorage
+- store access JWTs in localStorage
 
-\- store raw refresh/reset/verification tokens
+- store raw refresh/reset/verification tokens
 
-\- expose private object-storage URLs
+- expose private object-storage URLs
 
-\- commit secrets
+- commit secrets
 
-\- silently break API contracts
+- silently break API contracts
 
-\- refactor unrelated modules during focused work
+- refactor unrelated modules during focused work
 
-\- add dependencies without justification
+- add dependencies without justification
 
-\- rely on frontend authorization for security
+- rely on frontend authorization for security
 
-\- require internal university/organization staff to self-register as Student/University/Organization before staff provisioning
+- require internal university/organization staff to self-register as Student/University/Organization before staff provisioning
 
-\- authorize managed staff from role string or tenant equality alone
+- authorize managed staff from role string or tenant equality alone
 
-\- let tenant admins assign `SUPER_ADMIN`, their own admin role, or cross-domain staff roles
+- let tenant admins assign `SUPER_ADMIN`, their own admin role, or cross-domain staff roles
 
-\- expose generated staff passwords after the one-time creation/reset response
+- expose a server-generated staff password after its one-time reset response
 
-\- implement biometrics
+- implement biometrics
 
-\- implement billing unless explicitly instructed
+- implement billing unless explicitly instructed
 
-\- invent FursadHub's permanent colors/logo/typography
+- invent FursadHub's permanent colors/logo/typography
 
-\- create random page-by-page animation styles
+- create random page-by-page animation styles
 
 Claude MUST:
 
-\- read this file before significant work
+- read this file before significant work
 
-\- read relevant docs
+- read relevant docs
 
-\- inspect existing code before editing
+- inspect existing code before editing
 
-\- preserve established architecture
+- preserve established architecture
 
-\- keep diffs focused
+- keep diffs focused
 
-\- use PostgreSQL constraints for critical invariants
+- use PostgreSQL constraints for critical invariants
 
-\- use Spring Security framework capabilities where appropriate
+- use Spring Security framework capabilities where appropriate
 
-\- enforce managed staff authorization from current membership + role + resource scope
+- enforce managed staff authorization from current membership + role + resource scope
 
-\- keep public self-registration separate from tenant-admin managed staff provisioning
+- keep public self-registration separate from tenant-admin managed staff provisioning
 
-\- treat managed staff provisioning as production functionality across LOCAL/CI/STAGING/PRODUCTION
+- treat managed staff provisioning as production functionality across LOCAL/CI/STAGING/PRODUCTION
 
-\- write tests
+- write tests
 
-\- explain migrations
+- explain migrations
 
-\- explain security-sensitive decisions
+- explain security-sensitive decisions
 
-\- follow approved brand/design-system tokens
+- follow approved brand/design-system tokens
 
-\- support English/Somali UI
+- support English/Somali UI
 
-\- report files changed
+- report files changed
 
-\- report tests/commands run
+- report tests/commands run
 
-\- report unresolved risks
+- report unresolved risks
 
-\- stop after the requested phase
+- stop after the requested phase
 
-\---
+---
 
-\# 76. Claude Work Process
+# 76. Claude Work Process
 
 For every implementation phase/task:
 
-1\. Read \`CLAUDE.md\`.
+1. Read `CLAUDE.md`.
 
-2\. Read the relevant architecture/product docs.
+2. Read the relevant architecture/product docs.
 
-3\. Inspect the current repository.
+3. Inspect the current repository.
 
-4\. Restate the requested scope briefly.
+4. Restate the requested scope briefly.
 
-5\. Identify security-sensitive areas.
+5. Identify security-sensitive areas.
 
-6\. Identify migration/database needs.
+6. Identify migration/database needs.
 
-7\. Identify frontend brand/design implications.
+7. Identify frontend brand/design implications.
 
-8\. Create a concise implementation plan.
+8. Create a concise implementation plan.
 
-9\. Implement only requested scope.
+9. Implement only requested scope.
 
-10\. Add Flyway migrations where required.
+10. Add Flyway migrations where required.
 
-11\. Add appropriate unit/integration tests.
+11. Add appropriate unit/integration tests.
 
-12\. Run backend tests/build.
+12. Run backend tests/build.
 
-13\. Run frontend lint/typecheck/tests/build when relevant.
+13. Run frontend lint/typecheck/tests/build when relevant.
 
-14\. Review the Git diff.
+14. Review the Git diff.
 
-15\. Remove unrelated changes.
+15. Remove unrelated changes.
 
-16\. Report:
+16. Report:
 
    - completed work
 
