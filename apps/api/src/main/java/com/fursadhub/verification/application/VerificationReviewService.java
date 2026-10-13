@@ -35,6 +35,7 @@ public class VerificationReviewService {
     private final NotificationService notifications;
     private final UserRepository users;
     private final AuditService audit;
+    private final StudentVerificationGuard guard;
 
     public VerificationReviewService(
             StudentVerificationCaseRepository cases,
@@ -42,13 +43,15 @@ public class VerificationReviewService {
             UniversityAuthorization universityAuthorization,
             NotificationService notifications,
             UserRepository users,
-            AuditService audit) {
+            AuditService audit,
+            StudentVerificationGuard guard) {
         this.cases = cases;
         this.enrollments = enrollments;
         this.universityAuthorization = universityAuthorization;
         this.notifications = notifications;
         this.users = users;
         this.audit = audit;
+        this.guard = guard;
     }
 
     private record Loaded(StudentVerificationCase verificationCase, StudentEnrollment enrollment) {
@@ -77,6 +80,7 @@ public class VerificationReviewService {
     public void approve(UUID staffUserId, UUID universityId, UUID caseId, String ipAddress, String userAgent) {
         Loaded loaded = loadForReview(staffUserId, universityId, caseId);
         requireReviewable(loaded.verificationCase());
+        guard.requireUniversityVerifiedForApproval(loaded.enrollment());
         loaded.verificationCase().approve(staffUserId);
         persist(loaded);
         audit.record("STUDENT_VERIFIED", staffUserId, ipAddress, userAgent, "caseId=" + caseId);
@@ -103,6 +107,7 @@ public class VerificationReviewService {
             throw accessDenied();
         }
         universityAuthorization.requireMembership(staffUserId, universityId, UniversityRole.UNIVERSITY_ADMIN);
+        guard.requireNotSelf(staffUserId, enrollment);
 
         if (verificationCase.getStatus() != StudentVerificationStatus.VERIFIED) {
             if (verificationCase.isResolved()) {
@@ -160,6 +165,8 @@ public class VerificationReviewService {
         UniversityMembership membership = universityAuthorization.requireMembership(
                 staffUserId, universityId, UniversityRole.UNIVERSITY_ADMIN, UniversityRole.DEPARTMENT_COORDINATOR);
         universityAuthorization.requireDepartmentScope(membership, enrollment.getDepartmentId());
+        // After the membership/scope checks, so an outsider still gets the ordinary ACCESS_DENIED.
+        guard.requireNotSelf(staffUserId, enrollment);
         return new Loaded(verificationCase, enrollment);
     }
 

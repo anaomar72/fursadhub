@@ -13,6 +13,8 @@ import { useAuth } from '../../../lib/auth/AuthContext'
 import { resolveConsolePath, roleLandingPath } from '../roleRedirect'
 import * as legalApi from '../../legal/api/legalApi'
 import { PENDING_TERMS_ACCEPTANCE_KEY } from '../../legal/pendingAcceptance'
+import { ApiError } from '../../../lib/api/client'
+import type { VerifyEmailLocationState } from './VerifyEmailPage'
 
 interface LocationState {
   from?: { pathname: string }
@@ -56,6 +58,16 @@ export function LoginPage() {
       const redirectFrom = (location.state as LocationState | null)?.from?.pathname
       const redirectTo = redirectFrom ?? roleLandingPath(role) ?? (await resolveConsolePath())
       navigate(redirectTo, { replace: true })
+    },
+    onError: (error, variables) => {
+      // The password was right but the address was never confirmed (CLAUDE.md section 13): no session
+      // was issued, so the way forward is the code screen, not an error line. The address travels in
+      // navigation state, never the URL (see VerifyEmailPage).
+      if (error instanceof ApiError && error.body.code === 'EMAIL_NOT_VERIFIED' && variables.email) {
+        const params = new URLSearchParams({ unverified: '1' })
+        if (role) params.set('role', role)
+        navigate(`/verify-email?${params.toString()}`, { state: { email: variables.email } satisfies VerifyEmailLocationState })
+      }
     },
   })
 

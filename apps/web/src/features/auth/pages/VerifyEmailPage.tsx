@@ -53,12 +53,17 @@ export function VerifyEmailPage() {
   const [searchParams] = useSearchParams()
   const role = searchParams.get('role')
   const justRegistered = searchParams.get('registered') === '1'
+  // Sent here by a sign-in refused with EMAIL_NOT_VERIFIED. Unlike registration, no code was just
+  // emailed — the original one has usually lapsed — so a new one must be requestable immediately.
+  const fromUnverifiedLogin = searchParams.get('unverified') === '1'
   // `?email=` is still ACCEPTED (older links, a hand-typed address) but never kept: the effect below
   // moves it into navigation state and removes it from the address bar on arrival.
   const legacyEmail = searchParams.get('email')
   const [email, setEmail] = useState((location.state as VerifyEmailLocationState | null)?.email ?? legacyEmail ?? '')
   const [code, setCode] = useState('')
-  const [cooldownEndsAt, setCooldownEndsAt] = useState<number | null>(email ? Date.now() + RESEND_COOLDOWN_SECONDS * 1000 : null)
+  const [cooldownEndsAt, setCooldownEndsAt] = useState<number | null>(
+    email && !fromUnverifiedLogin ? Date.now() + RESEND_COOLDOWN_SECONDS * 1000 : null,
+  )
   const [secondsLeft, setSecondsLeft] = useState(0)
   // The last code actually sent to the server — see the guards in `submit`.
   const lastSubmittedCode = useRef<string | null>(null)
@@ -316,6 +321,11 @@ export function VerifyEmailPage() {
       {justRegistered && (
         <Alert tone="success" className="mb-6">
           {t('auth:verifyEmail.registeredNotice')}
+        </Alert>
+      )}
+      {fromUnverifiedLogin && !justRegistered && (
+        <Alert tone="warning" className="mb-6">
+          {t('auth:verifyEmail.unverifiedLoginNotice')}
         </Alert>
       )}
 

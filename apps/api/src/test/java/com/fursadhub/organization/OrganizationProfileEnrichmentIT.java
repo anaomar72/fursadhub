@@ -425,7 +425,7 @@ class OrganizationProfileEnrichmentIT extends AbstractPhase3IT {
 
         for (String role : List.of("RECRUITER", "ORGANIZATION_SUPERVISOR")) {
             String staffEmail = uniqueEmail("b2-" + role.substring(0, 4).toLowerCase());
-            register(staffEmail, "Password123");
+            registerAndVerify(staffEmail, "Password123");
             String staffToken = loginAndExtractAccessToken(staffEmail, "Password123");
             insertOrganizationMembership(organizationId, userIdOf(staffEmail), role);
 

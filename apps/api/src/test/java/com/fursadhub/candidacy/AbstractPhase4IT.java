@@ -102,12 +102,7 @@ public abstract class AbstractPhase4IT extends AbstractIdentityIT {
     }
 
     protected String registerVerifiedUser(String email) {
-        register(email, "Password123");
-        String code = latestVerificationCodeFor(email);
-        ResponseEntity<Map> response = verifyEmailCode(email, code);
-        if (!response.getStatusCode().is2xxSuccessful()) {
-            throw new IllegalStateException("Email verification failed: " + response.getBody());
-        }
+        registerAndVerify(email, "Password123");
         return email;
     }
 

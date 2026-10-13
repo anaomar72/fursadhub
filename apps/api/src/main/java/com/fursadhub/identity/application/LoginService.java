@@ -105,6 +105,18 @@ public class LoginService {
             audit.record("LOGIN_FAILURE", user.getId(), ip, userAgent, "reason=closed");
             throw invalidCredentials();
         }
+        if (user.getStatus() == UserStatus.PENDING_CONTACT_VERIFICATION) {
+            // CLAUDE.md section 13: an account that has not proven email ownership never receives a
+            // session. Reported only AFTER the password matched, so the distinct code tells nothing
+            // to someone who does not already hold the credentials.
+            audit.record("LOGIN_FAILURE", user.getId(), ip, userAgent, "reason=email_unverified");
+            throw emailNotVerified();
+        }
+        if (user.getStatus() != UserStatus.ACTIVE) {
+            // Fail closed for any status this method does not explicitly recognise.
+            audit.record("LOGIN_FAILURE", user.getId(), ip, userAgent, "reason=not_active");
+            throw invalidCredentials();
+        }
 
         AccessTokenIssuer.IssuedAccessToken accessToken = accessTokenIssuer.issueFor(user);
 
@@ -156,6 +168,11 @@ public class LoginService {
 
     private ApiException invalidCredentials() {
         return new ApiException("INVALID_CREDENTIALS", HttpStatus.UNAUTHORIZED, "Invalid credentials.");
+    }
+
+    private ApiException emailNotVerified() {
+        return new ApiException("EMAIL_NOT_VERIFIED", HttpStatus.FORBIDDEN,
+                "Verify your email address before signing in.");
     }
 
     private String safeIp(String ip) {

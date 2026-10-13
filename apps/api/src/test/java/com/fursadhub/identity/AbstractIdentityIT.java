@@ -198,6 +198,19 @@ public abstract class AbstractIdentityIT {
         }
     }
 
+    /**
+     * Registers and completes email verification through the real code flow, leaving the account
+     * ACTIVE. Since email verification is required before login (CLAUDE.md section 13), any test
+     * that needs a signed-in self-service user must start here rather than at {@link #register}.
+     */
+    protected void registerAndVerify(String email, String password) {
+        register(email, password);
+        ResponseEntity<Map> response = verifyEmailCode(email, latestVerificationCodeFor(email));
+        if (!response.getStatusCode().is2xxSuccessful()) {
+            throw new IllegalStateException("Email verification failed: " + response.getBody());
+        }
+    }
+
     /** @return the raw access token from a successful login. */
     /**
      * Managed staff authenticate by USERNAME once one is assigned (Backend Phase B5.5); their email

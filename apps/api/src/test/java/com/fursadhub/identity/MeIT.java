@@ -13,14 +13,16 @@ class MeIT extends AbstractIdentityIT {
     @Test
     void returnsTheCurrentUserWhenAuthenticated() {
         String email = uniqueEmail("me-success");
-        register(email, "Password123");
+        registerAndVerify(email, "Password123");
         String accessToken = loginAndExtractAccessToken(email, "Password123");
 
         ResponseEntity<Map> response = getMe(accessToken);
 
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
         assertThat(response.getBody().get("email")).isEqualTo(email);
-        assertThat(response.getBody().get("status")).isEqualTo("PENDING_CONTACT_VERIFICATION");
+        // Previously asserted PENDING_CONTACT_VERIFICATION: an unverified account could sign in, which
+        // CLAUDE.md section 13 forbids. Only a verified, ACTIVE account can reach /me now.
+        assertThat(response.getBody().get("status")).isEqualTo("ACTIVE");
     }
 
     @Test
@@ -34,7 +36,7 @@ class MeIT extends AbstractIdentityIT {
     @Test
     void rejectsATamperedToken() {
         String email = uniqueEmail("me-tampered");
-        register(email, "Password123");
+        registerAndVerify(email, "Password123");
         String accessToken = loginAndExtractAccessToken(email, "Password123");
 
         ResponseEntity<Map> response = getMe(accessToken + "tampered");

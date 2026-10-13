@@ -435,7 +435,7 @@ class SavedOpportunityIT extends AbstractPhase3IT {
         createVerifiedOrganization(organizationUser, uniqueName("B4 Org User Org"));
 
         String universityEmail = uniqueEmail("b4-uni-user");
-        register(universityEmail, "Password123");
+        registerAndVerify(universityEmail, "Password123");
         String universityUser = loginAndExtractAccessToken(universityEmail, "Password123");
         UUID universityId = insertVerifiedUniversity(uniqueName("B4 Uni"));
         insertUniversityMembership(universityId, userIdOf(universityEmail), "UNIVERSITY_ADMIN");
@@ -464,7 +464,7 @@ class SavedOpportunityIT extends AbstractPhase3IT {
     void deletingTheStudentCascadesTheirBookmarksAway() {
         Fixture fixture = publishedOpportunity("PUBLIC");
         String email = uniqueEmail("b4-cascade-student");
-        register(email, "Password123");
+        registerAndVerify(email, "Password123");
         String student = loginAndExtractAccessToken(email, "Password123");
         createStudentProfile(student);
         authorizedPost(SAVED + "/" + fixture.opportunityId(), student, Map.of());
@@ -500,7 +500,7 @@ class SavedOpportunityIT extends AbstractPhase3IT {
     /** A registered user with a student profile — deliberately no enrollment, so nothing is verified. */
     private String studentToken(String prefix) {
         String email = uniqueEmail(prefix);
-        register(email, "Password123");
+        registerAndVerify(email, "Password123");
         String token = loginAndExtractAccessToken(email, "Password123");
         createStudentProfile(token);
         return token;

@@ -1,6 +1,8 @@
 package com.fursadhub.candidacy;
 
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ValueSource;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 
@@ -86,6 +88,28 @@ class SelfApplicationIT extends AbstractPhase4IT {
 
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.FORBIDDEN);
         assertThat(errorCode(response)).isEqualTo("STUDENT_NOT_VERIFIED");
+        assertThat(countCandidacies(published.opportunityId(), student.userId())).isZero();
+    }
+
+    /**
+     * Audit finding F-02: a VERIFIED enrollment only counts while the university that attested it is
+     * itself VERIFIED. Covers a university the platform never verified and one suspended after the
+     * student was verified.
+     */
+    @ParameterizedTest
+    @ValueSource(strings = {"DRAFT", "SUSPENDED", "REVOKED"})
+    void studentOfAUniversityThatIsNotVerifiedCannotApply(String universityStatus) {
+        PublishedOpportunity published = publishPublicOpportunity("recruiter");
+        UUID universityId = insertVerifiedUniversity("Jamhuriya " + UUID.randomUUID());
+        UUID departmentId = insertDepartment(universityId, "Computer Science", "CS");
+        StudentFixture student = createVerifiedStudent("student-" + universityStatus.toLowerCase(), universityId, departmentId);
+        jdbcTemplate.update("UPDATE universities SET status = ? WHERE id = ?", universityStatus, universityId);
+
+        ResponseEntity<Map> response = authorizedPost(
+                "/api/v1/opportunities/" + published.opportunityId() + "/applications", student.accessToken(), Map.of());
+
+        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.FORBIDDEN);
+        assertThat(errorCode(response)).isEqualTo("STUDENT_UNIVERSITY_NOT_VERIFIED");
         assertThat(countCandidacies(published.opportunityId(), student.userId())).isZero();
     }
 

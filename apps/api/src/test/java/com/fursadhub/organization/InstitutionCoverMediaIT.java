@@ -106,7 +106,7 @@ class InstitutionCoverMediaIT extends AbstractPhase3IT {
 
         for (String role : List.of("RECRUITER", "ORGANIZATION_SUPERVISOR")) {
             String staffEmail = uniqueEmail("b2c-" + role.substring(0, 4).toLowerCase());
-            register(staffEmail, "Password123");
+            registerAndVerify(staffEmail, "Password123");
             String staffToken = loginAndExtractAccessToken(staffEmail, "Password123");
             insertOrganizationMembership(organizationId, userIdOf(staffEmail), role);
 
@@ -209,7 +209,7 @@ class InstitutionCoverMediaIT extends AbstractPhase3IT {
         UUID universityId = insertVerifiedUniversity(name);
 
         String adminEmail = uniqueEmail("b2c-uni-admin");
-        register(adminEmail, "Password123");
+        registerAndVerify(adminEmail, "Password123");
         String adminToken = loginAndExtractAccessToken(adminEmail, "Password123");
         insertUniversityMembership(universityId, userIdOf(adminEmail), "UNIVERSITY_ADMIN");
 
@@ -220,7 +220,7 @@ class InstitutionCoverMediaIT extends AbstractPhase3IT {
                 .getStatusCode()).isEqualTo(HttpStatus.OK);
 
         String coordinatorEmail = uniqueEmail("b2c-uni-coord");
-        register(coordinatorEmail, "Password123");
+        registerAndVerify(coordinatorEmail, "Password123");
         String coordinatorToken = loginAndExtractAccessToken(coordinatorEmail, "Password123");
         insertUniversityMembership(universityId, userIdOf(coordinatorEmail), "DEPARTMENT_COORDINATOR");
 
@@ -233,7 +233,7 @@ class InstitutionCoverMediaIT extends AbstractPhase3IT {
         String name = uniqueName("B2C Uni Mime");
         UUID universityId = insertVerifiedUniversity(name);
         String adminEmail = uniqueEmail("b2c-uni-mime");
-        register(adminEmail, "Password123");
+        registerAndVerify(adminEmail, "Password123");
         String adminToken = loginAndExtractAccessToken(adminEmail, "Password123");
         insertUniversityMembership(universityId, userIdOf(adminEmail), "UNIVERSITY_ADMIN");
 

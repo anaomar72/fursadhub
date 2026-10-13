@@ -249,6 +249,8 @@
       "VERIFICATION_CHALLENGE_EXPIRED": "This code has expired. Ask the student to generate a new one.",
       "VERIFICATION_CHALLENGE_INVALID": "This code is invalid or has already been used.",
       "VERIFICATION_CASE_ALREADY_RESOLVED": "This case has already been resolved.",
+      "UNIVERSITY_NOT_VERIFIED": "Your university must be verified by FursadHub before enrollments can be approved. You can still review and record cases.",
+      "VERIFICATION_SELF_REVIEW_FORBIDDEN": "You cannot review your own enrollment. Ask a colleague to review it.",
       "VERIFICATION_CASE_INVALID_TRANSITION": "This action isn't available for the case's current state.",
       "ACCESS_DENIED": "You do not have access to this case.",
       "generic": "That decision wasn't recorded. Check your connection and try again — the case shows its current status.",

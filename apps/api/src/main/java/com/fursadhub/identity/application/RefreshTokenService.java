@@ -77,6 +77,18 @@ public class RefreshTokenService {
         if (user.getStatus() == UserStatus.SUSPENDED || user.getStatus() == UserStatus.CLOSED) {
             throw new ApiException("ACCOUNT_SUSPENDED", HttpStatus.FORBIDDEN, "This account cannot refresh a session.");
         }
+        if (user.getStatus() == UserStatus.PENDING_CONTACT_VERIFICATION) {
+            // A session minted before email verification became mandatory at login (CLAUDE.md
+            // section 13) must not be kept alive by rotation. The family is NOT revoked here: this
+            // transaction holds the row lock on the presented token, so a REQUIRES_NEW revocation
+            // would wait on ourselves. Rejecting every refresh is sufficient — the token can never
+            // be exchanged again and simply expires.
+            throw new ApiException("EMAIL_NOT_VERIFIED", HttpStatus.FORBIDDEN,
+                    "Verify your email address before signing in.");
+        }
+        if (user.getStatus() != UserStatus.ACTIVE) {
+            throw invalidToken();
+        }
 
         String rawNew = tokenGenerator.generate();
         Instant expiresAt = Instant.now().plus(authProperties.refreshTokenTtl());

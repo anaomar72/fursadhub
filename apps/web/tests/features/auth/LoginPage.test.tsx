@@ -1,12 +1,22 @@
 import { render, screen, waitFor } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
-import { MemoryRouter, Route, Routes } from 'react-router-dom'
+import { MemoryRouter, Route, Routes, useLocation } from 'react-router-dom'
 import { AppProviders } from '../../../src/app/providers/AppProviders'
 import { LoginPage } from '../../../src/features/auth/pages/LoginPage'
 
 function jsonResponse(body: unknown, status = 200) {
   return Promise.resolve(new Response(body === null ? 'null' : JSON.stringify(body), { status, headers: { 'Content-Type': 'application/json' } }))
+}
+
+/** Stands in for the verify-email screen and exposes where the login page sent the user. */
+function VerifyEmailProbe() {
+  const location = useLocation()
+  return (
+    <div data-testid="verify-email" data-search={location.search} data-state-email={(location.state as { email?: string } | null)?.email ?? ''}>
+      Verify email page
+    </div>
+  )
 }
 
 function renderLoginPage() {
@@ -18,6 +28,7 @@ function renderLoginPage() {
           <Route path="/register" element={<div>Register page</div>} />
           <Route path="/forgot-password" element={<div>Forgot password page</div>} />
           <Route path="/student" element={<div>Student console</div>} />
+          <Route path="/verify-email" element={<VerifyEmailProbe />} />
         </Routes>
       </AppProviders>
     </MemoryRouter>,
@@ -177,5 +188,57 @@ describe('LoginPage', () => {
     const payload = JSON.parse(bodies[0] ?? '{}')
     expect(payload.username).toBe('ahmed.hassan')
     expect(payload.email).toBeUndefined()
+  })
+
+  /** Phase B (CLAUDE.md section 13): a correct password on an unverified account issues no session. */
+  function stubUnverifiedLogin() {
+    vi.stubGlobal(
+      'fetch',
+      vi.fn((input: RequestInfo | URL) => {
+        const url = String(input)
+        if (url.includes('/auth/refresh')) {
+          return jsonResponse(
+            { code: 'REFRESH_TOKEN_INVALID', message: '', status: 401, path: '', timestamp: '', fieldErrors: [] },
+            401,
+          )
+        }
+        if (url.includes('/auth/login')) {
+          return jsonResponse(
+            { code: 'EMAIL_NOT_VERIFIED', message: '', status: 403, path: '', timestamp: '', fieldErrors: [] },
+            403,
+          )
+        }
+        return jsonResponse({}, 200)
+      }),
+    )
+  }
+
+  it('sends an unverified email sign-in to the code screen, carrying the address outside the URL', async () => {
+    stubUnverifiedLogin()
+    const user = userEvent.setup()
+    renderLoginPage()
+
+    await user.type(screen.getByLabelText(/email or username/i), 'pending@example.com')
+    await user.type(screen.getByLabelText(/^password$/i), 'Password123')
+    await user.click(screen.getByRole('button', { name: /^login$/i }))
+
+    const probe = await screen.findByTestId('verify-email')
+    expect(probe.dataset.stateEmail).toBe('pending@example.com')
+    expect(probe.dataset.search).toContain('unverified=1')
+    expect(probe.dataset.search).not.toContain('pending')
+    expect(screen.queryByText('Student console')).not.toBeInTheDocument()
+  })
+
+  it('shows a translated error for an unverified username sign-in rather than navigating', async () => {
+    stubUnverifiedLogin()
+    const user = userEvent.setup()
+    renderLoginPage()
+
+    await user.type(screen.getByLabelText(/email or username/i), 'ahmed.hassan')
+    await user.type(screen.getByLabelText(/^password$/i), 'Password123')
+    await user.click(screen.getByRole('button', { name: /^login$/i }))
+
+    expect(await screen.findByRole('alert')).toHaveTextContent(/verify your email address before signing in/i)
+    expect(screen.queryByTestId('verify-email')).not.toBeInTheDocument()
   })
 })

@@ -299,7 +299,7 @@ class OpportunityEnrichmentIT extends AbstractPhase3IT {
         UUID opportunityId = createDraftOpportunity(token, organizationId, "PUBLIC", fullEnrichment());
 
         String supervisorEmail = uniqueEmail("b3-sup");
-        register(supervisorEmail, "Password123");
+        registerAndVerify(supervisorEmail, "Password123");
         String supervisorToken = loginAndExtractAccessToken(supervisorEmail, "Password123");
         insertOrganizationMembership(organizationId, userIdOf(supervisorEmail), "ORGANIZATION_SUPERVISOR");
 

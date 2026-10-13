@@ -204,7 +204,7 @@ class UniversityProfileEnrichmentIT extends AbstractPhase3IT {
 
         for (String role : List.of("DEPARTMENT_COORDINATOR", "UNIVERSITY_SUPERVISOR")) {
             String staffEmail = uniqueEmail("b2u-" + role.substring(0, 4).toLowerCase());
-            register(staffEmail, "Password123");
+            registerAndVerify(staffEmail, "Password123");
             String staffToken = loginAndExtractAccessToken(staffEmail, "Password123");
             insertUniversityMembership(fixture.universityId(), userIdOf(staffEmail), role);
 
@@ -283,7 +283,7 @@ class UniversityProfileEnrichmentIT extends AbstractPhase3IT {
         UUID universityId = insertVerifiedUniversity(name);
 
         String adminEmail = uniqueEmail(prefix);
-        register(adminEmail, "Password123");
+        registerAndVerify(adminEmail, "Password123");
         String adminToken = loginAndExtractAccessToken(adminEmail, "Password123");
         insertUniversityMembership(universityId, userIdOf(adminEmail), "UNIVERSITY_ADMIN");
 

@@ -255,6 +255,7 @@
     "goToPlacement": "View my internship",
     "blockers": {
       "STUDENT_NOT_VERIFIED": "Your university enrollment must be verified before you can apply.",
+      "STUDENT_UNIVERSITY_NOT_VERIFIED": "Your university is not currently verified on FursadHub, so you cannot apply right now.",
       "STUDENT_NOT_AVAILABLE": "You already have an active internship placement, so you cannot apply for another one.",
       "STUDENT_ALREADY_APPLIED": "You have already applied to this internship.",
       "OPPORTUNITY_NOT_PUBLIC": "This internship only accepts university nominations.",

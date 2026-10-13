@@ -13,7 +13,7 @@ class PasswordResetIT extends AbstractIdentityIT {
     @Test
     void resetSucceedsAndAllowsLoginWithNewPassword() {
         String email = uniqueEmail("reset-success");
-        register(email, "OldPassword123");
+        registerAndVerify(email, "OldPassword123");
 
         ResponseEntity<Map> forgot = restTemplate.postForEntity(url("/api/v1/auth/password/forgot"), Map.of("email", email), Map.class);
         assertThat(forgot.getStatusCode()).isEqualTo(HttpStatus.OK);
@@ -33,7 +33,7 @@ class PasswordResetIT extends AbstractIdentityIT {
     @Test
     void resetRevokesExistingRefreshSessions() {
         String email = uniqueEmail("reset-revokes-sessions");
-        register(email, "OldPassword123");
+        registerAndVerify(email, "OldPassword123");
         String rawRefreshToken = loginAndExtractRawRefreshToken(email, "OldPassword123");
 
         restTemplate.postForEntity(url("/api/v1/auth/password/forgot"), Map.of("email", email), Map.class);

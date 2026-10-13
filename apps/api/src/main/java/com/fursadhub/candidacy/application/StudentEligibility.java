@@ -7,6 +7,8 @@ import com.fursadhub.identity.domain.UserStatus;
 import com.fursadhub.placement.domain.PlacementRepository;
 import com.fursadhub.student.domain.StudentEnrollment;
 import com.fursadhub.student.domain.StudentEnrollmentRepository;
+import com.fursadhub.university.domain.University;
+import com.fursadhub.university.domain.UniversityRepository;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
@@ -29,11 +31,15 @@ public class StudentEligibility {
     private final UserRepository users;
     private final StudentEnrollmentRepository enrollments;
     private final PlacementRepository placements;
+    private final UniversityRepository universities;
 
-    public StudentEligibility(UserRepository users, StudentEnrollmentRepository enrollments, PlacementRepository placements) {
+    public StudentEligibility(
+            UserRepository users, StudentEnrollmentRepository enrollments, PlacementRepository placements,
+            UniversityRepository universities) {
         this.users = users;
         this.enrollments = enrollments;
         this.placements = placements;
+        this.universities = universities;
     }
 
     /**
@@ -57,6 +63,16 @@ public class StudentEligibility {
         if (!enrollment.isVerified()) {
             throw new ApiException("STUDENT_NOT_VERIFIED", HttpStatus.FORBIDDEN,
                     "Your university enrollment must be verified before taking part in internships.");
+        }
+        // A verified enrollment is only as trustworthy as the university that attested it. While that
+        // university is not VERIFIED (never verified, or since suspended/rejected/revoked) its
+        // students cannot enter new recruitment; existing placements are not re-checked here.
+        boolean universityVerified = universities.findById(enrollment.getUniversityId())
+                .map(University::isVerified)
+                .orElse(false);
+        if (!universityVerified) {
+            throw new ApiException("STUDENT_UNIVERSITY_NOT_VERIFIED", HttpStatus.FORBIDDEN,
+                    "Your university is not currently verified on FursadHub, so you cannot take part in new internship recruitment.");
         }
         return enrollment;
     }

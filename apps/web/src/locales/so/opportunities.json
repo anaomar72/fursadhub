@@ -255,6 +255,7 @@
     "goToPlacement": "Fiiri tababarkayga",
     "blockers": {
       "STUDENT_NOT_VERIFIED": "Diiwaangelintaada jaamacadeed waa in la xaqiijiyaa ka hor inta aadan codsan.",
+      "STUDENT_UNIVERSITY_NOT_VERIFIED": "Jaamacaddaada hadda kuma xaqiijna FursadHub, sidaa darteed hadda ma codsan kartid.",
       "STUDENT_NOT_AVAILABLE": "Waxaad hore u haysatay tababar firfircoon, sidaa darteed mid kale ma codsan kartid.",
       "STUDENT_ALREADY_APPLIED": "Hore ayaad u codsatay tababarkan.",
       "OPPORTUNITY_NOT_PUBLIC": "Tababarkani wuxuu qaataa oo keliya magacaabista jaamacadda.",

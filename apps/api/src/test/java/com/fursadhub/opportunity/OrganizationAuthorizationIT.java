@@ -51,7 +51,7 @@ class OrganizationAuthorizationIT extends AbstractPhase3IT {
         UUID opportunityB = createDraftOpportunity(adminBToken, organizationB, "PUBLIC", Map.of());
 
         String recruiterAEmail = uniqueEmail("org-a-recruiter");
-        register(recruiterAEmail, "Password123");
+        registerAndVerify(recruiterAEmail, "Password123");
         UUID recruiterAId = userIdOf(recruiterAEmail);
         String adminAToken = registerAndLogin("org-a-admin-opp");
         UUID organizationA = createOrganization(adminAToken, "Org A " + UUID.randomUUID());
@@ -84,7 +84,7 @@ class OrganizationAuthorizationIT extends AbstractPhase3IT {
         UUID organizationId = createVerifiedOrganization(adminToken, "Supervisor Org " + UUID.randomUUID());
 
         String supervisorEmail = uniqueEmail("org-supervisor");
-        register(supervisorEmail, "Password123");
+        registerAndVerify(supervisorEmail, "Password123");
         UUID supervisorId = userIdOf(supervisorEmail);
         insertOrganizationMembership(organizationId, supervisorId, "ORGANIZATION_SUPERVISOR");
         String supervisorToken = loginAndExtractAccessToken(supervisorEmail, "Password123");
@@ -103,7 +103,7 @@ class OrganizationAuthorizationIT extends AbstractPhase3IT {
         UUID organizationId = createVerifiedOrganization(adminToken, "Recruiter Org " + UUID.randomUUID());
 
         String recruiterEmail = uniqueEmail("recruiter");
-        register(recruiterEmail, "Password123");
+        registerAndVerify(recruiterEmail, "Password123");
         UUID recruiterId = userIdOf(recruiterEmail);
         insertOrganizationMembership(organizationId, recruiterId, "RECRUITER");
         String recruiterToken = loginAndExtractAccessToken(recruiterEmail, "Password123");

@@ -89,7 +89,7 @@ class ManagedUsernameLoginIT extends AbstractPhase3IT {
     @DisplayName("Self-service accounts keep logging in by email, exactly as before")
     void selfServiceEmailLoginIsUnchanged() {
         String email = uniqueEmail("b55-self-service");
-        register(email, "Password123");
+        registerAndVerify(email, "Password123");
 
         assertThat(loginWithEmail(email, "Password123").getStatusCode()).isEqualTo(HttpStatus.OK);
         // And a self-service account has no username to log in with.
@@ -421,7 +421,7 @@ class ManagedUsernameLoginIT extends AbstractPhase3IT {
 
     private Fixture organizationWithAdmin(String prefix) {
         String adminEmail = uniqueEmail(prefix + "-admin");
-        register(adminEmail, "Password123");
+        registerAndVerify(adminEmail, "Password123");
         String adminToken = loginAndExtractAccessToken(adminEmail, "Password123");
         UUID organizationId = createVerifiedOrganization(adminToken, uniqueName("B55 " + prefix));
         return new Fixture(organizationId, adminToken, adminEmail);
@@ -431,7 +431,7 @@ class ManagedUsernameLoginIT extends AbstractPhase3IT {
         UUID universityId = insertVerifiedUniversity(uniqueName("B55U " + prefix));
         UUID departmentId = insertDepartment(universityId, "Computer Science", "CS-" + UUID.randomUUID());
         String adminEmail = uniqueEmail(prefix);
-        register(adminEmail, "Password123");
+        registerAndVerify(adminEmail, "Password123");
         String adminToken = loginAndExtractAccessToken(adminEmail, "Password123");
         insertUniversityMembership(universityId, userIdOf(adminEmail), "UNIVERSITY_ADMIN");
         return new UniversityFixture(universityId, departmentId, adminToken);

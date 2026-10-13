@@ -14,7 +14,7 @@ class LogoutIT extends AbstractIdentityIT {
     @Test
     void logoutRevokesTheSessionSoRefreshFails() {
         String email = uniqueEmail("logout-single");
-        register(email, "Password123");
+        registerAndVerify(email, "Password123");
         String rawRefreshToken = loginAndExtractRawRefreshToken(email, "Password123");
 
         ResponseEntity<Map> logout = logoutWith(rawRefreshToken);
@@ -32,7 +32,7 @@ class LogoutIT extends AbstractIdentityIT {
     @Test
     void logoutWithAJustRotatedTokenStillEndsTheSessionItBelongsTo() {
         String email = uniqueEmail("logout-rotated");
-        register(email, "Password123");
+        registerAndVerify(email, "Password123");
         String original = loginAndExtractRawRefreshToken(email, "Password123");
 
         ResponseEntity<Map> refresh = refreshWith(original);
@@ -48,7 +48,7 @@ class LogoutIT extends AbstractIdentityIT {
     @Test
     void logoutEndsOnlyItsOwnSessionNotTheUsersOtherSessions() {
         String email = uniqueEmail("logout-scope");
-        register(email, "Password123");
+        registerAndVerify(email, "Password123");
         String sessionOne = loginAndExtractRawRefreshToken(email, "Password123");
         String sessionTwo = loginAndExtractRawRefreshToken(email, "Password123");
 
@@ -62,7 +62,7 @@ class LogoutIT extends AbstractIdentityIT {
     @Test
     void logoutClearsTheRefreshCookieWithTheAttributesItWasSetWith() {
         String email = uniqueEmail("logout-cookie");
-        register(email, "Password123");
+        registerAndVerify(email, "Password123");
         String rawRefreshToken = loginAndExtractRawRefreshToken(email, "Password123");
 
         ResponseEntity<Map> logout = logoutWith(rawRefreshToken);
@@ -79,7 +79,7 @@ class LogoutIT extends AbstractIdentityIT {
     @Test
     void logoutIsIdempotentForAnAlreadyEndedSession() {
         String email = uniqueEmail("logout-twice");
-        register(email, "Password123");
+        registerAndVerify(email, "Password123");
         String rawRefreshToken = loginAndExtractRawRefreshToken(email, "Password123");
 
         assertThat(logoutWith(rawRefreshToken).getStatusCode()).isEqualTo(HttpStatus.OK);
@@ -95,7 +95,7 @@ class LogoutIT extends AbstractIdentityIT {
     @Test
     void logoutAllRevokesEverySessionForTheUser() {
         String email = uniqueEmail("logout-all");
-        register(email, "Password123");
+        registerAndVerify(email, "Password123");
 
         String rawRefreshTokenSessionOne = loginAndExtractRawRefreshToken(email, "Password123");
         ResponseEntity<Map> secondLogin = login(email, "Password123");

@@ -189,7 +189,7 @@ class UniversityStaffDisplayNameIT extends AbstractPhase3IT {
         UUID departmentId = insertDepartment(universityId, "Computer Science", "CS-" + UUID.randomUUID());
 
         String adminEmail = uniqueEmail(prefix);
-        register(adminEmail, "Password123");
+        registerAndVerify(adminEmail, "Password123");
         String adminToken = loginAndExtractAccessToken(adminEmail, "Password123");
         insertUniversityMembership(universityId, userIdOf(adminEmail), "UNIVERSITY_ADMIN");
 

@@ -88,10 +88,10 @@ public abstract class AbstractPhase3IT extends AbstractIdentityIT {
         return restTemplate.getForEntity(url(path), Map.class);
     }
 
-    /** Registers, logs in, and returns the caller's access token. */
+    /** Registers, verifies the email, logs in, and returns the caller's access token. */
     protected String registerAndLogin(String emailPrefix) {
         String email = uniqueEmail(emailPrefix);
-        register(email, "Password123");
+        registerAndVerify(email, "Password123");
         return loginAndExtractAccessToken(email, "Password123");
     }
 

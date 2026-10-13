@@ -278,6 +278,8 @@
       "generic": "Tallaabadaas lama dhammayn karin. Fadlan mar kale isku day.",
       "VERIFICATION_CASE_NOT_FOUND": "Kiiskaas lama helin.",
       "VERIFICATION_CASE_ALREADY_RESOLVED": "Kiiskaas horey ayaa loo xalliyay.",
+      "UNIVERSITY_NOT_VERIFIED": "Jaamacadda ardaygan lama xaqiijin, sidaa darteed diiwaangelinta lama ansixin karo.",
+      "VERIFICATION_SELF_REVIEW_FORBIDDEN": "Ma wax ka qaban kartid xaqiijinta diiwaangelintaada.",
       "VERIFICATION_EVIDENCE_MISSING": "Kiiskan caddayn looma soo gelin.",
       "VALIDATION_FAILED": "Tallaabadan waxay u baahan tahay sabab."
     },

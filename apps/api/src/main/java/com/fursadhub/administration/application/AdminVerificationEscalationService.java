@@ -8,6 +8,7 @@ import com.fursadhub.notification.application.NotificationService;
 import com.fursadhub.notification.domain.NotificationType;
 import com.fursadhub.student.domain.StudentEnrollment;
 import com.fursadhub.student.domain.StudentEnrollmentRepository;
+import com.fursadhub.verification.application.StudentVerificationGuard;
 import com.fursadhub.verification.domain.StudentVerificationCase;
 import com.fursadhub.verification.domain.StudentVerificationCaseRepository;
 import org.springframework.http.HttpStatus;
@@ -40,6 +41,7 @@ public class AdminVerificationEscalationService {
     private final UserRepository users;
     private final NotificationService notifications;
     private final AuditService audit;
+    private final StudentVerificationGuard guard;
 
     public AdminVerificationEscalationService(
             PlatformAuthorization authorization,
@@ -47,13 +49,15 @@ public class AdminVerificationEscalationService {
             StudentEnrollmentRepository enrollments,
             UserRepository users,
             NotificationService notifications,
-            AuditService audit) {
+            AuditService audit,
+            StudentVerificationGuard guard) {
         this.authorization = authorization;
         this.cases = cases;
         this.enrollments = enrollments;
         this.users = users;
         this.notifications = notifications;
         this.audit = audit;
+        this.guard = guard;
     }
 
     /** One escalated case plus the enrollment context a reviewer needs to judge it. */
@@ -77,6 +81,7 @@ public class AdminVerificationEscalationService {
     @Transactional
     public void verify(UUID actingUserId, UUID caseId, String ip, String userAgent) {
         StudentVerificationCase verificationCase = beginResolution(actingUserId, caseId);
+        guard.requireUniversityVerifiedForApproval(enrollmentOf(verificationCase));
         verificationCase.approve(actingUserId);
         persist(verificationCase);
 
@@ -118,7 +123,13 @@ public class AdminVerificationEscalationService {
             throw new ApiException("VERIFICATION_CASE_ALREADY_RESOLVED", HttpStatus.CONFLICT,
                     "This verification case has already been resolved.");
         }
+        guard.requireNotSelf(actingUserId, enrollmentOf(verificationCase));
         return verificationCase;
+    }
+
+    private StudentEnrollment enrollmentOf(StudentVerificationCase verificationCase) {
+        return enrollments.findById(verificationCase.getEnrollmentId())
+                .orElseThrow(() -> new IllegalStateException("Verification case references a missing enrollment"));
     }
 
     /**

@@ -237,6 +237,22 @@ describe('VerifyEmailPage', () => {
     expect(screen.queryByRole('button', { name: /resend code/i })).not.toBeInTheDocument()
   })
 
+  it('arriving from a sign-in refused for an unverified email explains why and allows an immediate resend', async () => {
+    // No code was emailed by the refused sign-in, so there is no cooldown to wait out.
+    renderVerifyEmailPage({ pathname: '/verify-email', search: '?unverified=1', state: { email: 'pending@example.com' } })
+
+    expect(await screen.findByText(/hasn.t been verified yet, so we couldn.t sign you in/i)).toBeInTheDocument()
+    expect(screen.queryByText(/resend in \d+s/i)).not.toBeInTheDocument()
+
+    const user = userEvent.setup()
+    await user.click(screen.getByRole('button', { name: /resend code/i }))
+
+    await waitFor(() => expect(resendCallCount).toBe(1))
+    expect(await screen.findByText(/resend in \d+s/i)).toBeInTheDocument()
+    // The address stays out of the URL.
+    expect(screen.getByTestId('location').dataset.search).not.toContain('pending')
+  })
+
   it('shows a request-code form when no email is known and adopts the email on success', async () => {
     const user = userEvent.setup()
     renderVerifyEmailPage('/verify-email')

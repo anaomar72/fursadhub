@@ -49,7 +49,7 @@ class UniversityVerificationAuthorizationIT extends AbstractIdentityIT {
         UUID universityB = insertVerifiedUniversity("University B " + UUID.randomUUID());
 
         String adminEmail = uniqueEmail("uni-a-admin");
-        register(adminEmail, "Password123");
+        registerAndVerify(adminEmail, "Password123");
         UUID adminId = userIdOf(adminEmail);
         insertMembership(defaultUniversityId, adminId, "UNIVERSITY_ADMIN");
         String adminToken = loginAndExtractAccessToken(adminEmail, "Password123");
@@ -63,7 +63,7 @@ class UniversityVerificationAuthorizationIT extends AbstractIdentityIT {
     @Test
     void csCoordinatorCannotListBusinessStudents() {
         String coordinatorEmail = uniqueEmail("cs-coordinator");
-        register(coordinatorEmail, "Password123");
+        registerAndVerify(coordinatorEmail, "Password123");
         UUID coordinatorId = userIdOf(coordinatorEmail);
         UUID membershipId = insertMembership(defaultUniversityId, coordinatorId, "DEPARTMENT_COORDINATOR");
         insertMembershipDepartment(membershipId, csDepartmentId);
@@ -79,13 +79,13 @@ class UniversityVerificationAuthorizationIT extends AbstractIdentityIT {
     @Test
     void coordinatorCannotReviewCaseOutsideAssignedDepartment() {
         String studentEmail = uniqueEmail("ba-student");
-        register(studentEmail, "Password123");
+        registerAndVerify(studentEmail, "Password123");
         String studentToken = loginAndExtractAccessToken(studentEmail, "Password123");
         claimAndSubmit(studentToken, baDepartmentId, "BA-" + UUID.randomUUID().toString().substring(0, 8));
         UUID caseId = caseIdForEnrollmentOwnedBy(studentEmail);
 
         String coordinatorEmail = uniqueEmail("cs-only-coordinator");
-        register(coordinatorEmail, "Password123");
+        registerAndVerify(coordinatorEmail, "Password123");
         UUID coordinatorId = userIdOf(coordinatorEmail);
         UUID membershipId = insertMembership(defaultUniversityId, coordinatorId, "DEPARTMENT_COORDINATOR");
         insertMembershipDepartment(membershipId, csDepartmentId);
@@ -102,7 +102,7 @@ class UniversityVerificationAuthorizationIT extends AbstractIdentityIT {
     @Test
     void universitySupervisorCannotAccessVerificationQueue() {
         String supervisorEmail = uniqueEmail("supervisor");
-        register(supervisorEmail, "Password123");
+        registerAndVerify(supervisorEmail, "Password123");
         UUID supervisorId = userIdOf(supervisorEmail);
         UUID membershipId = insertMembership(defaultUniversityId, supervisorId, "UNIVERSITY_SUPERVISOR");
         insertMembershipDepartment(membershipId, csDepartmentId);
@@ -120,7 +120,7 @@ class UniversityVerificationAuthorizationIT extends AbstractIdentityIT {
         String sharedNumber = "DUP-" + UUID.randomUUID().toString().substring(0, 8);
 
         String firstEmail = uniqueEmail("dup-first");
-        register(firstEmail, "Password123");
+        registerAndVerify(firstEmail, "Password123");
         String firstToken = loginAndExtractAccessToken(firstEmail, "Password123");
         ResponseEntity<Map> first = authorizedPost("/api/v1/students/me/enrollment", firstToken,
                 Map.of("universityId", defaultUniversityId.toString(), "departmentId", csDepartmentId.toString(),
@@ -128,7 +128,7 @@ class UniversityVerificationAuthorizationIT extends AbstractIdentityIT {
         assertThat(first.getStatusCode()).isEqualTo(HttpStatus.CREATED);
 
         String secondEmail = uniqueEmail("dup-second");
-        register(secondEmail, "Password123");
+        registerAndVerify(secondEmail, "Password123");
         String secondToken = loginAndExtractAccessToken(secondEmail, "Password123");
         ResponseEntity<Map> second = authorizedPost("/api/v1/students/me/enrollment", secondToken,
                 Map.of("universityId", defaultUniversityId.toString(), "departmentId", baDepartmentId.toString(),
@@ -141,7 +141,7 @@ class UniversityVerificationAuthorizationIT extends AbstractIdentityIT {
     @Test
     void expiredChallengeIsRejected() {
         String studentEmail = uniqueEmail("expired-challenge-student");
-        register(studentEmail, "Password123");
+        registerAndVerify(studentEmail, "Password123");
         String studentToken = loginAndExtractAccessToken(studentEmail, "Password123");
         claimAndSubmit(studentToken, csDepartmentId, "EXP-" + UUID.randomUUID().toString().substring(0, 8));
         UUID caseId = caseIdForEnrollmentOwnedBy(studentEmail);
@@ -163,7 +163,7 @@ class UniversityVerificationAuthorizationIT extends AbstractIdentityIT {
     @Test
     void consumedChallengeCannotBeReplayed() {
         String studentEmail = uniqueEmail("replay-challenge-student");
-        register(studentEmail, "Password123");
+        registerAndVerify(studentEmail, "Password123");
         String studentToken = loginAndExtractAccessToken(studentEmail, "Password123");
         claimAndSubmit(studentToken, csDepartmentId, "REPLAY-" + UUID.randomUUID().toString().substring(0, 8));
         UUID caseId = caseIdForEnrollmentOwnedBy(studentEmail);
@@ -188,7 +188,7 @@ class UniversityVerificationAuthorizationIT extends AbstractIdentityIT {
     @Test
     void verifiedCaseCannotBeVerifiedAgain() {
         String studentEmail = uniqueEmail("already-resolved-student");
-        register(studentEmail, "Password123");
+        registerAndVerify(studentEmail, "Password123");
         String studentToken = loginAndExtractAccessToken(studentEmail, "Password123");
         claimAndSubmit(studentToken, csDepartmentId, "RESOLVED-" + UUID.randomUUID().toString().substring(0, 8));
         UUID caseId = caseIdForEnrollmentOwnedBy(studentEmail);
@@ -209,7 +209,7 @@ class UniversityVerificationAuthorizationIT extends AbstractIdentityIT {
 
     private String provisionUniversityAdmin() {
         String email = uniqueEmail("admin");
-        register(email, "Password123");
+        registerAndVerify(email, "Password123");
         UUID adminId = userIdOf(email);
         insertMembership(defaultUniversityId, adminId, "UNIVERSITY_ADMIN");
         return loginAndExtractAccessToken(email, "Password123");

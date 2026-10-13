@@ -31,6 +31,7 @@ public class ConsumeVerificationChallengeService {
     private final OpaqueTokenGenerator hasher;
     private final UniversityAuthorization universityAuthorization;
     private final AuditService audit;
+    private final StudentVerificationGuard guard;
 
     public ConsumeVerificationChallengeService(
             StudentVerificationCaseRepository cases,
@@ -38,13 +39,15 @@ public class ConsumeVerificationChallengeService {
             VerificationChallengeRepository challenges,
             OpaqueTokenGenerator hasher,
             UniversityAuthorization universityAuthorization,
-            AuditService audit) {
+            AuditService audit,
+            StudentVerificationGuard guard) {
         this.cases = cases;
         this.enrollments = enrollments;
         this.challenges = challenges;
         this.hasher = hasher;
         this.universityAuthorization = universityAuthorization;
         this.audit = audit;
+        this.guard = guard;
     }
 
     @Transactional
@@ -60,6 +63,9 @@ public class ConsumeVerificationChallengeService {
         UniversityMembership membership = universityAuthorization.requireMembership(
                 staffUserId, universityId, UniversityRole.UNIVERSITY_ADMIN, UniversityRole.DEPARTMENT_COORDINATOR);
         universityAuthorization.requireDepartmentScope(membership, enrollment.getDepartmentId());
+        // Account binding proves the person at the desk is the account holder; doing it to oneself
+        // proves nothing.
+        guard.requireNotSelf(staffUserId, enrollment);
 
         String hash = hasher.hash(rawCode);
         VerificationChallenge challenge = challenges.findByVerificationCaseIdAndCodeHash(caseId, hash)
